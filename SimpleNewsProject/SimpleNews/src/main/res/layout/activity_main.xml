@@ -1,0 +1,109 @@
+<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/drawer_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+    <com.astuetz.PagerSlidingTabStrip
+        android:id="@+id/tabs"
+        android:layout_width="match_parent"
+        android:layout_height="48dip"
+        android:background="@drawable/background_tabs" />
+
+    <de.dala.simplenews.RestrictedViewPager
+        android:id="@+id/pager"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/colors"
+        android:layout_below="@+id/tabs" />
+
+        <!--
+    <LinearLayout
+        android:id="@+id/colors"
+        android:layout_width="match_parent"
+        android:layout_height="48dip"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="8dip"
+        android:layout_marginLeft="4dip"
+        android:layout_marginRight="4dip"
+        android:orientation="horizontal" >
+
+        <ImageView
+            android:layout_width="0dip"
+            android:layout_height="match_parent"
+            android:layout_margin="4dip"
+            android:layout_weight="1"
+            android:background="#FF666666"
+            android:onClick="onColorClicked"
+            android:tag="#FF666666" />
+
+        <ImageView
+            android:layout_width="0dip"
+            android:layout_height="match_parent"
+            android:layout_margin="4dip"
+            android:layout_weight="1"
+            android:background="#FF96AA39"
+            android:onClick="onColorClicked"
+            android:tag="#FF96AA39" />
+
+        <ImageView
+            android:layout_width="0dip"
+            android:layout_height="match_parent"
+            android:layout_margin="4dip"
+            android:layout_weight="1"
+            android:background="#FFC74B46"
+            android:onClick="onColorClicked"
+            android:tag="#FFC74B46" />
+
+        <ImageView
+            android:layout_width="0dip"
+            android:layout_height="match_parent"
+            android:layout_margin="4dip"
+            android:layout_weight="1"
+            android:background="#FFF4842D"
+            android:onClick="onColorClicked"
+            android:tag="#FFF4842D" />
+
+        <ImageView
+            android:layout_width="0dip"
+            android:layout_height="match_parent"
+            android:layout_margin="4dip"
+            android:layout_weight="1"
+            android:background="#FF3F9FE0"
+            android:onClick="onColorClicked"
+            android:tag="#FF3F9FE0" />
+
+        <ImageView
+            android:layout_width="0dip"
+            android:layout_height="match_parent"
+            android:layout_margin="4dip"
+            android:layout_weight="1"
+            android:background="#FF5161BC"
+            android:onClick="onColorClicked"
+            android:tag="#FF5161BC" />
+    </LinearLayout>
+    -->
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/linear_drawer"
+        android:layout_width="240dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:orientation="horizontal">
+
+        <ListView
+            android:id="@+id/left_drawer"
+            android:layout_width="237dp"
+            android:layout_height="match_parent"
+            android:background="@drawable/background_tabs"
+            android:choiceMode="singleChoice"
+            android:divider="@android:color/transparent"
+            android:dividerHeight="0dp" />
+        <View
+            android:id="@+id/vertical_line"
+            android:layout_width="3dp"
+            android:layout_height="fill_parent" android:background="@android:color/black"></View>
+    </LinearLayout>
+</android.support.v4.widget.DrawerLayout>

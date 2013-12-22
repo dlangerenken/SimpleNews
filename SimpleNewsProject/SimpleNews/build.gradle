@@ -1,0 +1,36 @@
+buildscript {
+    repositories {
+mavenCentral()
+}
+    dependencies {
+        classpath 'com.android.tools.build:gradle:0.7.+'
+    }
+}
+apply plugin: 'android'
+
+repositories {
+mavenCentral()
+}
+
+android {
+    compileSdkVersion 19
+    buildToolsVersion '19.0.0'
+
+    defaultConfig {
+        minSdkVersion 14
+        targetSdkVersion 19
+    }
+}
+
+dependencies {
+    compile 'com.android.support:support-v4:19.0.0'
+    compile 'com.android.support:appcompat-v7:19.0.0'
+    compile 'com.astuetz:pagerslidingtabstrip:1.0.1'
+    compile 'com.github.gabrielemariotti.cards:library:1.1.0'
+    compile 'com.github.gabrielemariotti.changeloglib:library:1.4.0'
+    compile files('libs/volley.jar')
+    compile files('libs/gson-2.2.4.jar')
+    compile ('de.keyboardsurfer.android.widget:crouton:1.8.1') {
+        exclude module: 'support-v4'
+    }
+}
