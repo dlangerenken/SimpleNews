@@ -73,7 +73,7 @@ public class NavDrawerAdapter extends BaseAdapter {
         }
             if (item.type == NavDrawItem.Type.CATEGORY){
                 if (categoryDrawable != null){
-                holder.view.setBackground(categoryDrawable);
+                holder.view.setBackgroundDrawable(categoryDrawable);
             }
         }
         holder.textView.setText(mData.get(position).text);

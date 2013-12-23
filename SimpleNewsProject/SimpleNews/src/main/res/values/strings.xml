@@ -17,4 +17,7 @@
     <string name="minutes">Minuten</string>
     <string name="just_now"> - gerade eben</string>
     <string name="coming_soon">Coming soon</string>
+    <string name="progress">Progress</string>
+    <string name="quick_contact">Quick Contact</string>
+    <string name="item1">Item1</string>
 </resources>

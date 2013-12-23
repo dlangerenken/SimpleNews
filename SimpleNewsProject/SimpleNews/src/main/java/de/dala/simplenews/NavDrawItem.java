@@ -8,7 +8,7 @@ public class NavDrawItem {
 
     public enum Type {
         CATEGORY, ENTRY
-    };
+    }
 
     public Type type;
 

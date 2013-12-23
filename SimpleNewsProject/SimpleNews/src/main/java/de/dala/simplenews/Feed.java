@@ -1,25 +1,52 @@
 package de.dala.simplenews;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import androidrss.RSSFeed;
 
 /**
  * Created by Daniel on 19.12.13.
  */
-public class Feed {
+public class Feed implements Serializable{
     private long id;
     private String url;
     private long categoryId;
     private long lastUpdateTime;
     private List<Entry> entries;
+    private String title;
+    private String description;
+    private boolean visible = true;
 
+    public String getTitle(){
+        return title;
+    }
+
+    public void setTitle(String title){
+        this.title = title;
+    }
+
+    public boolean isVisible(){
+        return visible;
+    }
+
+    public void setVisible(boolean visible){
+        this.visible = visible;
+    }
+
+    public String getDescription(){
+        return description;
+    }
+
+    public void setDescription(String description){
+        this.description = description;
+    }
     public Feed (String url){
         this.entries = new ArrayList<Entry>();
         this.url = url;
+    }
+
+    public Feed(){
+        this.entries = new ArrayList<Entry>();
     }
 
     public Feed(long id, String url, long categoryId, long lastUpdateTime, List<Entry> entries){

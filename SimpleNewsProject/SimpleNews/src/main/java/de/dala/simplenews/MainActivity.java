@@ -1,8 +1,8 @@
 package de.dala.simplenews;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
@@ -12,57 +12,47 @@ import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.TypedValue;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.os.Build;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.astuetz.PagerSlidingTabStrip;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.zip.Inflater;
+import org.xmlpull.v1.XmlPullParserException;
 
-import androidrss.*;
-import androidrss.RSSFeed;
+import java.io.IOException;
+import java.util.List;
+
+import de.dala.simplenews.database.DatabaseHandler;
 import de.dala.simplenews.database.IDatabaseHandler;
 import de.dala.simplenews.database.MockDatabaseHandler;
 import de.dala.simplenews.dialog.ChangeLogDialog;
-import de.dala.simplenews.network.NetworkCommunication;
 import de.dala.simplenews.parser.XmlParser;
 import de.keyboardsurfer.android.widget.crouton.Configuration;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
-import de.keyboardsurfer.android.widget.crouton.Style;
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
 
 public class MainActivity extends ActionBarActivity implements ViewPager.OnPageChangeListener{
 
+    public static final String DE_DALA_SIMPLENEWS = "de.dala.simplenews";
+    public static final String XML_LOADED = "xmlLoaded";
     private IDatabaseHandler databaseHandler;
+
+    private static String TAG = "MainActivity";
 
     private final Handler handler = new Handler();
 
@@ -92,8 +82,11 @@ public class MainActivity extends ActionBarActivity implements ViewPager.OnPageC
         setContentView(R.layout.activity_main);
         setupDrawer(savedInstanceState);
 
-        databaseHandler = new MockDatabaseHandler(this);
-        categories = databaseHandler.getCategories();
+        databaseHandler = DatabaseHandler.getInstance(this);
+        if (!xmlIsAlreadyLoaded()){
+            loadXml();
+        }
+        categories = databaseHandler.getCategories(null, null);
 
         pager = (ViewPager) findViewById(R.id.pager);
         adapter = new MyPagerAdapter(getSupportFragmentManager());
@@ -110,6 +103,36 @@ public class MainActivity extends ActionBarActivity implements ViewPager.OnPageC
         createProgressView();
 
         changeColor(currentColor);
+    }
+
+    private void loadXml() {
+            try {
+                News news = new XmlParser(this).readDefaultNewsFile();
+                for (Category category : news.getCategories()){
+                    if (category != null){
+                        databaseHandler.addCategory(category, false, false);
+                    }
+                }
+                saveLoading();
+            } catch (XmlPullParserException e){
+                Log.e(TAG, "Error in adding xml to Database");
+                e.printStackTrace();
+            }catch (IOException io){
+                Log.e(TAG, "Error in adding xml to Database");
+                io.printStackTrace();
+            }
+    }
+
+    private boolean xmlIsAlreadyLoaded(){
+        SharedPreferences prefs = this.getSharedPreferences(
+                DE_DALA_SIMPLENEWS, Context.MODE_PRIVATE);
+        return prefs.getBoolean(XML_LOADED, false);
+    }
+
+    private void saveLoading() {
+        SharedPreferences prefs = this.getSharedPreferences(
+                DE_DALA_SIMPLENEWS, Context.MODE_PRIVATE);
+        prefs.edit().putBoolean(XML_LOADED, true).commit();
     }
 
     private View progressView;
@@ -368,7 +391,7 @@ public class MainActivity extends ActionBarActivity implements ViewPager.OnPageC
 
         @Override
         public Fragment getItem(int position) {
-            Fragment fragment = NewsCardFragment.newInstance(position, categories.get(position));
+            Fragment fragment = NewsCardFragment.newInstance(categories.get(position));
             return fragment;
         }
 

@@ -86,19 +86,10 @@ public class MyCardArrayAdapter extends CardArrayAdapter{
     private class CardComparator implements Comparator<Card> {
             @Override
             public int compare(Card card0, Card card1) {
-                if (card0 instanceof NewsCardFragment.NewsCard && card1 instanceof NewsCardFragment.NewsCard){
-                    Entry entry0 = ((NewsCardFragment.NewsCard) card0).getEntry();
-                    Entry entry1 = ((NewsCardFragment.NewsCard) card1).getEntry();
-                    if (entry0.getDate() == null){
-                        return -1;
-                    }else if (entry1.getDate() == null){
-                        return 1;
-                    }
-                    if (entry0.getDate() > entry1.getDate()){
-                        return -1;
-                    }else{
-                        return 1;
-                    }
+                if (card0 instanceof NewsCard && card1 instanceof NewsCard){
+                    Entry entry0 = ((NewsCard) card0).getEntry();
+                    Entry entry1 = ((NewsCard) card1).getEntry();
+                    return entry0.compareTo(entry1);
                 }
                 return -1;
         }

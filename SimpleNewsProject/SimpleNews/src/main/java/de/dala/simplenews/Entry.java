@@ -1,16 +1,11 @@
 package de.dala.simplenews;
 
-import android.text.Html;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import androidrss.RSSFeed;
+import java.io.Serializable;
 
 /**
  * Created by Daniel on 19.12.13.
  */
-public class Entry {
+public class Entry implements Comparable<Entry>, Serializable{
     private long id;
     private long feedId;
     private long categoryId;
@@ -21,7 +16,11 @@ public class Entry {
     private String link;
     private String imageLink;
 
-    private boolean isDeleted;
+    private boolean visible = true;
+
+    public Entry(){
+
+    }
 
     public Entry(long id, long feedId, long categoryId, String title, String description, Long date, String srcName, String link, String imageLink){
         this.id = id;
@@ -107,11 +106,25 @@ public class Entry {
         this.imageLink = imageLink;
     }
 
-    public boolean isDeleted() {
-        return isDeleted;
+    public boolean isVisible() {
+        return visible;
     }
 
-    public void setDeleted(boolean isDeleted) {
-        this.isDeleted = isDeleted;
+    public void setVisible(boolean visible) {
+        this.visible = visible;
+    }
+
+    @Override
+    public int compareTo(Entry another) {
+        if (getDate() == null){
+            return -1;
+        }else if (another.getDate() == null){
+            return 1;
+        }
+        if (getDate() > another.getDate()){
+            return -1;
+        }else{
+            return 1;
+        }
     }
 }

@@ -16,7 +16,7 @@
         android:orderInCategory="100"
         app:showAsAction="never" />
     <item android:id="@+id/progress"
-        android:title="Progress"
+        android:title="@string/progress"
         android:orderInCategory="100"
         app:showAsAction="never" />
 </menu>

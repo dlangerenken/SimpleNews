@@ -2,28 +2,43 @@
 <news>
     <category name="Sport" color="#FF666666">
         <feed>http://www.spiegel.de/sport/index.rss</feed>
+        <feed>http://www.welt.de/sport/?service=Rss</feed>
+        <feed>http://www.faz.net/rss/aktuell/sport/</feed>
     </category>
     <category name="Gesundheit" color="#ffd2a494">
+        <feed>http://www.spiegel.de/gesundheit/index.rss</feed>
         <feed>http://www.welt.de/gesundheit/?service=Rss</feed>
+        <feed>http://www.faz.net/rss/aktuell/gesellschaft/gesundheit/</feed>
     </category>
     <category name="Wirtschaft" color="#FF96AA39">
         <feed>http://www.spiegel.de/wirtschaft/index.rss</feed>
+        <feed>http://www.welt.de/wirtschaft/?service=Rss</feed>
+        <feed>http://www.faz.net/rss/aktuell/wirtschaft/</feed>
     </category>
     <category name="Karriere" color="#ff289a74">
+        <feed>http://www.spiegel.de/unispiegel/studium/index.rss</feed>
         <feed>http://www.welt.de/wirtschaft/karriere/?service=Rss</feed>
+        <feed>http://www.faz.net/rss/aktuell/beruf-chance/</feed>
     </category>
     <category name="Politik" color="#FFC74B46">
         <feed>http://www.spiegel.de/politik/index.rss</feed>
+        <feed>http://www.welt.de/politik/?service=Rss</feed>
+        <feed>http://www.faz.net/rss/aktuell/politik/</feed>
     </category>
-    <category name="Studium" color="#FFF4842D">
-        <feed>http://www.spiegel.de/unispiegel/studium/index.rss</feed>
+    <category name="Kultur" color="#FFF4842D">
+        <feed>http://www.spiegel.de/kultur/index.rss</feed>
+        <feed>http://www.welt.de/kultur/?service=Rss</feed>
+        <feed>http://www.faz.net/rss/aktuell/rhein-main/kultur/</feed>
     </category>
     <category name="International" color="#FF3F9FE0">
         <feed>http://www.spiegel.de/international/index.rss</feed>
+        <feed>http://www.welt.de/politik/ausland/?service=Rss</feed>
+        <feed>http://www.faz.net/rss/aktuell/politik/ausland/</feed>
     </category>
     <category name="Technologie" color="#FFBA55D3">
         <feed>http://rss.golem.de/rss.php?feed=RSS2.0</feed>
         <feed>http://www.spiegel.de/wissenschaft/technik/index.rss</feed>
         <feed>http://www.heise.de/newsticker/heise-atom.xml</feed>
+        <feed>http://www.faz.net/rss/aktuell/technik-motor/</feed>
     </category>
 </news>

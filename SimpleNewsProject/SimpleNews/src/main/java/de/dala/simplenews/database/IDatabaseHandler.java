@@ -12,14 +12,23 @@ import de.dala.simplenews.Feed;
  * @author Daniel Langerenken
  */
 public interface IDatabaseHandler {
-    List<Category> getCategories();
-    Category getCategory(long categoryId);
-    long addCategory(Category category);
-    Category removeCategory(long categoryId);
-    List<Feed> getFeeds(long categoryId);
-    List<Entry> getEntries(long feedId);
-    void setVisibilityCategory(long categoryId, boolean visible);
-    void setEntryDeleted(long entryId, boolean visible);
+    List<Category> getCategories(Boolean excludeFeeds, Boolean excludeEntries);
+    Category getCategory(Long categoryId, Boolean excludeFeeds, Boolean excludeEntries);
+    long addCategory(Category category, Boolean excludeFeeds, Boolean excludeEntries);
+    int removeCategory(long categoryId, Boolean excludeFeeds, Boolean excludeEntries);
+    void setVisibilityCategories(Long categoryId, boolean visible, Boolean excludeFeeds, Boolean excludeEntries);
 
-    long addEntry(Entry entry);
+    List<Feed> getFeeds(Long categoryId, Boolean excludeEntries);
+    Feed getFeed(long feedId, Boolean excludeEntries);
+    long addFeed(long categoryId, Feed feed, Boolean excludeEntries);
+    int removeFeeds(Long categoryId, Long feedId, Boolean excludeEntries);
+    void setVisibilityFeed(Long categoryId, Long feedId, boolean visible, Boolean excludeEntries);
+
+    List<Entry> getEntries(Long categoryId, Long feedId);
+    Entry getEntry(long entryId);
+    long addEntry(long categoryId, long feedId, Entry entry);
+    int removeEntries(Long categoryId, Long feedId, Long entryId);
+    void setVisibilityEntry(Long categoryId, Long feedId, Long entryId, boolean visible);
+
+    //TODO replace!
 }

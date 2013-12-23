@@ -4,9 +4,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import androidrss.RSSFeed;
-import androidrss.RSSItem;
-
 /**
  * Created by Daniel on 19.12.13.
  */
@@ -16,13 +13,13 @@ public class Category implements Serializable{
     private int color;
     private transient List<Feed> feeds;
 
-    private boolean isDisplayed;
+    private boolean isVisible = true;
 
     public Category(){
         feeds = new ArrayList<Feed>();
     }
 
-    public Category(String name, List<Feed> feeds, long id, int color, boolean isDisplayed){
+    public Category(String name, List<Feed> feeds, long id, int color, boolean isVisible){
         this.name = name;
         this.feeds = feeds;
         if (feeds==null){
@@ -30,12 +27,9 @@ public class Category implements Serializable{
         }
         this.id = id;
         this.color = color;
-        this.isDisplayed = isDisplayed;
+        this.isVisible = isVisible;
     }
 
-    public boolean isDisplay(){
-        return isDisplayed;
-    }
 
     public String getName(){
         return name;
@@ -58,7 +52,7 @@ public class Category implements Serializable{
     }
 
     public void setVisible(boolean visible) {
-        this.isDisplayed = visible;
+        this.isVisible = visible;
     }
 
     public void setColor(int color) {
@@ -69,14 +63,9 @@ public class Category implements Serializable{
         this.feeds = feeds;
     }
 
-    public boolean isDisplayed() {
-        return isDisplayed;
+    public boolean isVisible() {
+        return isVisible;
     }
-
-    public void setDisplayed(boolean isDisplayed) {
-        this.isDisplayed = isDisplayed;
-    }
-
     public void setName(String name) {
 
         this.name = name;

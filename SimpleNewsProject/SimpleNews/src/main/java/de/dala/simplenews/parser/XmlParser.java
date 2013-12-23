@@ -86,9 +86,9 @@ public class XmlParser  {
      *
      * @return {@link News} obj with all data
      */
-    public News readDefaultNewsFile() throws Exception{
+    public News readDefaultNewsFile() throws XmlPullParserException, IOException{
 
-        News news;
+        News news = null;
 
         try {
             InputStream is;
@@ -111,7 +111,6 @@ public class XmlParser  {
                 is.close();
             }else{
                 Log.d(TAG, "categories.xml not found");
-                throw new Exception("categories.xml not found");
             }
         } catch (XmlPullParserException xpe) {
             Log.d(TAG,"XmlPullParseException while parsing changelog file",xpe);
@@ -122,7 +121,7 @@ public class XmlParser  {
         }
 
         if (news!=null)
-            Log.d(TAG,"Process ended. News:"+news.toString());
+            Log.d(TAG,"Process ended. News:" + news);
 
         return news;
     }
@@ -134,7 +133,7 @@ public class XmlParser  {
      * @param parser
      * @param news
      */
-    protected void readNews(XmlPullParser parser, News news) throws Exception{
+    protected void readNews(XmlPullParser parser, News news) throws  XmlPullParserException, IOException{
 
         if (parser==null || news==null) return;
 
@@ -164,7 +163,7 @@ public class XmlParser  {
      * @param news
      * @throws Exception
      */
-    protected void readCategory(XmlPullParser parser, News news) throws  Exception{
+    protected void readCategory(XmlPullParser parser, News news) throws  XmlPullParserException, IOException{
 
         if (parser==null) return;
 
@@ -203,7 +202,7 @@ public class XmlParser  {
      * @param news
      * @throws Exception
      */
-    private String readFeed(XmlPullParser parser, News news) throws  Exception{
+    private String readFeed(XmlPullParser parser, News news) throws  XmlPullParserException, IOException{
         String feed = null;
         if (parser==null) return null;
 
