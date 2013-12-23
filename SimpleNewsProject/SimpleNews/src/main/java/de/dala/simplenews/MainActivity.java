@@ -407,17 +407,17 @@ public class MainActivity extends ActionBarActivity implements ViewPager.OnPageC
         crouton.show();
     }
 
-    private int loadingNews = 0;
+    private int loadingNews = -1;
     public void showLoadingNews(){
-        if (loadingNews <= 0){
+        loadingNews++;
+        if (loadingNews == 0){
             updateNews();
-            loadingNews++;
         }
     }
 
     public void cancelLoadingNews(){
         loadingNews--;
-        if (loadingNews <= 0){
+        if (loadingNews == -1){
             crouton.cancel();
         }
     }

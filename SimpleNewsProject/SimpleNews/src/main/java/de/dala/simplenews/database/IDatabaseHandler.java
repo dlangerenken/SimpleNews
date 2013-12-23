@@ -17,13 +17,13 @@ public interface IDatabaseHandler {
     long addCategory(Category category, Boolean excludeFeeds, Boolean excludeEntries);
     int removeCategory(long categoryId, Boolean excludeFeeds, Boolean excludeEntries);
     void setVisibilityCategories(Long categoryId, boolean visible, Boolean excludeFeeds, Boolean excludeEntries);
+    void updateCategoryTime(long categoryId, long lastUpdateTime);
 
     List<Feed> getFeeds(Long categoryId, Boolean excludeEntries);
     Feed getFeed(long feedId, Boolean excludeEntries);
     long addFeed(long categoryId, Feed feed, Boolean excludeEntries);
     int removeFeeds(Long categoryId, Long feedId, Boolean excludeEntries);
     void setVisibilityFeed(Long categoryId, Long feedId, boolean visible, Boolean excludeEntries);
-    void updateFeedTime(long feedId, long lastUpdateTime);
 
     List<Entry> getEntries(Long categoryId, Long feedId);
     Entry getEntry(long entryId);
@@ -32,5 +32,6 @@ public interface IDatabaseHandler {
     void setVisibilityEntry(Long categoryId, Long feedId, Long entryId, boolean visible);
 
 
-    //TODO replace!
+    //TODO replace - remove all "old" entries!
+    //TODO favorite field?!
 }

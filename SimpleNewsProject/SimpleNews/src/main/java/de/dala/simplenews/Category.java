@@ -15,19 +15,18 @@ public class Category implements Serializable{
 
     private boolean isVisible = true;
 
+    private long lastUpdateTime;
+
     public Category(){
         feeds = new ArrayList<Feed>();
     }
 
-    public Category(String name, List<Feed> feeds, long id, int color, boolean isVisible){
-        this.name = name;
-        this.feeds = feeds;
-        if (feeds==null){
-            feeds = new ArrayList<Feed>();
-        }
-        this.id = id;
-        this.color = color;
-        this.isVisible = isVisible;
+    public long getLastUpdateTime() {
+        return lastUpdateTime;
+    }
+
+    public void setLastUpdateTime(long lastUpdateTime) {
+        this.lastUpdateTime = lastUpdateTime;
     }
 
 

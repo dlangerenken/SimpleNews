@@ -23,12 +23,10 @@ import de.dala.simplenews.Feed;
 public class DatabaseHandler extends SQLiteOpenHelper implements
 		IDatabaseHandler {
 
-    private static final String TAG = "DatabaseHandler";
-
 	/**
 	 * Database Name and Version
 	 */
-	private static final int DATABASE_VERSION = 10;
+	private static final int DATABASE_VERSION = 12;
 	private static final String DATABASE_NAME = "news_database";
 
 	/**
@@ -42,13 +40,13 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
     private static final String CATEGORY_COLOR = "color";
     private static final String CATEGORY_NAME = "name";
     private static final String CATEGORY_VISIBLE = "visible";
+    private static final String CATEGORY_LAST_UPDATE = "last_update";
 
     private static final String FEED_ID = "id";
     private static final String FEED_CATEGORY_ID = "category_id";
     private static final String FEED_TITLE = "title";
     private static final String FEED_DESCRIPTION = "description";
     private static final String FEED_URL = "url";
-    private static final String FEED_LAST_UPDATE = "last_update";
     private static final String FEED_VISIBLE = "visible";
 
     private static final String ENTRY_ID = "id";
@@ -125,6 +123,7 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
                  + CATEGORY_ID + " INTEGER PRIMARY KEY, "
 		         + CATEGORY_COLOR + " INTEGER,"
                  + CATEGORY_NAME + " TEXT,"
+                 + CATEGORY_LAST_UPDATE + " LONG,"
                  + CATEGORY_VISIBLE + " INTEGER" +")";
         String createFeedTable = "CREATE TABLE "
                 + TABLE_FEED + "("
@@ -133,7 +132,6 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
                 + FEED_TITLE + " TEXT,"
                 + FEED_DESCRIPTION + " TEXT,"
                 + FEED_URL + " TEXT,"
-                + FEED_LAST_UPDATE + " LONG,"
                 + FEED_VISIBLE + " INTEGER" +")";
         String createEntryTable = "CREATE TABLE "
                 + TABLE_ENTRY + "("
@@ -207,6 +205,7 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
         ContentValues values = new ContentValues();
         values.put(CATEGORY_COLOR, category.getColor());
         values.put(CATEGORY_NAME, category.getName());
+        values.put(CATEGORY_LAST_UPDATE, category.getLastUpdateTime());
         values.put(CATEGORY_VISIBLE, category.isVisible() ? 1 : 0);
 
         long rowId = db.insert(TABLE_CATEGORY, null, values);
@@ -279,7 +278,6 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
         values.put(FEED_TITLE, feed.getTitle());
         values.put(FEED_DESCRIPTION, feed.getDescription());
         values.put(FEED_URL, feed.getUrl());
-        values.put(FEED_LAST_UPDATE, feed.getLastUpdateTime());
         values.put(FEED_VISIBLE, feed.isVisible() ? 1 : 0);
 		/*
 		 * Inserting Row
@@ -418,7 +416,7 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
             query = concatenateQueries(query, ENTRY_ID + "=" + entryId);
         }
 
-        int rowsAffected = db.delete(TABLE_FEED, query, null);
+        int rowsAffected = db.delete(TABLE_ENTRY, query, null);
         return rowsAffected;
     }
 
@@ -441,22 +439,24 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
     }
 
     @Override
-    public void updateFeedTime(long feedId, long lastUpdateTime){
+    public void updateCategoryTime(long categoryId, long lastUpdateTime){
         ContentValues values = new ContentValues();
-        values.put(FEED_LAST_UPDATE, lastUpdateTime);
-        db.update(TABLE_FEED, values, FEED_ID + "=" + feedId, null);
+        values.put(CATEGORY_LAST_UPDATE, lastUpdateTime);
+        db.update(TABLE_CATEGORY, values, FEED_ID + "=" + categoryId, null);
     }
 
     private Category getCategoryByCursor(Cursor cursor) {
         long id = cursor.getLong(0);
         int color = cursor.getInt(1);
         String name = cursor.getString(2);
-        int visible = cursor.getInt(3);
+        long lastUpdate = cursor.getLong(3);
+        int visible = cursor.getInt(4);
 
         Category category = new Category();
         category.setId(id);
         category.setColor(color);
         category.setName(name);
+        category.setLastUpdateTime(lastUpdate);
         category.setVisible(visible > 0);
         return category;
     }
@@ -466,8 +466,7 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
         String title = cursor.getString(2);
         String description = cursor.getString(3);
         String url = cursor.getString(4);
-        long lastUpdate = cursor.getLong(5);
-        int visible = cursor.getInt(6);
+        int visible = cursor.getInt(5);
 
         Feed feed = new Feed();
         feed.setId(id);
@@ -475,7 +474,6 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
         feed.setTitle(title);
         feed.setDescription(description);
         feed.setUrl(url);
-        feed.setLastUpdateTime(lastUpdate);
         feed.setVisible(visible > 0);
         return feed;
     }

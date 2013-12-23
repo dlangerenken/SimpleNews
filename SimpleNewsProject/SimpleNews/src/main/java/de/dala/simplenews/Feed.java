@@ -11,7 +11,6 @@ public class Feed implements Serializable{
     private long id;
     private String url;
     private long categoryId;
-    private long lastUpdateTime;
     private List<Entry> entries;
     private String title;
     private String description;
@@ -49,10 +48,9 @@ public class Feed implements Serializable{
         this.entries = new ArrayList<Entry>();
     }
 
-    public Feed(long id, String url, long categoryId, long lastUpdateTime, List<Entry> entries){
+    public Feed(long id, String url, long categoryId, List<Entry> entries){
         this.id = id;
         this.categoryId =categoryId;
-        this.lastUpdateTime =lastUpdateTime;
         this.entries = entries;
         if (entries==null){
             entries = new ArrayList<Entry>();
@@ -82,14 +80,6 @@ public class Feed implements Serializable{
 
     public void setCategoryId(long categoryId) {
         this.categoryId = categoryId;
-    }
-
-    public long getLastUpdateTime() {
-        return lastUpdateTime;
-    }
-
-    public void setLastUpdateTime(long lastUpdateTime) {
-        this.lastUpdateTime = lastUpdateTime;
     }
 
     public List<Entry> getEntries() {

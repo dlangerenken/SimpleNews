@@ -4,6 +4,9 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -57,7 +60,7 @@ public class NewsCardFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //setRetainInstance(true);
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -114,18 +117,45 @@ public class NewsCardFragment extends Fragment {
         }
     }
 
-    private void loadEntries() {
-        for(Feed feed : feeds){
-            if (feed.getLastUpdateTime() < new Date().getTime() - TIME_FOR_REFRESH){
-                updateFeed(feed);
-            }else{
-                List<Entry> entries = databaseHandler.getEntries(null, feed.getId());
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.refresh:
+                refreshFeeds();
+                return true;
 
+            default:
+                break;
+        }
+
+        return false;
+    }
+
+    @Override
+     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.news, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    private void refreshFeeds(){
+        mCardArrayAdapter.clear();
+        databaseHandler.removeEntries(category.getId(), null, null);
+        for (Feed feed : feeds){
+            updateFeed(feed);
+        }
+        category.setLastUpdateTime(new Date().getTime());
+        databaseHandler.updateCategoryTime(category.getId(), category.getLastUpdateTime());
+    }
+
+    private void loadEntries() {
+        if (category.getLastUpdateTime() < new Date().getTime() - TIME_FOR_REFRESH){
+            refreshFeeds();
+        }else{
+                List<Entry> entries = databaseHandler.getEntries(category.getId(), null);
                 for (Entry entry : entries){
-                    addEntryToCardAndDatabase(feed.getId(), entry, false);
+                    addEntryToCardAndDatabase(-1, entry, false);
                 }
             }
-        }
     }
 
     private void updateFeed(final Feed feed) {
@@ -133,12 +163,9 @@ public class NewsCardFragment extends Fragment {
             activity.showLoadingNews();
         }
 
-
         NetworkCommunication.loadRSSFeed(feed.getUrl(),new Response.Listener<String>() {
             @Override
             public void onResponse(String feedStringResult) {
-                feed.setLastUpdateTime(new Date().getTime()); //TODO update database
-                databaseHandler.updateFeedTime(feed.getId(), feed.getLastUpdateTime());
                 RSSParser parser = new RSSParser(new RSSConfig());
                 try {
                     RSSFeed rssFeed = parser.parse(new ByteArrayInputStream(feedStringResult.getBytes("UTF-8")));
