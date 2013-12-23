@@ -1,6 +1,7 @@
 package de.dala.simplenews;
 
 import android.app.ActionBar;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -9,6 +10,7 @@ import android.opengl.Visibility;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,12 +18,14 @@ import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.NetworkImageView;
+import com.ocpsoft.pretty.time.PrettyTime;
 
 import java.io.ByteArrayInputStream;
 import java.io.UnsupportedEncodingException;
@@ -39,6 +43,9 @@ import de.dala.simplenews.database.IDatabaseHandler;
 import de.dala.simplenews.network.AnimatedNetworkImageView;
 import de.dala.simplenews.network.NetworkCommunication;
 import de.dala.simplenews.network.VolleySingleton;
+import de.keyboardsurfer.android.widget.crouton.Configuration;
+import de.keyboardsurfer.android.widget.crouton.Crouton;
+import de.keyboardsurfer.android.widget.crouton.Style;
 import it.gmariotti.cardslib.library.internal.Card;
 import it.gmariotti.cardslib.library.internal.CardArrayAdapter;
 import it.gmariotti.cardslib.library.internal.CardExpand;
@@ -53,6 +60,7 @@ public class NewsCardFragment extends Fragment {
     //TODO fragment performance
     private static final String ARG_POSITION = "position";
     private static final String ARG_CATEGORY = "category";
+    public static final String IMAGE_JPEG = "image/jpeg";
     private CardListView mListView;
     private View undobar;
     private MyCardArrayAdapter mCardArrayAdapter;
@@ -60,6 +68,7 @@ public class NewsCardFragment extends Fragment {
     private Category category;
 
     private List<Feed> feeds;
+    private MainActivity activity;
 
     private IDatabaseHandler databaseHandler;
     private static long TIME_FOR_REFRESH = 1000 * 60  * 60; //one hour
@@ -71,6 +80,14 @@ public class NewsCardFragment extends Fragment {
         b.putInt(ARG_POSITION, position);
         f.setArguments(b);
         return f;
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        if (activity instanceof MainActivity){
+            this.activity = (MainActivity) activity;
+        }
     }
 
     @Override
@@ -118,6 +135,9 @@ public class NewsCardFragment extends Fragment {
     }
 
     private void updateFeed(final Feed feed) {
+        if (activity != null){
+            activity.showLoadingNews();
+        }
         NetworkCommunication.loadRSSFeed(feed.getUrl(),new Response.Listener<String>() {
             @Override
             public void onResponse(String feedStringResult) {
@@ -132,10 +152,14 @@ public class NewsCardFragment extends Fragment {
                         }
                     }
                 }catch (UnsupportedEncodingException ex){}
+                finally {
+                    activity.cancelLoadingNews();
+                }
             }
         }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
+                    activity.cancelLoadingNews();
                 }
             });
     }
@@ -239,57 +263,13 @@ public class NewsCardFragment extends Fragment {
             if (view != null) {
                 TextView mTitleView = (TextView) view.findViewById(R.id.card_main_inner_simple_title);
                 if (mTitleView != null){
-                    mTitleView.setText(entry.getSrcName() + formatDate(entry.getDate()));
+                    String prettyTimeString = new PrettyTime().format(new Date(entry.getDate()));
+                    mTitleView.setText(String.format("%s - %s",entry.getSrcName(), prettyTimeString));
                     mTitleView.setTextColor(category.getColor());
                     mTitleView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
                 }
             }
         }
-
-        private String formatDate(Long date) {
-            String trimmer = " -  ";
-            if  (date != null){
-            long currentTime = new Date().getTime();
-            long diff = currentTime - date;
-            long seconds = diff/1000;
-            long minutes = seconds / 60;
-            long hours = minutes / 60;
-            long days = hours / 24;
-            String unit = "";
-            long value = 0;
-            if (days > 0 ){
-                if (days == 1){
-                    unit = "Tag";
-                }else{
-                    unit = "Tagen";
-                }
-                value = days;
-            }else  if (hours > 0){
-                if (hours == 1){
-                    unit = "Stunde";
-                }else{
-                    unit = "Stunden";
-                }
-                value = hours;
-            }else if (minutes > 0) {
-                if (hours == 1){
-                    unit = "Minute";
-                }else{
-                    unit = "Minuten";
-                }
-                value = minutes;
-            }else {
-                if (seconds == 0){
-                    return "";
-                }
-                return String.format("%s %s", trimmer, "gerade eben");
-            }
-            return String.format("%s vor %s %s", trimmer, value+"", unit);
-        }else{
-                return "";
-            }
-        }
-
 
         @Override
         public int getType() {
@@ -328,7 +308,7 @@ public class NewsCardFragment extends Fragment {
         MediaEnclosure enclose = item.getEnclosure();
         String mediaUri = null;
         if (enclose != null){
-            if (enclose.getMimeType().equals( "image/jpeg")){
+            if (enclose.getMimeType().equals(IMAGE_JPEG)){
                  mediaUri = enclose.getUrl().toString();
             }
         }

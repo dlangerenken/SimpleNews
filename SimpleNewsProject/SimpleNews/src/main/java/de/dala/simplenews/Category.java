@@ -18,6 +18,10 @@ public class Category implements Serializable{
 
     private boolean isDisplayed;
 
+    public Category(){
+        feeds = new ArrayList<Feed>();
+    }
+
     public Category(String name, List<Feed> feeds, long id, int color, boolean isDisplayed){
         this.name = name;
         this.feeds = feeds;
@@ -55,5 +59,26 @@ public class Category implements Serializable{
 
     public void setVisible(boolean visible) {
         this.isDisplayed = visible;
+    }
+
+    public void setColor(int color) {
+        this.color = color;
+    }
+
+    public void setFeeds(List<Feed> feeds) {
+        this.feeds = feeds;
+    }
+
+    public boolean isDisplayed() {
+        return isDisplayed;
+    }
+
+    public void setDisplayed(boolean isDisplayed) {
+        this.isDisplayed = isDisplayed;
+    }
+
+    public void setName(String name) {
+
+        this.name = name;
     }
 }

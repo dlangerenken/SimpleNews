@@ -33,4 +33,6 @@ dependencies {
     compile ('de.keyboardsurfer.android.widget:crouton:1.8.1') {
         exclude module: 'support-v4'
     }
+    compile ('com.ocpsoft:ocpsoft-pretty-time:1.0.7')
+    compile 'com.github.castorflex.smoothprogressbar:library:0.2.0'
 }

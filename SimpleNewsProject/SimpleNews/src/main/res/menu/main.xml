@@ -15,4 +15,8 @@
         android:title="@string/changelog_menu"
         android:orderInCategory="100"
         app:showAsAction="never" />
+    <item android:id="@+id/progress"
+        android:title="Progress"
+        android:orderInCategory="100"
+        app:showAsAction="never" />
 </menu>

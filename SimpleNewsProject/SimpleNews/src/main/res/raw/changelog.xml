@@ -19,6 +19,10 @@
         <changelogtext>Adding RSS-Feeds to categories.</changelogtext>
         <changelogtext>Removing RSS-Feeds to categories.</changelogtext>
     </changelogversion>
+    <changelogversion versionName="0.1.1" changeDate="Dec 22, 2013">
+        <changelogtext>Multi-Language Support</changelogtext>
+        <changelogtext>ProgressBar implemented </changelogtext>
+    </changelogversion>
     <changelogversion versionName="0.1" changeDate="Dec 21, 2013">
         <changelogtext>Initial release.</changelogtext>
     </changelogversion>

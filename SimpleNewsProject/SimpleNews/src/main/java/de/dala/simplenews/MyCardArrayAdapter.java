@@ -31,7 +31,7 @@ public class MyCardArrayAdapter extends CardArrayAdapter{
      *
      * @param enableUndo <code>true</code> to enable an undo message
      */
-    public void setEnableUndo(boolean enableUndo, View undobar) {
+    public void setEnableUndo(boolean enableUndo, View undoBar) {
         mEnableUndo = enableUndo;
         if (enableUndo) {
             mInternalObjects = new HashMap<String, Card>();
@@ -42,8 +42,8 @@ public class MyCardArrayAdapter extends CardArrayAdapter{
 
             //Create a UndoController
             if (mUndoBarController==null){
-                if (undobar != null) {
-                    mUndoBarController = new UndoBarController(undobar, this);
+                if (undoBar != null) {
+                    mUndoBarController = new UndoBarController(undoBar, this);
                 }
             }
         }else{

@@ -34,5 +34,4 @@
     </RelativeLayout>
     <!-- Include undo message layout -->
     <include layout="@layout/list_card_undo_message"/>
-
 </FrameLayout>

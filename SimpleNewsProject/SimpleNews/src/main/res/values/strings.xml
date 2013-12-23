@@ -9,4 +9,12 @@
     <string name="about_ok">OK</string>
     <string name="changelog_title">Changelog</string>
     <string name="changelog_menu">Changelog</string>
+    <string name="day">Tag</string>
+    <string name="days">Tagen</string>
+    <string name="hour">Stunde</string>
+    <string name="hours">Stunden</string>
+    <string name="minute">Minute</string>
+    <string name="minutes">Minuten</string>
+    <string name="just_now"> - gerade eben</string>
+    <string name="coming_soon">Coming soon</string>
 </resources>

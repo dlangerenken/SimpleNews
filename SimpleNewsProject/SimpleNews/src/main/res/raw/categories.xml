@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<news>
+    <category name="Sport" color="#FF666666">
+        <feed>http://www.spiegel.de/sport/index.rss</feed>
+    </category>
+    <category name="Gesundheit" color="#ffd2a494">
+        <feed>http://www.welt.de/gesundheit/?service=Rss</feed>
+    </category>
+    <category name="Wirtschaft" color="#FF96AA39">
+        <feed>http://www.spiegel.de/wirtschaft/index.rss</feed>
+    </category>
+    <category name="Karriere" color="#ff289a74">
+        <feed>http://www.welt.de/wirtschaft/karriere/?service=Rss</feed>
+    </category>
+    <category name="Politik" color="#FFC74B46">
+        <feed>http://www.spiegel.de/politik/index.rss</feed>
+    </category>
+    <category name="Studium" color="#FFF4842D">
+        <feed>http://www.spiegel.de/unispiegel/studium/index.rss</feed>
+    </category>
+    <category name="International" color="#FF3F9FE0">
+        <feed>http://www.spiegel.de/international/index.rss</feed>
+    </category>
+    <category name="Technologie" color="#FFBA55D3">
+        <feed>http://rss.golem.de/rss.php?feed=RSS2.0</feed>
+        <feed>http://www.spiegel.de/wissenschaft/technik/index.rss</feed>
+        <feed>http://www.heise.de/newsticker/heise-atom.xml</feed>
+    </category>
+</news>

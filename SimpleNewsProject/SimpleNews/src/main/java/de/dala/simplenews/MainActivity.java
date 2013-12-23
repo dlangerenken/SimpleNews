@@ -2,6 +2,7 @@ package de.dala.simplenews;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
@@ -19,6 +20,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -27,6 +29,9 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Response;
@@ -41,6 +46,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.zip.Inflater;
 
 import androidrss.*;
 import androidrss.RSSFeed;
@@ -48,6 +54,11 @@ import de.dala.simplenews.database.IDatabaseHandler;
 import de.dala.simplenews.database.MockDatabaseHandler;
 import de.dala.simplenews.dialog.ChangeLogDialog;
 import de.dala.simplenews.network.NetworkCommunication;
+import de.dala.simplenews.parser.XmlParser;
+import de.keyboardsurfer.android.widget.crouton.Configuration;
+import de.keyboardsurfer.android.widget.crouton.Crouton;
+import de.keyboardsurfer.android.widget.crouton.Style;
+import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
 
 public class MainActivity extends ActionBarActivity implements ViewPager.OnPageChangeListener{
 
@@ -72,6 +83,8 @@ public class MainActivity extends ActionBarActivity implements ViewPager.OnPageC
     private int currentColor = 0xFF666666;
 
     private List<Category> categories;
+    private RelativeLayout bottomView;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,7 +92,7 @@ public class MainActivity extends ActionBarActivity implements ViewPager.OnPageC
         setContentView(R.layout.activity_main);
         setupDrawer(savedInstanceState);
 
-        databaseHandler = new MockDatabaseHandler();
+        databaseHandler = new MockDatabaseHandler(this);
         categories = databaseHandler.getCategories();
 
         pager = (ViewPager) findViewById(R.id.pager);
@@ -93,9 +106,22 @@ public class MainActivity extends ActionBarActivity implements ViewPager.OnPageC
         final int pageMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4, getResources()
                 .getDisplayMetrics());
         pager.setPageMargin(pageMargin);
+        bottomView = (RelativeLayout)findViewById(R.id.bottom_view);
+        createProgressView();
+
         changeColor(currentColor);
     }
 
+    private View progressView;
+
+    private View createProgressView(){
+        progressView = getLayoutInflater().inflate(R.layout.progress_layout, null);
+        progressView.setBackgroundColor(currentColor);
+        TextView progressText = (TextView) progressView.findViewById(R.id.progress_text);
+        progressText.setText("Updating news...");
+        SmoothProgressBar progressBar = (SmoothProgressBar)progressView.findViewById(R.id.smooth_progress);
+        return progressView;
+    }
 
     private void setupDrawer(Bundle savedInstanceState) {
         mTitle = mDrawerTitle = getTitle();
@@ -150,7 +176,7 @@ public class MainActivity extends ActionBarActivity implements ViewPager.OnPageC
 
 
     private void addItemsToAdapter() {
-        navDrawAdapter.addItem(new NavDrawItem("Coming soon", NavDrawItem.Type.CATEGORY));
+        navDrawAdapter.addItem(new NavDrawItem(getString(R.string.coming_soon), NavDrawItem.Type.CATEGORY));
         /*navDrawAdapter.addItem(new NavDrawItem("Tees", NavDrawItem.Type.CATEGORY));
         navDrawAdapter.addItem(new NavDrawItem("Today's Tee", NavDrawItem.Type.ENTRY));
         navDrawAdapter.addItem(new NavDrawItem("Last Chance Tee", NavDrawItem.Type.ENTRY));
@@ -225,6 +251,9 @@ public class MainActivity extends ActionBarActivity implements ViewPager.OnPageC
                 dialog = new ChangeLogDialog();
                 dialog.show(getSupportFragmentManager(), "ChangeLog");
                 return true;
+            case R.id.progress:
+                updateNews();
+                break;
 
         }
         return super.onOptionsItemSelected(item);
@@ -262,6 +291,7 @@ public class MainActivity extends ActionBarActivity implements ViewPager.OnPageC
             }
             navDrawAdapter.setCategoryDrawable(colorDrawable);
             verticalLine.setBackgroundColor(newColor);
+            progressView.setBackgroundColor(newColor);
             oldBackground = ld;
 
             // http://stackoverflow.com/questions/11002691/actionbar-setbackgrounddrawable-nulling-background-from-thread-handler
@@ -343,7 +373,30 @@ public class MainActivity extends ActionBarActivity implements ViewPager.OnPageC
         }
 
     }
+    private Crouton crouton;
 
+    public void updateNews(){
+        if (crouton != null){
+            crouton.cancel();
+        }
+        Configuration config = new Configuration.Builder().setOutAnimation(R.anim.abc_slide_out_bottom).setInAnimation(R.anim.abc_slide_in_bottom).setDuration(Configuration.DURATION_INFINITE).build();
+        crouton = Crouton.make(this, createProgressView(), bottomView);
+        crouton.setConfiguration(config);
+        crouton.show();
+    }
 
+    private int loadingNews = 0;
+    public void showLoadingNews(){
+        if (loadingNews <= 0){
+            updateNews();
+            loadingNews++;
+        }
+    }
 
+    public void cancelLoadingNews(){
+        loadingNews--;
+        if (loadingNews <= 0){
+            crouton.cancel();
+        }
+    }
 }

@@ -17,6 +17,11 @@ public class Feed {
     private long lastUpdateTime;
     private List<Entry> entries;
 
+    public Feed (String url){
+        this.entries = new ArrayList<Entry>();
+        this.url = url;
+    }
+
     public Feed(long id, String url, long categoryId, long lastUpdateTime, List<Entry> entries){
         this.id = id;
         this.categoryId =categoryId;

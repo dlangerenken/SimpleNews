@@ -1,5 +1,6 @@
 package de.dala.simplenews.database;
 
+import android.content.Context;
 import android.graphics.Color;
 
 import java.util.ArrayList;
@@ -11,6 +12,8 @@ import androidrss.RSSItem;
 import de.dala.simplenews.Category;
 import de.dala.simplenews.Entry;
 import de.dala.simplenews.Feed;
+import de.dala.simplenews.News;
+import de.dala.simplenews.parser.XmlParser;
 
 /**
  * A Mock-DatabaseHandler for the communiciation between Client and
@@ -19,13 +22,36 @@ import de.dala.simplenews.Feed;
  * @author Daniel Langerenken
  */
 public class MockDatabaseHandler implements IDatabaseHandler {
-
+    News news;
     List<Category> categories;
     List<Feed> feeds;
     List<Entry> entries;
 
-    public MockDatabaseHandler(){
-        categories = new ArrayList<Category>();
+    public MockDatabaseHandler(Context context){
+
+        try {
+            news = new XmlParser(context).readDefaultNewsFile();
+            entries = new ArrayList<Entry>();
+            categories = new ArrayList<Category>();
+            feeds = new ArrayList<Feed>();
+            int id = 0;
+            for (Category category : news.getCategories()){
+                if (category != null){
+                    category.setId(id);
+                    categories.add(category);
+                    if (category.getFeeds() != null){
+                        for(Feed feed : category.getFeeds()){
+                            feed.setCategoryId(id);
+                            feeds.add(feed);
+                        }
+                    }
+                    id++;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        /*categories = new ArrayList<Category>();
         categories.add(new Category("Sport", null, 0, Color.parseColor("#FF666666"), true));
         categories.add(new Category("Wirtschaft", null, 1, Color.parseColor("#FF96AA39"), true));
         categories.add(new Category("Politik", null, 2, Color.parseColor("#FFC74B46"), true));
@@ -45,14 +71,11 @@ public class MockDatabaseHandler implements IDatabaseHandler {
 
 
 
-        entries = new ArrayList<Entry>();
+        entries = new ArrayList<Entry>();*/
     }
 
     @Override
     public List<Category> getCategories() {
-
-
-
         return categories;
     }
 
