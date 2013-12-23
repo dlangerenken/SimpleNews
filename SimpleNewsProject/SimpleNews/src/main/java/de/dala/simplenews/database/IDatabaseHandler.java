@@ -23,12 +23,14 @@ public interface IDatabaseHandler {
     long addFeed(long categoryId, Feed feed, Boolean excludeEntries);
     int removeFeeds(Long categoryId, Long feedId, Boolean excludeEntries);
     void setVisibilityFeed(Long categoryId, Long feedId, boolean visible, Boolean excludeEntries);
+    void updateFeedTime(long feedId, long lastUpdateTime);
 
     List<Entry> getEntries(Long categoryId, Long feedId);
     Entry getEntry(long entryId);
     long addEntry(long categoryId, long feedId, Entry entry);
     int removeEntries(Long categoryId, Long feedId, Long entryId);
     void setVisibilityEntry(Long categoryId, Long feedId, Long entryId, boolean visible);
+
 
     //TODO replace!
 }

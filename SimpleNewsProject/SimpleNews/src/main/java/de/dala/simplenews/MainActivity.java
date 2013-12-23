@@ -39,7 +39,6 @@ import java.util.List;
 
 import de.dala.simplenews.database.DatabaseHandler;
 import de.dala.simplenews.database.IDatabaseHandler;
-import de.dala.simplenews.database.MockDatabaseHandler;
 import de.dala.simplenews.dialog.ChangeLogDialog;
 import de.dala.simplenews.parser.XmlParser;
 import de.keyboardsurfer.android.widget.crouton.Configuration;
@@ -125,7 +124,7 @@ public class MainActivity extends ActionBarActivity implements ViewPager.OnPageC
 
     private boolean xmlIsAlreadyLoaded(){
         SharedPreferences prefs = this.getSharedPreferences(
-                DE_DALA_SIMPLENEWS, Context.MODE_PRIVATE);
+               DE_DALA_SIMPLENEWS, Context.MODE_PRIVATE);
         return prefs.getBoolean(XML_LOADED, false);
     }
 

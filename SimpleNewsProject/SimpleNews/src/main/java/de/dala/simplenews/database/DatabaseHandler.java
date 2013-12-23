@@ -28,7 +28,7 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
 	/**
 	 * Database Name and Version
 	 */
-	private static final int DATABASE_VERSION = 8;
+	private static final int DATABASE_VERSION = 10;
 	private static final String DATABASE_NAME = "news_database";
 
 	/**
@@ -438,6 +438,13 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
         ContentValues values = new ContentValues();
         values.put(ENTRY_VISIBLE, visible);
         db.update(TABLE_ENTRY, values, query, null);
+    }
+
+    @Override
+    public void updateFeedTime(long feedId, long lastUpdateTime){
+        ContentValues values = new ContentValues();
+        values.put(FEED_LAST_UPDATE, lastUpdateTime);
+        db.update(TABLE_FEED, values, FEED_ID + "=" + feedId, null);
     }
 
     private Category getCategoryByCursor(Cursor cursor) {

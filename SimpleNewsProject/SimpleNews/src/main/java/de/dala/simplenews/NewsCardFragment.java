@@ -138,6 +138,7 @@ public class NewsCardFragment extends Fragment {
             @Override
             public void onResponse(String feedStringResult) {
                 feed.setLastUpdateTime(new Date().getTime()); //TODO update database
+                databaseHandler.updateFeedTime(feed.getId(), feed.getLastUpdateTime());
                 RSSParser parser = new RSSParser(new RSSConfig());
                 try {
                     RSSFeed rssFeed = parser.parse(new ByteArrayInputStream(feedStringResult.getBytes("UTF-8")));
