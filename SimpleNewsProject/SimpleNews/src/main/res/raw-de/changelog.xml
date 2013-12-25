@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<changelog bulletedList="true">
+    <changelogversion versionName="0.3+" changeDate="demnächst">
+        <changelogtext>Personalisierung</changelogtext>
+        <changelogtext>Teilen von Beiträgen möglich.</changelogtext>
+        <changelogtext>Interaktion mit RSS-Buttons.</changelogtext>
+    </changelogversion>
+
+    <changelogversion versionName="0.2" changeDate="demnächst">
+        <changelogtext>Hinzufügen und Entfernen von Kategorien.</changelogtext>
+        <changelogtext>Füge RSS-Feeds zu Kategorien hinzu.</changelogtext>
+        <changelogtext>EntferneRSS-Feeds von Kategorien.</changelogtext>
+    </changelogversion>
+    <changelogversion versionName="0.1.1" changeDate="22.12.2013">
+        <changelogtext>Mehrsprachigkeit hinzugefügt.</changelogtext>
+        <changelogtext>Fortschrittsbalken und Aktualisierungs-Button eingefügt.</changelogtext>
+    </changelogversion>
+    <changelogversion versionName="0.1" changeDate="21.12.2013">
+        <changelogtext>Initialer Upload.</changelogtext>
+    </changelogversion>
+
+</changelog>

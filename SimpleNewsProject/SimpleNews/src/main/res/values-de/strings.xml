@@ -3,15 +3,13 @@
 
     <string name="app_name">SimpleNews</string>
     <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Settings</string>
+    <string name="action_settings">Einstellungen</string>
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
     <string name="about_ok">OK</string>
     <string name="changelog_title">Changelog</string>
     <string name="changelog_menu">Changelog</string>
-    <string name="progress">Progress</string>
-    <string name="quick_contact">Quick Contact</string>
-    <string name="item1">Item1</string>
-    <string name="refresh">Refresh</string>
-    <string name="update_news">Updating news...</string>
+    <string name="progress">Fortschritt</string>
+    <string name="refresh">Aktualisieren</string>
+    <string name="update_news">Aktualisiere Nachrichten...</string>
 </resources>

@@ -1,27 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog bulletedList="true">
-    <changelogversion versionName="0.4+" changeDate="soon">
+    <changelogversion versionName="0.3+" changeDate="soon">
         <changelogtext>Personalizing</changelogtext>
-        <changelogtext>Adding Ignore-List</changelogtext>
-        <changelogtext>Adding Social-Network interfaces</changelogtext>
+        <changelogtext>Adding Social-Network Interfaces</changelogtext>
         <changelogtext>Handling RSS-Buttons</changelogtext>
     </changelogversion>
-
-    <changelogversion versionName="0.3" changeDate="soon">
-        <changelogtext>Adding multi-language support</changelogtext>
-        <changelogtext>Adding default-categories for multiple languages</changelogtext>
-
-    </changelogversion>
     <changelogversion versionName="0.2" changeDate="soon">
-        <changelogtext>Adding of categories.</changelogtext>
-        <changelogtext>Removing of categories.</changelogtext>
-        <changelogtext>Changing colors of categories.</changelogtext>
-        <changelogtext>Adding RSS-Feeds to categories.</changelogtext>
-        <changelogtext>Removing RSS-Feeds to categories.</changelogtext>
+        <changelogtext>Adding and Removing of Categories.</changelogtext>
+        <changelogtext>Adding RSS-Feeds to Categories.</changelogtext>
+        <changelogtext>Removing RSS-Feeds to Categories.</changelogtext>
     </changelogversion>
     <changelogversion versionName="0.1.1" changeDate="Dec 22, 2013">
-        <changelogtext>Multi-Language Support</changelogtext>
-        <changelogtext>ProgressBar implemented </changelogtext>
+        <changelogtext>Added Multi-Language Support</changelogtext>
+        <changelogtext>Added ProgressBar and Refresh-Button</changelogtext>
     </changelogversion>
     <changelogversion versionName="0.1" changeDate="Dec 21, 2013">
         <changelogtext>Initial release.</changelogtext>

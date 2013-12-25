@@ -140,8 +140,7 @@ public class MainActivity extends ActionBarActivity implements ViewPager.OnPageC
         progressView = getLayoutInflater().inflate(R.layout.progress_layout, null);
         progressView.setBackgroundColor(currentColor);
         TextView progressText = (TextView) progressView.findViewById(R.id.progress_text);
-        progressText.setText("Updating news...");
-        SmoothProgressBar progressBar = (SmoothProgressBar)progressView.findViewById(R.id.smooth_progress);
+        progressText.setText(getString(R.string.update_news));
         return progressView;
     }
 
@@ -199,12 +198,6 @@ public class MainActivity extends ActionBarActivity implements ViewPager.OnPageC
 
     private void addItemsToAdapter() {
         navDrawAdapter.addItem(new NavDrawItem(getString(R.string.coming_soon), NavDrawItem.Type.CATEGORY));
-        /*navDrawAdapter.addItem(new NavDrawItem("Tees", NavDrawItem.Type.CATEGORY));
-        navDrawAdapter.addItem(new NavDrawItem("Today's Tee", NavDrawItem.Type.ENTRY));
-        navDrawAdapter.addItem(new NavDrawItem("Last Chance Tee", NavDrawItem.Type.ENTRY));
-        navDrawAdapter.addItem(new NavDrawItem("Previous Tees", NavDrawItem.Type.ENTRY));
-        navDrawAdapter.addItem(new NavDrawItem("Free Tees", NavDrawItem.Type.ENTRY));
-        */
     }
 
     /* Called whenever we call invalidateOptionsMenu() */
