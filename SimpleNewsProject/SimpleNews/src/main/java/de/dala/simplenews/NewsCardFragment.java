@@ -2,14 +2,14 @@ package de.dala.simplenews;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.actionbarsherlock.app.SherlockFragment;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 
@@ -33,7 +33,7 @@ import it.gmariotti.cardslib.library.view.CardListView;
 /**
  * Created by Daniel on 18.12.13.
  */
-public class NewsCardFragment extends Fragment {
+public class NewsCardFragment extends SherlockFragment {
     //TODO fragment performance
     private static final String ARG_CATEGORY = "category";
     public static final String IMAGE_JPEG = "image/jpeg";
@@ -109,8 +109,6 @@ public class NewsCardFragment extends Fragment {
         mCardArrayAdapter = new MyCardArrayAdapter(activity,new ArrayList<Card>());
         //mCardArrayAdapter.setInnerViewTypeCount(3);
         mCardArrayAdapter.setEnableUndo(true, undoBar);
-        // An alternative is to write a own CardArrayAdapter
-        // MyCardArrayAdapter mCardArrayAdapter = new MyCardArrayAdapter(getActivity(),cards);
 
         if (mListView!=null){
             mListView.setAdapter(mCardArrayAdapter);

@@ -14,4 +14,8 @@
     <string name="item1">Item1</string>
     <string name="refresh">Refresh</string>
     <string name="update_news">Updating news...</string>
+    <string name="coming_soon">Coming soon...</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
 </resources>
