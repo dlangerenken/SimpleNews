@@ -11,7 +11,7 @@
         android:layout_height="48dip"
         android:background="@drawable/background_tabs" />
 
-    <de.dala.simplenews.RestrictedViewPager
+    <de.dala.simplenews.utilities.RestrictedViewPager
         android:id="@+id/pager"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -33,6 +33,6 @@
         android:layout_width="@dimen/navigation_drawer_width"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:name="de.dala.simplenews.NavigationDrawerFragment" />
+        android:name="de.dala.simplenews.ui.NavigationDrawerFragment" />
 
 </android.support.v4.widget.DrawerLayout>

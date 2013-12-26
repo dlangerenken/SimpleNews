@@ -10,9 +10,9 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import de.dala.simplenews.Category;
-import de.dala.simplenews.Entry;
-import de.dala.simplenews.Feed;
+import de.dala.simplenews.common.Category;
+import de.dala.simplenews.common.Entry;
+import de.dala.simplenews.common.Feed;
 
 /**
 * The DatabaseHandler for the communication between Client and Client-Database

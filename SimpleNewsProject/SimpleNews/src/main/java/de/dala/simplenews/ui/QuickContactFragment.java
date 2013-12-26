@@ -1,4 +1,4 @@
-package de.dala.simplenews;
+package de.dala.simplenews.ui;
 import android.graphics.Point;
 import android.os.Build;
 import android.os.Bundle;
@@ -16,6 +16,9 @@ import android.widget.TextView;
 
 import com.astuetz.PagerSlidingTabStrip;
 import com.astuetz.PagerSlidingTabStrip.IconTabProvider;
+
+import de.dala.simplenews.R;
+
 /**
  * Created by Daniel on 18.12.13.
  */

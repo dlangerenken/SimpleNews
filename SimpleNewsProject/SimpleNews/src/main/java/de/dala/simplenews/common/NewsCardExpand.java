@@ -1,4 +1,4 @@
-package de.dala.simplenews;
+package de.dala.simplenews.common;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import de.dala.simplenews.R;
 import it.gmariotti.cardslib.library.internal.CardExpand;
 
 /**

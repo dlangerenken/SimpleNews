@@ -1,4 +1,4 @@
-package de.dala.simplenews;
+package de.dala.simplenews.utilities;
 
 import android.content.Context;
 import android.os.Parcelable;
@@ -9,6 +9,8 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
+import de.dala.simplenews.common.NewsCard;
+import de.dala.simplenews.common.Entry;
 import it.gmariotti.cardslib.library.internal.Card;
 import it.gmariotti.cardslib.library.internal.CardArrayAdapter;
 import it.gmariotti.cardslib.library.view.listener.UndoBarController;

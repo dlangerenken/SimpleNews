@@ -8,7 +8,7 @@ import com.android.volley.Response;
 import com.android.volley.toolbox.StringRequest;
 import com.google.gson.reflect.TypeToken;
 
-import de.dala.simplenews.Category;
+import de.dala.simplenews.common.Category;
 
 
 public class NetworkCommunication {

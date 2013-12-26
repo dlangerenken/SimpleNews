@@ -1,4 +1,4 @@
-package de.dala.simplenews;
+package de.dala.simplenews.common;
 
 import java.io.Serializable;
 

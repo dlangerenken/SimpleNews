@@ -1,4 +1,4 @@
-package de.dala.simplenews;
+package de.dala.simplenews.ui;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
@@ -21,6 +21,10 @@ import android.widget.ListView;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragment;
+
+import de.dala.simplenews.R;
+import de.dala.simplenews.common.NavDrawItem;
+import de.dala.simplenews.utilities.NavDrawerAdapter;
 
 
 /**
@@ -155,7 +159,7 @@ public class NavigationDrawerFragment extends SherlockFragment {
                     return;
                 }
 
-                getActivity().supportInvalidateOptionsMenu(); // calls onPrepareOptionsMenu()
+                getSherlockActivity().supportInvalidateOptionsMenu(); // calls onPrepareOptionsMenu()
             }
 
             @Override

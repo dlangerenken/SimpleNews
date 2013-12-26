@@ -1,4 +1,4 @@
-package de.dala.simplenews;
+package de.dala.simplenews.common;
 
 /**
  * Created by Daniel on 18.12.13.

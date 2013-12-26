@@ -1,4 +1,4 @@
-package de.dala.simplenews;
+package de.dala.simplenews.common;
 
 import android.content.Context;
 import android.content.Intent;
@@ -12,6 +12,7 @@ import com.ocpsoft.pretty.time.PrettyTime;
 
 import java.util.Date;
 
+import de.dala.simplenews.R;
 import de.dala.simplenews.network.AnimatedNetworkImageView;
 import de.dala.simplenews.network.VolleySingleton;
 import it.gmariotti.cardslib.library.internal.Card;

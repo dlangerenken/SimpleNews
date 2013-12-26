@@ -1,4 +1,4 @@
-package de.dala.simplenews;
+package de.dala.simplenews.utilities;
 
 import android.content.Context;
 import android.support.v4.view.ViewPager;

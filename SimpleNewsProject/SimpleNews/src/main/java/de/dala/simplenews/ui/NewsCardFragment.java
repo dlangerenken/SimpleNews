@@ -1,4 +1,4 @@
-package de.dala.simplenews;
+package de.dala.simplenews.ui;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -24,9 +24,15 @@ import androidrss.RSSConfig;
 import androidrss.RSSFeed;
 import androidrss.RSSItem;
 import androidrss.RSSParser;
+import de.dala.simplenews.R;
 import de.dala.simplenews.database.DatabaseHandler;
 import de.dala.simplenews.database.IDatabaseHandler;
+import de.dala.simplenews.common.Category;
+import de.dala.simplenews.common.Entry;
+import de.dala.simplenews.common.Feed;
+import de.dala.simplenews.common.NewsCard;
 import de.dala.simplenews.network.NetworkCommunication;
+import de.dala.simplenews.utilities.MyCardArrayAdapter;
 import it.gmariotti.cardslib.library.internal.Card;
 import it.gmariotti.cardslib.library.view.CardListView;
 

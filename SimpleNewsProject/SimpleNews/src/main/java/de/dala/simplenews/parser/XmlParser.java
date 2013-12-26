@@ -11,9 +11,9 @@ import org.xmlpull.v1.XmlPullParserException;
 import java.io.IOException;
 import java.io.InputStream;
 
-import de.dala.simplenews.Category;
-import de.dala.simplenews.Feed;
-import de.dala.simplenews.News;
+import de.dala.simplenews.common.Category;
+import de.dala.simplenews.common.Feed;
+import de.dala.simplenews.common.News;
 import de.dala.simplenews.R;
 
 /**
