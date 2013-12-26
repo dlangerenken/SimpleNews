@@ -190,11 +190,11 @@ public class MainActivity extends SherlockFragmentActivity implements ViewPager.
 
         progressView.setBackgroundColor(newColor);
         oldBackground = ld;
+        currentColor = newColor;
 
         // http://stackoverflow.com/questions/11002691/actionbar-setbackgrounddrawable-nulling-background-from-thread-handler
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         getSupportActionBar().setDisplayShowTitleEnabled(true);
-        currentColor = newColor;
     }
 
     @Override
