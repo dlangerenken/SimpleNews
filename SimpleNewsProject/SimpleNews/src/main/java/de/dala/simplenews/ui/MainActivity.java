@@ -157,10 +157,6 @@ public class MainActivity extends SherlockFragmentActivity implements ViewPager.
                 dialog = new ChangeLogDialog();
                 dialog.show(getSupportFragmentManager(), "ChangeLog");
                 return true;
-            case R.id.progress:
-                updateNews();
-                break;
-
         }
         return super.onOptionsItemSelected(item);
     }

@@ -17,6 +17,10 @@ package de.dala.simplenews.network;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.TransitionDrawable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.ViewGroup.LayoutParams;
@@ -30,38 +34,35 @@ import com.android.volley.toolbox.ImageLoader.ImageListener;
 import com.android.volley.toolbox.NetworkImageView;
 
 /**
- * Extended NetworkImageView with Animation-Effect
+ * Extended NetworkImageView with Transition-Effect
  */
-public class AnimatedNetworkImageView extends NetworkImageView {
-        private Animation animation;
+public class FadeInNetworkImageView extends NetworkImageView {
+    private int transitionTime = 250;
 
-        public Animation getAnimation() {
-            return animation;
-        }
+    public FadeInNetworkImageView(Context context) {
+        super(context);
+    }
 
-        public void setAnimation(Animation animation) {
-            this.animation = animation;
-        }
+    public FadeInNetworkImageView(Context context, AttributeSet attrs) {
+        super(context, attrs);
+    }
 
-        public AnimatedNetworkImageView(Context context) {
-            this(context, null);
-        }
+    public FadeInNetworkImageView(Context context, AttributeSet attrs, int defStyle) {
+        super(context, attrs, defStyle);
+    }
 
-        public AnimatedNetworkImageView(Context context, AttributeSet attrs) {
-            this(context, attrs, 0);
-        }
+    public void setTransitionTime(int time){
+        this.transitionTime = time;
+    }
 
-        public AnimatedNetworkImageView(Context context, AttributeSet attrs,
-                                        int defStyle) {
-            super(context, attrs, defStyle);
-        }
+    @Override
+    public void setImageBitmap(Bitmap bm) {
+        TransitionDrawable td = new TransitionDrawable(new Drawable[]{
+                new ColorDrawable(android.R.color.transparent),
+                new BitmapDrawable(getContext().getResources(), bm)
+        });
 
-
-        @Override
-        public void setImageBitmap(Bitmap bm) {
-            if (animation != null) {
-                startAnimation(animation);
-            }
-            super.setImageBitmap(bm);
-        }
-  }
+        setImageDrawable(td);
+        td.startTransition(transitionTime);
+    }
+}

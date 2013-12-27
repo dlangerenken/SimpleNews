@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:layout_marginBottom="2dp">
 
-    <de.dala.simplenews.network.AnimatedNetworkImageView
+    <de.dala.simplenews.network.FadeInNetworkImageView
         android:id="@+id/card_header_imageView"
         android:scaleType="fitStart"
         android:layout_margin="2dp"
