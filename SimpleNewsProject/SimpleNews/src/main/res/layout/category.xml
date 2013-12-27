@@ -27,8 +27,7 @@
         android:paddingBottom="5dp"
         android:paddingLeft="2dp"
         android:paddingRight="16dp"
-        android:paddingTop="5dp"
-        style="@style/card.header_simple_title" />
+        android:paddingTop="5dp" />
 
     <View
         android:id="@+id/underline"

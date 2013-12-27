@@ -152,11 +152,6 @@ public class MainActivity extends SherlockFragmentActivity implements ViewPager.
     public boolean onOptionsItemSelected(MenuItem item) {
         DialogFragment dialog;
         switch (item.getItemId()) {
-
-            //case R.id.action_contact:
-            //    dialog = new QuickContactFragment();
-            //    dialog.show(getSupportFragmentManager(), "QuickContactFragment");
-            //    return true;
             case R.id.changelog:
                 dialog = new ChangeLogDialog();
                 dialog.show(getSupportFragmentManager(), "ChangeLog");
@@ -251,8 +246,9 @@ public class MainActivity extends SherlockFragmentActivity implements ViewPager.
 
     public void cancelLoadingNews() {
         loadingNews--;
-        if (loadingNews == -1) {
+        if (loadingNews >= -1) {
             crouton.cancel();
+            loadingNews = -1;
         }
     }
 
@@ -280,7 +276,7 @@ public class MainActivity extends SherlockFragmentActivity implements ViewPager.
 
         @Override
         public Fragment getItem(int position) {
-            Fragment fragment = NewsCardFragment.newInstance(categories.get(position));
+            Fragment fragment = ExpandableNewsFragment.newInstance(categories.get(position));
             return fragment;
         }
 

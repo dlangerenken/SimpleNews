@@ -35,11 +35,4 @@
         app:spb_color="@android:color/white"
         android:indeterminate="true"/>
 
-    <!-- <fr.castorflex.android.smoothprogressbar.SmoothProgressBar
-         android:id="@+id/smooth_progress"
-         android:layout_width="match_parent"
-         android:layout_height="wrap_content"
-         style="@style/MyGNow"
-         android:indeterminate="true"/>-->
-
  </LinearLayout>

@@ -30,8 +30,7 @@
         android:paddingTop="3dp"
         android:textColor="#000"
         android:layout_height="48dip"
-        android:layout_marginTop="2dp"
-        style="@style/card.header_simple_title" />
+        android:layout_marginTop="2dp" />
 
 </LinearLayout>
 
