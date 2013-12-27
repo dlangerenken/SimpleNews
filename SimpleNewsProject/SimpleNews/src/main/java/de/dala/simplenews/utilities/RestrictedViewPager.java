@@ -7,7 +7,7 @@ import android.util.AttributeSet;
 /**
  * Created by Daniel on 19.12.13.
  */
-public class RestrictedViewPager extends ViewPager{
+public class RestrictedViewPager extends ViewPager {
 
     public RestrictedViewPager(Context context, AttributeSet attrs) {
         super(context, attrs);

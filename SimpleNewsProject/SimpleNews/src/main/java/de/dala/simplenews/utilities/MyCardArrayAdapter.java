@@ -20,11 +20,9 @@ import it.gmariotti.cardslib.library.view.listener.UndoCard;
  * Created by Daniel on 19.12.13.
  */
 public class MyCardArrayAdapter extends CardArrayAdapter{
-    private CardComparator comparator;
 
     public MyCardArrayAdapter(Context context, List<Card> cards) {
         super(context, cards);
-        comparator = new CardComparator();
     }
 
 
@@ -85,21 +83,6 @@ public class MyCardArrayAdapter extends CardArrayAdapter{
         }
     }
 
-    private class CardComparator implements Comparator<Card> {
-            @Override
-            public int compare(Card card0, Card card1) {
-                if (card0 instanceof NewsCard && card1 instanceof NewsCard){
-                    Entry entry0 = ((NewsCard) card0).getEntry();
-                    Entry entry1 = ((NewsCard) card1).getEntry();
-                    return entry0.compareTo(entry1);
-                }
-                return -1;
-        }
-    }
-    private void sort(){
-        sort(comparator);
-    }
-
     @Override
     public void notifyDataSetChanged() {
         super.notifyDataSetChanged();
@@ -109,7 +92,6 @@ public class MyCardArrayAdapter extends CardArrayAdapter{
     public void add(Card card) {
         super.add(card);
         mInternalObjects.put(card.getId(), card);
-        sort();
     }
 
 }

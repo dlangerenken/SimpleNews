@@ -26,7 +26,7 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
 	/**
 	 * Database Name and Version
 	 */
-	private static final int DATABASE_VERSION = 12;
+	private static final int DATABASE_VERSION = 15;
 	private static final String DATABASE_NAME = "news_database";
 
 	/**
@@ -36,20 +36,20 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
     private static final String TABLE_FEED = "feed";
     private static final String TABLE_ENTRY = "entry";
 
-    private static final String CATEGORY_ID = "id";
+    private static final String CATEGORY_ID = "_id";
     private static final String CATEGORY_COLOR = "color";
     private static final String CATEGORY_NAME = "name";
     private static final String CATEGORY_VISIBLE = "visible";
     private static final String CATEGORY_LAST_UPDATE = "last_update";
 
-    private static final String FEED_ID = "id";
+    private static final String FEED_ID = "_id";
     private static final String FEED_CATEGORY_ID = "category_id";
     private static final String FEED_TITLE = "title";
     private static final String FEED_DESCRIPTION = "description";
     private static final String FEED_URL = "url";
     private static final String FEED_VISIBLE = "visible";
 
-    private static final String ENTRY_ID = "id";
+    private static final String ENTRY_ID = "_id";
     private static final String ENTRY_CATEGORY_ID = "category_id";
     private static final String ENTRY_FEED_ID = "feed_id";
     private static final String ENTRY_TITLE = "title";

@@ -8,22 +8,16 @@ import com.android.volley.Response;
 import com.android.volley.toolbox.StringRequest;
 import com.google.gson.reflect.TypeToken;
 
+
 import de.dala.simplenews.common.Category;
 
 
 public class NetworkCommunication {
-   // private static String serverURL="www.google.de";
 
 	public static void addRequest(Request<?> request) {
 		VolleySingleton.getRequestQueue().add(request);
 	}
 
-   /* public static void loadRSSFeed(String serverURL, Response.Listener<RSSFeedSource> successListener,
-                                           Response.ErrorListener errorListener) {
-        Request request = new RssRequest(serverURL,
-               successListener, errorListener);
-        addRequest(request);
-    } */
 
     public static void loadRSSFeed(String serverURL, Response.Listener<String> successListener,
                                    Response.ErrorListener errorListener) {

@@ -23,13 +23,16 @@ android {
 }
 
 dependencies {
+    compile 'com.google.android.gms:play-services:4.0.30'
+    compile 'com.nineoldandroids:library:2.4.0'
     compile 'com.android.support:support-v4:19.0.0'
+
     compile 'com.astuetz:pagerslidingtabstrip:1.0.1'
     compile 'com.github.gabrielemariotti.cards:library:1.1.0'
     compile 'com.github.gabrielemariotti.changeloglib:library:1.4.0'
-    compile files('libs/msafe_common.jar')
     compile files('libs/volley.jar')
-    compile 'com.google.code.gson:gson:2.2.4'
+    compile files('libs/gson-2.2.4.jar')
+    compile files('libs/CWAC-LoaderEx.jar')
     compile ('de.keyboardsurfer.android.widget:crouton:1.8.1') {
         exclude module: 'support-v4'
     }

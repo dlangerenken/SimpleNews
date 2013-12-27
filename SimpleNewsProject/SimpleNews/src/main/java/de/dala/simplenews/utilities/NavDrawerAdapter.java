@@ -1,17 +1,17 @@
 package de.dala.simplenews.utilities;
 
+import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
-import android.content.Context;
-import android.view.LayoutInflater;
 import android.widget.BaseAdapter;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
-import de.dala.simplenews.common.NavDrawItem;
 import de.dala.simplenews.R;
+import de.dala.simplenews.common.NavDrawItem;
 
 /**
  * Created by Daniel on 18.12.13.
@@ -74,8 +74,8 @@ public class NavDrawerAdapter extends BaseAdapter {
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
-            if (item.type == NavDrawItem.Type.CATEGORY){
-                if (categoryDrawable != null){
+        if (item.type == NavDrawItem.Type.CATEGORY) {
+            if (categoryDrawable != null) {
                 holder.view.setBackgroundDrawable(categoryDrawable);
             }
         }

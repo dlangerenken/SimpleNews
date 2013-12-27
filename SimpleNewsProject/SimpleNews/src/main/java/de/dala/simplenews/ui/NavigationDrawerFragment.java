@@ -10,9 +10,6 @@ import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.view.LayoutInflater;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
-import com.actionbarsherlock.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -21,6 +18,9 @@ import android.widget.ListView;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragment;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
 
 import de.dala.simplenews.R;
 import de.dala.simplenews.common.NavDrawItem;
@@ -89,15 +89,15 @@ public class NavigationDrawerFragment extends SherlockFragment {
     }
 
     @Override
-    public void onActivityCreated (Bundle savedInstanceState) {
+    public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         // Indicate that this fragment would like to influence the set of actions in the action bar.
-        setHasOptionsMenu(true);
+        //setHasOptionsMenu(true);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState) {
+                             Bundle savedInstanceState) {
         mDrawerView = (LinearLayout) inflater.inflate(R.layout.fragment_navigation_drawer, container, false);
         mDrawerList = (ListView) mDrawerView.findViewById(R.id.left_drawer);
         mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -158,8 +158,7 @@ public class NavigationDrawerFragment extends SherlockFragment {
                 if (!isAdded()) {
                     return;
                 }
-
-                getSherlockActivity().supportInvalidateOptionsMenu(); // calls onPrepareOptionsMenu()
+                getSherlockActivity().supportInvalidateOptionsMenu();// calls onPrepareOptionsMenu()
             }
 
             @Override
@@ -177,8 +176,7 @@ public class NavigationDrawerFragment extends SherlockFragment {
                             .getDefaultSharedPreferences(getSherlockActivity());
                     sp.edit().putBoolean(PREF_USER_LEARNED_DRAWER, true).commit();
                 }
-
-                getSherlockActivity().supportInvalidateOptionsMenu(); // calls onPrepareOptionsMenu()
+                getSherlockActivity().supportInvalidateOptionsMenu();// calls onPrepareOptionsMenu()
             }
         };
 
@@ -241,12 +239,12 @@ public class NavigationDrawerFragment extends SherlockFragment {
         mDrawerToggle.onConfigurationChanged(newConfig);
     }
 
-   @Override
+    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         // If the drawer is open, show the global app actions in the action bar. See also
         // showGlobalContextActionBar, which controls the top-left area of the action bar.
         if (mDrawerLayout != null && isDrawerOpen()) {
-            inflater.inflate(R.menu.global, menu);
+            inflater.inflate(R.menu.main, menu);
             showGlobalContextActionBar();
         }
         super.onCreateOptionsMenu(menu, inflater);
