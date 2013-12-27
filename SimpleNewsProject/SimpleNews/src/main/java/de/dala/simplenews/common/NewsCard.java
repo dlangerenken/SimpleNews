@@ -7,7 +7,9 @@ import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.actionbarsherlock.view.MenuItem;
 import com.ocpsoft.pretty.time.PrettyTime;
 
 import java.util.Date;
@@ -18,6 +20,8 @@ import de.dala.simplenews.network.VolleySingleton;
 import it.gmariotti.cardslib.library.internal.Card;
 import it.gmariotti.cardslib.library.internal.CardExpand;
 import it.gmariotti.cardslib.library.internal.CardHeader;
+import it.gmariotti.cardslib.library.internal.ViewToClickToExpand;
+import it.gmariotti.cardslib.library.internal.base.BaseCard;
 
 /**
  * Created by Daniel on 18.12.13.
@@ -63,6 +67,10 @@ public class NewsCard extends Card {
                     }else{
                         mImageView.setVisibility(View.GONE);
                     }
+                    ViewToClickToExpand viewToClickToExpand =
+                            ViewToClickToExpand.builder()
+                                    .setupView(view);
+                    setViewToClickToExpand(viewToClickToExpand);
                 }
 
             }
@@ -98,7 +106,14 @@ public class NewsCard extends Card {
         });
 
         //Set visible the expand/collapse button
-        header.setButtonExpandVisible(true);
+        //header.setButtonExpandVisible(true);
+        header.setPopupMenu(R.menu.card_popup, new CardHeader.OnClickCardHeaderPopupMenuListener() {
+            @Override
+            public void onMenuItemClick(BaseCard baseCard, android.view.MenuItem menuItem) {
+                Toast.makeText(context, "Click on " + menuItem.getTitle(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
         if (mTitleMain != null && !mTitleMain.equals("")){
             CardExpand expand = new NewsCardExpand(context, mTitleMain, category);
             addCardExpand(expand);
@@ -126,6 +141,8 @@ public class NewsCard extends Card {
                 mTitleView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
             }
         }
+
+
     }
 
     @Override

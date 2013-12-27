@@ -11,8 +11,6 @@ import com.android.volley.VolleyError;
 import java.io.ByteArrayInputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -21,14 +19,13 @@ import androidrss.RSSConfig;
 import androidrss.RSSFeed;
 import androidrss.RSSItem;
 import androidrss.RSSParser;
+import de.dala.simplenews.R;
 import de.dala.simplenews.common.Category;
 import de.dala.simplenews.common.Entry;
 import de.dala.simplenews.common.Feed;
-import de.dala.simplenews.common.NewsCard;
 import de.dala.simplenews.database.DatabaseHandler;
 import de.dala.simplenews.database.IDatabaseHandler;
 import de.dala.simplenews.network.NetworkCommunication;
-import it.gmariotti.cardslib.library.internal.Card;
 
 /**
  * Created by Daniel on 27.12.13.
@@ -49,7 +46,7 @@ public class CategoryUpdater {
 
 
     public void start() {
-        sendMessage("Fetching News", STATUS_CHANGED);
+        sendMessage(context.getString(R.string.update_news), STATUS_CHANGED);
         if (updateDatabase){
             dropCategory();
         }
@@ -83,10 +80,12 @@ public class CategoryUpdater {
             this.stringResult = result;
         }
     }
+    private Context context;
 
     public CategoryUpdater(Handler handler, Category category, Context context, boolean updateDatabase){
         this.handler = handler;
         this.category = category;
+        this.context = context;
         databaseHandler = DatabaseHandler.getInstance(context);
         this.updateDatabase = updateDatabase;
     }
@@ -116,7 +115,7 @@ public class CategoryUpdater {
     }
 
     private void parseInformation() {
-        sendMessage("Parsing Information", STATUS_CHANGED);
+        //sendMessage("Parsing Information", STATUS_CHANGED);
         RSSParser parser = new RSSParser(new RSSConfig());
         List<Entry> entries = new ArrayList<Entry>();
         for(FetchingResult fetchingResult : results){
@@ -128,17 +127,17 @@ public class CategoryUpdater {
                 }
             } catch (UnsupportedEncodingException ex){}
         }
-        sleep(250);
+        //sleep(250);
         addToDatabase(entries);
     }
 
     private void addToDatabase(List<Entry> entries) {
-        sendMessage("Adding to database", STATUS_CHANGED);
+        //sendMessage("Adding to database", STATUS_CHANGED);
 
         for (Entry entry : entries){
             databaseHandler.addEntry(category.getId(), entry.getFeedId(), entry);
         }
-        sleep(250);
+        //sleep(250);
         getNewItems(entries);
     }
 
@@ -151,7 +150,7 @@ public class CategoryUpdater {
     }
 
     private void getNewItems(List<Entry> entries) {
-        sleep(500);
+        //sleep(500);
         category.setLastUpdateTime(new Date().getTime());
         databaseHandler.updateCategoryTime(category.getId(), category.getLastUpdateTime());
         sendMessage(entries, RESULT);
@@ -187,13 +186,5 @@ public class CategoryUpdater {
         msg.what = type;
         msg.obj = message;
         handler.sendMessage(msg);
-    }
-
-    private class FetchingTask extends AsyncTask<Void, Void, Void> {
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            return null;
-        }
     }
 }

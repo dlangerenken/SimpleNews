@@ -22,16 +22,18 @@
     xmlns:card="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+
+
+    <uk.co.senab.actionbarpulltorefresh.library.PullToRefreshLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:id="@+id/ptr_layout">
     <it.gmariotti.cardslib.library.view.CardListView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         card:list_card_layout_resourceID="@layout/my_list_card_thumbnail_layout"
         android:id="@+id/card_list_base"/>
-
-    </RelativeLayout>
+    </uk.co.senab.actionbarpulltorefresh.library.PullToRefreshLayout>
     <!-- Include undo message layout -->
     <include layout="@layout/list_card_undo_message"/>
 </FrameLayout>

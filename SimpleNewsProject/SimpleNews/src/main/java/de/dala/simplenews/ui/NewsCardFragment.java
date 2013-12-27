@@ -1,33 +1,49 @@
 package de.dala.simplenews.ui;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.res.Configuration;
+import android.content.res.TypedArray;
+import android.graphics.Color;
+import android.graphics.PixelFormat;
+import android.graphics.drawable.ClipDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.shapes.RectShape;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.LayoutInflater;
+
+import com.actionbarsherlock.internal.nineoldandroids.animation.Animator;
+import com.actionbarsherlock.internal.nineoldandroids.animation.AnimatorListenerAdapter;
+import com.actionbarsherlock.internal.nineoldandroids.animation.AnimatorSet;
+import com.actionbarsherlock.internal.nineoldandroids.animation.ObjectAnimator;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.Interpolator;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragment;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
+import com.google.android.gms.internal.s;
+import com.haarman.listviewanimations.swinginadapters.AnimationAdapter;
+import com.haarman.listviewanimations.swinginadapters.prepared.SwingBottomInAnimationAdapter;
+import com.haarman.listviewanimations.swinginadapters.prepared.SwingRightInAnimationAdapter;
 
-import java.io.ByteArrayInputStream;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import androidrss.MediaEnclosure;
-import androidrss.RSSConfig;
-import androidrss.RSSFeed;
-import androidrss.RSSItem;
-import androidrss.RSSParser;
 import de.dala.simplenews.R;
 import de.dala.simplenews.database.DatabaseHandler;
 import de.dala.simplenews.database.IDatabaseHandler;
@@ -37,20 +53,30 @@ import de.dala.simplenews.common.Feed;
 import de.dala.simplenews.common.NewsCard;
 import de.dala.simplenews.utilities.CategoryUpdater;
 import de.dala.simplenews.utilities.MyCardArrayAdapter;
+import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
+import fr.castorflex.android.smoothprogressbar.SmoothProgressDrawable;
 import it.gmariotti.cardslib.library.internal.Card;
 import it.gmariotti.cardslib.library.view.CardListView;
+import uk.co.senab.actionbarpulltorefresh.library.ActionBarPullToRefresh;
+import uk.co.senab.actionbarpulltorefresh.library.DefaultHeaderTransformer;
+import uk.co.senab.actionbarpulltorefresh.library.HeaderTransformer;
+import uk.co.senab.actionbarpulltorefresh.library.Options;
+import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshLayout;
+import uk.co.senab.actionbarpulltorefresh.library.listeners.OnRefreshListener;
+import uk.co.senab.actionbarpulltorefresh.library.sdk.Compat;
 
 /**
  * Created by Daniel on 18.12.13.
  */
-public class NewsCardFragment extends SherlockFragment {
+public class NewsCardFragment extends SherlockFragment implements OnRefreshListener{
     //TODO fragment performance
     private static final String ARG_CATEGORY = "category";
-    public static final String IMAGE_JPEG = "image/jpeg";
     private CardListView mListView;
     private View undoBar;
     private MyCardArrayAdapter mCardArrayAdapter;
     private Category category;
+
+    PullToRefreshLayout mPullToRefreshLayout;
 
     private List<Feed> feeds;
     private MainActivity activity;
@@ -106,6 +132,21 @@ public class NewsCardFragment extends SherlockFragment {
         View rootView = inflater.inflate(R.layout.list_base_different_inner, container, false);
         mListView = (CardListView) rootView.findViewById(R.id.card_list_base);
         undoBar = rootView.findViewById(R.id.list_card_undobar);
+        mPullToRefreshLayout = (PullToRefreshLayout) rootView.findViewById(R.id.ptr_layout);
+
+        DefaultHeaderTransformer transformer = new DefaultHeaderTransformer(){
+            @Override
+            public void onViewCreated(Activity activity, View headerView) {
+                super.onViewCreated(activity, headerView);
+                ViewGroup mContentLayout = (ViewGroup) headerView.findViewById(R.id.ptr_content);
+                mContentLayout.setBackgroundColor(category.getColor());
+            }
+        };
+        transformer.setProgressBarColor(Color.WHITE);
+
+        ActionBarPullToRefresh.from(getActivity()).options(Options.create().headerTransformer(transformer).build()).allChildrenArePullable().listener(this).setup(mPullToRefreshLayout);
+
+
         initCardsAdapter(new ArrayList<Card>());
 
         loadEntries();
@@ -119,9 +160,8 @@ public class NewsCardFragment extends SherlockFragment {
         mCardArrayAdapter = new MyCardArrayAdapter(activity, cards);
         //mCardArrayAdapter.setInnerViewTypeCount(3);
         mCardArrayAdapter.setEnableUndo(true, undoBar);
-
         if (mListView!=null){
-            mListView.setAdapter(mCardArrayAdapter);
+            setBottomAdapter();
         }
     }
 
@@ -149,14 +189,18 @@ public class NewsCardFragment extends SherlockFragment {
         activity.showLoadingNews();
     }
 
+    @Override
+    public void onRefreshStarted(View view) {
+        refreshFeeds();
+    }
+
     private class CategoryUpdateHandler extends Handler {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what){
                 case CategoryUpdater.RESULT:
                     List<Entry> entries = (ArrayList<Entry>) msg.obj;
-                    updateAdapter(entries);
-                    activity.cancelLoadingNews();
+                    updateFinished(entries);
                     break;
                 case CategoryUpdater.STATUS_CHANGED:
                     activity.updateNews((String)msg.obj, category.getId());
@@ -166,6 +210,14 @@ public class NewsCardFragment extends SherlockFragment {
                     activity.cancelLoadingNews();
                     break;
             }
+        }
+    }
+
+    private void updateFinished(List<Entry> entries) {
+        updateAdapter(entries);
+        activity.cancelLoadingNews();
+        if (mPullToRefreshLayout != null){
+            mPullToRefreshLayout.setRefreshComplete();
         }
     }
 
@@ -195,4 +247,12 @@ public class NewsCardFragment extends SherlockFragment {
         outState.putSerializable("feeds", (ArrayList<Feed>) feeds);
     }
 
+
+    private void setBottomAdapter() {
+        AnimationAdapter animCardArrayAdapter = new SwingBottomInAnimationAdapter(mCardArrayAdapter);
+        animCardArrayAdapter.setAbsListView(mListView);
+        if (mListView != null) {
+            mListView.setExternalAdapter(animCardArrayAdapter,mCardArrayAdapter);
+        }
+    }
 }
