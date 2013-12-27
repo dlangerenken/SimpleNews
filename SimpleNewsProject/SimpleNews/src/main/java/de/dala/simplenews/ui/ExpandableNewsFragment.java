@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Interpolator;
+import android.view.animation.LinearInterpolator;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -81,7 +82,6 @@ public class ExpandableNewsFragment extends SherlockFragment implements OnRefres
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
     }
 
     @Override
@@ -142,24 +142,6 @@ public class ExpandableNewsFragment extends SherlockFragment implements OnRefres
         }
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.refresh:
-                refreshFeeds();
-                return true;
-            default:
-                break;
-        }
-        return false;
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.news, menu);
-        super.onCreateOptionsMenu(menu, inflater);
-    }
-
     private void refreshThroughPull(){
         CategoryUpdater updater = new CategoryUpdater(new CategoryPullUpdateHandler(), category, getActivity(), true);
         updater.start();
@@ -198,6 +180,7 @@ public class ExpandableNewsFragment extends SherlockFragment implements OnRefres
                 case CategoryUpdater.RESULT:
                     List<Entry> entries = (ArrayList<Entry>) msg.obj;
                     updateFinished(entries);
+                    activity.cancelLoadingNews();
                     break;
                 case CategoryUpdater.STATUS_CHANGED:
                     activity.updateNews((String)msg.obj, category.getId());
@@ -212,7 +195,6 @@ public class ExpandableNewsFragment extends SherlockFragment implements OnRefres
 
     private void updateFinished(List<Entry> entries) {
         updateAdapter(entries);
-        activity.cancelLoadingNews();
         if (mPullToRefreshLayout != null){
             mPullToRefreshLayout.setRefreshComplete();
         }

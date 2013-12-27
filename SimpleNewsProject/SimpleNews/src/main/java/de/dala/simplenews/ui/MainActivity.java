@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
+import android.graphics.drawable.TransitionDrawable;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
@@ -174,10 +175,10 @@ public class MainActivity extends SherlockFragmentActivity implements ViewPager.
         if (oldBackground == null) {
             getSupportActionBar().setBackgroundDrawable(ld);
         } else {
-            getSupportActionBar().setBackgroundDrawable(ld); //BUG otherwise
-            //TransitionDrawable td = new TransitionDrawable(new Drawable[] { oldBackground, ld });
-            //getSupportActionBar().setBackgroundDrawable(td);
-            //td.startTransition(200);
+            //getSupportActionBar().setBackgroundDrawable(ld); //BUG otherwise
+            TransitionDrawable td = new TransitionDrawable(new Drawable[] { oldBackground, ld });
+            getSupportActionBar().setBackgroundDrawable(td);
+            td.startTransition(400);
         }
         mNavigationDrawerFragment.changeColor(ld, newColor);
 
