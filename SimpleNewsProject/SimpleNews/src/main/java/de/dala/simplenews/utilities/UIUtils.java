@@ -1,0 +1,72 @@
+/*
+ * Copyright 2012 Google Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package de.dala.simplenews.utilities;
+
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.text.Html;
+import android.text.TextUtils;
+import android.text.method.LinkMovementMethod;
+import android.widget.TextView;
+
+import java.util.regex.Pattern;
+
+/**
+ * Created by Daniel on 29.12.13.
+ */
+public class UIUtils {
+
+    /**
+     * Regex to search for HTML escape sequences.
+     *
+     * <p></p>Searches for any continuous string of characters starting with an ampersand and ending with a
+     * semicolon. (Example: &amp;amp;)
+     */
+    private static final Pattern REGEX_HTML_ESCAPE = Pattern.compile(".*&\\S;.*");
+
+    /**
+     * Populate the given {@link TextView} with the requested text, formatting
+     * through {@link Html#fromHtml(String)} when applicable. Also sets
+     * {@link TextView#setMovementMethod} so inline links are handled.
+     */
+    public static void setTextMaybeHtml(TextView view, String text) {
+        if (TextUtils.isEmpty(text)) {
+            view.setText("");
+            return;
+        }
+        if ((text.contains("<") && text.contains(">")) || REGEX_HTML_ESCAPE.matcher(text).find()) {
+            view.setText(Html.fromHtml(text));
+            view.setMovementMethod(LinkMovementMethod.getInstance());
+        } else {
+            view.setText(text);
+        }
+    }
+
+    @SuppressWarnings("unchecked") // Casts are checked using runtime methods
+    public static <T> T getParent(Fragment frag, Class<T> callbackInterface) {
+        Fragment parentFragment = frag.getParentFragment();
+        if (parentFragment != null
+                && callbackInterface.isInstance(parentFragment)) {
+            return (T) parentFragment;
+        } else {
+            FragmentActivity activity = frag.getActivity();
+            if (activity != null && callbackInterface.isInstance(activity)) {
+                return (T) activity;
+            }
+        }
+        return null;
+    }
+}

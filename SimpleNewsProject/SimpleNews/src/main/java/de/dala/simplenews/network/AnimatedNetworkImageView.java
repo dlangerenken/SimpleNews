@@ -17,16 +17,8 @@ package de.dala.simplenews.network;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.text.TextUtils;
 import android.util.AttributeSet;
-import android.view.ViewGroup.LayoutParams;
 import android.view.animation.Animation;
-import android.widget.ImageView;
-
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.ImageLoader;
-import com.android.volley.toolbox.ImageLoader.ImageContainer;
-import com.android.volley.toolbox.ImageLoader.ImageListener;
 import com.android.volley.toolbox.NetworkImageView;
 
 /**

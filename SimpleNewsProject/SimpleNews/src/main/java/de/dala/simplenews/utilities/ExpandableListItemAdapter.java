@@ -286,6 +286,7 @@ public abstract class ExpandableListItemAdapter<T> extends ArrayAdapter<T> {
         }
     }
 
+
     private static class ExpandCollapseHelper {
 
         public static void animateCollapsing(final View view) {
@@ -303,14 +304,12 @@ public abstract class ExpandableListItemAdapter<T> extends ArrayAdapter<T> {
         }
 
         public static void animateExpanding(final View view) {
-
-        /*
-         * Set this view to invisible so that the size can be measured. If it's set to View.VISIBLE here
-         * the maximized layout appears to flicker in before animating.
-         */
-            view.setVisibility(View.INVISIBLE);
-
-            view.post(new Runnable() {
+                /*
+                 * Set this view to invisible so that the size can be measured. If it's set to View.VISIBLE here
+                 * the maximized layout appears to flicker in before animating.
+                 */
+                view.setVisibility(View.INVISIBLE);
+                view.post(new Runnable() {
 
                 @Override
                 public void run() {

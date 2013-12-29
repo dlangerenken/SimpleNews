@@ -10,6 +10,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import de.dala.simplenews.MainApplication;
 import de.dala.simplenews.common.Category;
 import de.dala.simplenews.common.Entry;
 import de.dala.simplenews.common.Feed;
@@ -26,7 +27,7 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
 	/**
 	 * Database Name and Version
 	 */
-	private static final int DATABASE_VERSION = 15;
+	private static final int DATABASE_VERSION = 22;
 	private static final String DATABASE_NAME = "news_database";
 
 	/**
@@ -79,17 +80,9 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
     private static DatabaseHandler instance;
 
     /**
-     * Retrieves a thread-safe instance of the singleton object {@link DatabaseHandler} and opens the database
-     * with writing permissions.
-     *
-     * @param context the context to set.
      * @return the singleton instance.
      */
-    public static synchronized DatabaseHandler getInstance(Context context) {
-        if (instance == null) {
-            instance = new DatabaseHandler(context);
-            db = instance.getWritableDatabase();
-        }
+    public static synchronized DatabaseHandler getInstance() {
         return instance;
     }
 
@@ -442,7 +435,14 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
     public void updateCategoryTime(long categoryId, long lastUpdateTime){
         ContentValues values = new ContentValues();
         values.put(CATEGORY_LAST_UPDATE, lastUpdateTime);
-        db.update(TABLE_CATEGORY, values, FEED_ID + "=" + categoryId, null);
+        db.update(TABLE_CATEGORY, values, CATEGORY_ID + "=" + categoryId, null);
+    }
+
+    @Override
+    public void updateCategoryColor(long categoryId, int color) {
+        ContentValues values = new ContentValues();
+        values.put(CATEGORY_COLOR, color);
+        db.update(TABLE_CATEGORY, values, CATEGORY_ID + "=" + categoryId, null);
     }
 
     private Category getCategoryByCursor(Cursor cursor) {
@@ -509,5 +509,18 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
             return additionalQuery;
         }
         return query + " AND " + additionalQuery;
+    }
+
+    /*
+    * Retrieves a thread-safe instance of the singleton object {@link DatabaseHandler} and opens the database
+    * with writing permissions.
+    *
+    * @param context the context to set.
+    */
+    public static void init(Context context) {
+        if (instance == null) {
+            instance = new DatabaseHandler(context);
+            db = instance.getWritableDatabase();
+        }
     }
 }

@@ -2,7 +2,9 @@ package de.dala.simplenews.ui;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -10,6 +12,7 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -33,6 +36,7 @@ import de.dala.simplenews.database.DatabaseHandler;
 import de.dala.simplenews.database.IDatabaseHandler;
 import de.dala.simplenews.network.FadeInNetworkImageView;
 import de.dala.simplenews.utilities.CategoryUpdater;
+import de.dala.simplenews.utilities.UIUtils;
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
 import uk.co.senab.actionbarpulltorefresh.library.ActionBarPullToRefresh;
 import uk.co.senab.actionbarpulltorefresh.library.DefaultHeaderTransformer;
@@ -92,7 +96,7 @@ public class ExpandableNewsFragment extends SherlockFragment implements OnRefres
                 feeds = (ArrayList<Feed>) feedsObject;
             }
         }
-        databaseHandler = DatabaseHandler.getInstance(getActivity());
+        databaseHandler = DatabaseHandler.getInstance();
 
         if (feeds == null){
             feeds = databaseHandler.getFeeds(category.getId(), null);
@@ -116,7 +120,6 @@ public class ExpandableNewsFragment extends SherlockFragment implements OnRefres
                         // Finally commit the setup to our PullToRefreshLayout
                 .setup(mPullToRefreshLayout);
         mListView = (ListView) rootView.findViewById(R.id.news_listview);
-
         initCardsAdapter(new ArrayList<Entry>());
 
         loadEntries();
@@ -233,7 +236,8 @@ public class ExpandableNewsFragment extends SherlockFragment implements OnRefres
             imageView.setVisibility(View.GONE);
             TextView titleTextView = (TextView) layout.findViewById(R.id.title);
             TextView infoTextView = (TextView) layout.findViewById(R.id.info);
-            titleTextView.setText(entry.getTitle());
+
+            UIUtils.setTextMaybeHtml(titleTextView, entry.getTitle());
 
 
             String prettyTimeString = new PrettyTime().format(new Date(entry.getDate()));
@@ -246,7 +250,7 @@ public class ExpandableNewsFragment extends SherlockFragment implements OnRefres
 
         @Override
         public View getContentView(int position, View convertView, ViewGroup parent) {
-            Entry entry = getItem(position);
+            final Entry entry = getItem(position);
             LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             LinearLayout layout = (LinearLayout) inflater.inflate(R.layout.news_card_expand, null);
 
@@ -254,7 +258,15 @@ public class ExpandableNewsFragment extends SherlockFragment implements OnRefres
             colorBorder.setBackgroundColor(category.getColor());
 
             final TextView description = (TextView) layout.findViewById(R.id.expand_card_main_inner_simple_title);
-            description.setText(entry.getDescription());
+            UIUtils.setTextMaybeHtml(description, entry.getDescription());
+
+            layout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(entry.getLink()));
+                    startActivity(browserIntent);
+                }
+            });
             return layout;
         }
     }

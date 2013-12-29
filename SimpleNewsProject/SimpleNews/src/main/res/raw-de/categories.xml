@@ -38,7 +38,7 @@
     <category name="Technologie" color="#FFBA55D3">
         <feed>http://rss.golem.de/rss.php?feed=RSS2.0</feed>
         <feed>http://www.spiegel.de/wissenschaft/technik/index.rss</feed>
-        <feed>http://www.heise.de/newsticker/heise-atom.xml</feed>
+        <feed>http://www.heise.de/newsticker/heise-atom.xml</feed>n
         <feed>http://www.faz.net/rss/aktuell/technik-motor/</feed>
     </category>
 </news>

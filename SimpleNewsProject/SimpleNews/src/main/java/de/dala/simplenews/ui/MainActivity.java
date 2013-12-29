@@ -77,7 +77,7 @@ public class MainActivity extends SherlockFragmentActivity implements ViewPager.
                 (DrawerLayout) findViewById(R.id.drawer_layout));
 
 
-        databaseHandler = DatabaseHandler.getInstance(this);
+        databaseHandler = DatabaseHandler.getInstance();
         if (!xmlIsAlreadyLoaded()) {
             loadXml();
         }
@@ -157,6 +157,10 @@ public class MainActivity extends SherlockFragmentActivity implements ViewPager.
                 dialog = new ChangeLogDialog();
                 dialog.show(getSupportFragmentManager(), "ChangeLog");
                 return true;
+            case R.id.settings:
+                dialog = new CategoryModifierFragment(categories);
+                dialog.show(getSupportFragmentManager(), "Settings");
+                break;
         }
         return super.onOptionsItemSelected(item);
     }

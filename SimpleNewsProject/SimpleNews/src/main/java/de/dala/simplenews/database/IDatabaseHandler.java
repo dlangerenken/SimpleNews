@@ -18,6 +18,7 @@ public interface IDatabaseHandler {
     int removeCategory(long categoryId, Boolean excludeFeeds, Boolean excludeEntries);
     void setVisibilityCategories(Long categoryId, boolean visible, Boolean excludeFeeds, Boolean excludeEntries);
     void updateCategoryTime(long categoryId, long lastUpdateTime);
+    void updateCategoryColor(long categoryId, int color);
 
     List<Feed> getFeeds(Long categoryId, Boolean excludeEntries);
     Feed getFeed(long feedId, Boolean excludeEntries);
@@ -30,6 +31,7 @@ public interface IDatabaseHandler {
     long addEntry(long categoryId, long feedId, Entry entry);
     int removeEntries(Long categoryId, Long feedId, Long entryId);
     void setVisibilityEntry(Long categoryId, Long feedId, Long entryId, boolean visible);
+
 
 
     //TODO replace - remove all "old" entries!

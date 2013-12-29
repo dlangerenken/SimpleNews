@@ -5,4 +5,8 @@
         android:title="@string/changelog_menu"
         android:orderInCategory="100"
         android:showAsAction="never" />
+    <item android:id="@+id/settings"
+        android:title="@string/settings"
+        android:orderInCategory="100"
+        android:showAsAction="never" />
 </menu>

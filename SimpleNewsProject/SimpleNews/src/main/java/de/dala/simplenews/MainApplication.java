@@ -2,6 +2,7 @@ package de.dala.simplenews;
 
 import android.app.Application;
 
+import de.dala.simplenews.database.DatabaseHandler;
 import de.dala.simplenews.network.VolleySingleton;
 
 /**
@@ -12,5 +13,6 @@ public class MainApplication extends Application{
     public void onCreate() {
         super.onCreate();
         VolleySingleton.init(this);
+        DatabaseHandler.init(this);
     }
 }

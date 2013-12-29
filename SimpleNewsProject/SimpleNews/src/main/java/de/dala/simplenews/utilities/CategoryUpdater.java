@@ -86,7 +86,7 @@ public class CategoryUpdater {
         this.handler = handler;
         this.category = category;
         this.context = context;
-        databaseHandler = DatabaseHandler.getInstance(context);
+        databaseHandler = DatabaseHandler.getInstance();
         this.updateDatabase = updateDatabase;
     }
 
