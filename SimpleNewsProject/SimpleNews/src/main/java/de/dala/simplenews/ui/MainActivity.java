@@ -97,7 +97,7 @@ public class MainActivity extends SherlockFragmentActivity implements ViewPager.
         bottomView = (RelativeLayout) findViewById(R.id.bottom_view);
         createProgressView();
 
-        changeColor(currentColor);
+        onPageSelected(0);
     }
 
     private void loadXml() {
