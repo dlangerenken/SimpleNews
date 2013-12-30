@@ -2,7 +2,8 @@
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal" android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="@drawable/card_background_white">
 
     <LinearLayout
         android:layout_alignParentLeft="true"
@@ -11,16 +12,16 @@
         android:orientation="horizontal"
         android:layout_gravity="left|center_vertical">
         <ImageView
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
             android:layout_margin="3dp"
             android:id="@+id/color" />
 
         <TextView
+            android:layout_marginLeft="5dp"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Medium Text"
             android:gravity="center_vertical"
             android:layout_gravity="center_vertical"
             android:id="@+id/name" />
@@ -28,25 +29,36 @@
 </LinearLayout>
     <LinearLayout android:layout_alignParentRight="true"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_gravity="right|center_vertical">
+        android:layout_height="fill_parent"
+        android:orientation="horizontal">
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:id="@+id/remove"
-            android:background="@drawable/ic_action_delete" />
+            android:layout_height="35dp"
+            android:layout_width="35dp"
+            android:layout_gravity="center"
+            android:id="@+id/edit"
+            android:background="@drawable/ic_action_edit" />
+        <View
+            android:layout_width="2dp"
+            android:layout_margin="3dp"
+            android:layout_gravity="center"
+            android:layout_height="match_parent"
+            android:background="#818285" />
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
             android:id="@+id/show"
-            android:background="@drawable/ic_action_done" />
+            android:layout_gravity="center"
+            android:background="@drawable/ic_action_important" />
+        <View
+            android:layout_width="2dp"
+            android:layout_gravity="center"
+            android:layout_margin="3dp"
+            android:layout_height="match_parent"
+            android:background="#818285" />
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
+            android:layout_width="35dp"
+            android:layout_gravity="center"
+            android:layout_height="35dp"
             android:id="@+id/more"
             android:background="@drawable/ic_action_overflow" />
 

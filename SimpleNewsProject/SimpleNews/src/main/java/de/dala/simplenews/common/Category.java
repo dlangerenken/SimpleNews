@@ -11,6 +11,7 @@ public class Category implements Serializable{
     private String name;
     private long id;
     private int color;
+    private int order;
     private transient List<Feed> feeds;
 
     private boolean isVisible = true;
@@ -69,4 +70,13 @@ public class Category implements Serializable{
 
         this.name = name;
     }
+
+    public int getOrder(){
+        return order;
+    }
+
+    public void setOrder(int order){
+        this.order = order;
+    }
+
 }

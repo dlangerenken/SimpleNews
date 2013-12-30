@@ -19,5 +19,19 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="settings">Settings</string>
     <string name="pref_config" >Color Picker</string>
+    <string name="new_category">New Category</string>
+    <string name="add">Add</string>
+
+    <plurals name="countdown_seconds">
+        <item quantity="one">Removing in 1...</item>
+        <item quantity="other">Removing in %d...</item>
+    </plurals>
+
+    <string name="countdown_dismissing">Removing</string>
+    <string name="itemdeleted">Item deleted</string>
+    <string name="taptoundo">Tap to undo</string>
+    <string name="select_color_create_category">Select Color for Category</string>
+    <string name="create_category_2_2">Create Category 2 / 2</string>
+    <string name="create_category_1_2">Create Category 1 / 2</string>
 
 </resources>

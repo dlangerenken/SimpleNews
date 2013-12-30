@@ -12,4 +12,5 @@
     <string name="progress">Fortschritt</string>
     <string name="refresh">Aktualisieren</string>
     <string name="update_news">Aktualisiere Nachrichten...</string>
+    <string name="add">Hinzufügen</string>
 </resources>

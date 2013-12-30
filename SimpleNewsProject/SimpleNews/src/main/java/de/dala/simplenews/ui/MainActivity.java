@@ -1,6 +1,7 @@
 package de.dala.simplenews.ui;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -105,7 +106,7 @@ public class MainActivity extends SherlockFragmentActivity implements ViewPager.
             News news = new XmlParser(this).readDefaultNewsFile();
             for (Category category : news.getCategories()) {
                 if (category != null) {
-                    databaseHandler.addCategory(category, false, false);
+                    databaseHandler.addCategory(category, true, true);
                 }
             }
             saveLoading();
@@ -158,8 +159,8 @@ public class MainActivity extends SherlockFragmentActivity implements ViewPager.
                 dialog.show(getSupportFragmentManager(), "ChangeLog");
                 return true;
             case R.id.settings:
-                dialog = new CategoryModifierFragment(categories);
-                dialog.show(getSupportFragmentManager(), "Settings");
+                Intent intent = new Intent(MainActivity.this, CategoryModifierActivity.class);
+                startActivity(intent);
                 break;
         }
         return super.onOptionsItemSelected(item);

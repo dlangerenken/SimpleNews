@@ -35,7 +35,6 @@ public class NetworkCommunication {
         addRequest(request);
     }
 
-    //TODO maybe only categories first -> then offer download for sources
     public static void loadCategories(String serverURL,Response.Listener<ArrayList<Category>> successListener, Response.ErrorListener errorListener){
         Type categoryListType = new TypeToken<ArrayList<Category>>() {
         }.getType();

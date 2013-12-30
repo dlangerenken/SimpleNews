@@ -27,7 +27,7 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
 	/**
 	 * Database Name and Version
 	 */
-	private static final int DATABASE_VERSION = 22;
+	private static final int DATABASE_VERSION = 26;
 	private static final String DATABASE_NAME = "news_database";
 
 	/**
@@ -42,6 +42,7 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
     private static final String CATEGORY_NAME = "name";
     private static final String CATEGORY_VISIBLE = "visible";
     private static final String CATEGORY_LAST_UPDATE = "last_update";
+    private static final String CATEGORY_ORDER = "_order";
 
     private static final String FEED_ID = "_id";
     private static final String FEED_CATEGORY_ID = "category_id";
@@ -117,7 +118,8 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
 		         + CATEGORY_COLOR + " INTEGER,"
                  + CATEGORY_NAME + " TEXT,"
                  + CATEGORY_LAST_UPDATE + " LONG,"
-                 + CATEGORY_VISIBLE + " INTEGER" +")";
+                 + CATEGORY_VISIBLE + " INTEGER,"
+                 + CATEGORY_ORDER + " INTEGER" +")";
         String createFeedTable = "CREATE TABLE "
                 + TABLE_FEED + "("
                 + FEED_ID + " INTEGER PRIMARY KEY, "
@@ -158,8 +160,9 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
 
     public List<Category> getCategories(Boolean excludeFeeds, Boolean excludeEntries) {
         List<Category> categories = new ArrayList<Category>();
+        String orderBy = CATEGORY_ORDER + " ASC";
         Cursor cursor = db.query(TABLE_CATEGORY, null,
-                null, null, null, null, null);
+                null, null, null, null, orderBy);
 
 		/*
 		 * looping through all rows and adding to list
@@ -201,14 +204,17 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
         values.put(CATEGORY_LAST_UPDATE, category.getLastUpdateTime());
         values.put(CATEGORY_VISIBLE, category.isVisible() ? 1 : 0);
 
-        long rowId = db.insert(TABLE_CATEGORY, null, values);
+        long categoryId = db.insert(TABLE_CATEGORY, null, values);
+        values = new ContentValues();
+        values.put(CATEGORY_ORDER, categoryId);
+        db.update(TABLE_CATEGORY, values, CATEGORY_ID + " = " + categoryId, null);
 
         if (excludeFeeds != null && !excludeFeeds){
             for(Feed feed : category.getFeeds()){
-                addFeed(rowId, feed, excludeEntries);
+                addFeed(categoryId, feed, excludeEntries);
             }
         }
-        return rowId;
+        return categoryId;
     }
 
 
@@ -431,10 +437,26 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
         db.update(TABLE_ENTRY, values, query, null);
     }
 
+
+
     @Override
     public void updateCategoryTime(long categoryId, long lastUpdateTime){
         ContentValues values = new ContentValues();
         values.put(CATEGORY_LAST_UPDATE, lastUpdateTime);
+        db.update(TABLE_CATEGORY, values, CATEGORY_ID + "=" + categoryId, null);
+    }
+
+    @Override
+    public void updateCategoryOrder(long categoryId, int order){
+        ContentValues values = new ContentValues();
+        values.put(CATEGORY_ORDER, order);
+        db.update(TABLE_CATEGORY, values, CATEGORY_ID + "=" + categoryId, null);
+    }
+
+    @Override
+    public void updateCategoryName(long categoryId, String name) {
+        ContentValues values = new ContentValues();
+        values.put(CATEGORY_NAME, name);
         db.update(TABLE_CATEGORY, values, CATEGORY_ID + "=" + categoryId, null);
     }
 
@@ -444,6 +466,19 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
         values.put(CATEGORY_COLOR, color);
         db.update(TABLE_CATEGORY, values, CATEGORY_ID + "=" + categoryId, null);
     }
+    @Override
+    public void updateFeedUrl(long feedId, String newUrl) {
+        ContentValues values = new ContentValues();
+        values.put(FEED_URL, newUrl);
+        db.update(TABLE_FEED, values, FEED_ID + "=" + feedId, null);
+    }
+
+    @Override
+    public void updateFeedVisible(long feedId, boolean visible) {
+        ContentValues values = new ContentValues();
+        values.put(FEED_VISIBLE, visible ? 1 : 0);
+        db.update(TABLE_FEED, values, FEED_ID + "=" + feedId, null);
+    }
 
     private Category getCategoryByCursor(Cursor cursor) {
         long id = cursor.getLong(0);
@@ -451,6 +486,7 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
         String name = cursor.getString(2);
         long lastUpdate = cursor.getLong(3);
         int visible = cursor.getInt(4);
+        int order = cursor.getInt(5);
 
         Category category = new Category();
         category.setId(id);
@@ -458,6 +494,7 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
         category.setName(name);
         category.setLastUpdateTime(lastUpdate);
         category.setVisible(visible > 0);
+        category.setOrder(order);
         return category;
     }
     private Feed getFeedByCursor(Cursor cursor) {
