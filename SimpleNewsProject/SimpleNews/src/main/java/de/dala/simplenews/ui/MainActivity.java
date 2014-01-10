@@ -8,6 +8,7 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.TransitionDrawable;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -37,12 +38,12 @@ import de.dala.simplenews.database.DatabaseHandler;
 import de.dala.simplenews.database.IDatabaseHandler;
 import de.dala.simplenews.dialog.ChangeLogDialog;
 import de.dala.simplenews.parser.XmlParser;
+import de.dala.toasty.Toasty;
 import de.keyboardsurfer.android.widget.crouton.Configuration;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 
 public class MainActivity extends SherlockFragmentActivity implements ViewPager.OnPageChangeListener, NavigationDrawerFragment.NavigationDrawerCallbacks {
 
-    public static final String DE_DALA_SIMPLENEWS = "de.dala.simplenews";
     public static final String XML_LOADED = "xmlLoaded";
     private static String TAG = "MainActivity";
     private IDatabaseHandler databaseHandler;
@@ -99,6 +100,17 @@ public class MainActivity extends SherlockFragmentActivity implements ViewPager.
         createProgressView();
 
         onPageSelected(0);
+
+        //opening transition animations
+        overridePendingTransition(R.anim.open_translate,R.anim.close_scale);
+    }
+
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        //closing transition animations
+        overridePendingTransition(R.anim.open_scale,R.anim.close_translate);
     }
 
     private void loadXml() {
@@ -106,28 +118,26 @@ public class MainActivity extends SherlockFragmentActivity implements ViewPager.
             News news = new XmlParser(this).readDefaultNewsFile();
             for (Category category : news.getCategories()) {
                 if (category != null) {
-                    databaseHandler.addCategory(category, true, true);
+                    databaseHandler.addCategory(category, false, false);
                 }
             }
             saveLoading();
         } catch (XmlPullParserException e) {
-            Log.e(TAG, "Error in adding xml to Database");
+            Toasty.LOGE(TAG, "Error in adding xml to Database");
             e.printStackTrace();
         } catch (IOException io) {
-            Log.e(TAG, "Error in adding xml to Database");
+            Toasty.LOGE(TAG, "Error in adding xml to Database");
             io.printStackTrace();
         }
     }
 
     private boolean xmlIsAlreadyLoaded() {
-        SharedPreferences prefs = this.getSharedPreferences(
-                DE_DALA_SIMPLENEWS, Context.MODE_PRIVATE);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         return prefs.getBoolean(XML_LOADED, false);
     }
 
     private void saveLoading() {
-        SharedPreferences prefs = this.getSharedPreferences(
-                DE_DALA_SIMPLENEWS, Context.MODE_PRIVATE);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         prefs.edit().putBoolean(XML_LOADED, true).commit();
     }
 

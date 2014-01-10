@@ -15,6 +15,7 @@ import de.dala.simplenews.common.Category;
 import de.dala.simplenews.common.Feed;
 import de.dala.simplenews.common.News;
 import de.dala.simplenews.R;
+import de.dala.toasty.Toasty;
 
 /**
  * Created by Daniel on 23.12.13.
@@ -110,18 +111,18 @@ public class XmlParser  {
                 // Close inputstream
                 is.close();
             }else{
-                Log.d(TAG, "categories.xml not found");
+                Toasty.LOGD(TAG, "categories.xml not found");
             }
         } catch (XmlPullParserException xpe) {
-            Log.d(TAG,"XmlPullParseException while parsing changelog file",xpe);
+            Toasty.LOGD(TAG,"XmlPullParseException while parsing changelog file",xpe);
             throw  xpe;
         } catch (IOException ioe){
-            Log.d(TAG,"Error i/o with categories.xml",ioe);
+            Toasty.LOGD(TAG,"Error i/o with categories.xml",ioe);
             throw ioe;
         }
 
         if (news!=null)
-            Log.d(TAG,"Process ended. News:" + news);
+            Toasty.LOGD(TAG,"Process ended. News:" + news);
 
         return news;
     }
@@ -139,7 +140,7 @@ public class XmlParser  {
 
         // Parse changelog node
         parser.require(XmlPullParser.START_TAG, null, TAG_NEWS);
-        Log.d(TAG,"Processing main tag=");
+        Toasty.LOGD(TAG,"Processing main tag=");
 
         //Parse nested nodes
         while (parser.next() != XmlPullParser.END_TAG) {
@@ -148,7 +149,7 @@ public class XmlParser  {
             }
 
             String tag = parser.getName();
-            Log.d(TAG,"Processing tag="+tag);
+            Toasty.LOGD(TAG,"Processing tag="+tag);
 
             if (tag.equals(TAG_CATEGORY)) {
                 readCategory(parser, news);
@@ -185,7 +186,7 @@ public class XmlParser  {
                 continue;
             }
             String tag = parser.getName();
-            Log.d(TAG,"Processing tag="+tag);
+            Toasty.LOGD(TAG,"Processing tag="+tag);
 
             if (tag.equals(TAG_FEED)){
                 String feed = readFeed(parser, news);

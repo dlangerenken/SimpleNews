@@ -1,5 +1,8 @@
 package de.dala.simplenews.common;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -7,7 +10,7 @@ import java.util.List;
 /**
  * Created by Daniel on 19.12.13.
  */
-public class Category implements Serializable{
+public class Category implements Serializable, Parcelable {
     private String name;
     private long id;
     private int color;
@@ -20,6 +23,14 @@ public class Category implements Serializable{
 
     public Category(){
         feeds = new ArrayList<Feed>();
+    }
+
+    public Category(Parcel in){
+        this.name = in.readString();
+        this.id = in.readLong();
+        this.color = in.readInt();
+        this.order = in.readInt();
+        this.isVisible = in.readInt() > 0 ? true : false;
     }
 
     public long getLastUpdateTime() {
@@ -79,4 +90,27 @@ public class Category implements Serializable{
         this.order = order;
     }
 
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(name);
+        dest.writeLong(id);
+        dest.writeInt(color);
+        dest.writeInt(order);
+        dest.writeInt(isVisible ? 1 : 0);
+    }
+    public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
+        public Category createFromParcel(Parcel in) {
+            return new Category(in);
+        }
+
+        public Category[] newArray(int size) {
+            return new Category[size];
+        }
+    };
 }

@@ -20,6 +20,7 @@ import com.haarman.listviewanimations.ArrayAdapter;
 import com.haarman.listviewanimations.itemmanipulation.contextualundo.ContextualUndoAdapter;
 import com.haarman.listviewanimations.view.DynamicListView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import colorpicker.ColorPickerDialog;
@@ -42,10 +43,18 @@ public class CategorySelectionFragment extends Fragment implements ContextualUnd
     private List<Category> categories;
     private DynamicListView categoryListView;
     private CategoryListAdapter adapter;
+    private static final String CATEGORIES_KEY = "categories";
     OnCategoryClicked categoryClicked;
 
-    public CategorySelectionFragment(List<Category> categories) {
-        this.categories = categories;
+    public CategorySelectionFragment(){
+    }
+
+    public static CategorySelectionFragment newInstance(ArrayList<Category> categories){
+        CategorySelectionFragment fragment = new CategorySelectionFragment();
+        Bundle b = new Bundle();
+        b.putParcelableArrayList(CATEGORIES_KEY, categories);
+        fragment.setArguments(b);
+        return fragment;
     }
 
     @Override
@@ -65,6 +74,7 @@ public class CategorySelectionFragment extends Fragment implements ContextualUnd
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        this.categories = getArguments().getParcelableArrayList(CATEGORIES_KEY);
     }
 
     @Override
@@ -81,6 +91,7 @@ public class CategorySelectionFragment extends Fragment implements ContextualUnd
         }
         return false;
     }
+
 
     private void initAdapter() {
         adapter = new CategoryListAdapter(getActivity(), categories);

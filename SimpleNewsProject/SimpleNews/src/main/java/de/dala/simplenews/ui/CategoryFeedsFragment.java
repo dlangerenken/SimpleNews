@@ -19,13 +19,9 @@ import android.widget.Toast;
 
 import com.haarman.listviewanimations.ArrayAdapter;
 import com.haarman.listviewanimations.itemmanipulation.contextualundo.ContextualUndoAdapter;
-import com.haarman.listviewanimations.view.DynamicListView;
 
 import java.util.List;
 
-import colorpicker.ColorPickerDialog;
-import colorpicker.ColorUtils;
-import colorpicker.OnColorSelectedListener;
 import de.dala.simplenews.R;
 import de.dala.simplenews.common.Category;
 import de.dala.simplenews.common.Feed;
@@ -40,11 +36,19 @@ public class CategoryFeedsFragment extends Fragment implements ContextualUndoAda
 
     private ListView feedListView;
     private FeedListAdapter adapter;
-
+    private ContextualUndoAdapter undoAdapter;
+    private static final String CATEGORY_KEY = "category";
     private Category category;
 
-    public CategoryFeedsFragment(Category category) {
-        this.category = category;
+    public CategoryFeedsFragment(){
+    }
+
+    public static CategoryFeedsFragment newInstance(Category category){
+        CategoryFeedsFragment fragment = new CategoryFeedsFragment();
+        Bundle b = new Bundle();
+        b.putParcelable(CATEGORY_KEY, category);
+        fragment.setArguments(b);
+        return fragment;
     }
 
     @Override
@@ -60,6 +64,7 @@ public class CategoryFeedsFragment extends Fragment implements ContextualUndoAda
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        this.category = getArguments().getParcelable(CATEGORY_KEY);
     }
 
     @Override
@@ -77,12 +82,21 @@ public class CategoryFeedsFragment extends Fragment implements ContextualUndoAda
         return false;
     }
 
+
     private void initAdapter() {
         adapter = new FeedListAdapter(getActivity(), category.getFeeds());
-        ContextualUndoAdapter undoAdapter = new ContextualUndoAdapter(adapter, R.layout.undo_row, R.id.undo_row_undobutton, 5000, R.id.undo_row_texttv, new MyFormatCountDownCallback());
+        undoAdapter = new ContextualUndoAdapter(adapter, R.layout.undo_row, R.id.undo_row_undobutton, 5000, R.id.undo_row_texttv, new MyFormatCountDownCallback());
+
         undoAdapter.setAbsListView(feedListView);
         undoAdapter.setDeleteItemCallback(this);
         feedListView.setAdapter(undoAdapter);
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+
+
     }
 
     @Override

@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.Parcelable;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -61,14 +62,17 @@ public class ExpandableNewsFragment extends SherlockFragment implements OnRefres
 
     private Category category;
 
-    public ExpandableNewsFragment(Category category) {
+    public ExpandableNewsFragment(){
+    }
+
+    private ExpandableNewsFragment(Category category) {
         this.category = category;
     }
 
     public static ExpandableNewsFragment newInstance(Category category) {
         ExpandableNewsFragment f = new ExpandableNewsFragment(category);
         Bundle b = new Bundle();
-        b.putSerializable(ARG_CATEGORY, category);
+        b.putParcelable(ARG_CATEGORY, category);
         f.setArguments(b);
         return f;
     }
@@ -76,6 +80,7 @@ public class ExpandableNewsFragment extends SherlockFragment implements OnRefres
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        this.category = getArguments().getParcelable(ARG_CATEGORY);
     }
 
     @Override
@@ -88,8 +93,6 @@ public class ExpandableNewsFragment extends SherlockFragment implements OnRefres
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        category = (Category) getArguments().getSerializable(ARG_CATEGORY);
-
         if (savedInstanceState != null){
             Object feedsObject = savedInstanceState.getSerializable("feeds");
             if (feedsObject != null){
