@@ -12,6 +12,8 @@
         android:orientation="horizontal"
         android:layout_gravity="left|center_vertical">
         <ImageView
+            android:minHeight="35dp"
+            android:minWidth="35dp"
             android:layout_width="35dp"
             android:layout_height="35dp"
             android:layout_margin="3dp"
@@ -39,6 +41,7 @@
             android:background="@drawable/ic_action_edit" />
         <View
             android:layout_width="2dp"
+            android:visibility="gone"
             android:layout_margin="3dp"
             android:layout_gravity="center"
             android:layout_height="match_parent"
@@ -47,6 +50,7 @@
             android:layout_width="35dp"
             android:layout_height="35dp"
             android:id="@+id/show"
+            android:visibility="gone"
             android:layout_gravity="center"
             android:background="@drawable/ic_action_important" />
         <View

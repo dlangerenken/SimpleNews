@@ -13,9 +13,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.internal.s;
 import com.haarman.listviewanimations.ArrayAdapter;
 import com.haarman.listviewanimations.itemmanipulation.contextualundo.ContextualUndoAdapter;
 import com.haarman.listviewanimations.view.DynamicListView;
@@ -37,22 +39,30 @@ import de.dala.simplenews.utilities.UIUtils;
 public class CategorySelectionFragment extends Fragment implements ContextualUndoAdapter.DeleteItemCallback {
 
     public interface OnCategoryClicked {
-        public void onMoreClicked(Category category);
+        void onMoreClicked(Category category);
+        void onRSSSavedClick(Category category, String rssPath);
     }
 
     private List<Category> categories;
     private DynamicListView categoryListView;
     private CategoryListAdapter adapter;
+    private boolean fromRSS;
+    private String rssPath;
     private static final String CATEGORIES_KEY = "categories";
+    private static final String FROM_RSS_KEY = "rss";
+    private static final String RSS_PATH_KEY = "path";
     OnCategoryClicked categoryClicked;
 
+    private TextView topView;
     public CategorySelectionFragment(){
     }
 
-    public static CategorySelectionFragment newInstance(ArrayList<Category> categories){
+    public static CategorySelectionFragment newInstance(ArrayList<Category> categories, boolean fromRSS, String path){
         CategorySelectionFragment fragment = new CategorySelectionFragment();
         Bundle b = new Bundle();
         b.putParcelableArrayList(CATEGORIES_KEY, categories);
+        b.putBoolean(FROM_RSS_KEY, fromRSS);
+        b.putString(RSS_PATH_KEY, path);
         fragment.setArguments(b);
         return fragment;
     }
@@ -64,6 +74,13 @@ public class CategorySelectionFragment extends Fragment implements ContextualUnd
             throw new ClassCastException("No Parent with Interface OnCategoryClicked");
         }
         View rootView = inflater.inflate(R.layout.category_selection, container, false);
+
+        if (fromRSS){
+            topView = (TextView) rootView.findViewById(R.id.topTextView);
+            topView.setText("Select Category to add Feed");
+            topView.setVisibility(View.VISIBLE);
+        }
+
         categoryListView = (DynamicListView) rootView.findViewById(R.id.listView);
         categoryListView.setDivider(null);
         initAdapter();
@@ -75,6 +92,8 @@ public class CategorySelectionFragment extends Fragment implements ContextualUnd
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         this.categories = getArguments().getParcelableArrayList(CATEGORIES_KEY);
+        this.fromRSS = getArguments().getBoolean(FROM_RSS_KEY);
+        this.rssPath = getArguments().getString(RSS_PATH_KEY);
     }
 
     @Override
@@ -160,12 +179,19 @@ public class CategorySelectionFragment extends Fragment implements ContextualUnd
                 convertView.setTag(viewHolder);
             }
             ViewHolder holder = (ViewHolder) convertView.getTag();
-            holder.color.setBackgroundColor(category.getColor());
             holder.name.setText(category.getName());
-            holder.edit.setOnClickListener(new CategoryItemClickListener(category));
-            holder.color.setOnClickListener(new CategoryItemClickListener(category));
-            holder.show.setOnClickListener(new CategoryItemClickListener(category));
-            holder.more.setOnClickListener(new CategoryItemClickListener(category));
+            holder.color.setBackgroundColor(category.getColor());
+            if (!fromRSS){
+                holder.edit.setOnClickListener(new CategoryItemClickListener(category));
+                holder.color.setOnClickListener(new CategoryItemClickListener(category));
+                holder.show.setOnClickListener(new CategoryItemClickListener(category));
+                holder.more.setOnClickListener(new CategoryItemClickListener(category));
+            }else{
+                holder.edit.setVisibility(View.GONE);
+                holder.show.setVisibility(View.GONE);
+                holder.more.setVisibility(View.GONE);
+                convertView.setOnClickListener(new CategoryItemRSSClickListener(category));
+            }
 
             return convertView;
         }
@@ -185,6 +211,19 @@ public class CategorySelectionFragment extends Fragment implements ContextualUnd
             public ImageView more;
             public ImageView edit;
             public ImageView show;
+        }
+    }
+
+    class CategoryItemRSSClickListener implements View.OnClickListener {
+        private Category category;
+
+        public CategoryItemRSSClickListener(Category category) {
+            this.category = category;
+        }
+
+        @Override
+        public void onClick(View v) {
+            categoryClicked.onRSSSavedClick(category, rssPath);
         }
     }
 
@@ -258,7 +297,7 @@ public class CategorySelectionFragment extends Fragment implements ContextualUnd
 
         new AlertDialog.Builder(getActivity()).
                 setPositiveButton("Rename", dialogClickListener).setNegativeButton("Cancel", dialogClickListener).setTitle("Category")
-                .setMessage("Change the name o the category").setView(input).show();
+                .setMessage("Change the name of the category").setView(input).show();
     }
 
     private void onColorClicked(final Category category){
