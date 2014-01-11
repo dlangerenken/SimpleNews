@@ -1,22 +1,16 @@
 <resources>
-
-
     <string-array name="default_color_choice_values" translatable="false">
-        <item>#33b5e5</item>
-        <item>#aa66cc</item>
-        <item>#99cc00</item>
-        <item>#ffbb33</item>
-        <item>#ff4444</item>
-        <item>#0099cc</item>
-        <item>#9933cc</item>
-        <item>#669900</item>
-        <item>#ff8800</item>
-        <item>#cc0000</item>
-        <item>#cccccc</item>
-        <item>#888888</item>
-        <item>#ffd2a494</item>
-        <item>#FFC74B46</item>
+        <item>#BC51CC</item>
+        <item>#CC5151</item>
+        <item>#DB6F6F</item>
+        <item>#CC7F51</item>
+        <item>#FF9932</item>
+        <item>#ffccc61d</item>
+        <item>#ff59b34d</item>
+        <item>#519ECC</item>
+        <item>#337F7F</item>
+        <item>#6051CC</item>
+        <item>#808080</item>
+        <item>#ff494949</item>
     </string-array>
-
-  
 </resources>
