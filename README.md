@@ -7,6 +7,14 @@ So this is a News-Feed-Reader based on the current State of the Art in User-Inte
 
 Some screenshots of the application:
 
-![ScreenShot](https://github.com/Dalanie/SimpleNews/screenshot1.jpg)
-![ScreenShot](https://github.com/Dalanie/SimpleNews/screenshot2.png)
-![ScreenShot](https://github.com/Dalanie/SimpleNews/screenshot3.jpg)
+<table>
+<tr>
+<td>
+![ScreenShot](https://raw.github.com/Dalanie/SimpleNews/master/screenshot1.jpg)
+</td>
+<td>
+![ScreenShot](https://raw.github.com/Dalanie/SimpleNews/master/screenshot2.png)
+</td>
+<td>
+![ScreenShot](https://raw.github.com/Dalanie/SimpleNews/master/screenshot3.jpg)
+</td>
