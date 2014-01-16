@@ -9,6 +9,8 @@ import android.view.View;
 import android.widget.RelativeLayout;
 
 
+import com.actionbarsherlock.app.SherlockFragmentActivity;
+
 import java.util.ArrayList;
 
 import de.dala.simplenews.R;
@@ -20,11 +22,10 @@ import de.dala.toasty.Toasty;
 /**
  * Created by Daniel on 29.12.13.
  */
-public class CategoryModifierActivity extends FragmentActivity implements CategorySelectionFragment.OnCategoryClicked{
+public class CategoryModifierActivity extends SherlockFragmentActivity implements CategorySelectionFragment.OnCategoryClicked{
     private static final String LAST_FRAG = "CURRENT_FRAGMENT";
     private static final String CATEGORY_FEEDS_TAG = "feed";
     private static final String CATEGORY_SELECTION_TAG = "selection";
-    private static final String CATEGORY_RSS_TAG = "rss";
     private static final int CATEGORY_SELECTION = 0;
     private static final int CATEGORY_FEEDS = 1;
 
@@ -36,7 +37,7 @@ public class CategoryModifierActivity extends FragmentActivity implements Catego
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.category_modifier);
-
+        getSupportActionBar().setTitle(getString(R.string.categories_title));
         categories = new ArrayList<Category>(DatabaseHandler.getInstance().getCategories(false, true));
 
         Fragment fragment = null;
@@ -44,7 +45,6 @@ public class CategoryModifierActivity extends FragmentActivity implements Catego
         if(this.getIntent().getDataString()!=null)
         {
             String path = this.getIntent().getDataString();
-            Toasty.toast(path + " clicked");
             fromRSS = true;
             fragment = CategorySelectionFragment.newInstance(categories, fromRSS, path);
         }
@@ -61,8 +61,9 @@ public class CategoryModifierActivity extends FragmentActivity implements Catego
 
     @Override
     public void onBackPressed() {
-        if(getSupportFragmentManager().getBackStackEntryCount() == 0 && !fromRSS){
+        if(getSupportFragmentManager().getBackStackEntryCount() == 0 && fromRSS){
             startActivity(new Intent(CategoryModifierActivity.this, MainActivity.class));
+            finish();
         }else{
             super.onBackPressed();
         }
@@ -87,6 +88,7 @@ public class CategoryModifierActivity extends FragmentActivity implements Catego
         DatabaseHandler.getInstance().addFeed(category.getId(), feed, true);
         finish();
     }
+
 
     @Override
     protected void onPause() {

@@ -9,13 +9,14 @@
     <category name="Technology" color="#FF96AA39">
         <feed>http://rss.nytimes.com/services/xml/rss/nyt/Technology.xml</feed>
     </category>
-    <category name="Science" color="#ff289a74">
+    <category name="Science" color="#FFC74B46">
         <feed>http://rss.nytimes.com/services/xml/rss/nyt/Science.xml</feed>
     </category>
     <category name="International" color="#FF3F9FE0">
         <feed>http://www.nytimes.com/services/xml/rss/nyt/International.xml</feed>
     </category>
-    <category name="Real Estate" color="#FFBA55D3">
+    <category name="Real Estate" color="#FFF4842D">
         <feed>http://rss.nytimes.com/services/xml/rss/nyt/RealEstate.xml</feed>
     </category>
+
 </news>

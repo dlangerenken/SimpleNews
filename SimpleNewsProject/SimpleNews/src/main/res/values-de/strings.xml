@@ -2,15 +2,40 @@
 <resources>
 
     <string name="app_name">SimpleNews</string>
-    <string name="hello_world">Hello world!</string>
     <string name="action_settings">Einstellungen</string>
-    <string name="drawer_open">Open navigation drawer</string>
-    <string name="drawer_close">Close navigation drawer</string>
+    <string name="settings">Einstellungen</string>
     <string name="about_ok">OK</string>
-    <string name="changelog_title">Changelog</string>
-    <string name="changelog_menu">Changelog</string>
+    <string name="changelog_title">Versionen</string>
+    <string name="changelog_menu">Versionen</string>
     <string name="progress">Fortschritt</string>
     <string name="refresh">Aktualisieren</string>
     <string name="update_news">Aktualisiere Nachrichten...</string>
     <string name="add">Hinzufügen</string>
+    <string name="not_valid_format">Adresse nicht valide - XML/RSS-Format benötigt.</string>
+    <string name="category_add">Wähle eine Kategorie für den Feed aus.</string>
+    <string name="cancel">Abbrechen</string>
+    <string name="submit">Ok</string>
+    <string name="name_of_category">Name für die Kategorie</string>
+    <string name="new_name">Neuer Name: %s</string>
+    <string name="rename">Umbenennen</string>
+    <string name="category">Kategorie</string>
+    <string name="change_category_name">Ändere den Namen der Kategorie</string>
+    <string name="category_created">Kategorie erstellt</string>
+    <string name="coming_soon">Demnächst...</string>
+
+    <string name="countdown_dismissing">Entfernen</string>
+    <string name="itemdeleted">Eintrag gelöscht</string>
+    <string name="taptoundo">Wiederherstellen</string>
+
+    <string name="select_color_create_category">Wähle eine Farbe für die Kategorie</string>
+    <string name="create_category_2_2">Erstelle Kategorie 2 / 2</string>
+    <string name="create_category_1_2">Erstelle Kategorie 1 / 2</string>
+    <string name="rename_feed">Ändere die Adresse des Feeds</string>
+    <string name="new_feed_url_header">Neue Adresse des Feeds</string>
+
+    <plurals name="countdown_seconds">
+        <item quantity="one">Entferne in 1...</item>
+        <item quantity="other">Entferne in %d...</item>
+    </plurals>
+    <string name="categories_title"><![CDATA[Kategorien - Einstellung]]></string>
 </resources>

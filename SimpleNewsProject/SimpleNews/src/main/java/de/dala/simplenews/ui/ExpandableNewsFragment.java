@@ -39,16 +39,17 @@ import de.dala.simplenews.network.FadeInNetworkImageView;
 import de.dala.simplenews.utilities.CategoryUpdater;
 import de.dala.simplenews.utilities.UIUtils;
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
+import uk.co.senab.actionbarpulltorefresh.extras.actionbarsherlock.AbsDefaultHeaderTransformer;
+import uk.co.senab.actionbarpulltorefresh.extras.actionbarsherlock.PullToRefreshLayout;
 import uk.co.senab.actionbarpulltorefresh.library.ActionBarPullToRefresh;
 import uk.co.senab.actionbarpulltorefresh.library.DefaultHeaderTransformer;
 import uk.co.senab.actionbarpulltorefresh.library.Options;
-import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshLayout;
 import uk.co.senab.actionbarpulltorefresh.library.listeners.OnRefreshListener;
 
 /**
  * Created by Daniel on 18.12.13.
  */
-public class ExpandableNewsFragment extends SherlockFragment implements OnRefreshListener{
+public class ExpandableNewsFragment extends SherlockFragment implements OnRefreshListener {
     private MyExpandableListItemAdapter myExpandableListItemAdapter;
     private static final String ARG_CATEGORY = "category";
     private ListView mListView;
@@ -273,7 +274,7 @@ public class ExpandableNewsFragment extends SherlockFragment implements OnRefres
             return layout;
         }
     }
-    private class MyHeaderTransformer extends DefaultHeaderTransformer{
+    private class MyHeaderTransformer extends AbsDefaultHeaderTransformer {
         private Category category;
         private TextView mHeaderTextView;
         private SmoothProgressBar mHeaderProgressBar;

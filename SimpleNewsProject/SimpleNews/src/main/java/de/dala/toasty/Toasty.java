@@ -36,7 +36,7 @@ public class Toasty {
 
     private Toast currentToast;
 
-    private LogType type = LogType.BOTH;
+    private LogType type = LogType.LOG;
     private boolean shouldInterrupt = true;
     private int toastLength = Toast.LENGTH_LONG;
 

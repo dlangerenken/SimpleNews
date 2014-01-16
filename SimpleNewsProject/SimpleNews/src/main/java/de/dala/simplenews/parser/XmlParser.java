@@ -221,7 +221,6 @@ public class XmlParser  {
             if (parser.next() == XmlPullParser.TEXT) {
                 feed=parser.getText();
                 if (feed==null){
-                    //throw new ChangeLogException("ChangeLogText required in changeLogText node");
                 }
                 parser.nextTag();
             }

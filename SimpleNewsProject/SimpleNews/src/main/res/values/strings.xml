@@ -33,5 +33,18 @@
     <string name="select_color_create_category">Select Color for Category</string>
     <string name="create_category_2_2">Create Category 2 / 2</string>
     <string name="create_category_1_2">Create Category 1 / 2</string>
-
+    <string name="not_valid_format">Address not valid - XML/RSS-Format required.</string>
+    <string name="category_add">Select Category to add Feed</string>
+    <string name="cancel">Cancel</string>
+    <string name="submit">Ok</string>
+    <string name="name_of_category">Name for the Category</string>
+    <string name="new_name">New name: %s</string>
+    <string name="rename">Rename</string>
+    <string name="category">Category</string>
+    <string name="change_category_name">Change the name of the category</string>
+    <string name="category_created">Category created</string>
+    <string name="rename_feed">Rename Feed</string>
+    <string name="new_feed_url_header">New Feed Url</string>
+    <string name="simple_news_title">SimpleNews - RSS</string>
+    <string name="categories_title"><![CDATA[Categories - Add & Modify]]></string>
 </resources>

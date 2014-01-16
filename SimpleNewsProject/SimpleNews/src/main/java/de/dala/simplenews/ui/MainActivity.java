@@ -1,6 +1,5 @@
 package de.dala.simplenews.ui;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.ColorDrawable;
@@ -15,7 +14,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.RelativeLayout;
@@ -73,6 +71,7 @@ public class MainActivity extends SherlockFragmentActivity implements ViewPager.
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
         mTitle = getTitle();
+        getSupportActionBar().setTitle(getString(R.string.simple_news_title));
         // Set up the drawer.
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
@@ -105,6 +104,10 @@ public class MainActivity extends SherlockFragmentActivity implements ViewPager.
         overridePendingTransition(R.anim.open_translate,R.anim.close_scale);
     }
 
+    @Override
+    public void onBackPressed() {
+        finish();
+    }
 
     @Override
     protected void onPause() {
@@ -236,8 +239,6 @@ public class MainActivity extends SherlockFragmentActivity implements ViewPager.
                 break;
         }
     }
-
-
 
     public void updateNews() {
         if (crouton != null) {

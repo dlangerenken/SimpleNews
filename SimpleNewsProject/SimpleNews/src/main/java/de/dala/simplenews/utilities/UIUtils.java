@@ -20,6 +20,7 @@ import android.support.v4.app.FragmentActivity;
 import android.text.Html;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
+import android.webkit.URLUtil;
 import android.widget.TextView;
 
 import java.util.regex.Pattern;
@@ -37,6 +38,11 @@ public class UIUtils {
      */
     private static final Pattern REGEX_HTML_ESCAPE = Pattern.compile(".*&\\S;.*");
 
+    private static final Pattern VALID_URL = Pattern.compile("/((([A-Za-z]{3,9}:(?:\\/\\/)?)(?:[-;:&=\\+\\$,\\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\\+\\$,\\w]+@)[A-Za-z0-9.-]+)((?:\\/[\\+~%\\/]*)?\\??(?:[-\\+=&;%@.\\w_]*)#?(?:[\\w]*))?)/");
+
+    public static boolean isValideUrl(String url){
+        return URLUtil.isValidUrl(url);
+    }
     /**
      * Populate the given {@link TextView} with the requested text, formatting
      * through {@link Html#fromHtml(String)} when applicable. Also sets

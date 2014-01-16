@@ -32,6 +32,8 @@ import de.dala.simplenews.R;
 import de.dala.simplenews.common.Category;
 import de.dala.simplenews.database.DatabaseHandler;
 import de.dala.simplenews.utilities.UIUtils;
+import de.keyboardsurfer.android.widget.crouton.Crouton;
+import de.keyboardsurfer.android.widget.crouton.Style;
 
 /**
  * Created by Daniel on 29.12.13.
@@ -53,7 +55,8 @@ public class CategorySelectionFragment extends Fragment implements ContextualUnd
     private static final String RSS_PATH_KEY = "path";
     OnCategoryClicked categoryClicked;
 
-    private TextView topView;
+    private TextView topTextView;
+    private ViewGroup topView;
     public CategorySelectionFragment(){
     }
 
@@ -74,11 +77,11 @@ public class CategorySelectionFragment extends Fragment implements ContextualUnd
             throw new ClassCastException("No Parent with Interface OnCategoryClicked");
         }
         View rootView = inflater.inflate(R.layout.category_selection, container, false);
-
+        topView = (ViewGroup) rootView.findViewById(R.id.topView);
         if (fromRSS){
-            topView = (TextView) rootView.findViewById(R.id.topTextView);
-            topView.setText("Select Category to add Feed");
-            topView.setVisibility(View.VISIBLE);
+            topTextView = (TextView) rootView.findViewById(R.id.topTextView);
+            topTextView.setText(getActivity().getString(R.string.category_add));
+            topTextView.setVisibility(View.VISIBLE);
         }
 
         categoryListView = (DynamicListView) rootView.findViewById(R.id.listView);
@@ -270,8 +273,8 @@ public class CategorySelectionFragment extends Fragment implements ContextualUnd
             };
 
             new AlertDialog.Builder(getActivity()).
-                    setPositiveButton("Ok", dialogClickListener).setNegativeButton("Cancel", dialogClickListener).setTitle(getActivity().getString(R.string.create_category_1_2))
-                    .setMessage("Name for the Category").setView(input).show();
+                    setPositiveButton(getActivity().getString(R.string.submit), dialogClickListener).setNegativeButton(getActivity().getString(R.string.cancel), dialogClickListener).setTitle(getActivity().getString(R.string.create_category_1_2))
+                    .setMessage(getActivity().getString(R.string.name_of_category)).setView(input).show();
     }
 
     private void editClicked(final Category category) {
@@ -287,7 +290,7 @@ public class CategorySelectionFragment extends Fragment implements ContextualUnd
                         category.setName(newName);
                         adapter.notifyDataSetChanged();
                         DatabaseHandler.getInstance().updateCategoryName(category.getId(), newName);
-                        Toast.makeText(getActivity(), "New name: " + newName, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), String.format(getActivity().getString(R.string.new_name), newName), Toast.LENGTH_SHORT).show();
                         break;
                     case DialogInterface.BUTTON_NEGATIVE:
                         break;
@@ -296,8 +299,8 @@ public class CategorySelectionFragment extends Fragment implements ContextualUnd
         };
 
         new AlertDialog.Builder(getActivity()).
-                setPositiveButton("Rename", dialogClickListener).setNegativeButton("Cancel", dialogClickListener).setTitle("Category")
-                .setMessage("Change the name of the category").setView(input).show();
+                setPositiveButton(R.string.rename, dialogClickListener).setNegativeButton(R.string.cancel, dialogClickListener).setTitle(R.string.category)
+                .setMessage(R.string.change_category_name).setView(input).show();
     }
 
     private void onColorClicked(final Category category){
@@ -332,7 +335,7 @@ public class CategorySelectionFragment extends Fragment implements ContextualUnd
                 newCategory.setId(id);
                 adapter.add(newCategory);
                 adapter.notifyDataSetChanged();
-                Toast.makeText(getActivity(), "Category created", Toast.LENGTH_SHORT).show();
+                Crouton.makeText(getActivity(), R.string.category_created, Style.CONFIRM,  topView).show();
             }
         });
         colorCalendar.show(getChildFragmentManager(), "dash");

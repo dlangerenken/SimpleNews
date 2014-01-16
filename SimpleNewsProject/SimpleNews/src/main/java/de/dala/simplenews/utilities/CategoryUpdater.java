@@ -13,6 +13,8 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import androidrss.MediaEnclosure;
 import androidrss.RSSConfig;
@@ -47,9 +49,6 @@ public class CategoryUpdater {
 
     public void start() {
         sendMessage(context.getString(R.string.update_news), STATUS_CHANGED);
-        if (updateDatabase){
-            dropCategory();
-        }
         results = new ArrayList<FetchingResult>();
         currentWorkingThreads = category.getFeeds().size();
         if (currentWorkingThreads == 0){
@@ -107,6 +106,9 @@ public class CategoryUpdater {
 
                 @Override
                 protected Void doInBackground(Void... params) {
+                    if (updateDatabase){
+                        dropCategory();
+                    }
                     parseInformation();
                     return null;
                 }
@@ -175,7 +177,7 @@ public class CategoryUpdater {
         }
         String desc = item.getDescription();
         if (desc != null) {
-            desc = desc.replaceAll("\\<.*?>","").replaceAll("()", "");
+            desc = desc.replaceAll("\\<.*?>","").replace("()", "").replace("&nbsp;", "");
         }
 
         return new Entry(-1, feedId, category.getId(), item.getTitle(), desc, time, source, url, mediaUri);
