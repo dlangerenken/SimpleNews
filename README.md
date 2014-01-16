@@ -7,13 +7,9 @@ So this is a News-Feed-Reader based on the current State of the Art in User-Inte
 
 Some screenshots of the application:
 
-
-<div class="nav3" style="height:705px;">
-    <a href="#" class="icons"><img src="https://raw.github.com/Dalanie/SimpleNews/master/screenshot1.png"></a>
-    <a href="#" class="icons"><img src="https://raw.github.com/Dalanie/SimpleNews/master/screenshot2.png"></a>
-    <a href="#" class="icons"><img src="https://raw.github.com/Dalanie/SimpleNews/master/screenshot3.png"></a>
-</div>
-
+<html>
+<head>
+<style type="text/css">
 .nav3 {
     background-color: #E9E8C7;
     height: auto;
@@ -36,3 +32,13 @@ Some screenshots of the application:
  a.icons:hover {
      background: #C93;
  }
+</style>
+</head>
+<div class="nav3" style="height:705px;">
+    <a href="#" class="icons"><img src="https://raw.github.com/Dalanie/SimpleNews/master/screenshot1.png"></a>
+    <a href="#" class="icons"><img src="https://raw.github.com/Dalanie/SimpleNews/master/screenshot2.png"></a>
+    <a href="#" class="icons"><img src="https://raw.github.com/Dalanie/SimpleNews/master/screenshot3.png"></a>
+</div>
+</html>
+
+
