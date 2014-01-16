@@ -7,6 +7,9 @@ So this is a News-Feed-Reader based on the current State of the Art in User-Inte
 
 Some screenshots of the application:
 
-<img src="https://raw.github.com/Dalanie/SimpleNews/master/screenshot1.png" alt="Drawing" style="width: 100px;"/>
-<img src="https://raw.github.com/Dalanie/SimpleNews/master/screenshot2.png" alt="Drawing" style="width: 100px;"/>
-<img src="https://raw.github.com/Dalanie/SimpleNews/master/screenshot3.png" alt="Drawing" style="width: 100px;"/>
+
+<div class="nav3" style="height:705px;">
+    <a href="#" class="icons"><img src="https://raw.github.com/Dalanie/SimpleNews/master/screenshot1.png"></a>
+    <a href="#" class="icons"><img src="https://raw.github.com/Dalanie/SimpleNews/master/screenshot2.png"></a>
+    <a href="#" class="icons"><img src="https://raw.github.com/Dalanie/SimpleNews/master/screenshot3.png"></a>
+</div>
