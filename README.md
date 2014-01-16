@@ -10,11 +10,11 @@ Some screenshots of the application:
 <table>
 <tr>
 <td>
-![ScreenShot](https://raw.github.com/Dalanie/SimpleNews/master/screenshot1.jpg)
+![ScreenShot](https://raw.github.com/Dalanie/SimpleNews/master/screenshot1.png)
 </td>
 <td>
 ![ScreenShot](https://raw.github.com/Dalanie/SimpleNews/master/screenshot2.png)
 </td>
 <td>
-![ScreenShot](https://raw.github.com/Dalanie/SimpleNews/master/screenshot3.jpg)
+![ScreenShot](https://raw.github.com/Dalanie/SimpleNews/master/screenshot3.png)
 </td>
