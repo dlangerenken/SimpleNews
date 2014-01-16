@@ -13,3 +13,26 @@ Some screenshots of the application:
     <a href="#" class="icons"><img src="https://raw.github.com/Dalanie/SimpleNews/master/screenshot2.png"></a>
     <a href="#" class="icons"><img src="https://raw.github.com/Dalanie/SimpleNews/master/screenshot3.png"></a>
 </div>
+
+.nav3 {
+    background-color: #E9E8C7;
+    height: auto;
+    width: 150px;
+    float: left;
+    padding-left: 20px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 12px;
+    color: #333333;
+    padding-top: 20px;
+    padding-right: 20px;
+}
+
+.icons{
+    display:inline-block;
+    width: 64px; 
+    height: 64px; 
+   }
+
+ a.icons:hover {
+     background: #C93;
+ }
