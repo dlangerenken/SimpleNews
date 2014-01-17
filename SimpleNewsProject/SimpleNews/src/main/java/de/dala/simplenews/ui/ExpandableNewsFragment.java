@@ -168,7 +168,7 @@ public class ExpandableNewsFragment extends SherlockFragment implements OnRefres
         }
 
         if(mActionMode != null)
-            mActionMode.setTitle(String.valueOf(myExpandableListItemAdapter.getSelectedCount()) + " selected");
+            mActionMode.setTitle(String.valueOf(myExpandableListItemAdapter.getSelectedCount()));
     }
 
 
@@ -410,7 +410,7 @@ public class ExpandableNewsFragment extends SherlockFragment implements OnRefres
 
             StringBuilder message = new StringBuilder();
             message.append(TextUtils.join("\n", entries));
-            message.append("\nby SimpleNews");
+            message.append(" - by SimpleNews");
             Intent shareIntent = new Intent(Intent.ACTION_SEND);
             shareIntent.setType("text/plain");
             shareIntent.putExtra(Intent.EXTRA_TEXT,

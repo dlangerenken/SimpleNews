@@ -1,13 +1,11 @@
 package de.dala.simplenews.ui;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.TransitionDrawable;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -36,13 +34,13 @@ import de.dala.simplenews.database.DatabaseHandler;
 import de.dala.simplenews.database.IDatabaseHandler;
 import de.dala.simplenews.dialog.ChangeLogDialog;
 import de.dala.simplenews.parser.XmlParser;
+import de.dala.simplenews.utilities.PrefUtilities;
 import de.dala.toasty.Toasty;
 import de.keyboardsurfer.android.widget.crouton.Configuration;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 
 public class MainActivity extends SherlockFragmentActivity implements ViewPager.OnPageChangeListener, NavigationDrawerFragment.NavigationDrawerCallbacks {
 
-    public static final String XML_LOADED = "xmlLoaded";
     private static String TAG = "MainActivity";
     private IDatabaseHandler databaseHandler;
     private PagerSlidingTabStrip tabs;
@@ -79,7 +77,7 @@ public class MainActivity extends SherlockFragmentActivity implements ViewPager.
 
 
         databaseHandler = DatabaseHandler.getInstance();
-        if (!!xmlIsAlreadyLoaded()) {
+        if (!PrefUtilities.getInstance().xmlIsAlreadyLoaded()) {
             loadXml();
         }
         categories = databaseHandler.getCategories(null, null);
@@ -126,7 +124,7 @@ public class MainActivity extends SherlockFragmentActivity implements ViewPager.
                     databaseHandler.addCategory(category, false, false);
                 }
             }
-            saveLoading();
+            PrefUtilities.getInstance().saveLoading(true);
         } catch (XmlPullParserException e) {
             Toasty.LOGE(TAG, "Error in adding xml to Database");
             e.printStackTrace();
@@ -136,15 +134,7 @@ public class MainActivity extends SherlockFragmentActivity implements ViewPager.
         }
     }
 
-    private boolean xmlIsAlreadyLoaded() {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        return prefs.getBoolean(XML_LOADED, false);
-    }
 
-    private void saveLoading() {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        prefs.edit().putBoolean(XML_LOADED, true).commit();
-    }
 
     private View createProgressView() {
         progressView = getLayoutInflater().inflate(R.layout.progress_layout, null);

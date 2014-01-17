@@ -4,6 +4,7 @@ import android.app.Application;
 
 import de.dala.simplenews.database.DatabaseHandler;
 import de.dala.simplenews.network.VolleySingleton;
+import de.dala.simplenews.utilities.PrefUtilities;
 import de.dala.toasty.Toasty;
 
 /**
@@ -16,5 +17,6 @@ public class MainApplication extends Application{
         VolleySingleton.init(this);
         DatabaseHandler.init(this);
         Toasty.init(this, "simplenews");
+        PrefUtilities.init(this);
     }
 }

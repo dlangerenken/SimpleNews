@@ -171,13 +171,18 @@ public class CategoryUpdater {
 
     private void getShortenedLinks(final List<Entry> entries) {
         for (final Entry entry : entries){
+            if (entry.getShortenedLink() != null){
+                continue;
+            }
             String urlForCall = getUrlForCall(shorten(entry.getLink()));
             NetworkCommunication.loadShortenedUrl(urlForCall, new Response.Listener<String>() {
                         @Override
                         public void onResponse(String s) {
                             String shortenedUrl = new XmlParser(context).readShortenedLink(s);
-                            entry.setShortenedLink(shortenedUrl);
-                            databaseHandler.setShortenedLinkEntry(entry.getId(), entry.getShortenedLink());
+                            if (shortenedUrl != null){
+                                entry.setShortenedLink(shortenedUrl);
+                                databaseHandler.setShortenedLinkEntry(entry.getId(), entry.getShortenedLink());
+                            }
                         }
                     }, new Response.ErrorListener() {
                         @Override

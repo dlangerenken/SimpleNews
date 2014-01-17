@@ -123,8 +123,9 @@ public class XmlParser  {
             throw ioe;
         }
 
-        if (news!=null)
+        if (news!=null){
             Toasty.LOGD(TAG,"Process ended. News:" + news);
+        }
 
         return news;
     }
@@ -235,6 +236,9 @@ public class XmlParser  {
     public String readShortenedLink(String shortenedLink) {
         int startIndex = shortenedLink.indexOf("<url>") + "<url>".length();
         int endIndex = shortenedLink.indexOf("</url>");
-        return shortenedLink.substring(startIndex,endIndex);
+        if (startIndex > -1 && endIndex > -1){
+            return shortenedLink.substring(startIndex,endIndex);
+        }
+        return null;
     }
 }

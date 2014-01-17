@@ -1,11 +1,9 @@
 package de.dala.simplenews.ui;
 
 import android.app.Activity;
-import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -25,6 +23,7 @@ import com.actionbarsherlock.view.MenuItem;
 import de.dala.simplenews.R;
 import de.dala.simplenews.common.NavDrawItem;
 import de.dala.simplenews.utilities.NavDrawerAdapter;
+import de.dala.simplenews.utilities.PrefUtilities;
 
 
 /**
@@ -34,17 +33,7 @@ import de.dala.simplenews.utilities.NavDrawerAdapter;
  */
 public class NavigationDrawerFragment extends SherlockFragment {
 
-    /**
-     * Remember the position of the selected item.
-     */
-    private static final String STATE_SELECTED_POSITION = "selected_navigation_drawer_position";
-
-    /**
-     * Per the design guidelines, you should show the drawer on launch until the user manually
-     * expands it. This shared preference tracks this.
-     */
-    private static final String PREF_USER_LEARNED_DRAWER = "navigation_drawer_learned";
-
+    private static final String STATE_SELECTED_POSITION = "position";
     /**
      * A pointer to the current callbacks instance (the Activity).
      */
@@ -60,7 +49,6 @@ public class NavigationDrawerFragment extends SherlockFragment {
 
     private int mCurrentSelectedPosition = 0;
     private boolean mFromSavedInstanceState;
-    private boolean mUserLearnedDrawer;
 
     private LinearLayout mDrawerView;
     private View verticalLine;
@@ -74,10 +62,7 @@ public class NavigationDrawerFragment extends SherlockFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Read in the flag indicating whether or not the user has demonstrated awareness of the
-        // drawer. See PREF_USER_LEARNED_DRAWER for details.
-        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getSherlockActivity());
-        mUserLearnedDrawer = sp.getBoolean(PREF_USER_LEARNED_DRAWER, false);
+
 
         if (savedInstanceState != null) {
             mCurrentSelectedPosition = savedInstanceState.getInt(STATE_SELECTED_POSITION);
@@ -168,13 +153,10 @@ public class NavigationDrawerFragment extends SherlockFragment {
                     return;
                 }
 
-                if (!mUserLearnedDrawer) {
+                if (!PrefUtilities.getInstance().hasUserLearnedDrawer()) {
                     // The user manually opened the drawer; store this flag to prevent auto-showing
                     // the navigation drawer automatically in the future.
-                    mUserLearnedDrawer = true;
-                    SharedPreferences sp = PreferenceManager
-                            .getDefaultSharedPreferences(getSherlockActivity());
-                    sp.edit().putBoolean(PREF_USER_LEARNED_DRAWER, true).commit();
+                    PrefUtilities.getInstance().setUserLearnedDrawer(true);
                 }
                 getSherlockActivity().supportInvalidateOptionsMenu();// calls onPrepareOptionsMenu()
             }
@@ -182,8 +164,8 @@ public class NavigationDrawerFragment extends SherlockFragment {
 
         // If the user hasn't 'learned' about the drawer, open it to introduce them to the drawer,
         // per the navigation drawer design guidelines.
-        if (!mUserLearnedDrawer && !mFromSavedInstanceState) {
-           // mDrawerLayout.openDrawer(mFragmentContainerView);
+        if (!PrefUtilities.getInstance().hasUserLearnedDrawer() && !mFromSavedInstanceState) {
+           // mDrawerLayout.openDrawer(mFragmentContainerView); //TODO wieder einfügen
         }
 
         // Defer code dependent on restoration of previous instance state.

@@ -6,9 +6,11 @@ import java.util.List;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.preference.PreferenceManager;
 
 import de.dala.simplenews.MainApplication;
 import de.dala.simplenews.common.Category;
@@ -27,7 +29,7 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
 	/**
 	 * Database Name and Version
 	 */
-	private static final int DATABASE_VERSION = 31;
+	private static final int DATABASE_VERSION = 32;
 	private static final String DATABASE_NAME = "news_database";
 
 	/**
@@ -153,7 +155,7 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_CATEGORY);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_FEED);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_ENTRY);
-
+        PreferenceManager.getDefaultSharedPreferences(context).edit().clear().commit();
 		/*
 		 * Create tables again
 		 */
@@ -397,9 +399,7 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
         values.put(ENTRY_URL, entry.getLink());
         values.put(ENTRY_IMAGE_URL, entry.getImageLink());
         values.put(ENTRY_VISIBLE, entry.isVisible() ? 1 : 0);
-        if (entry.getShortenedLink() != null){
-            values.put(ENTRY_SHORTENED_URL, entry.getShortenedLink());
-        }
+        values.put(ENTRY_SHORTENED_URL, entry.getShortenedLink());
 		/*
 		 * Inserting Row
 		 */
