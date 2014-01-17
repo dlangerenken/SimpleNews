@@ -3,6 +3,7 @@ package de.dala.simplenews.network;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
+import com.actionbarsherlock.R;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.toolbox.StringRequest;
@@ -40,6 +41,11 @@ public class NetworkCommunication {
         }.getType();
         Request<ArrayList<Category>> request = new GsonRequest<ArrayList<Category>>(Request.Method.GET, serverURL,categoryListType,
                 successListener, errorListener);
+        addRequest(request);
+    }
+
+    public static void loadShortenedUrl(String url, Response.Listener<String> successListener, Response.ErrorListener errorListener){
+        Request request = new StringRequest(url, successListener, errorListener);
         addRequest(request);
     }
 }

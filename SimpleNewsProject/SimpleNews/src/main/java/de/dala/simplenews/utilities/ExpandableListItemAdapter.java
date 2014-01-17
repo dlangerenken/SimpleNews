@@ -217,6 +217,8 @@ public abstract class ExpandableListItemAdapter<T> extends ArrayAdapter<T> {
      */
     public abstract View getContentView(int position, View convertView, ViewGroup parent);
 
+
+
     private static class ViewHolder {
         ViewGroup titleParent;
         ViewGroup contentParent;

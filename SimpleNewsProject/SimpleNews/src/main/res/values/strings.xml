@@ -47,4 +47,6 @@
     <string name="new_feed_url_header">New Feed Url</string>
     <string name="simple_news_title">SimpleNews - RSS</string>
     <string name="categories_title"><![CDATA[Categories - Add & Modify]]></string>
+    <string name="api_key">R_5a8cd2843ed14ce896d469cb22235f18</string>
+    <string name="api_user">dalanie91</string>
 </resources>

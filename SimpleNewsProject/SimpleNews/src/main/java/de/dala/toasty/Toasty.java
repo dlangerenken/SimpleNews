@@ -65,7 +65,8 @@ public class Toasty {
 
     public void showOrLogToast(final String tag, String message, Throwable cause, int logLevel){
         int result = -1;
-        if (isLogType() && Log.isLoggable(tag, logLevel)) {
+        if (isLogType()){
+         if (Log.isLoggable(tag, logLevel)) {
             switch (logLevel){
                 case Log.DEBUG:
                     result = (cause != null) ? Log.d(tag, message, cause) :  Log.d(tag, message);
@@ -83,6 +84,7 @@ public class Toasty {
                     result = (cause != null) ? Log.v(tag, message, cause) :  Log.v(tag, message);
                     break;
             }
+         }
         }else{
             showToast(null, null, null, tag + ": " + message);
         }

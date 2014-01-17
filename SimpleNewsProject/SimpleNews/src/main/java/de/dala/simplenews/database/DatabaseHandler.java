@@ -27,7 +27,7 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
 	/**
 	 * Database Name and Version
 	 */
-	private static final int DATABASE_VERSION = 29;
+	private static final int DATABASE_VERSION = 31;
 	private static final String DATABASE_NAME = "news_database";
 
 	/**
@@ -59,6 +59,7 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
     private static final String ENTRY_DATE = "date";
     private static final String ENTRY_SRC_NAME = "src_name";
     private static final String ENTRY_URL = "url";
+    private static final String ENTRY_SHORTENED_URL = "shortened_url";
     private static final String ENTRY_IMAGE_URL = "image_url";
     private static final String ENTRY_VISIBLE = "visible";
 
@@ -138,6 +139,7 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
                 + ENTRY_DATE + " LONG,"
                 + ENTRY_SRC_NAME + " TEXT,"
                 + ENTRY_URL + " TEXT,"
+                + ENTRY_SHORTENED_URL + " TEXT,"
                 + ENTRY_IMAGE_URL + " TEXT,"
                 + ENTRY_VISIBLE + " INTEGER" +")";
 
@@ -395,6 +397,9 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
         values.put(ENTRY_URL, entry.getLink());
         values.put(ENTRY_IMAGE_URL, entry.getImageLink());
         values.put(ENTRY_VISIBLE, entry.isVisible() ? 1 : 0);
+        if (entry.getShortenedLink() != null){
+            values.put(ENTRY_SHORTENED_URL, entry.getShortenedLink());
+        }
 		/*
 		 * Inserting Row
 		 */
@@ -437,6 +442,32 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
         db.update(TABLE_ENTRY, values, query, null);
     }
 
+    @Override
+    public void setShortenedLinkEntry(Long entryId, String shortenedLink) {
+        String query = null;
+        if (entryId != null){
+            query = concatenateQueries(query, ENTRY_ID + "=" + entryId);
+        }
+
+        ContentValues values = new ContentValues();
+        values.put(ENTRY_SHORTENED_URL, shortenedLink);
+        db.update(TABLE_ENTRY, values, query, null);
+    }
+
+    @Override
+    public Cursor getEntriesCursor(Long categoryId, Long feedId) {
+        String query = null;
+        if (categoryId != null){
+            query = concatenateQueries(query, ENTRY_CATEGORY_ID + "=" + categoryId);
+        }
+        if (feedId != null){
+            query = concatenateQueries(query, ENTRY_FEED_ID + "=" + feedId);
+        }
+
+        Cursor cursor = db.query(TABLE_ENTRY, null,
+                query, null, null, null, null);
+        return cursor;
+    }
 
 
     @Override
@@ -525,6 +556,7 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
         String url = cursor.getString(7);
         String imageUrl = cursor.getString(8);
         int visible = cursor.getInt(9);
+        String shortenedUrl = cursor.getString(10);
 
         Entry entry = new Entry();
         entry.setId(id);
@@ -537,6 +569,7 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
         entry.setLink(url);
         entry.setImageLink(imageUrl);
         entry.setVisible(visible > 0);
+        entry.setShortenedLink(shortenedUrl);
         return entry;
     }
 

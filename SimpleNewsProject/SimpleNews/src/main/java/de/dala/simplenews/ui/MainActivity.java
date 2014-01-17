@@ -79,7 +79,7 @@ public class MainActivity extends SherlockFragmentActivity implements ViewPager.
 
 
         databaseHandler = DatabaseHandler.getInstance();
-        if (!xmlIsAlreadyLoaded()) {
+        if (!!xmlIsAlreadyLoaded()) {
             loadXml();
         }
         categories = databaseHandler.getCategories(null, null);
@@ -98,7 +98,9 @@ public class MainActivity extends SherlockFragmentActivity implements ViewPager.
         bottomView = (RelativeLayout) findViewById(R.id.bottom_view);
         createProgressView();
 
-        onPageSelected(0);
+        if (categories != null && !categories.isEmpty()){
+            onPageSelected(0);
+        }
 
         //opening transition animations
         overridePendingTransition(R.anim.open_translate,R.anim.close_scale);
@@ -224,7 +226,9 @@ public class MainActivity extends SherlockFragmentActivity implements ViewPager.
 
     @Override
     public void onPageSelected(int i) {
-        changeColor(categories.get(i).getColor());
+        if (categories != null && categories.size() > i){
+            changeColor(categories.get(i).getColor());
+        }
     }
 
     @Override

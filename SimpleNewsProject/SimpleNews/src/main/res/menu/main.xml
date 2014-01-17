@@ -9,4 +9,5 @@
         android:title="@string/settings"
         android:orderInCategory="100"
         android:showAsAction="never" />
+
 </menu>

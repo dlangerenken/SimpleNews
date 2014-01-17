@@ -4,7 +4,7 @@
     android:layout_height="wrap_content"
     android:background="@drawable/card_background_white"
     android:orientation="vertical"
-    android:padding="16dp" >
+    android:padding="@dimen/card_layout_padding" >
 
     <FrameLayout
         android:id="@+id/card_title"

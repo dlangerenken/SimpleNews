@@ -10,13 +10,9 @@ import com.android.volley.VolleyError;
 
 import java.io.ByteArrayInputStream;
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.security.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import androidrss.MediaEnclosure;
 import androidrss.RSSConfig;
@@ -30,19 +26,11 @@ import de.dala.simplenews.common.Feed;
 import de.dala.simplenews.database.DatabaseHandler;
 import de.dala.simplenews.database.IDatabaseHandler;
 import de.dala.simplenews.network.NetworkCommunication;
-import de.dala.simplenews.parser.XmlParser;
-
-import com.rosaloves.bitlyj.BitlyMethod;
-import com.rosaloves.bitlyj.data.Pair;
-
-import org.w3c.dom.Document;
-
-import static com.rosaloves.bitlyj.Bitly.*;
 
 /**
  * Created by Daniel on 27.12.13.
  */
-public class CategoryUpdater {
+public class EntryDownloader {
 
     public static final int ERROR = -1;
     public static final int STATUS_CHANGED = 3;
@@ -91,7 +79,7 @@ public class CategoryUpdater {
     }
     private Context context;
 
-    public CategoryUpdater(Handler handler, Category category, Context context, boolean updateDatabase){
+    public EntryDownloader(Handler handler, Category category, Context context, boolean updateDatabase){
         this.handler = handler;
         this.category = category;
         this.context = context;
@@ -132,8 +120,8 @@ public class CategoryUpdater {
         List<Entry> entries = new ArrayList<Entry>();
         for(FetchingResult fetchingResult : results){
             try {
-                RSSFeed rssFeed = parser.parse(new ByteArrayInputStream(fetchingResult.stringResult.getBytes("UTF-8")));
-                String title = rssFeed.getTitle();
+            RSSFeed rssFeed = parser.parse(new ByteArrayInputStream(fetchingResult.stringResult.getBytes("UTF-8")));
+            String title = rssFeed.getTitle();
                 for (RSSItem item : rssFeed.getItems()){
                     entries.add(getEntryFromRSSItem(item, fetchingResult.feed.getId(), title));
                 }
@@ -166,44 +154,6 @@ public class CategoryUpdater {
         category.setLastUpdateTime(new Date().getTime());
         databaseHandler.updateCategoryTime(category.getId(), category.getLastUpdateTime());
         sendMessage(entries, RESULT);
-        getShortenedLinks(entries);
-    }
-
-    private void getShortenedLinks(final List<Entry> entries) {
-        for (final Entry entry : entries){
-            String urlForCall = getUrlForCall(shorten(entry.getLink()));
-            NetworkCommunication.loadShortenedUrl(urlForCall, new Response.Listener<String>() {
-                        @Override
-                        public void onResponse(String s) {
-                            String shortenedUrl = new XmlParser(context).readShortenedLink(s);
-                            entry.setShortenedLink(shortenedUrl);
-                            databaseHandler.setShortenedLinkEntry(entry.getId(), entry.getShortenedLink());
-                        }
-                    }, new Response.ErrorListener() {
-                        @Override
-                        public void onErrorResponse(VolleyError volleyError) {
-
-                        }
-                    }
-            );
-        }
-    }
-
-    protected String getUrlForCall(BitlyMethod<?> m) {
-        StringBuilder sb = new StringBuilder("http://api.bit.ly/v3/")
-                .append(m.getName() + "?")
-                .append("&login=").append(context.getString(R.string.api_user))
-                .append("&apiKey=").append(context.getString(R.string.api_key))
-                .append("&format=xml");
-
-        try {
-            for(Pair<String, String> p : m.getParameters()) {
-                sb.append("&" + p.getOne() + "=" + URLEncoder.encode(p.getTwo(), "UTF-8"));
-            }
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
-        return sb.toString();
     }
 
     public static final String IMAGE_JPEG = "image/jpeg";

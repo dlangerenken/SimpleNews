@@ -15,6 +15,7 @@ public class Entry implements Comparable<Entry>, Serializable{
     private String srcName;
     private String link;
     private String imageLink;
+    private String shortenedLink;
 
     private boolean visible = true;
 
@@ -98,6 +99,15 @@ public class Entry implements Comparable<Entry>, Serializable{
         this.link = link;
     }
 
+
+    public String getShortenedLink() {
+        return shortenedLink;
+    }
+
+    public void setShortenedLink(String shortenedLink) {
+        this.shortenedLink = shortenedLink;
+    }
+
     public String getImageLink() {
         return imageLink;
     }
@@ -126,5 +136,13 @@ public class Entry implements Comparable<Entry>, Serializable{
         }else{
             return 1;
         }
+    }
+
+    @Override
+    public String toString() {
+        if (shortenedLink != null){
+            return String.format("%s - %s", title, shortenedLink);
+        }
+        return String.format("%s - %s", title, link);
     }
 }

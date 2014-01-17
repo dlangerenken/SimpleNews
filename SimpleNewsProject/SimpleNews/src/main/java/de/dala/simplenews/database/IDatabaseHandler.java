@@ -1,5 +1,7 @@
 package de.dala.simplenews.database;
 
+import android.database.Cursor;
+
 import java.util.List;
 
 import de.dala.simplenews.common.Category;
@@ -36,6 +38,9 @@ public interface IDatabaseHandler {
     int removeEntries(Long categoryId, Long feedId, Long entryId);
     void setVisibilityEntry(Long categoryId, Long feedId, Long entryId, boolean visible);
 
+    void setShortenedLinkEntry(Long entryId, String shortenedLink);
+
+    Cursor getEntriesCursor(Long categoryId, Long feedId);
 
 
     //TODO replace - remove all "old" entries!

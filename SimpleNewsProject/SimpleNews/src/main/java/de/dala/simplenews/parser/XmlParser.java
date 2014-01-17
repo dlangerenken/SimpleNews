@@ -5,6 +5,8 @@ import android.graphics.Color;
 import android.util.Log;
 import android.util.Xml;
 
+import com.android.volley.toolbox.StringRequest;
+
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -230,4 +232,9 @@ public class XmlParser  {
         return feed;
     }
 
+    public String readShortenedLink(String shortenedLink) {
+        int startIndex = shortenedLink.indexOf("<url>") + "<url>".length();
+        int endIndex = shortenedLink.indexOf("</url>");
+        return shortenedLink.substring(startIndex,endIndex);
+    }
 }

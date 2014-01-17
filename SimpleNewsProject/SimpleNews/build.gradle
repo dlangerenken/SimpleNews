@@ -43,4 +43,5 @@ dependencies {
     compile 'com.actionbarsherlock:actionbarsherlock:4.4.0@aar'
     compile 'com.github.chrisbanes.actionbarpulltorefresh:extra-abs:+'
     compile 'com.nhaarman.listviewanimations:library:2.5.2'
+    compile 'com.rosaloves:bitlyj:2.0.0'
 }
