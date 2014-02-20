@@ -34,37 +34,44 @@
         android:layout_height="fill_parent"
         android:orientation="horizontal">
         <ImageView
-            android:layout_height="35dp"
-            android:layout_width="35dp"
+            android:layout_height="30dp"
+            android:layout_width="30dp"
             android:layout_gravity="center"
             android:id="@+id/edit"
             android:background="@drawable/ic_action_edit" />
         <View
             android:layout_width="2dp"
             android:visibility="gone"
-            android:layout_margin="3dp"
+            android:layout_margin="5dp"
             android:layout_gravity="center"
             android:layout_height="match_parent"
             android:background="#818285" />
-        <ImageView
-            android:layout_width="35dp"
-            android:layout_height="35dp"
-            android:id="@+id/show"
-            android:visibility="gone"
+        <View
+            android:layout_width="2dp"
             android:layout_gravity="center"
-            android:background="@drawable/ic_action_important" />
+            android:layout_margin="5dp"
+            android:layout_height="match_parent"
+            android:background="#818285" />
+        <ImageView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center"
+            android:id="@+id/more"
+            android:background="@drawable/ic_action_overflow" />
         <View
             android:layout_width="2dp"
             android:layout_gravity="center"
             android:layout_margin="3dp"
             android:layout_height="match_parent"
             android:background="#818285" />
-        <ImageView
+        <CheckBox
             android:layout_width="35dp"
-            android:layout_gravity="center"
             android:layout_height="35dp"
-            android:id="@+id/more"
-            android:background="@drawable/ic_action_overflow" />
+            android:focusable="false"
+            android:id="@+id/show"
+            android:background="@drawable/checkbox_visible_drawable"
+            android:button="@null"/>
+
 
         </LinearLayout>
 

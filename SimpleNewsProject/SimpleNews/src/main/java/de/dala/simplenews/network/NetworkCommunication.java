@@ -48,4 +48,5 @@ public class NetworkCommunication {
         Request request = new StringRequest(url, successListener, errorListener);
         addRequest(request);
     }
+
 }

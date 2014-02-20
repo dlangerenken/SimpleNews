@@ -1,5 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Nav Drawer Menu Items -->
+    <string-array name="nav_drawer_items">
+        <item >Home</item>
+        <item >Favorites</item>
+        <item >Recently Opened</item>
+        <item >Categories</item>
+        <item >Search</item>
+        <item >Settings</item>
+        <item >Changelog</item>
+    </string-array>
 
+    <!-- Nav Drawer List Item Icons -->
+    <array name="nav_drawer_icons">
+        <item>@drawable/ic_nav_home</item>
+        <item>@drawable/ic_nav_fav</item>
+        <item>@drawable/ic_nav_recently_used</item>
+        <item>@drawable/ic_nav_categories</item>
+        <item>@android:drawable/ic_search_category_default</item>
+        <item>@android:drawable/ic_menu_preferences</item>
+        <item>@android:drawable/ic_menu_agenda</item>
+    </array>
 
 </resources>

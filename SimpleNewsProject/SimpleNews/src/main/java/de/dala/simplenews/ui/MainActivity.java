@@ -1,61 +1,24 @@
 package de.dala.simplenews.ui;
-
-import android.content.Intent;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
-import android.graphics.drawable.TransitionDrawable;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
-import android.util.TypedValue;
-import android.view.View;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
+import android.util.Log;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
-import com.astuetz.PagerSlidingTabStrip;
 
-import org.xmlpull.v1.XmlPullParserException;
-
-import java.io.IOException;
 import java.util.List;
 
 import de.dala.simplenews.R;
-import de.dala.simplenews.common.Category;
-import de.dala.simplenews.common.News;
-import de.dala.simplenews.database.DatabaseHandler;
-import de.dala.simplenews.database.IDatabaseHandler;
+import de.dala.simplenews.common.Entry;
 import de.dala.simplenews.dialog.ChangeLogDialog;
-import de.dala.simplenews.parser.XmlParser;
-import de.dala.simplenews.utilities.PrefUtilities;
-import de.dala.toasty.Toasty;
-import de.keyboardsurfer.android.widget.crouton.Configuration;
-import de.keyboardsurfer.android.widget.crouton.Crouton;
 
-public class MainActivity extends SherlockFragmentActivity implements ViewPager.OnPageChangeListener, NavigationDrawerFragment.NavigationDrawerCallbacks {
+public class MainActivity extends SherlockFragmentActivity implements NavigationDrawerFragment.NavigationDrawerCallbacks{
 
     private static String TAG = "MainActivity";
-    private IDatabaseHandler databaseHandler;
-    private PagerSlidingTabStrip tabs;
-    private ViewPager pager;
-    private MyPagerAdapter adapter;
-    private CharSequence mDrawerTitle;
-    private CharSequence mTitle;
-    private View progressView;
-    private Drawable oldBackground = null;
-    private int currentColor = 0xFF666666;
-    private List<Category> categories;
-    private RelativeLayout bottomView;
-    private Crouton crouton;
-    private int loadingNews = -1;
-    private TextView progressText;
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
@@ -65,48 +28,41 @@ public class MainActivity extends SherlockFragmentActivity implements ViewPager.
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        setupDrawer();
 
-        mNavigationDrawerFragment = (NavigationDrawerFragment)
-                getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
-        mTitle = getTitle();
         getSupportActionBar().setTitle(getString(R.string.simple_news_title));
-        // Set up the drawer.
-        mNavigationDrawerFragment.setUp(
-                R.id.navigation_drawer,
-                (DrawerLayout) findViewById(R.id.drawer_layout));
-
-
-        databaseHandler = DatabaseHandler.getInstance();
-        if (!PrefUtilities.getInstance().xmlIsAlreadyLoaded()) {
-            loadXml();
-        }
-        categories = databaseHandler.getCategories(null, null);
-
-        pager = (ViewPager) findViewById(R.id.pager);
-        adapter = new MyPagerAdapter(getSupportFragmentManager());
-        pager.setAdapter(adapter);
-
-        tabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
-        tabs.setViewPager(pager);
-        tabs.setOnPageChangeListener(this);
-
-        final int pageMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4, getResources()
-                .getDisplayMetrics());
-        pager.setPageMargin(pageMargin);
-        bottomView = (RelativeLayout) findViewById(R.id.bottom_view);
-        createProgressView();
-
-        if (categories != null && !categories.isEmpty()){
-            onPageSelected(0);
-        }
 
         //opening transition animations
         overridePendingTransition(R.anim.open_translate,R.anim.close_scale);
+        RateMyApp.appLaunched(this);
+
+        if (savedInstanceState != null){
+
+        }else{
+            if(getIntent().getDataString()!=null)
+            {
+                String path = getIntent().getDataString();
+                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                Fragment categoryModifierFrag = CategoryModifierFragment.getInstance(path);
+                transaction.replace(R.id.container, categoryModifierFrag).commit();
+            }else{
+                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                Fragment newsFrag = NewsOverViewFragment.getInstance();
+                transaction.replace(R.id.container, newsFrag).commit();
+            }
+        }
     }
 
     @Override
-    public void onBackPressed() {
-        finish();
+    public void onBackPressed(){
+        android.support.v4.app.FragmentManager fm = getSupportFragmentManager();
+        if (fm.getBackStackEntryCount() > 0) {
+            Log.i("MainActivity", "popping backstack");
+            fm.popBackStack();
+        } else {
+            Log.i("MainActivity", "nothing on backstack, calling super");
+            super.onBackPressed();
+        }
     }
 
     @Override
@@ -114,34 +70,6 @@ public class MainActivity extends SherlockFragmentActivity implements ViewPager.
         super.onPause();
         //closing transition animations
         overridePendingTransition(R.anim.open_scale,R.anim.close_translate);
-    }
-
-    private void loadXml() {
-        try {
-            News news = new XmlParser(this).readDefaultNewsFile();
-            for (Category category : news.getCategories()) {
-                if (category != null) {
-                    databaseHandler.addCategory(category, false, false);
-                }
-            }
-            PrefUtilities.getInstance().saveLoading(true);
-        } catch (XmlPullParserException e) {
-            Toasty.LOGE(TAG, "Error in adding xml to Database");
-            e.printStackTrace();
-        } catch (IOException io) {
-            Toasty.LOGE(TAG, "Error in adding xml to Database");
-            io.printStackTrace();
-        }
-    }
-
-
-
-    private View createProgressView() {
-        progressView = getLayoutInflater().inflate(R.layout.progress_layout, null);
-        progressView.setBackgroundColor(currentColor);
-        progressText = (TextView) progressView.findViewById(R.id.progress_text);
-        progressText.setText(getString(R.string.update_news));
-        return progressView;
     }
 
     @Override
@@ -155,137 +83,47 @@ public class MainActivity extends SherlockFragmentActivity implements ViewPager.
         return super.onPrepareOptionsMenu(menu);
     }
 
+    protected void setupDrawer(){
+        mNavigationDrawerFragment = (NavigationDrawerFragment)
+                getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
+        // Set up the drawer.
+        mNavigationDrawerFragment.setUp(
+                R.id.navigation_drawer,
+                (DrawerLayout) findViewById(R.id.drawer_layout));
+    }
+
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        DialogFragment dialog;
-        switch (item.getItemId()) {
-            case R.id.changelog:
-                dialog = new ChangeLogDialog();
+    public void onNavigationDrawerItemSelected(int item) {
+        switch (item){
+            case NavigationDrawerFragment.HOME:
+                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                transaction.replace(R.id.container, NewsOverViewFragment.getInstance()).addToBackStack(null).commit();
+                break;
+            case NavigationDrawerFragment.FAVORITE:
+                break;
+            case NavigationDrawerFragment.RECENT:
+                break;
+            case NavigationDrawerFragment.CATEGORIES:
+                transaction = getSupportFragmentManager().beginTransaction();
+                transaction.replace(R.id.container, CategoryModifierFragment.getInstance()).addToBackStack(null).commit();
+                break;
+            case NavigationDrawerFragment.SEARCH:
+                break;
+            case NavigationDrawerFragment.SETTINGS:
+                break;
+            case NavigationDrawerFragment.CHANGELOG:
+                DialogFragment dialog = new ChangeLogDialog();
                 dialog.show(getSupportFragmentManager(), "ChangeLog");
-                return true;
-            case R.id.settings:
-                Intent intent = new Intent(MainActivity.this, CategoryModifierActivity.class);
-                startActivity(intent);
                 break;
         }
-        return super.onOptionsItemSelected(item);
     }
 
-    private void changeColor(int newColor) {
-        tabs.setIndicatorColor(newColor);
-
-        Drawable colorDrawable = new ColorDrawable(newColor);
-        Drawable bottomDrawable = getResources().getDrawable(R.drawable.actionbar_bottom);
-        LayerDrawable ld = new LayerDrawable(new Drawable[]{colorDrawable, bottomDrawable});
-
-        if (oldBackground == null) {
-            getSupportActionBar().setBackgroundDrawable(ld);
-        } else {
-            //getSupportActionBar().setBackgroundDrawable(ld); //BUG otherwise
-            TransitionDrawable td = new TransitionDrawable(new Drawable[] { oldBackground, ld });
-            getSupportActionBar().setBackgroundDrawable(td);
-            td.startTransition(400);
-        }
+    protected void changeDrawerColor(LayerDrawable ld, int newColor) {
         mNavigationDrawerFragment.changeColor(ld, newColor);
-
-        progressView.setBackgroundColor(newColor);
-        oldBackground = ld;
-        currentColor = newColor;
-
-        // http://stackoverflow.com/questions/11002691/actionbar-setbackgrounddrawable-nulling-background-from-thread-handler
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
-        getSupportActionBar().setDisplayShowTitleEnabled(true);
     }
 
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putInt("currentColor", currentColor);
+    public void setNavDrawerInformation(List<Entry> favoriteEntries, List<Entry> visitedEntries){
+        mNavigationDrawerFragment.setInformation(favoriteEntries, visitedEntries);
     }
 
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        currentColor = savedInstanceState.getInt("currentColor");
-        changeColor(currentColor);
-    }
-
-    @Override
-    public void onPageScrolled(int i, float v, int i2) {
-    }
-
-    @Override
-    public void onPageSelected(int i) {
-        if (categories != null && categories.size() > i){
-            changeColor(categories.get(i).getColor());
-        }
-    }
-
-    @Override
-    public void onPageScrollStateChanged(int i) {
-
-    }
-
-    @Override
-    public void onNavigationDrawerItemSelected(int position) {
-        switch (position) {
-            case 0: //TODO open fragment, changing mtitle
-                break;
-        }
-    }
-
-    public void updateNews() {
-        if (crouton != null) {
-            crouton.cancel();
-        }
-        Configuration config = new Configuration.Builder().setOutAnimation(R.anim.abc_slide_out_bottom).setInAnimation(R.anim.abc_slide_in_bottom).setDuration(Configuration.DURATION_INFINITE).build();
-        crouton = Crouton.make(this, createProgressView(), bottomView);
-        crouton.setConfiguration(config);
-        crouton.show();
-    }
-
-    public void showLoadingNews() {
-        loadingNews++;
-        if (loadingNews == 0) {
-            updateNews();
-        }
-    }
-
-    public void cancelLoadingNews() {
-        loadingNews--;
-        if (loadingNews >= -1) {
-            crouton.cancel();
-            loadingNews = -1;
-        }
-    }
-
-    public void updateNews(String text, long categoryId) {
-        if (progressText != null){
-            progressText.setText(text);
-        }
-    }
-
-    public class MyPagerAdapter extends FragmentPagerAdapter {
-
-        public MyPagerAdapter(FragmentManager fm) {
-            super(fm);
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            return categories.get(position).getName();
-        }
-
-        @Override
-        public int getCount() {
-            return categories.size();
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            Fragment fragment = ExpandableNewsFragment.newInstance(categories.get(position));
-            return fragment;
-        }
-
-    }
 }

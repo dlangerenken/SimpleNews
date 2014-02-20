@@ -9,10 +9,10 @@ mavenCentral()
 apply plugin: 'android'
 
 repositories {
-mavenCentral()
     maven {
         url "https://oss.sonatype.org/content/repositories/snapshots"
     }
+    mavenCentral()
 }
 
 android {
@@ -42,6 +42,6 @@ dependencies {
     compile 'com.github.castorflex.smoothprogressbar:library:0.2.0'
     compile 'com.actionbarsherlock:actionbarsherlock:4.4.0@aar'
     compile 'com.github.chrisbanes.actionbarpulltorefresh:extra-abs:+'
-    compile 'com.nhaarman.listviewanimations:library:2.5.2'
     compile 'com.rosaloves:bitlyj:2.0.0'
+    compile 'com.nhaarman.listviewanimations:library:2.6.0-SNAPSHOT'
 }

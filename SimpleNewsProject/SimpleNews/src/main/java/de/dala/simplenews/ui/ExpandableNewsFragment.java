@@ -1,6 +1,7 @@
 package de.dala.simplenews.ui;
 
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -16,7 +17,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,8 +25,8 @@ import com.actionbarsherlock.view.ActionMode;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.widget.ShareActionProvider;
-import com.haarman.listviewanimations.swinginadapters.AnimationAdapter;
-import com.haarman.listviewanimations.swinginadapters.prepared.SwingBottomInAnimationAdapter;
+import com.nhaarman.listviewanimations.swinginadapters.AnimationAdapter;
+import com.nhaarman.listviewanimations.swinginadapters.prepared.SwingBottomInAnimationAdapter;
 import com.ocpsoft.pretty.time.PrettyTime;
 
 import java.util.ArrayList;
@@ -42,6 +42,7 @@ import de.dala.simplenews.database.DatabaseHandler;
 import de.dala.simplenews.database.IDatabaseHandler;
 import de.dala.simplenews.network.FadeInNetworkImageView;
 import de.dala.simplenews.utilities.CategoryUpdater;
+import de.dala.simplenews.utilities.ExpandableListItemAdapter;
 import de.dala.simplenews.utilities.UIUtils;
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
 import uk.co.senab.actionbarpulltorefresh.extras.actionbarsherlock.AbsDefaultHeaderTransformer;
@@ -53,21 +54,27 @@ import uk.co.senab.actionbarpulltorefresh.library.listeners.OnRefreshListener;
 /**
  * Created by Daniel on 18.12.13.
  */
-public class ExpandableNewsFragment extends SherlockFragment implements OnRefreshListener {
+public class ExpandableNewsFragment extends SherlockFragment implements OnRefreshListener{
     private MyExpandableListItemAdapter myExpandableListItemAdapter;
     private ActionMode mActionMode;
     private static final String ARG_CATEGORY = "category";
     private ListView mListView;
-    PullToRefreshLayout mPullToRefreshLayout;
+    private PullToRefreshLayout mPullToRefreshLayout;
     private ShareActionProvider myShareActionProvider;
 
     private List<Feed> feeds;
     private MainActivity activity;
+    private NewsOverViewFragment parentFragment;
 
     private IDatabaseHandler databaseHandler;
     private static long TIME_FOR_REFRESH = 1000 * 60  * 60; //one hour
 
     private Category category;
+
+    private boolean isVisible = false;
+
+    private CategoryUpdater pullUpdater;
+    private CategoryUpdater autoUpdater;
 
     public ExpandableNewsFragment(){
     }
@@ -96,17 +103,26 @@ public class ExpandableNewsFragment extends SherlockFragment implements OnRefres
         if (activity instanceof MainActivity){
             this.activity = (MainActivity) activity;
         }
+        if (getParentFragment() instanceof NewsOverViewFragment){
+            parentFragment = (NewsOverViewFragment) getParentFragment();
+        }else{
+            throw new ActivityNotFoundException();
+        }
     }
 
     @Override
     public void setMenuVisibility(final boolean visible) {
         super.setMenuVisibility(visible);
+        isVisible = visible;
         if (!visible) {
             if (mActionMode != null){
                 mActionMode.finish();
             }
+        }else{
+            updateNavDrawerItems();
         }
     }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -133,7 +149,7 @@ public class ExpandableNewsFragment extends SherlockFragment implements OnRefres
                         .scrollDistance(.40f)
                         .headerTransformer(transformer)
                         .build())
-                // Mark All Children as pullable
+                        // Mark All Children as pullable
                 .allChildrenArePullable()
                         // Set the OnRefreshListener
                 .listener(this)
@@ -142,8 +158,17 @@ public class ExpandableNewsFragment extends SherlockFragment implements OnRefres
         mListView = (ListView) rootView.findViewById(R.id.news_listview);
         initCardsAdapter(new ArrayList<Entry>());
 
-        loadEntries();
+        if (isVisible){
+            updateNavDrawerItems();
+        }
+        loadEntries(true);
         return rootView;
+    }
+
+    private void updateNavDrawerItems() {
+        if (activity != null && databaseHandler != null && category != null){
+            activity.setNavDrawerInformation(databaseHandler.getFavoriteEntries(category.getId()), databaseHandler.getVisitedEntries(category.getId()));
+        }
     }
 
     private void initCardsAdapter(List<Entry> entries) {
@@ -154,6 +179,7 @@ public class ExpandableNewsFragment extends SherlockFragment implements OnRefres
             mListView.setAdapter(animCardArrayAdapter);
         }
     }
+
     private void onListItemCheck(int position) {
         myExpandableListItemAdapter.toggleSelection(position);
         boolean hasCheckedItems = myExpandableListItemAdapter.getSelectedCount() > 0;
@@ -167,19 +193,30 @@ public class ExpandableNewsFragment extends SherlockFragment implements OnRefres
             mActionMode.finish();
         }
 
-        if(mActionMode != null)
+        if(mActionMode != null){
             mActionMode.setTitle(String.valueOf(myExpandableListItemAdapter.getSelectedCount()));
+        }
+        if (shareActionProvider != null){
+            shareActionProvider.setShareIntent(createShareIntent());
+        }
     }
 
 
     private void refreshThroughPull(){
-        CategoryUpdater updater = new CategoryUpdater(new CategoryPullUpdateHandler(), category, getActivity(), true);
-        updater.start();
+        if (pullUpdater == null){
+            pullUpdater = new CategoryUpdater(new CategoryPullUpdateHandler(), category, getActivity(), true);
+        }
+        pullUpdater.start();
     }
     private void refreshFeeds(){
-        CategoryUpdater updater = new CategoryUpdater(new CategoryUpdateHandler(), category, getActivity(), true);
-        updater.start();
-        activity.showLoadingNews();
+        if (autoUpdater == null){
+            autoUpdater = new CategoryUpdater(new CategoryUpdateHandler(), category, getActivity(), true);
+        }
+        if (autoUpdater.start()){
+            parentFragment.showLoadingNews();
+        }else{
+            //already running
+        }
     }
 
     @Override
@@ -192,12 +229,13 @@ public class ExpandableNewsFragment extends SherlockFragment implements OnRefres
         public void handleMessage(Message msg) {
             switch (msg.what){
                 case CategoryUpdater.RESULT:
-                    List<Entry> entries = (ArrayList<Entry>) msg.obj;
-                    updateFinished(entries);
+                    loadEntries(false);
+                    updateFinished();
                     break;
                 case CategoryUpdater.STATUS_CHANGED:
                     break;
                 case CategoryUpdater.ERROR:
+                    updateFinished();
                     break;
             }
         }
@@ -208,39 +246,47 @@ public class ExpandableNewsFragment extends SherlockFragment implements OnRefres
         public void handleMessage(Message msg) {
             switch (msg.what){
                 case CategoryUpdater.RESULT:
-                    List<Entry> entries = (ArrayList<Entry>) msg.obj;
-                    updateFinished(entries);
-                    activity.cancelLoadingNews();
+                    loadEntries(false);
+                    parentFragment.cancelLoadingNews();
                     break;
                 case CategoryUpdater.STATUS_CHANGED:
-                    activity.updateNews((String)msg.obj, category.getId());
+                    parentFragment.updateNews((String)msg.obj, category.getId());
                     break;
                 case CategoryUpdater.ERROR:
                     Toast.makeText(getActivity(), (String) msg.obj, Toast.LENGTH_SHORT).show();
-                    activity.cancelLoadingNews();
+                    parentFragment.cancelLoadingNews();
+                    updateAdapter(new ArrayList<Entry>());
                     break;
             }
         }
     }
 
-    private void updateFinished(List<Entry> entries) {
-        updateAdapter(entries);
+    private void updateFinished() {
         if (mPullToRefreshLayout != null){
             mPullToRefreshLayout.setRefreshComplete();
+        }
+        if (mActionMode != null){
+            mActionMode.finish();
         }
     }
 
     private void updateAdapter(List<Entry> entries) {
         Collections.sort(entries);
         initCardsAdapter(entries);
+        updateNavDrawerItems();
     }
 
-    private void loadEntries() {
-        if (category.getLastUpdateTime() < new Date().getTime() - TIME_FOR_REFRESH){
+    private void loadEntries(boolean withRefresh) {
+        List<Feed> feeds = databaseHandler.getFeeds(category.getId(), false);
+        List<Entry> entries = new ArrayList<Entry>();
+        if (feeds != null){
+            for (Feed feed : feeds){
+                entries.addAll(feed.getEntries());
+            }
+        }
+        updateAdapter(entries);
+        if (withRefresh && category.getLastUpdateTime() < new Date().getTime() - TIME_FOR_REFRESH){
             refreshFeeds();
-        }else{
-            List<Entry> entries = databaseHandler.getEntries(category.getId(), null);
-            updateAdapter(entries);
         }
     }
 
@@ -251,7 +297,7 @@ public class ExpandableNewsFragment extends SherlockFragment implements OnRefres
     }
 
 
-    private class MyExpandableListItemAdapter extends de.dala.simplenews.utilities.ExpandableListItemAdapter<Entry> {
+    private class MyExpandableListItemAdapter extends ExpandableListItemAdapter<Entry> {
 
         private Context mContext;
         private SparseBooleanArray mSelectedItemIds;
@@ -318,11 +364,14 @@ public class ExpandableNewsFragment extends SherlockFragment implements OnRefres
             layout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    entry.setVisitedDate(new Date().getTime());
+                    DatabaseHandler.getInstance().updateEntry(entry);
+                    updateNavDrawerItems();
                     Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(entry.getLink()));
                     startActivity(browserIntent);
                 }
             });
-             return layout;
+            return layout;
         }
 
         public void toggleSelection(int position) {
@@ -373,8 +422,31 @@ public class ExpandableNewsFragment extends SherlockFragment implements OnRefres
             mHeaderProgressBar.setPadding(0,0,0,5);
             setProgressBarColor(Color.WHITE);
         }
+    }
 
-}
+    private ShareActionProvider shareActionProvider;
+
+    private Intent createShareIntent() {
+        // retrieve selected items and print them out
+        SparseBooleanArray selected = myExpandableListItemAdapter.getSelectedIds();
+        ArrayList<Entry> entries = new ArrayList<Entry>();
+        for (int i = 0; i < selected.size(); i++){
+            if (selected.valueAt(i)) {
+                Entry selectedItem = myExpandableListItemAdapter.getItem(selected.keyAt(i));
+                entries.add(selectedItem);
+            }
+        }
+
+        StringBuilder message = new StringBuilder();
+        message.append(TextUtils.join("\n", entries));
+        message.append(" - by SimpleNews");
+        String finalMessage = message.toString();
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.setType("text/plain");
+        shareIntent.putExtra(Intent.EXTRA_TEXT,
+                finalMessage);
+        return shareIntent;
+    }
 
     private class ActionModeCallBack implements ActionMode.Callback {
 
@@ -383,39 +455,18 @@ public class ExpandableNewsFragment extends SherlockFragment implements OnRefres
             // inflate contextual menu
             mode.getMenuInflater().inflate(R.menu.contextual_list_view, menu);
             MenuItem item = menu.findItem(R.id.menu_item_share);
-            myShareActionProvider = (ShareActionProvider)item.getActionProvider();
-            myShareActionProvider.setShareHistoryFileName(
+            shareActionProvider = (ShareActionProvider)item.getActionProvider();
+            shareActionProvider.setShareHistoryFileName(
                     ShareActionProvider.DEFAULT_SHARE_HISTORY_FILE_NAME);
-            myShareActionProvider.setShareIntent(createShareIntent());
-            myShareActionProvider.setOnShareTargetSelectedListener(new ShareActionProvider.OnShareTargetSelectedListener() {
+            shareActionProvider.setShareIntent(createShareIntent());
+            shareActionProvider.setOnShareTargetSelectedListener(new ShareActionProvider.OnShareTargetSelectedListener() {
                 @Override
                 public boolean onShareTargetSelected(ShareActionProvider shareActionProvider, Intent intent) {
-                    myShareActionProvider.setShareIntent(createShareIntent());
+                    //TODO save "sharing-information" in history
                     return false;
                 }
             });
             return true;
-        }
-
-        private Intent createShareIntent() {
-            // retrieve selected items and print them out
-            SparseBooleanArray selected = myExpandableListItemAdapter.getSelectedIds();
-            ArrayList<Entry> entries = new ArrayList<Entry>();
-            for (int i = 0; i < selected.size(); i++){
-                if (selected.valueAt(i)) {
-                    Entry selectedItem = myExpandableListItemAdapter.getItem(selected.keyAt(i));
-                    entries.add(selectedItem);
-                }
-            }
-
-            StringBuilder message = new StringBuilder();
-            message.append(TextUtils.join("\n", entries));
-            message.append(" - by SimpleNews");
-            Intent shareIntent = new Intent(Intent.ACTION_SEND);
-            shareIntent.setType("text/plain");
-            shareIntent.putExtra(Intent.EXTRA_TEXT,
-                    message.toString().trim());
-            return shareIntent;
         }
 
         @Override
@@ -427,7 +478,6 @@ public class ExpandableNewsFragment extends SherlockFragment implements OnRefres
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
             // retrieve selected items and print them out
             SparseBooleanArray selected = myExpandableListItemAdapter.getSelectedIds();
-            StringBuilder message = new StringBuilder();
             List<Entry> selectedEntries = new ArrayList<Entry>();
             for (int i = 0; i < selected.size(); i++){
                 if (selected.valueAt(i)) {
@@ -454,7 +504,10 @@ public class ExpandableNewsFragment extends SherlockFragment implements OnRefres
     }
 
     private void saveSelectedEntries(List<Entry> selectedEntries) {
-        //TODO ask if download or only store
-        //with ladebalken mit option "in background" :))
+        for(Entry entry : selectedEntries){
+            entry.setFavoriteDate(new Date().getTime());
+            DatabaseHandler.getInstance().updateEntry(entry);
+        }
+        updateNavDrawerItems();
     }
 }

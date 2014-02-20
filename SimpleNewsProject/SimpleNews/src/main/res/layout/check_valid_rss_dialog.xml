@@ -25,7 +25,7 @@
         android:divider="?android:attr/dividerHorizontal">
         <EditText
             android:id="@+id/input"
-            android:hint="Insert Address"
+            android:hint="@string/hint_add_entry"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
@@ -46,7 +46,7 @@
                 android:paddingRight="4dp"
                 android:background="@android:drawable/list_selector_background"
                 android:layout_height="wrap_content"
-                android:text="Cancel"/>
+                android:text="@string/cancel_menu"/>
             <Button
                 android:id="@+id/positive"
                 android:layout_weight="1"

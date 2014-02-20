@@ -2,25 +2,9 @@
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
-    <RelativeLayout
+    <FrameLayout android:id="@+id/container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" >
-    <com.astuetz.PagerSlidingTabStrip
-        android:id="@+id/tabs"
-        android:layout_width="match_parent"
-        android:layout_height="48dip"
-        android:background="@drawable/background_tabs" />
-
-    <de.dala.simplenews.utilities.RestrictedViewPager
-        android:id="@+id/pager"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/colors"
-        android:layout_below="@+id/tabs" />
-
-    <RelativeLayout android:id="@+id/bottom_view" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentBottom="true"></RelativeLayout>
-
-    </RelativeLayout>
+        android:layout_height="match_parent" />
 
     <!-- android:layout_gravity="start" tells DrawerLayout to treat
         this as a sliding drawer on the left side for left-to-right

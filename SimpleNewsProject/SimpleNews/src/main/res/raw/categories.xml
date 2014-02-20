@@ -1,22 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <news>
-    <category name="Sports" color="#FF666666">
+    <category name="Sports" color="#FF666666" visible="true">
         <feed>http://rss.nytimes.com/services/xml/rss/nyt/Sports.xml</feed>
+        <feed>http://rss.cnn.com/rss/edition_sport.rss</feed>
+        <feed>http://feeds.abcnews.com/abcnews/sportsheadlines</feed>
     </category>
-    <category name="Health" color="#ffd2a494">
+    <category name="Health" color="#ffd2a494" visible="true">
         <feed>http://rss.nytimes.com/services/xml/rss/nyt/Health.xml</feed>
+        <feed>http://feeds.abcnews.com/abcnews/healthheadlines</feed>
+        <feed>http://www.cbsnews.com/feeds/rss/health.rss</feed>
     </category>
-    <category name="Technology" color="#FF96AA39">
+    <category name="Technology" color="#FF96AA39" visible="true">
         <feed>http://rss.nytimes.com/services/xml/rss/nyt/Technology.xml</feed>
+        <feed>http://rss.cnn.com/rss/edition_technology.rss</feed>
+        <feed>http://feeds.abcnews.com/abcnews/technologyheadlines</feed>
+        <feed>http://www.cbsnews.com/rss/tech_talk.rss</feed>
     </category>
-    <category name="Science" color="#FFC74B46">
+    <category name="Science" color="#FFC74B46" visible="true">
         <feed>http://rss.nytimes.com/services/xml/rss/nyt/Science.xml</feed>
+        <feed>http://rss.cnn.com/rss/edition_space.rss</feed>
     </category>
-    <category name="International" color="#FF3F9FE0">
+    <category name="World" color="#ff289a74" visible="true">
         <feed>http://www.nytimes.com/services/xml/rss/nyt/International.xml</feed>
+        <feed>http://rss.cnn.com/rss/edition_world.rss</feed>
+        <feed>http://feeds.abcnews.com/abcnews/internationalheadlines</feed>
+        <feed>http://www.cbsnews.com/latest/rss/world</feed>
     </category>
-    <category name="Real Estate" color="#FFF4842D">
+    <category name="Real Estate" color="#FFF4842D" visible="false">
         <feed>http://rss.nytimes.com/services/xml/rss/nyt/RealEstate.xml</feed>
     </category>
-
+    <category name="Top Stories" color="#FF3F9FE0" visible="true">
+        <feed>http://edition.cnn.com/services/rss/</feed>
+        <feed>http://feeds.abcnews.com/abcnews/topstories</feed>
+        <feed>http://www.cbsnews.com/latest/rss/main</feed>
+    </category>
+    <category name="Entertainment" color="#FFBA55D3" visible="true">
+        <feed>http://rss.cnn.com/rss/edition_entertainment.rss</feed>
+        <feed>http://feeds.abcnews.com/abcnews/entertainmentheadlines</feed>
+        <feed>http://www.cbsnews.com/feeds/rss/entertainment.rss</feed>
+    </category>
 </news>

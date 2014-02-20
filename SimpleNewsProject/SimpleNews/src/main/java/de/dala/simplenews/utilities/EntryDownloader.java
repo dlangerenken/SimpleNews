@@ -152,7 +152,7 @@ public class EntryDownloader {
     private void getNewItems(List<Entry> entries) {
         //sleep(500);
         category.setLastUpdateTime(new Date().getTime());
-        databaseHandler.updateCategoryTime(category.getId(), category.getLastUpdateTime());
+        databaseHandler.updateCategory(category);
         sendMessage(entries, RESULT);
     }
 
@@ -178,7 +178,7 @@ public class EntryDownloader {
             desc = desc.replaceAll("\\<.*?>","").replace("()", "").replace("&nbsp;", "");
         }
 
-        return new Entry(-1, feedId, category.getId(), item.getTitle(), desc, time, source, url, mediaUri);
+        return new Entry(-1, feedId, category.getId(), item.getTitle(), desc, time, source, url, mediaUri, null, null);
     }
 
     private void sendMessage(Object message, int type){

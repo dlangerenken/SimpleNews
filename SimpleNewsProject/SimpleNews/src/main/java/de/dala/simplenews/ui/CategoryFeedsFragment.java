@@ -2,8 +2,10 @@ package de.dala.simplenews.ui;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -13,21 +15,26 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.actionbarsherlock.app.SherlockFragment;
+import com.actionbarsherlock.view.ActionMode;
+import com.actionbarsherlock.widget.ShareActionProvider;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.haarman.listviewanimations.ArrayAdapter;
-import com.haarman.listviewanimations.itemmanipulation.contextualundo.ContextualUndoAdapter;
+import com.nhaarman.listviewanimations.ArrayAdapter;
+import com.nhaarman.listviewanimations.itemmanipulation.swipedismiss.contextualundo.ContextualUndoAdapter;
 import com.nineoldandroids.animation.Animator;
 import com.nineoldandroids.animation.AnimatorListenerAdapter;
 import com.nineoldandroids.view.ViewPropertyAnimator;
 
 import java.io.ByteArrayInputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.List;
 
 import androidrss.RSSConfig;
@@ -36,6 +43,7 @@ import androidrss.RSSFeed;
 import androidrss.RSSParser;
 import de.dala.simplenews.R;
 import de.dala.simplenews.common.Category;
+import de.dala.simplenews.common.Entry;
 import de.dala.simplenews.common.Feed;
 import de.dala.simplenews.database.DatabaseHandler;
 import de.dala.simplenews.network.NetworkCommunication;
@@ -46,7 +54,7 @@ import de.keyboardsurfer.android.widget.crouton.Style;
 /**
  * Created by Daniel on 29.12.13.
  */
-public class CategoryFeedsFragment extends Fragment implements ContextualUndoAdapter.DeleteItemCallback {
+public class CategoryFeedsFragment extends SherlockFragment implements ContextualUndoAdapter.DeleteItemCallback {
 
 
     private ListView feedListView;
@@ -54,6 +62,7 @@ public class CategoryFeedsFragment extends Fragment implements ContextualUndoAda
     private ContextualUndoAdapter undoAdapter;
     private static final String CATEGORY_KEY = "category";
     private Category category;
+    private ActionMode mActionMode;
 
     public CategoryFeedsFragment(){
     }
@@ -72,6 +81,8 @@ public class CategoryFeedsFragment extends Fragment implements ContextualUndoAda
         feedListView = (ListView) rootView.findViewById(R.id.listView);
         feedListView.setDivider(null);
         initAdapter();
+        getSherlockActivity().getSupportActionBar().setTitle(String.format("%s - Feeds", category.getName()));
+        getSherlockActivity().getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         return rootView;
     }
 
@@ -82,16 +93,20 @@ public class CategoryFeedsFragment extends Fragment implements ContextualUndoAda
         this.category = getArguments().getParcelable(CATEGORY_KEY);
     }
 
+
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+    public void onCreateOptionsMenu(com.actionbarsherlock.view.Menu menu, com.actionbarsherlock.view.MenuInflater inflater) {
         inflater.inflate(R.menu.feed_selection_menu, menu);
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(com.actionbarsherlock.view.MenuItem item) {
         switch (item.getItemId()){
             case R.id.new_feed:
                 createFeedClicked();
+                return true;
+            case android.R.id.home:
+                getSherlockActivity().onBackPressed();
                 return true;
         }
         return false;
@@ -101,10 +116,9 @@ public class CategoryFeedsFragment extends Fragment implements ContextualUndoAda
     private void initAdapter() {
         adapter = new FeedListAdapter(getActivity(), category.getFeeds());
         //buggy because of handler
-        undoAdapter = new ContextualUndoAdapter(adapter, R.layout.undo_row, R.id.undo_row_undobutton, 5000, R.id.undo_row_texttv, new MyFormatCountDownCallback());
+        undoAdapter = new ContextualUndoAdapter(adapter, R.layout.undo_row, R.id.undo_row_undobutton, 5000, R.id.undo_row_texttv, this, new MyFormatCountDownCallback());
         //undoAdapter = new ContextualUndoAdapter(adapter, R.layout.undo_row, R.id.undo_row_undobutton);
         undoAdapter.setAbsListView(feedListView);
-        undoAdapter.setDeleteItemCallback(this);
         feedListView.setAdapter(undoAdapter);
     }
 
@@ -114,16 +128,14 @@ public class CategoryFeedsFragment extends Fragment implements ContextualUndoAda
     }
 
 
+        public void deleteItem(int position) {
+            Feed feed = adapter.getItem(position);
+            adapter.remove(position);
+            adapter.notifyDataSetChanged();
 
-    @Override
-    public void deleteItem(int position) {
-        Feed feed = adapter.getItem(position);
-        adapter.remove(position);
-        adapter.notifyDataSetChanged();
-
-        DatabaseHandler.getInstance().removeFeeds(null, feed.getId(), false);
-        category.getFeeds().remove(feed);
-    }
+            DatabaseHandler.getInstance().removeFeeds(null, feed.getId(), false);
+            category.getFeeds().remove(feed);
+        }
 
     private class MyFormatCountDownCallback implements ContextualUndoAdapter.CountDownFormatter {
 
@@ -145,11 +157,13 @@ public class CategoryFeedsFragment extends Fragment implements ContextualUndoAda
 
         private Context context;
         private DatabaseHandler database;
+        private SparseBooleanArray mSelectedItemIds;
 
         public FeedListAdapter(Context context, List<Feed> feeds) {
             super(feeds);
             this.context = context;
             this.database = DatabaseHandler.getInstance();
+            mSelectedItemIds = new SparseBooleanArray();
         }
 
         @Override
@@ -163,7 +177,7 @@ public class CategoryFeedsFragment extends Fragment implements ContextualUndoAda
         }
 
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
+        public View getView(final int position, View convertView, ViewGroup parent) {
             Feed feed = getItem(position);
 
             if (convertView == null){
@@ -171,31 +185,63 @@ public class CategoryFeedsFragment extends Fragment implements ContextualUndoAda
                 convertView = inflater.inflate(R.layout.feed_modify_item, null, false);
                 ViewHolder viewHolder = new ViewHolder();
                 viewHolder.name = (TextView) convertView.findViewById(R.id.name);
-                viewHolder.show = (ImageView) convertView.findViewById(R.id.show);
+                viewHolder.link = (TextView) convertView.findViewById(R.id.link);
+                viewHolder.show = (CheckBox) convertView.findViewById(R.id.show);
                 viewHolder.edit = (ImageView) convertView.findViewById(R.id.edit);
                 convertView.setTag(viewHolder);
             }
             ViewHolder holder = (ViewHolder) convertView.getTag();
-            holder.name.setText(feed.getUrl());
+            holder.name.setText(feed.getTitle() == null ? context.getString(R.string.feed_title_not_found) : feed.getTitle());
+            holder.link.setText(feed.getUrl());
             holder.show.setOnClickListener(new FeedItemClickListener(feed));
+            holder.show.setChecked(feed.isVisible());
             holder.edit.setOnClickListener(new FeedItemClickListener(feed));
 
+            convertView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    onListItemCheck(position);
+                    return false;
+                }
+            });
+            convertView.setBackgroundResource(mSelectedItemIds.get(position) ? R.drawable.card_background_blue : R.drawable.card_background_white);
+            int pad = getResources().getDimensionPixelSize(R.dimen.card_layout_padding);
+            convertView.setPadding(pad,pad,pad,pad);
             return convertView;
-        }
-
-        @Override
-        public void swapItems(int positionOne, int positionTwo) {
-            Feed temp = getItem(positionOne);
-            set(positionOne, getItem(positionTwo));
-            set(positionTwo, temp);
-            database.updateCategoryOrder(getItem(positionOne).getId(), positionOne);
-            database.updateCategoryOrder(getItem(positionTwo).getId(), positionTwo);
         }
 
         class ViewHolder {
             public TextView name;
-            public ImageView show;
+            public TextView link;
+            public CheckBox show;
             public ImageView edit;
+        }
+
+        public void toggleSelection(int position) {
+            selectView(position, !mSelectedItemIds.get(position));
+        }
+
+        public void selectView(int position, boolean value)
+        {
+            if(value){
+                mSelectedItemIds.put(position, value);
+            }else{
+                mSelectedItemIds.delete(position);
+            }
+            notifyDataSetChanged();
+        }
+
+        public int getSelectedCount() {
+            return mSelectedItemIds.size();// mSelectedCount;
+        }
+
+        public SparseBooleanArray getSelectedIds() {
+            return mSelectedItemIds;
+        }
+
+        public void removeSelection() {
+            mSelectedItemIds = new SparseBooleanArray();
+            notifyDataSetChanged();
         }
     }
 
@@ -213,6 +259,9 @@ public class CategoryFeedsFragment extends Fragment implements ContextualUndoAda
                     editClicked(feed);
                     break;
                 case R.id.show:
+                    boolean visible = !feed.isVisible();
+                    feed.setVisible(visible);
+                    DatabaseHandler.getInstance().updateFeed(feed);
                     break;
             }
         }
@@ -233,7 +282,7 @@ public class CategoryFeedsFragment extends Fragment implements ContextualUndoAda
             public void onClick(View v) {
                 switch (v.getId()){
                     case R.id.positive:
-                        String feedUrl = input.getText().toString().toLowerCase();
+                        String feedUrl = input.getText().toString();
                         if (!feedUrl.startsWith("http://")){
                             feedUrl = "http://" + feedUrl;
                         }
@@ -252,7 +301,9 @@ public class CategoryFeedsFragment extends Fragment implements ContextualUndoAda
                                                 }else{
                                                     Feed feed = new Feed();
                                                     feed.setCategoryId(category.getId());
-                                                    feed.setUrl(formattedFeedUrl); //TODO check if valid
+                                                    feed.setTitle(rssFeed.getTitle());
+                                                    feed.setDescription(rssFeed.getDescription());
+                                                    feed.setUrl(formattedFeedUrl);
                                                     long id = DatabaseHandler.getInstance().addFeed(category.getId(), feed, true);
                                                     feed.setId(id);
                                                     adapter.add(feed);
@@ -355,7 +406,7 @@ public class CategoryFeedsFragment extends Fragment implements ContextualUndoAda
                 switch (view.getId()){
                     case R.id.positive:
 
-                        String feedUrl = input.getText().toString().toLowerCase();
+                        String feedUrl = input.getText().toString();
                         if (!feedUrl.startsWith("http://")){
                             feedUrl = "http://" + feedUrl;
                         }
@@ -373,8 +424,11 @@ public class CategoryFeedsFragment extends Fragment implements ContextualUndoAda
                                                     invalidFeedUrl(true);
                                                 }else{
                                                     feed.setUrl(formattedFeedUrl);
+                                                    if (rssFeed.getTitle() != null){
+                                                        feed.setTitle(rssFeed.getTitle());
+                                                    }
                                                     adapter.notifyDataSetChanged();
-                                                    DatabaseHandler.getInstance().updateFeedUrl(feed.getId(), formattedFeedUrl);
+                                                    DatabaseHandler.getInstance().updateFeed(feed);
                                                     dialog.dismiss();
                                                 }
                                             } catch (RSSFault ex){
@@ -426,6 +480,92 @@ public class CategoryFeedsFragment extends Fragment implements ContextualUndoAda
         positive.setOnClickListener(dialogClickListener);
         negative.setOnClickListener(dialogClickListener);
         dialog.show();
+    }
+
+    private ShareActionProvider shareActionProvider;
+
+    private class ActionModeCallBack implements ActionMode.Callback {
+
+        @Override
+        public boolean onCreateActionMode(ActionMode mode, com.actionbarsherlock.view.Menu menu) {
+            // inflate contextual menu
+            mode.getMenuInflater().inflate(R.menu.contextual_feed_selection_menu, menu);
+            /*com.actionbarsherlock.view.MenuItem item = menu.findItem(R.id.menu_item_share);
+            shareActionProvider = (ShareActionProvider)item.getActionProvider();
+            shareActionProvider.setShareHistoryFileName(
+                    ShareActionProvider.DEFAULT_SHARE_HISTORY_FILE_NAME);
+            shareActionProvider.setShareIntent(createShareIntent());
+            shareActionProvider.setOnShareTargetSelectedListener(new ShareActionProvider.OnShareTargetSelectedListener() {
+                @Override
+                public boolean onShareTargetSelected(ShareActionProvider shareActionProvider, Intent intent) {
+                    //TODO save "sharing-information" in history
+                    return false;
+                }
+            });
+            */
+            return true;
+        }
+
+        @Override
+        public boolean onPrepareActionMode(ActionMode mode, com.actionbarsherlock.view.Menu menu) {
+            return false;
+        }
+
+        @Override
+        public boolean onActionItemClicked(ActionMode mode, com.actionbarsherlock.view.MenuItem item) {
+            // retrieve selected items and print them out
+            SparseBooleanArray selected = adapter.getSelectedIds();
+            List<Feed> selectedEntries = new ArrayList<Feed>();
+            for (int i = 0; i < selected.size(); i++){
+                if (selected.valueAt(i)) {
+                    Feed selectedItem = adapter.getItem(selected.keyAt(i));
+                    selectedEntries.add(selectedItem);
+                }
+            }
+            // close action mode
+            switch (item.getItemId()){
+                case R.id.menu_item_remove:
+                    removeSelectedFeeds(selectedEntries);
+                    break;
+            }
+            mode.finish();
+            return false;
+        }
+
+        @Override
+        public void onDestroyActionMode(ActionMode mode) {
+            // remove selection
+            adapter.removeSelection();
+            mActionMode = null;
+        }
+    }
+
+    private void onListItemCheck(int position) {
+        adapter.toggleSelection(position);
+        boolean hasCheckedItems = adapter.getSelectedCount() > 0;
+
+        if (hasCheckedItems && mActionMode == null){
+            // there are some selected items, start the actionMode
+            mActionMode = getSherlockActivity().startActionMode(new ActionModeCallBack());
+        }
+        else if (!hasCheckedItems && mActionMode != null){
+            // there no selected items, finish the actionMode
+            mActionMode.finish();
+        }
+
+        if(mActionMode != null){
+            mActionMode.setTitle(String.valueOf(adapter.getSelectedCount()));
+        }
+    }
+
+    private void removeSelectedFeeds(List<Feed> selectedFeeds) {
+        for (Feed feed : selectedFeeds){
+            adapter.remove(feed);
+            adapter.notifyDataSetChanged();
+
+            DatabaseHandler.getInstance().removeFeeds(null, feed.getId(), false);
+            category.getFeeds().remove(feed);
+        }
     }
 
 }

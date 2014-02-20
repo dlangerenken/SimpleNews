@@ -17,7 +17,7 @@
     <string name="coming_soon">Coming soon...</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="settings">Settings</string>
+    <string name="categories">Categories</string>
     <string name="pref_config" >Color Picker</string>
     <string name="new_category">New Category</string>
     <string name="add">Add</string>
@@ -45,8 +45,31 @@
     <string name="category_created">Category created</string>
     <string name="rename_feed">Rename Feed</string>
     <string name="new_feed_url_header">New Feed Url</string>
-    <string name="simple_news_title">SimpleNews - RSS</string>
-    <string name="categories_title"><![CDATA[Categories - Add & Modify]]></string>
+    <string name="simple_news_title">News</string>
+    <string name="categories_title"><![CDATA[Categories]]></string>
     <string name="api_key">R_5a8cd2843ed14ce896d469cb22235f18</string>
     <string name="api_user">dalanie91</string>
+    <string name="cancel_menu">Cancel</string>
+    <string name="hint_add_entry">Insert Address</string>
+    <string name="rate_my_app_desc">If you enjoy using %s, please take a moment to rate the app. Thank you for your support!</string>
+    <string name="rate_my_app_title">Rate %s</string>
+    <string name="rate_my_app_now">Rate Now</string>
+    <string name="rate_my_app_later">Later</string>
+    <string name="rate_my_app_never">No, Thanks</string>
+    <string name="playstore_not_found">Couldn\'t launch the market. Please open the PlayStore manually.</string>
+    <string name="restore_categories">Restore</string>
+    <string name="add_category">Add</string>
+    <string name="restore_categories_yes">Yes, restore.</string>
+    <string name="restore_categories_no">No, cancel.</string>
+    <string name="restore_categories_title">Do you want to restore the default settings?</string>
+    <string name="restore_categories_message">Careful! All saved data will be removed!</string>
+    <string name="feed_title_not_found">No title found</string>
+    <string name="nav_more">More</string>
+    <string name="nav_favorites">Favorites</string>
+    <string name="nav_no_entries">No entries found</string>
+    <string name="nav_recently_opened">Recently Opened</string>
+
+    <!-- Content Description -->
+    <string name="desc_list_item_icon">Item Icon</string>
+
 </resources>

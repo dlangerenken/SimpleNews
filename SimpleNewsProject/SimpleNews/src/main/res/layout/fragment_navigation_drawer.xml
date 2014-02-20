@@ -9,10 +9,12 @@
         android:id="@+id/left_drawer"
         android:layout_width="237dp"
         android:layout_height="match_parent"
-        android:background="@drawable/background_tabs"
+        android:background="@color/list_background"
         android:choiceMode="singleChoice"
-        android:divider="@android:color/transparent"
-        android:dividerHeight="0dp" />
+        android:divider="@color/list_divider"
+        android:dividerHeight="1dp" android:listSelector="@drawable/list_selector"
+        />
+
     <View
         android:id="@+id/vertical_line"
         android:layout_width="3dp"

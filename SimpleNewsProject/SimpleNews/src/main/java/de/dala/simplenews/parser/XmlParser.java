@@ -38,6 +38,7 @@ public class XmlParser  {
 
     private static final String ATTRIBUTE_NAME="name";
     private static final String ATTRIBUTE_COLOR="color";
+    private static final String ATTRIBUTE_VISIBLE="visible";
     private static final String ATTRIBUTE_FEED_TITLE="title";
 
     //--------------------------------------------------------------------------------
@@ -176,12 +177,17 @@ public class XmlParser  {
         // Read attributes
         String categoryName = parser.getAttributeValue(null, ATTRIBUTE_NAME);
         String color= parser.getAttributeValue(null, ATTRIBUTE_COLOR);
+        String visible = parser.getAttributeValue(null, ATTRIBUTE_VISIBLE);
         if (categoryName==null){
             //throw new ChangeLogException("VersionName required in changeLogVersion node");
         }
+
         Category category = new Category();
         category.setColor(Color.parseColor(color));
         category.setName(categoryName);
+        if (visible != null){
+            category.setVisible(!"false".equals(visible));
+        }
 
         // Parse nested nodes
         while (parser.next() != XmlPullParser.END_TAG) {
@@ -192,8 +198,10 @@ public class XmlParser  {
             Toasty.LOGD(TAG,"Processing tag="+tag);
 
             if (tag.equals(TAG_FEED)){
-                String feed = readFeed(parser, news);
-                category.getFeeds().add(new Feed(feed));
+                Feed feed = readFeed(parser, news);
+                if (feed != null){
+                    category.getFeeds().add(feed);
+                }
             }
         }
         news.getCategories().add(category);
@@ -206,8 +214,8 @@ public class XmlParser  {
      * @param news
      * @throws Exception
      */
-    private String readFeed(XmlPullParser parser, News news) throws  XmlPullParserException, IOException{
-        String feed = null;
+    private Feed readFeed(XmlPullParser parser, News news) throws  XmlPullParserException, IOException{
+        Feed feed = null;
         if (parser==null) return null;
 
         parser.require(XmlPullParser.START_TAG, null,TAG_FEED);
@@ -216,14 +224,19 @@ public class XmlParser  {
         if (tag.equals(TAG_FEED)){
             // Read attributes
             String feedTitle = parser.getAttributeValue(null,ATTRIBUTE_FEED_TITLE);
-            if (feedTitle!=null){
-                //TODO
-            }
+            String feedVisible = parser.getAttributeValue(null, ATTRIBUTE_VISIBLE);
 
             // Read text
             if (parser.next() == XmlPullParser.TEXT) {
-                feed=parser.getText();
-                if (feed==null){
+                String feedText =parser.getText();
+                if (feedText!=null){
+                    feed = new Feed(feedText);
+                    if (feedTitle!=null){
+                        feed.setTitle(feedTitle);
+                    }
+                    if (feedVisible != null){
+                        feed.setVisible(!"false".equals(feedVisible));
+                    }
                 }
                 parser.nextTag();
             }

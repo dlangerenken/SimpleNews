@@ -14,35 +14,26 @@ import de.dala.simplenews.common.Feed;
  * @author Daniel Langerenken
  */
 public interface IDatabaseHandler {
-    List<Category> getCategories(Boolean excludeFeeds, Boolean excludeEntries);
+    List<Category> getCategories(Boolean excludeFeeds, Boolean excludeEntries, Boolean onlyVisible);
     Category getCategory(Long categoryId, Boolean excludeFeeds, Boolean excludeEntries);
     long addCategory(Category category, Boolean excludeFeeds, Boolean excludeEntries);
     int removeCategory(long categoryId, Boolean excludeFeeds, Boolean excludeEntries);
-    void setVisibilityCategories(Long categoryId, boolean visible, Boolean excludeFeeds, Boolean excludeEntries);
-    void updateCategoryTime(long categoryId, long lastUpdateTime);
-    void updateCategoryColor(long categoryId, int color);
-    void updateCategoryOrder(long categoryId, int order);
-    void updateCategoryName(long categoryId, String name);
+    int updateCategory(Category category);
+    void removeAllCategories();
 
     List<Feed> getFeeds(Long categoryId, Boolean excludeEntries);
     Feed getFeed(long feedId, Boolean excludeEntries);
     long addFeed(long categoryId, Feed feed, Boolean excludeEntries);
     int removeFeeds(Long categoryId, Long feedId, Boolean excludeEntries);
-    void setVisibilityFeed(Long categoryId, Long feedId, boolean visible, Boolean excludeEntries);
-    void updateFeedUrl(long feedId, String newUrl);
-    void updateFeedVisible(long feedId, boolean visible);
+    int updateFeed(Feed feed);
 
     List<Entry> getEntries(Long categoryId, Long feedId);
     Entry getEntry(long entryId);
     long addEntry(long categoryId, long feedId, Entry entry);
+    int updateEntry(Entry entry);
     int removeEntries(Long categoryId, Long feedId, Long entryId);
-    void setVisibilityEntry(Long categoryId, Long feedId, Long entryId, boolean visible);
-
-    void setShortenedLinkEntry(Long entryId, String shortenedLink);
-
     Cursor getEntriesCursor(Long categoryId, Long feedId);
 
-
-    //TODO replace - remove all "old" entries!
-    //TODO favorite field?!
+    List<Entry> getFavoriteEntries(long categoryId);
+    List<Entry> getVisitedEntries(long categoryId);
 }

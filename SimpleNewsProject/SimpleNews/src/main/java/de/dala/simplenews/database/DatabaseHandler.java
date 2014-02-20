@@ -6,39 +6,35 @@ import java.util.List;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.preference.PreferenceManager;
 
-import de.dala.simplenews.MainApplication;
 import de.dala.simplenews.common.Category;
 import de.dala.simplenews.common.Entry;
 import de.dala.simplenews.common.Feed;
 
 /**
-* The DatabaseHandler for the communication between Client and Client-Database
-*
-* @author Daniel Langerenken based on
-*         http://www.androidhive.info/2011/11/android-sqlite-database-tutorial/
-*/
+ * The DatabaseHandler for the communication between Client and Client-Database
+ *
+ * @author Daniel Langerenken based on
+ *         http://www.androidhive.info/2011/11/android-sqlite-database-tutorial/
+ */
 public class DatabaseHandler extends SQLiteOpenHelper implements
-		IDatabaseHandler {
+        IDatabaseHandler {
 
-	/**
-	 * Database Name and Version
-	 */
-	private static final int DATABASE_VERSION = 32;
-	private static final String DATABASE_NAME = "news_database";
+    /**
+     * Database Name and Version
+     */
+    private static final int DATABASE_VERSION = 36;
+    private static final String DATABASE_NAME = "news_database";
 
-	/**
-	 * Table names
-	 */
-	private static final String TABLE_CATEGORY = "category";
+    /**
+     * Table names
+     */
+    private static final String TABLE_CATEGORY = "category";
     private static final String TABLE_FEED = "feed";
     private static final String TABLE_ENTRY = "entry";
-
     private static final String CATEGORY_ID = "_id";
     private static final String CATEGORY_COLOR = "color";
     private static final String CATEGORY_NAME = "name";
@@ -64,19 +60,8 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
     private static final String ENTRY_SHORTENED_URL = "shortened_url";
     private static final String ENTRY_IMAGE_URL = "image_url";
     private static final String ENTRY_VISIBLE = "visible";
-
-
-
-
-	// Ways = List of Nodes, Date, unique id, pedestrian/wheelchair type
-	// In case of node/edge-manipulation. If way is affected (blocked or new type) ->
-	// way into revision (with revision date). node/edge into revision (with date). new node/edge into list of nodes
-	// if node is removed -> node into revision. corresponding edges into revision, removed of "edges"
-	// if building changed, move all nodes,edges,routegraphs,messages,ways into revision.
-	// if routegraph changed, move routegraph into revision
-	// if messages reseted by server (e.g.), move all messages into revision
-	// if messages "expire" -> older then some hours? move into revision
-	// if node/edge changes, recalculate map.
+    private static final String ENTRY_VISITED_DATE = "visited";
+    private static final String ENTRY_FAVORITE_DATE = "favorite";
 
     private Context context;
 
@@ -101,28 +86,28 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
         }
     }
 
-	private DatabaseHandler(Context context) {
-		super(context, DATABASE_NAME, null, DATABASE_VERSION);
+    private DatabaseHandler(Context context) {
+        super(context, DATABASE_NAME, null, DATABASE_VERSION);
         this.context = context;
     }
 
-	/*
-	 * Creating Tables(non-Javadoc)
-	 *
-	 * @see
-	 * android.database.sqlite.SQLiteOpenHelper#onCreate(android.database.sqlite
-	 * .SQLiteDatabase)
-	 */
-	@Override
-	public void onCreate(SQLiteDatabase db) {
-		 String createCategoryTable = "CREATE TABLE "
-                 + TABLE_CATEGORY + "("
-                 + CATEGORY_ID + " INTEGER PRIMARY KEY, "
-		         + CATEGORY_COLOR + " INTEGER,"
-                 + CATEGORY_NAME + " TEXT,"
-                 + CATEGORY_LAST_UPDATE + " LONG,"
-                 + CATEGORY_VISIBLE + " INTEGER,"
-                 + CATEGORY_ORDER + " INTEGER" +")";
+    /*
+     * Creating Tables(non-Javadoc)
+     *
+     * @see
+     * android.database.sqlite.SQLiteOpenHelper#onCreate(android.database.sqlite
+     * .SQLiteDatabase)
+     */
+    @Override
+    public void onCreate(SQLiteDatabase db) {
+        String createCategoryTable = "CREATE TABLE "
+                + TABLE_CATEGORY + "("
+                + CATEGORY_ID + " INTEGER PRIMARY KEY, "
+                + CATEGORY_COLOR + " INTEGER,"
+                + CATEGORY_NAME + " TEXT,"
+                + CATEGORY_LAST_UPDATE + " LONG,"
+                + CATEGORY_VISIBLE + " INTEGER,"
+                + CATEGORY_ORDER + " INTEGER" +")";
         String createFeedTable = "CREATE TABLE "
                 + TABLE_FEED + "("
                 + FEED_ID + " INTEGER PRIMARY KEY, "
@@ -143,30 +128,42 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
                 + ENTRY_URL + " TEXT,"
                 + ENTRY_SHORTENED_URL + " TEXT,"
                 + ENTRY_IMAGE_URL + " TEXT,"
-                + ENTRY_VISIBLE + " INTEGER" +")";
-
-		db.execSQL(createCategoryTable);
+                + ENTRY_VISIBLE + " INTEGER,"
+                + ENTRY_VISITED_DATE + " LONG,"
+                + ENTRY_FAVORITE_DATE + " LONG" +")";
+        db.execSQL(createCategoryTable);
         db.execSQL(createFeedTable);
         db.execSQL(createEntryTable);
-	}
+    }
 
-	@Override
-	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-		db.execSQL("DROP TABLE IF EXISTS " + TABLE_CATEGORY);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_FEED);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_ENTRY);
-        PreferenceManager.getDefaultSharedPreferences(context).edit().clear().commit();
+    @Override
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        String upgradeQueryVisited = "ALTER TABLE " + TABLE_ENTRY + " ADD COLUMN " + ENTRY_VISITED_DATE + " LONG";
+        String upgradeQueryFavorite = "ALTER TABLE " + TABLE_ENTRY + " ADD COLUMN " + ENTRY_FAVORITE_DATE + " LONG";
+        if (oldVersion < 35 && newVersion >= 35){
+            db.execSQL(upgradeQueryVisited);
+            db.execSQL(upgradeQueryFavorite);
+        }
+
+        //db.execSQL("DROP TABLE IF EXISTS " + TABLE_CATEGORY);
+        //db.execSQL("DROP TABLE IF EXISTS " + TABLE_FEED);
+        //db.execSQL("DROP TABLE IF EXISTS " + TABLE_ENTRY);
+        //PreferenceManager.getDefaultSharedPreferences(context).edit().clear().commit();
 		/*
 		 * Create tables again
 		 */
-		onCreate(db);
-	}
+        //onCreate(db);
+    }
 
-    public List<Category> getCategories(Boolean excludeFeeds, Boolean excludeEntries) {
+    public List<Category> getCategories(Boolean excludeFeeds, Boolean excludeEntries, Boolean onlyVisible) {
         List<Category> categories = new ArrayList<Category>();
         String orderBy = CATEGORY_ORDER + " ASC";
+        String query = null;
+        if (onlyVisible){
+            query = CATEGORY_VISIBLE + "=" + "1";
+        }
         Cursor cursor = db.query(TABLE_CATEGORY, null,
-                null, null, null, null, orderBy);
+                query, null, null, null, orderBy);
 
 		/*
 		 * looping through all rows and adding to list
@@ -248,9 +245,9 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
         if (cursor.moveToFirst()) {
             do {
                 Feed feed = getFeedByCursor(cursor);
-                    if (excludeEntries != null && !excludeEntries){
-                        feed.setEntries(getEntries(categoryId, feed.getId()));
-                    }
+                if (feed.isVisible() && excludeEntries != null && !excludeEntries){
+                    feed.setEntries(getEntries(categoryId, feed.getId()));
+                }
                 feeds.add(feed);
             } while (cursor.moveToNext());
         }
@@ -266,7 +263,7 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
         Feed feed = null;
         if (cursor.moveToFirst()) {
             feed = getFeedByCursor(cursor);
-            if (excludeEntries != null && !excludeEntries){
+            if (feed.isVisible() && excludeEntries != null && !excludeEntries){
                 feed.setEntries(getEntries(null, feed.getId()));
             }
         }
@@ -315,49 +312,36 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
         return rowsAffected;
     }
 
-
-    @Override
-    public void setVisibilityFeed(Long categoryId, Long feedId, boolean visible, Boolean excludeEntries) {
-        String query = null;
-        if (categoryId != null){
-            query = concatenateQueries(query, FEED_CATEGORY_ID + "=" + categoryId);
-        }
-        if (feedId != null){
-            query = concatenateQueries(query, FEED_ID + "=" + feedId);
-        }
-        ContentValues values = new ContentValues();
-        values.put(FEED_VISIBLE, visible);
-        db.update(TABLE_FEED, values, query, null);
-
-        if (excludeEntries != null && !excludeEntries){
-            setVisibilityEntry(categoryId, feedId, null, visible);
-        }
-    }
-
     @Override
     public List<Entry> getEntries(Long categoryId, Long feedId) {
-        String query = null;
-        if (categoryId != null){
-            query = concatenateQueries(query, ENTRY_CATEGORY_ID + "=" + categoryId);
-        }
-        if (feedId != null){
-            query = concatenateQueries(query, ENTRY_FEED_ID + "=" + feedId);
-        }
-
-        Cursor cursor = db.query(TABLE_ENTRY, null,
-                query, null, null, null, null);
-
-		/*
-		 * looping through all rows and adding to list
-		 */
         List<Entry> entries = new ArrayList<Entry>();
-        if (cursor.moveToFirst()) {
-            do {
-                Entry entry = getEntryByCursor(cursor);
-                entries.add(entry);
-            } while (cursor.moveToNext());
+
+        if (feedId != null){
+            Feed feed = getFeed(feedId, true);
+            if (feed != null && feed.isVisible()){
+                String query = null;
+                if (categoryId != null){
+                    query = concatenateQueries(query, ENTRY_CATEGORY_ID + "=" + categoryId);
+                }
+                if (feedId != null){
+                    query = concatenateQueries(query, ENTRY_FEED_ID + "=" + feedId);
+                }
+
+                Cursor cursor = db.query(TABLE_ENTRY, null,
+                        query, null, null, null, null);
+
+                /*
+                 * looping through all rows and adding to list
+                 */
+                if (cursor.moveToFirst()) {
+                    do {
+                        Entry entry = getEntryByCursor(cursor);
+                        entries.add(entry);
+                    } while (cursor.moveToNext());
+                }
+                cursor.close();
+            }
         }
-        cursor.close();
         return entries;
     }
 
@@ -376,18 +360,6 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
 
 
     @Override
-    public void setVisibilityCategories(Long categoryId, boolean visible, Boolean excludeFeeds, Boolean excludeEntries) {
-        ContentValues values = new ContentValues();
-        values.put(CATEGORY_VISIBLE, visible);
-        db.update(TABLE_CATEGORY, values, CATEGORY_ID + " = " + categoryId, null);
-
-        if (excludeFeeds != null && !excludeFeeds){
-            setVisibilityFeed(categoryId, null, visible, excludeEntries);
-        }
-    }
-
-
-    @Override
     public long addEntry(long categoryId, long feedId, Entry entry) {
         ContentValues values = new ContentValues();
         values.put(ENTRY_CATEGORY_ID, categoryId);
@@ -397,14 +369,36 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
         values.put(ENTRY_DATE, entry.getDate());
         values.put(ENTRY_SRC_NAME, entry.getSrcName());
         values.put(ENTRY_URL, entry.getLink());
+        values.put(ENTRY_SHORTENED_URL, entry.getShortenedLink());
         values.put(ENTRY_IMAGE_URL, entry.getImageLink());
         values.put(ENTRY_VISIBLE, entry.isVisible() ? 1 : 0);
-        values.put(ENTRY_SHORTENED_URL, entry.getShortenedLink());
+        values.put(ENTRY_VISITED_DATE, entry.getVisitedDate());
+        values.put(ENTRY_FAVORITE_DATE, entry.getFavoriteDate());
+
 		/*
 		 * Inserting Row
 		 */
         long rowId = db.insert(TABLE_ENTRY, null, values);
+        entry.setId(rowId);
         return rowId;
+    }
+
+    @Override
+    public int updateEntry(Entry entry){
+        ContentValues values = new ContentValues();
+        values.put(ENTRY_TITLE, entry.getTitle());
+        values.put(ENTRY_DESCRIPTION, entry.getDescription());
+        values.put(ENTRY_DATE, entry.getDate());
+        values.put(ENTRY_SRC_NAME, entry.getSrcName());
+        values.put(ENTRY_URL, entry.getLink());
+        values.put(ENTRY_SHORTENED_URL, entry.getShortenedLink());
+        values.put(ENTRY_IMAGE_URL, entry.getImageLink());
+        values.put(ENTRY_VISIBLE, entry.isVisible() ? 1 : 0);
+        values.put(ENTRY_VISITED_DATE, entry.getVisitedDate());
+        values.put(ENTRY_FAVORITE_DATE, entry.getFavoriteDate());
+
+        int affected = db.update(TABLE_ENTRY, values, ENTRY_ID + "=" + entry.getId(), null);
+        return affected;
     }
 
     @Override
@@ -419,40 +413,12 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
         if (entryId != null){
             query = concatenateQueries(query, ENTRY_ID + "=" + entryId);
         }
-
+        query = concatenateQueries(query, ENTRY_FAVORITE_DATE + " is null");
+        query = concatenateQueries(query, ENTRY_VISITED_DATE + " is null");
         int rowsAffected = db.delete(TABLE_ENTRY, query, null);
         return rowsAffected;
     }
 
-    @Override
-    public void setVisibilityEntry(Long categoryId, Long feedId, Long entryId, boolean visible) {
-        String query = null;
-        if (categoryId != null){
-            query = concatenateQueries(query, ENTRY_CATEGORY_ID + "=" + categoryId);
-        }
-        if (feedId != null){
-            query = concatenateQueries(query, ENTRY_FEED_ID + "=" + feedId);
-        }
-        if (entryId != null){
-            query = concatenateQueries(query, ENTRY_ID + "=" + entryId);
-        }
-
-        ContentValues values = new ContentValues();
-        values.put(ENTRY_VISIBLE, visible);
-        db.update(TABLE_ENTRY, values, query, null);
-    }
-
-    @Override
-    public void setShortenedLinkEntry(Long entryId, String shortenedLink) {
-        String query = null;
-        if (entryId != null){
-            query = concatenateQueries(query, ENTRY_ID + "=" + entryId);
-        }
-
-        ContentValues values = new ContentValues();
-        values.put(ENTRY_SHORTENED_URL, shortenedLink);
-        db.update(TABLE_ENTRY, values, query, null);
-    }
 
     @Override
     public Cursor getEntriesCursor(Long categoryId, Long feedId) {
@@ -469,46 +435,86 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
         return cursor;
     }
 
-
     @Override
-    public void updateCategoryTime(long categoryId, long lastUpdateTime){
-        ContentValues values = new ContentValues();
-        values.put(CATEGORY_LAST_UPDATE, lastUpdateTime);
-        db.update(TABLE_CATEGORY, values, CATEGORY_ID + "=" + categoryId, null);
+    public List<Entry> getFavoriteEntries(long categoryId) {
+        List<Entry> entries = new ArrayList<Entry>();
+        int maxEntries = 5;
+        String query = null;
+        query = concatenateQueries(query, ENTRY_CATEGORY_ID + "=" + categoryId);
+        query = concatenateQueries(query, ENTRY_FAVORITE_DATE + " IS NOT NULL");
+        query = concatenateQueries(query, ENTRY_FAVORITE_DATE + " > 0");
+
+        Cursor cursor = db.query(TABLE_ENTRY, null,
+                query, null, null, null, ENTRY_FAVORITE_DATE + " DESC", maxEntries+"");
+
+                /*
+                 * looping through all rows and adding to list
+                 */
+        if (cursor.moveToFirst()) {
+            do {
+                Entry entry = getEntryByCursor(cursor);
+                entries.add(entry);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return entries;
     }
 
     @Override
-    public void updateCategoryOrder(long categoryId, int order){
-        ContentValues values = new ContentValues();
-        values.put(CATEGORY_ORDER, order);
-        db.update(TABLE_CATEGORY, values, CATEGORY_ID + "=" + categoryId, null);
+    public List<Entry> getVisitedEntries(long categoryId) {
+        List<Entry> entries = new ArrayList<Entry>();
+        int maxEntries = 5;
+        String query = null;
+        query = concatenateQueries(query, ENTRY_CATEGORY_ID + "=" + categoryId);
+        query = concatenateQueries(query, ENTRY_VISITED_DATE + " IS NOT NULL");
+        query = concatenateQueries(query, ENTRY_VISITED_DATE + " > 0");
+
+        Cursor cursor = db.query(TABLE_ENTRY, null,
+                query, null, null, null, ENTRY_VISITED_DATE + " DESC", maxEntries+"");
+
+                /*
+                 * looping through all rows and adding to list
+                 */
+        if (cursor.moveToFirst()) {
+            do {
+                Entry entry = getEntryByCursor(cursor);
+                entries.add(entry);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return entries;
     }
 
     @Override
-    public void updateCategoryName(long categoryId, String name) {
-        ContentValues values = new ContentValues();
-        values.put(CATEGORY_NAME, name);
-        db.update(TABLE_CATEGORY, values, CATEGORY_ID + "=" + categoryId, null);
+    public void removeAllCategories() {
+        db.delete(TABLE_CATEGORY, null, null);
+        db.delete(TABLE_ENTRY, null, null);
+        db.delete(TABLE_FEED, null, null);
     }
 
     @Override
-    public void updateCategoryColor(long categoryId, int color) {
+    public int updateCategory(Category category){
         ContentValues values = new ContentValues();
-        values.put(CATEGORY_COLOR, color);
-        db.update(TABLE_CATEGORY, values, CATEGORY_ID + "=" + categoryId, null);
-    }
-    @Override
-    public void updateFeedUrl(long feedId, String newUrl) {
-        ContentValues values = new ContentValues();
-        values.put(FEED_URL, newUrl);
-        db.update(TABLE_FEED, values, FEED_ID + "=" + feedId, null);
+        values.put(CATEGORY_COLOR, category.getColor());
+        values.put(CATEGORY_NAME, category.getName());
+        values.put(CATEGORY_LAST_UPDATE, category.getLastUpdateTime());
+        values.put(CATEGORY_VISIBLE, category.isVisible() ? 1 : 0);
+        values.put(CATEGORY_ORDER, category.getOrder());
+
+        int affected = db.update(TABLE_CATEGORY, values, CATEGORY_ID + "=" + category.getId(), null);
+        return affected;
     }
 
     @Override
-    public void updateFeedVisible(long feedId, boolean visible) {
+    public int updateFeed(Feed feed){
         ContentValues values = new ContentValues();
-        values.put(FEED_VISIBLE, visible ? 1 : 0);
-        db.update(TABLE_FEED, values, FEED_ID + "=" + feedId, null);
+        values.put(FEED_CATEGORY_ID, feed.getCategoryId());
+        values.put(FEED_TITLE, feed.getTitle());
+        values.put(FEED_DESCRIPTION, feed.getDescription());
+        values.put(FEED_URL, feed.getUrl());
+        values.put(FEED_VISIBLE, feed.isVisible() ? 1 : 0);
+        int affected = db.update(TABLE_FEED, values, FEED_ID + "=" + feed.getId(), null);
+        return affected;
     }
 
     private Category getCategoryByCursor(Cursor cursor) {
@@ -524,7 +530,7 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
         category.setColor(color);
         category.setName(name);
         category.setLastUpdateTime(lastUpdate);
-        category.setVisible(visible > 0);
+        category.setVisible(visible == 1);
         category.setOrder(order);
         return category;
     }
@@ -542,7 +548,7 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
         feed.setTitle(title);
         feed.setDescription(description);
         feed.setUrl(url);
-        feed.setVisible(visible > 0);
+        feed.setVisible(visible == 1);
         return feed;
     }
     private Entry getEntryByCursor(Cursor cursor) {
@@ -554,9 +560,11 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
         long date = cursor.getLong(5);
         String src = cursor.getString(6);
         String url = cursor.getString(7);
-        String imageUrl = cursor.getString(8);
-        int visible = cursor.getInt(9);
-        String shortenedUrl = cursor.getString(10);
+        String shortenedUrl = cursor.getString(8);
+        String imageUrl = cursor.getString(9);
+        int visible = cursor.getInt(10);
+        Long visited = cursor.getLong(11);
+        Long favorite = cursor.getLong(12);
 
         Entry entry = new Entry();
         entry.setId(id);
@@ -570,6 +578,8 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
         entry.setImageLink(imageUrl);
         entry.setVisible(visible > 0);
         entry.setShortenedLink(shortenedUrl);
+        entry.setVisitedDate(visited);
+        entry.setFavoriteDate(favorite);
         return entry;
     }
 

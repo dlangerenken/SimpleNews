@@ -3,7 +3,7 @@
 
     <string name="app_name">SimpleNews</string>
     <string name="action_settings">Einstellungen</string>
-    <string name="settings">Einstellungen</string>
+    <string name="categories">Kategorien</string>
     <string name="about_ok">OK</string>
     <string name="changelog_title">Versionen</string>
     <string name="changelog_menu">Versionen</string>
@@ -33,9 +33,31 @@
     <string name="rename_feed">Ändere die Adresse des Feeds</string>
     <string name="new_feed_url_header">Neue Adresse des Feeds</string>
 
+    <string name="simple_news_title">Nachrichten</string>
+
     <plurals name="countdown_seconds">
         <item quantity="one">Entferne in 1...</item>
         <item quantity="other">Entferne in %d...</item>
     </plurals>
-    <string name="categories_title"><![CDATA[Kategorien - Einstellung]]></string>
+    <string name="categories_title"><![CDATA[Kategorien]]></string>
+    <string name="cancel_menu">Abbrechen</string>
+    <string name="hint_add_entry">Adresse des Feeds</string>
+    <string name="rate_my_app_desc">Wenn dir %s gefällt, überlege bitte, eine Bewertung abzugeben. Danke für deine Unterstützung!</string>
+    <string name="rate_my_app_title">Bewerte %s</string>
+    <string name="rate_my_app_now">Jetzt Bewerten</string>
+    <string name="rate_my_app_later">Später</string>
+    <string name="rate_my_app_never">Nein, Danke.</string>
+    <string name="playstore_not_found">Der Playstore konnte nicht gefunden werden. Bitte starte Ihn manuell und gib deine Bewertung ab.</string>
+    <string name="restore_categories">Zurücksetzen</string>
+    <string name="add_category">Hinzufügen</string>
+    <string name="restore_categories_yes">Ja, zurücksetzen.</string>
+    <string name="restore_categories_no">Nein, Abbrechen.</string>
+    <string name="restore_categories_title">Ursprungszustand wiederherstellen?</string>
+    <string name="restore_categories_message">Achtung! Alle gesicherten Daten werden gelöscht!</string>
+    <string name="feed_title_not_found">Keinen Titel gefunden</string>
+
+    <string name="nav_more">Mehr</string>
+    <string name="nav_favorites">Favoriten</string>
+    <string name="nav_no_entries">Keine Einträge gefunden</string>
+    <string name="nav_recently_opened">Zuletzt geöffnet</string>
 </resources>

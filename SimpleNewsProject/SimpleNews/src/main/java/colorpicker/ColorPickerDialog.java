@@ -50,8 +50,8 @@ public class ColorPickerDialog extends DialogFragment implements OnColorSelected
     protected static final String KEY_COLUMNS = "columns";
     protected static final String KEY_SIZE = "size";
 
-    protected int mTitleResId = R.string.color_picker_default_title;
-    protected Integer mMessageResId = null;
+    protected String mTitle = null;
+    protected String mMessage = null;
     protected int[] mColors = null;
     protected int mSelectedColor;
     protected int mColumns;
@@ -66,23 +66,24 @@ public class ColorPickerDialog extends DialogFragment implements OnColorSelected
         // Empty constructor required for dialog fragments.
     }
 
-    public static ColorPickerDialog newInstance(int titleResId, int[] colors, int selectedColor,
-                                                int columns, int size, Integer messageResId) {
+    public static ColorPickerDialog newInstance(String title, int[] colors, int selectedColor,
+                                                int columns, int size, String message) {
         ColorPickerDialog ret = new ColorPickerDialog();
-        ret.initialize(titleResId, colors, selectedColor, columns, size, messageResId);
+        ret.initialize(title, colors, selectedColor, columns, size, message);
         return ret;
     }
 
-    public void initialize(int titleResId, int[] colors, int selectedColor, int columns, int size, Integer messageResId) {
-        setArguments(titleResId, columns, size, messageResId);
+    public void initialize(String title, int[] colors, int selectedColor,
+                           int columns, int size, String message) {
+        setArguments(title, columns, size, message);
         setColors(colors, selectedColor);
     }
 
-    public void setArguments(int titleResId, int columns, int size, Integer messageResId) {
+    public void setArguments(String title, int columns, int size, String message) {
         Bundle bundle = new Bundle();
-        bundle.putInt(KEY_TITLE_ID, titleResId);
-        if (messageResId != null){
-            bundle.putInt(KEY_MESSAGE_ID, messageResId);
+        bundle.putString(KEY_TITLE_ID, title);
+        if (message != null){
+            bundle.putString(KEY_MESSAGE_ID, message);
         }
         bundle.putInt(KEY_COLUMNS, columns);
         bundle.putInt(KEY_SIZE, size);
@@ -98,8 +99,8 @@ public class ColorPickerDialog extends DialogFragment implements OnColorSelected
         super.onCreate(savedInstanceState);
 
         if (getArguments() != null) {
-            mTitleResId = getArguments().getInt(KEY_TITLE_ID);
-            mMessageResId = getArguments().getInt(KEY_MESSAGE_ID);
+            mTitle = getArguments().getString(KEY_TITLE_ID);
+            mMessage = getArguments().getString(KEY_MESSAGE_ID);
             mColumns = getArguments().getInt(KEY_COLUMNS);
             mSize = getArguments().getInt(KEY_SIZE);
         }
@@ -124,15 +125,15 @@ public class ColorPickerDialog extends DialogFragment implements OnColorSelected
             //showProgressBarView();
         }
 
-        if (mMessageResId != 0){
+        if (mMessage != null){
             mAlertDialog = new AlertDialog.Builder(activity)
-                    .setTitle(mTitleResId)
-                    .setMessage(mMessageResId)
+                    .setTitle(mTitle)
+                    .setMessage(mMessage)
                     .setView(view)
                     .create();
         }else{
             mAlertDialog = new AlertDialog.Builder(activity)
-                    .setTitle(mTitleResId)
+                    .setTitle(mTitle)
                     .setView(view)
                     .create();
         }

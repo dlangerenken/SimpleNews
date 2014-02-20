@@ -19,11 +19,15 @@ public class Entry implements Comparable<Entry>, Serializable{
 
     private boolean visible = true;
 
-    public Entry(){
+    private Long favoriteDate;
+    private Long visitedDate;
 
+
+
+    public Entry(){
     }
 
-    public Entry(long id, long feedId, long categoryId, String title, String description, Long date, String srcName, String link, String imageLink){
+    public Entry(long id, long feedId, long categoryId, String title, String description, Long date, String srcName, String link, String imageLink, Long visitedDate, Long favoriteDate){
         this.id = id;
         this.feedId = feedId;
         this.categoryId = categoryId;
@@ -33,6 +37,8 @@ public class Entry implements Comparable<Entry>, Serializable{
         this.srcName = srcName;
         this.link = link;
         this.imageLink = imageLink;
+        this.favoriteDate = favoriteDate;
+        this.visitedDate = visitedDate;
     }
 
     public long getId() {
@@ -133,7 +139,9 @@ public class Entry implements Comparable<Entry>, Serializable{
         }
         if (getDate() > another.getDate()){
             return -1;
-        }else{
+        }else if (getDate() == another.getDate()){
+            return 0;
+        }else {
             return 1;
         }
     }
@@ -144,5 +152,25 @@ public class Entry implements Comparable<Entry>, Serializable{
             return String.format("%s - %s", title, shortenedLink);
         }
         return String.format("%s - %s", title, link);
+    }
+
+    public Long getVisitedDate() {
+        return visitedDate;
+    }
+
+    public void setVisitedDate(Long visitedDate) {
+        this.visitedDate = visitedDate;
+    }
+
+    public void setDate(Long date) {
+        this.date = date;
+    }
+
+    public Long getFavoriteDate() {
+        return favoriteDate;
+    }
+
+    public void setFavoriteDate(Long favoriteDate) {
+        this.favoriteDate = favoriteDate;
     }
 }

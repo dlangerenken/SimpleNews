@@ -13,6 +13,9 @@ public class PrefUtilities {
     private static PrefUtilities _instance;
 
     public static final String XML_LOADED = "xmlLoaded";
+    public static final String ASK_FOR_RATING = "ask_for_rating";
+    public static final String LAUNCH_COUNT = "launch_count";
+    public static final String FIRST_DAY_OF_LAUNCH = "first_launch_time";
 
     /**
      * Remember the position of the selected item.
@@ -55,4 +58,31 @@ public class PrefUtilities {
         preferences.edit().putBoolean(PREF_USER_LEARNED_DRAWER, b).commit();
     }
 
+    public void shouldNotAskForRatingAnymore(){
+        preferences.edit().putBoolean(ASK_FOR_RATING, false).commit();
+    }
+    public boolean shouldAskForRatingAgain() {
+        return preferences.getBoolean(ASK_FOR_RATING, true);
+    }
+
+    public void increaseLaunchCountForRating() {
+        int count = getLaunchCount();
+        preferences.edit().putInt(LAUNCH_COUNT, count+1).commit();
+    }
+
+    public long getDateOfFirstLaunch() {
+        return preferences.getLong(FIRST_DAY_OF_LAUNCH, 0);
+    }
+
+    public void setDateOfFirstLaunch(long date) {
+        preferences.edit().putLong(FIRST_DAY_OF_LAUNCH, date).commit();
+    }
+
+    public int getLaunchCount() {
+        return preferences.getInt(LAUNCH_COUNT, 0);
+    }
+
+    public void setXMLAlreadyLoaded(boolean b) {
+
+    }
 }

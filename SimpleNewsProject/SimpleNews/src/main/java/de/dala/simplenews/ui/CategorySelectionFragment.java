@@ -3,24 +3,24 @@ package de.dala.simplenews.ui;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.internal.s;
-import com.haarman.listviewanimations.ArrayAdapter;
-import com.haarman.listviewanimations.itemmanipulation.contextualundo.ContextualUndoAdapter;
-import com.haarman.listviewanimations.view.DynamicListView;
+import com.actionbarsherlock.app.SherlockFragment;
+import com.actionbarsherlock.view.ActionMode;
+import com.nhaarman.listviewanimations.ArrayAdapter;
+
+import de.dala.simplenews.utilities.MyDynamicListView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +31,7 @@ import colorpicker.OnColorSelectedListener;
 import de.dala.simplenews.R;
 import de.dala.simplenews.common.Category;
 import de.dala.simplenews.database.DatabaseHandler;
+import de.dala.simplenews.utilities.PrefUtilities;
 import de.dala.simplenews.utilities.UIUtils;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
@@ -38,15 +39,18 @@ import de.keyboardsurfer.android.widget.crouton.Style;
 /**
  * Created by Daniel on 29.12.13.
  */
-public class CategorySelectionFragment extends Fragment implements ContextualUndoAdapter.DeleteItemCallback {
+public class CategorySelectionFragment extends SherlockFragment {
 
     public interface OnCategoryClicked {
         void onMoreClicked(Category category);
         void onRSSSavedClick(Category category, String rssPath);
+        void onRestore();
     }
 
+    private ActionMode mActionMode;
+
     private List<Category> categories;
-    private DynamicListView categoryListView;
+    private MyDynamicListView categoryListView;
     private CategoryListAdapter adapter;
     private boolean fromRSS;
     private String rssPath;
@@ -72,6 +76,9 @@ public class CategorySelectionFragment extends Fragment implements ContextualUnd
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        getSherlockActivity().getSupportActionBar().setTitle(getString(R.string.categories_title));
+        getSherlockActivity().getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         this.categoryClicked = UIUtils.getParent(this, OnCategoryClicked.class);
         if (categoryClicked == null){
             throw new ClassCastException("No Parent with Interface OnCategoryClicked");
@@ -84,8 +91,19 @@ public class CategorySelectionFragment extends Fragment implements ContextualUnd
             topTextView.setVisibility(View.VISIBLE);
         }
 
-        categoryListView = (DynamicListView) rootView.findViewById(R.id.listView);
+        categoryListView = (MyDynamicListView) rootView.findViewById(R.id.listView);
         categoryListView.setDivider(null);
+        categoryListView.setAdditionalOnLongItemClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                onListItemCheck(position);
+                if (adapter.getSelectedCount() > 1){
+                    return true;
+                }
+                return false;
+            }
+        });
+
         initAdapter();
         return rootView;
     }
@@ -100,60 +118,60 @@ public class CategorySelectionFragment extends Fragment implements ContextualUnd
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+    public void onCreateOptionsMenu(com.actionbarsherlock.view.Menu menu, com.actionbarsherlock.view.MenuInflater inflater) {
         inflater.inflate(R.menu.category_selection_menu, menu);
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(com.actionbarsherlock.view.MenuItem item) {
         switch (item.getItemId()){
             case R.id.new_category:
                 createCategoryClicked();
+                return true;
+            case R.id.restore_categories:
+                new AlertDialog.Builder(getActivity()).setTitle(getActivity().getString(R.string.restore_categories_title)).setMessage(getActivity().getString(R.string.restore_categories_message))
+                        .setPositiveButton(getActivity().getString(R.string.restore_categories_yes), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                DatabaseHandler.getInstance().removeAllCategories();
+                                PrefUtilities.getInstance().saveLoading(false);
+                                categoryClicked.onRestore();
+                            }
+                        })
+                        .setNegativeButton(getActivity().getString(R.string.restore_categories_no), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        }).create().show();
+                return true;
+            case android.R.id.home:
+                Intent intent = new Intent(getSherlockActivity(), MainActivity.class);
+                startActivity(intent);
+                getSherlockActivity().finish();
                 return true;
         }
         return false;
     }
 
-
     private void initAdapter() {
         adapter = new CategoryListAdapter(getActivity(), categories);
-        ContextualUndoAdapter undoAdapter = new ContextualUndoAdapter(adapter, R.layout.undo_row, R.id.undo_row_undobutton, 5000, R.id.undo_row_texttv, new MyFormatCountDownCallback());
-        undoAdapter.setAbsListView(categoryListView);
-        undoAdapter.setDeleteItemCallback(this);
-        categoryListView.setAdapter(undoAdapter);
+        categoryListView.setAdapter(adapter);
     }
 
-    @Override
-    public void deleteItem(int position) {
-        Category category = adapter.getItem(position);
-        adapter.remove(position);
-        adapter.notifyDataSetChanged();
-
-        DatabaseHandler.getInstance().removeCategory(category.getId(), false, false);
-        categories.remove(category);
-    }
-
-    private class MyFormatCountDownCallback implements ContextualUndoAdapter.CountDownFormatter {
-
-        @Override
-        public String getCountDownString(long millisUntilFinished) {
-            int seconds = (int) Math.ceil((millisUntilFinished / 1000.0));
-            if (seconds > 0) {
-                return getResources().getQuantityString(R.plurals.countdown_seconds, seconds, seconds);
-            }
-            return getString(R.string.countdown_dismissing);
-        }
-    }
 
     private class CategoryListAdapter extends ArrayAdapter<Category> {
 
+        private int recentChangedViewId = -1;
         private Context context;
         private DatabaseHandler database;
+        private SparseBooleanArray mSelectedItemIds;
 
         public CategoryListAdapter(Context context, List<Category> categories) {
             super(categories);
             this.context = context;
             this.database = DatabaseHandler.getInstance();
+            mSelectedItemIds = new SparseBooleanArray();
         }
 
         @Override
@@ -167,7 +185,7 @@ public class CategorySelectionFragment extends Fragment implements ContextualUnd
         }
 
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
+        public View getView(final int position, View convertView, ViewGroup parent) {
             Category category = getItem(position);
 
             if (convertView == null){
@@ -177,13 +195,14 @@ public class CategorySelectionFragment extends Fragment implements ContextualUnd
                 viewHolder.name = (TextView) convertView.findViewById(R.id.name);
                 viewHolder.color = (ImageView) convertView.findViewById(R.id.color);
                 viewHolder.more = (ImageView) convertView.findViewById(R.id.more);
-                viewHolder.show = (ImageView) convertView.findViewById(R.id.show);
+                viewHolder.show = (CheckBox) convertView.findViewById(R.id.show);
                 viewHolder.edit = (ImageView) convertView.findViewById(R.id.edit);
                 convertView.setTag(viewHolder);
             }
             ViewHolder holder = (ViewHolder) convertView.getTag();
             holder.name.setText(category.getName());
             holder.color.setBackgroundColor(category.getColor());
+            holder.show.setChecked(category.isVisible());
             if (!fromRSS){
                 holder.edit.setOnClickListener(new CategoryItemClickListener(category));
                 holder.color.setOnClickListener(new CategoryItemClickListener(category));
@@ -195,8 +214,12 @@ public class CategorySelectionFragment extends Fragment implements ContextualUnd
                 holder.more.setVisibility(View.GONE);
                 convertView.setOnClickListener(new CategoryItemRSSClickListener(category));
             }
+            switchBackgroundOfView(position, convertView);
+           return convertView;
+        }
 
-            return convertView;
+        private void switchBackgroundOfView(int position, View view){
+            view.setBackgroundResource(mSelectedItemIds.get(position) ? R.drawable.card_background_blue : R.drawable.card_background_white);
         }
 
         @Override
@@ -204,8 +227,17 @@ public class CategorySelectionFragment extends Fragment implements ContextualUnd
             Category temp = getItem(positionOne);
             set(positionOne, getItem(positionTwo));
             set(positionTwo, temp);
-            database.updateCategoryOrder(getItem(positionOne).getId(), positionOne);
-            database.updateCategoryOrder(getItem(positionTwo).getId(), positionTwo);
+            Category one = getItem(positionOne);
+            one.setOrder(positionOne);
+            Category two = getItem(positionTwo);
+            two.setOrder(positionTwo);
+            database.updateCategory(one);
+            database.updateCategory(two);
+
+            if (mActionMode != null){
+                mActionMode.finish();
+            }
+            adapter.removeSelection();
         }
 
         class ViewHolder {
@@ -213,7 +245,38 @@ public class CategorySelectionFragment extends Fragment implements ContextualUnd
             public ImageView color;
             public ImageView more;
             public ImageView edit;
-            public ImageView show;
+            public CheckBox show;
+        }
+
+        public void toggleSelection(int position) {
+            recentChangedViewId = position;
+            selectView(position, !mSelectedItemIds.get(position));
+        }
+
+        public void selectView(int position, boolean value)
+        {
+            if(value){
+                mSelectedItemIds.put(position, value);
+            }else{
+                mSelectedItemIds.delete(position);
+            }
+
+            switchBackgroundOfView(position, categoryListView.getChildAt(position));
+        }
+
+        public int getSelectedCount() {
+            return mSelectedItemIds.size();
+        }
+
+        public SparseBooleanArray getSelectedIds() {
+            return mSelectedItemIds;
+        }
+
+        public void removeSelection() {
+            mSelectedItemIds = new SparseBooleanArray();
+            if (recentChangedViewId > -1){
+                switchBackgroundOfView(recentChangedViewId, categoryListView.getChildAt(recentChangedViewId));
+            }
         }
     }
 
@@ -247,11 +310,32 @@ public class CategorySelectionFragment extends Fragment implements ContextualUnd
                     editClicked(category);
                     break;
                 case R.id.show:
+                    boolean visible = !category.isVisible();
+                    category.setVisible(visible);
+                    DatabaseHandler.getInstance().updateCategory(category);
                     break;
                 case R.id.more:
                     categoryClicked.onMoreClicked(category);
                     break;
             }
+        }
+    }
+
+    private void onListItemCheck(int position) {
+        adapter.toggleSelection(position);
+        boolean hasCheckedItems = adapter.getSelectedCount() > 0;
+
+        if (hasCheckedItems && mActionMode == null){
+            // there are some selected items, start the actionMode
+            mActionMode = getSherlockActivity().startActionMode(new ActionModeCallBack());
+        }
+        else if (!hasCheckedItems && mActionMode != null){
+            // there no selected items, finish the actionMode
+            mActionMode.finish();
+        }
+
+        if(mActionMode != null){
+            mActionMode.setTitle(String.valueOf(adapter.getSelectedCount()));
         }
     }
 
@@ -289,7 +373,7 @@ public class CategorySelectionFragment extends Fragment implements ContextualUnd
                         String newName = input.getText().toString();
                         category.setName(newName);
                         adapter.notifyDataSetChanged();
-                        DatabaseHandler.getInstance().updateCategoryName(category.getId(), newName);
+                        DatabaseHandler.getInstance().updateCategory(category);
                         Toast.makeText(getActivity(), String.format(getActivity().getString(R.string.new_name), newName), Toast.LENGTH_SHORT).show();
                         break;
                     case DialogInterface.BUTTON_NEGATIVE:
@@ -305,14 +389,14 @@ public class CategorySelectionFragment extends Fragment implements ContextualUnd
 
     private void onColorClicked(final Category category){
         ColorPickerDialog colorCalendar = ColorPickerDialog.newInstance(
-                R.string.color_picker_default_title,
+                category.getName(),
                 ColorUtils.colorChoice(getActivity()), category.getColor(), 4,
-                ColorUtils.isTablet(getActivity()) ? ColorPickerDialog.SIZE_LARGE : ColorPickerDialog.SIZE_SMALL, null);
+                ColorUtils.isTablet(getActivity()) ? ColorPickerDialog.SIZE_LARGE : ColorPickerDialog.SIZE_SMALL, String.format("%s %s:", getString(R.string.color_picker_default_title), category.getName()));
         colorCalendar.setOnColorSelectedListener(new OnColorSelectedListener() {
             @Override
             public void onColorSelected(int color) {
                 category.setColor(color);
-                DatabaseHandler.getInstance().updateCategoryColor(category.getId(), color);
+                DatabaseHandler.getInstance().updateCategory(category);
                 adapter.notifyDataSetChanged();
             }
         });
@@ -321,9 +405,9 @@ public class CategorySelectionFragment extends Fragment implements ContextualUnd
 
     private void selectColor(final String categoryName){
         ColorPickerDialog colorCalendar = ColorPickerDialog.newInstance(
-                R.string.create_category_2_2,
+                getString(R.string.create_category_2_2),
                 ColorUtils.colorChoice(getActivity()), 0, 4,
-                ColorUtils.isTablet(getActivity()) ? ColorPickerDialog.SIZE_LARGE : ColorPickerDialog.SIZE_SMALL, R.string.select_color_create_category);
+                ColorUtils.isTablet(getActivity()) ? ColorPickerDialog.SIZE_LARGE : ColorPickerDialog.SIZE_SMALL, getString(R.string.select_color_create_category));
         colorCalendar.setOnColorSelectedListener(new OnColorSelectedListener() {
             @Override
             public void onColorSelected(int color) {
@@ -339,5 +423,60 @@ public class CategorySelectionFragment extends Fragment implements ContextualUnd
             }
         });
         colorCalendar.show(getChildFragmentManager(), "dash");
+    }
+
+    private class ActionModeCallBack implements ActionMode.Callback {
+
+        @Override
+        public boolean onCreateActionMode(ActionMode mode, com.actionbarsherlock.view.Menu menu) {
+            // inflate contextual menu
+            mode.getMenuInflater().inflate(R.menu.contextual_category_selection_menu, menu);
+            return true;
+        }
+
+
+        @Override
+        public boolean onPrepareActionMode(ActionMode mode, com.actionbarsherlock.view.Menu menu) {
+            return false;
+        }
+
+        @Override
+        public boolean onActionItemClicked(ActionMode mode, com.actionbarsherlock.view.MenuItem item) {
+            // retrieve selected items and print them out
+            SparseBooleanArray selected = adapter.getSelectedIds();
+            List<Category> selectedCategories = new ArrayList<Category>();
+            for (int i = 0; i < selected.size(); i++){
+                if (selected.valueAt(i)) {
+                    Category selectedItem = adapter.getItem(selected.keyAt(i));
+                    selectedCategories.add(selectedItem);
+                }
+            }
+            // close action mode
+            switch (item.getItemId()){
+                case R.id.menu_item_remove:
+                    removeSelectedCategories(selectedCategories);
+                    break;
+                case R.id.menu_item_share:
+                    break;
+            }
+            mode.finish();
+            return false;
+        }
+
+        @Override
+        public void onDestroyActionMode(ActionMode mode) {
+            // remove selection
+            adapter.removeSelection();
+            mActionMode = null;
+        }
+    }
+
+    private void removeSelectedCategories(List<Category> selectedCategories) {
+        for (Category category : selectedCategories){
+            adapter.remove(category);
+            DatabaseHandler.getInstance().removeCategory(category.getId(), false, false);
+            categories.remove(category);
+        }
+        adapter.notifyDataSetChanged();
     }
 }
