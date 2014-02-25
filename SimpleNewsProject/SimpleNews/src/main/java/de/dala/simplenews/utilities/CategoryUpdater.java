@@ -279,7 +279,7 @@ public class CategoryUpdater {
             desc = desc.replaceAll("\\<.*?>","").replace("()", "").replace("&nbsp;", "");
         }
 
-        return new Entry(-1, feedId, category.getId(), item.getTitle(), desc, time, source, url, mediaUri, null, null);
+        return new Entry(-1, feedId, category.getId(), item.getTitle() != null ? item.getTitle().trim() : item.getTitle(), desc, time, source, url, mediaUri, null, null);
     }
 
     private void sendMessage(Object message, int type){

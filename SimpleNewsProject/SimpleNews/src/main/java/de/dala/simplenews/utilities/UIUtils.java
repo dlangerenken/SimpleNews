@@ -15,6 +15,11 @@
  */
 package de.dala.simplenews.utilities;
 
+import android.content.res.ColorStateList;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.StateListDrawable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.text.Html;
@@ -74,5 +79,60 @@ public class UIUtils {
             }
         }
         return null;
+    }
+
+    public static StateListDrawable getStateListDrawableByColor(int color) {
+        Drawable colorDrawable = new ColorDrawable(color);
+        return getStateListDrawableByColorDrawable(colorDrawable);
+
+    }
+
+    public static StateListDrawable getStateListDrawableByColorDrawable(Drawable colorDrawable) {
+        StateListDrawable stateList = new StateListDrawable();
+        stateList.addState(new int[] { android.R.attr.state_pressed }, colorDrawable);
+        stateList.addState(new int[] { android.R.attr.state_focused }, colorDrawable);
+        stateList.addState(new int[] { android.R.attr.state_checked }, colorDrawable);
+        stateList.addState(new int[] { android.R.attr.state_selected }, colorDrawable);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.GINGERBREAD_MR1) {
+            stateList.addState(new int[] { android.R.attr.state_activated }, colorDrawable);
+        }
+        stateList.addState(new int[] {}, new ColorDrawable(Color.WHITE));
+        return stateList;
+    }
+
+    public static ColorStateList getColorTextStateList() {
+        ColorStateList colorStateList;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.GINGERBREAD_MR1) {
+            colorStateList = new ColorStateList (
+                    new int [] [] {
+                            new int [] {android.R.attr.state_pressed},
+                            new int [] {android.R.attr.state_focused},
+                            new int [] {android.R.attr.state_activated},
+                            new int [] {android.R.attr.state_selected},
+                            new int [] {}
+                    },
+                    new int [] {
+                            Color.WHITE,
+                            Color.WHITE,
+                            Color.WHITE,
+                            Color.WHITE,
+                            Color.BLACK
+                    });
+        }else{
+            colorStateList = new ColorStateList (
+                    new int [] [] {
+                            new int [] {android.R.attr.state_pressed},
+                            new int [] {android.R.attr.state_focused},
+                            new int [] {android.R.attr.state_selected},
+                            new int [] {}
+                    },
+                    new int [] {
+                            Color.WHITE,
+                            Color.WHITE,
+                            Color.WHITE,
+                            Color.BLACK
+                    });
+        }
+        return colorStateList;
     }
 }

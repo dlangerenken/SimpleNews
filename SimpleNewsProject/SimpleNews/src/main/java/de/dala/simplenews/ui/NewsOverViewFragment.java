@@ -59,6 +59,11 @@ public class NewsOverViewFragment extends SherlockFragment implements ViewPager.
     private int loadingNews = -1;
     private TextView progressText;
     private MainActivity mainActivity;
+    private int entryType;
+
+    public NewsOverViewFragment(int entryType) {
+        this.entryType = entryType;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -77,6 +82,8 @@ public class NewsOverViewFragment extends SherlockFragment implements ViewPager.
         if (!PrefUtilities.getInstance().xmlIsAlreadyLoaded()) {
             loadXml();
         }
+        mainActivity.getSupportActionBar().setTitle(getString(R.string.simple_news_title));
+        mainActivity.getSupportActionBar().setHomeButtonEnabled(true);
         categories = databaseHandler.getCategories(null, null, true);
 
         if (categories != null && !categories.isEmpty()){
@@ -177,8 +184,8 @@ public class NewsOverViewFragment extends SherlockFragment implements ViewPager.
         }
     }
 
-    public static Fragment getInstance() {
-        return new NewsOverViewFragment();
+    public static Fragment getInstance(int entryType) {
+        return new NewsOverViewFragment(entryType);
     }
 
 
@@ -200,7 +207,7 @@ public class NewsOverViewFragment extends SherlockFragment implements ViewPager.
 
         @Override
         public Fragment getItem(int position) {
-            Fragment fragment = ExpandableNewsFragment.newInstance(categories.get(position));
+            Fragment fragment = ExpandableNewsFragment.newInstance(categories.get(position), entryType);
             return fragment;
         }
     }

@@ -19,11 +19,28 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical">
-        <TextView
+
+        <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="16sp"
-            android:id="@+id/title"/>
+            android:orientation="horizontal">
+            <ImageView
+                android:layout_marginLeft="8dp"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:id="@+id/image"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentRight="true"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:layout_alignParentLeft="true"
+                android:layout_toLeftOf="@id/image"
+                android:id="@+id/title"/>
+            </RelativeLayout>
+
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

@@ -6,20 +6,34 @@
         <item >Favorites</item>
         <item >Recently Opened</item>
         <item >Categories</item>
-        <item >Search</item>
-        <item >Settings</item>
         <item >Changelog</item>
+        <item >Settings</item>
+        <item >Search</item>
     </string-array>
 
     <!-- Nav Drawer List Item Icons -->
     <array name="nav_drawer_icons">
         <item>@drawable/ic_nav_home</item>
+        <item>@drawable/ic_nav_categories</item>
+        <item>@android:drawable/ic_menu_agenda</item>
+        <item>@android:drawable/ic_menu_preferences</item>
+        <item>@android:drawable/ic_search_category_default</item>
         <item>@drawable/ic_nav_fav</item>
         <item>@drawable/ic_nav_recently_used</item>
-        <item>@drawable/ic_nav_categories</item>
-        <item>@android:drawable/ic_search_category_default</item>
-        <item>@android:drawable/ic_menu_preferences</item>
-        <item>@android:drawable/ic_menu_agenda</item>
     </array>
+
+        <string-array name="listOptions">
+            <item>Every hour</item>
+            <item>Every 4 hours</item>
+            <item>Every 8 hours</item>
+            <item>Every day</item>
+        </string-array>
+
+        <string-array name="listValues">
+            <item>3600000</item>
+            <item>14400000</item>
+            <item>28800000</item>
+            <item>86400000</item>
+        </string-array>
 
 </resources>

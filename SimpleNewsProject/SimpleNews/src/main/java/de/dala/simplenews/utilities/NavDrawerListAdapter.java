@@ -34,33 +34,8 @@ public class NavDrawerListAdapter extends BaseAdapter {
         this.context = context;
         this.navDrawerItems = navDrawerItems;
         colorDrawable = new ColorDrawable(Color.BLACK);
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.GINGERBREAD_MR1) {
-            colorStateList = new ColorStateList (
-                    new int [] [] {
-                            new int [] {android.R.attr.state_pressed},
-                            new int [] {android.R.attr.state_focused},
-                            new int [] {android.R.attr.state_activated},
-                            new int [] {}
-                    },
-                    new int [] {
-                            Color.WHITE,
-                            Color.WHITE,
-                            Color.WHITE,
-                            Color.BLACK
-                    });
-        }else{
-            colorStateList = new ColorStateList (
-                    new int [] [] {
-                            new int [] {android.R.attr.state_pressed},
-                            new int [] {android.R.attr.state_focused},
-                            new int [] {}
-                    },
-                    new int [] {
-                            Color.WHITE,
-                            Color.WHITE,
-                            Color.BLACK
-                    });
-        }
+        colorStateList = UIUtils.getColorTextStateList();
+
     }
 
     @Override
@@ -89,14 +64,7 @@ public class NavDrawerListAdapter extends BaseAdapter {
         TextView txtTitle = (TextView) convertView.findViewById(R.id.title);
         TextView txtCount = (TextView) convertView.findViewById(R.id.counter);
 
-        StateListDrawable stateList = new StateListDrawable();
-        stateList.addState(new int[] { android.R.attr.state_pressed }, colorDrawable);
-        stateList.addState(new int[] { android.R.attr.state_focused }, colorDrawable);
-        stateList.addState(new int[] { android.R.attr.state_checked }, colorDrawable);
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.GINGERBREAD_MR1) {
-            stateList.addState(new int[] { android.R.attr.state_activated }, colorDrawable);
-        }
-        stateList.addState(new int[] {}, new ColorDrawable(Color.WHITE));
+        StateListDrawable stateList = UIUtils.getStateListDrawableByColorDrawable(colorDrawable);
         convertView.setBackgroundDrawable(stateList);
         txtTitle.setTextColor(colorStateList);
 

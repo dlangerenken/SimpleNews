@@ -132,18 +132,7 @@ public class Entry implements Comparable<Entry>, Serializable{
 
     @Override
     public int compareTo(Entry another) {
-        if (getDate() == null){
-            return -1;
-        }else if (another.getDate() == null){
-            return 1;
-        }
-        if (getDate() > another.getDate()){
-            return -1;
-        }else if (getDate() == another.getDate()){
-            return 0;
-        }else {
-            return 1;
-        }
+        return getDate().compareTo(another.getDate());
     }
 
     @Override

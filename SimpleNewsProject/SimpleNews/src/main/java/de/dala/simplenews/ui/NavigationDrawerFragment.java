@@ -66,12 +66,12 @@ public class NavigationDrawerFragment extends SherlockFragment {
     private ArrayList<NavDrawerItem> navDrawerItems;
 
     public static final int HOME = 0;
-    public static final int FAVORITE = 1;
-    public static final int RECENT = 2;
-    public static final int CATEGORIES = 3;
+    public static final int CATEGORIES = 1;
+    public static final int CHANGELOG = 2;
+    public static final int SETTINGS = 3;
     public static final int SEARCH = 4;
-    public static final int SETTINGS = 5;
-    public static final int CHANGELOG = 6;
+    public static final int FAVORITE = 5;
+    public static final int RECENT = 6;
 
     public NavigationDrawerFragment() {
     }
@@ -85,7 +85,7 @@ public class NavigationDrawerFragment extends SherlockFragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         // Indicate that this fragment would like to influence the set of actions in the action bar.
-        //setHasOptionsMenu(true);
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -122,27 +122,7 @@ public class NavigationDrawerFragment extends SherlockFragment {
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
         // set up the drawer's list view with items and click listener
 
-
-        // load slide menu items
-        navMenuTitles = getResources().getStringArray(R.array.nav_drawer_items);
-
-        // nav drawer icons from resources
-        navMenuIcons = getResources()
-                .obtainTypedArray(R.array.nav_drawer_icons);
-
-        navDrawerItems = new ArrayList<NavDrawerItem>();
-        navDrawerItems.add(new NavDrawerItem(navMenuTitles[0], navMenuIcons.getResourceId(0, -1)));
-        navDrawerItems.add(new NavDrawerItem(navMenuTitles[1], navMenuIcons.getResourceId(1, -1), true, "0"));
-        navDrawerItems.add(new NavDrawerItem(navMenuTitles[2], navMenuIcons.getResourceId(2, -1), true, "0"));
-        navDrawerItems.add(new NavDrawerItem(navMenuTitles[3], navMenuIcons.getResourceId(3, -1)));
-        navDrawerItems.add(new NavDrawerItem(navMenuTitles[4], navMenuIcons.getResourceId(4, -1)));
-        navDrawerItems.add(new NavDrawerItem(navMenuTitles[5], navMenuIcons.getResourceId(5, -1)));
-        navDrawerItems.add(new NavDrawerItem(navMenuTitles[6], navMenuIcons.getResourceId(6, -1)));
-
-        navMenuIcons.recycle();
-        // set up the drawer's list view with items and click listener
-        navDrawAdapter = new NavDrawerListAdapter(getSherlockActivity(), navDrawerItems);
-        mDrawerList.setAdapter(navDrawAdapter);
+        initNavDrawerAdapter(0,0);
 
         ActionBar actionBar = getActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
@@ -196,21 +176,46 @@ public class NavigationDrawerFragment extends SherlockFragment {
                 mDrawerToggle.syncState();
             }
         });
-
         mDrawerLayout.setDrawerListener(mDrawerToggle);
     }
 
-    private void selectItem(int position) {
+    private void initNavDrawerAdapter(int favCount, int recentCount) {
+        if (isAdded()){
+            // load slide menu items
+            navMenuTitles = getResources().getStringArray(R.array.nav_drawer_items);
+            // nav drawer icons from resources
+            navMenuIcons = getResources()
+                    .obtainTypedArray(R.array.nav_drawer_icons);
+            navDrawerItems = new ArrayList<NavDrawerItem>();
+            navDrawerItems.add(new NavDrawerItem(navMenuTitles[0], navMenuIcons.getResourceId(HOME, -1)));
+            //navDrawerItems.add(new NavDrawerItem(navMenuTitles[1], navMenuIcons.getResourceId(FAVORITE, -1), true, favCount > 10 ? "10+" : favCount+""));
+            //navDrawerItems.add(new NavDrawerItem(navMenuTitles[2], navMenuIcons.getResourceId(RECENT, -1), true, recentCount > 10 ? "10+" : recentCount+""));
+            navDrawerItems.add(new NavDrawerItem(navMenuTitles[3], navMenuIcons.getResourceId(CATEGORIES, -1)));
+            navDrawerItems.add(new NavDrawerItem(navMenuTitles[4], navMenuIcons.getResourceId(CHANGELOG, -1)));
+            navDrawerItems.add(new NavDrawerItem(navMenuTitles[5], navMenuIcons.getResourceId(SETTINGS, -1)));
+            //navDrawerItems.add(new NavDrawerItem(navMenuTitles[6], navMenuIcons.getResourceId(SEARCH, -1)));
 
-        if (mDrawerList != null) {
-            mDrawerList.setItemChecked(position, true);
+            navMenuIcons.recycle();
+            // set up the drawer's list view with items and click listener
+            navDrawAdapter = new NavDrawerListAdapter(getSherlockActivity(), navDrawerItems);
+            mDrawerList.setAdapter(navDrawAdapter);
         }
+    }
+
+    private void selectItem(int position) {
+        //checkItem(position, true);
 
         if (mDrawerLayout != null) {
             mDrawerLayout.closeDrawer(mFragmentContainerView);
         }
         if (mCallbacks != null) {
             mCallbacks.onNavigationDrawerItemSelected(position);
+        }
+    }
+
+    public void checkItem(int position, boolean checkPosition){
+        if (mDrawerList != null) {
+            mDrawerList.setItemChecked(position, checkPosition);
         }
     }
 
@@ -294,8 +299,8 @@ public class NavigationDrawerFragment extends SherlockFragment {
     }
 
     public void setInformation(List<Entry> favoriteEntries, List<Entry> visitedEntries) {
+        initNavDrawerAdapter(favoriteEntries.size(), visitedEntries.size());
         changeColor(colorDrawable, color);
-        navDrawAdapter.notifyDataSetChanged();
     }
 
     /**

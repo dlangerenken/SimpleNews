@@ -1,5 +1,6 @@
 package de.dala.simplenews.ui;
 
+import android.app.FragmentManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -13,6 +14,9 @@ import android.widget.RelativeLayout;
 
 import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
 
 import java.util.ArrayList;
 
@@ -25,18 +29,19 @@ import de.dala.toasty.Toasty;
 /**
  * Created by Daniel on 29.12.13.
  */
-public class CategoryModifierFragment extends SherlockFragment implements CategorySelectionFragment.OnCategoryClicked{
+public class CategoryModifierFragment extends SherlockFragment implements CategorySelectionFragment.OnCategoryClicked {
     private static final String CATEGORY_FEEDS_TAG = "feed";
     private static final String CATEGORY_SELECTION_TAG = "selection";
     private static final String FROM_RSS =  "from_rss";
     private ArrayList<Category> categories;
     private boolean fromRSS = false;
+    private SherlockFragment fragment;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         categories = new ArrayList<Category>(DatabaseHandler.getInstance().getCategories(false, true, false));
-        Fragment fragment = null;
+        fragment = null;
         FragmentTransaction t = getChildFragmentManager().beginTransaction();
 
         String rssPath = getArguments() != null ? getArguments().getString(FROM_RSS) : null;
@@ -45,12 +50,29 @@ public class CategoryModifierFragment extends SherlockFragment implements Catego
             fragment = CategorySelectionFragment.newInstance(categories, fromRSS, rssPath);
         }else{
             if (!fromRSS){
+                getSherlockActivity().getSupportActionBar().setDisplayHomeAsUpEnabled(true);
                 fragment = CategorySelectionFragment.newInstance(categories, fromRSS, null);
             }
         }
         t.replace(R.id.container, fragment, CATEGORY_SELECTION_TAG);
         t.addToBackStack(null);
         t.commit();
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        if (fragment != null){
+            fragment.onCreateOptionsMenu(menu, inflater);
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (fragment != null){
+            fragment.onOptionsItemSelected(item);
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -69,11 +91,12 @@ public class CategoryModifierFragment extends SherlockFragment implements Catego
     @Override
     public void onMoreClicked(Category category) {
         FragmentTransaction t = getChildFragmentManager().beginTransaction();
-        Fragment fragment = CategoryFeedsFragment.newInstance(category);
+        fragment = CategoryFeedsFragment.newInstance(category);
         t.replace(R.id.container, fragment, CATEGORY_FEEDS_TAG);
         t.addToBackStack(null);
         t.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_left, R.anim.slide_in_right, R.anim.slide_out_right);
         t.commit();
+        getSherlockActivity().invalidateOptionsMenu();
     }
 
     @Override

@@ -60,4 +60,10 @@
     <string name="nav_favorites">Favoriten</string>
     <string name="nav_no_entries">Keine Einträge gefunden</string>
     <string name="nav_recently_opened">Zuletzt geöffnet</string>
+    <string name="refresh_summary">Wie oft sollen Feeds aktualisieren</string>
+    <string name="refresh_title">Aktualisierungs-Intervall</string>
+    <string name="menu_recently">Gelesene</string>
+    <string name="menu_favorites">Favoriten</string>
+    <string name="menu_all">Alle</string>
+    <string name="reset_categories">Kategorien zurücksetzen</string>
 </resources>

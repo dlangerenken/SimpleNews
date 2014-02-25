@@ -1,4 +1,5 @@
 package de.dala.simplenews.ui;
+import android.content.Intent;
 import android.graphics.drawable.LayerDrawable;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
@@ -9,6 +10,7 @@ import android.util.Log;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
 
 import java.util.List;
 
@@ -36,9 +38,7 @@ public class MainActivity extends SherlockFragmentActivity implements Navigation
         overridePendingTransition(R.anim.open_translate,R.anim.close_scale);
         RateMyApp.appLaunched(this);
 
-        if (savedInstanceState != null){
-
-        }else{
+        if (savedInstanceState == null){
             if(getIntent().getDataString()!=null)
             {
                 String path = getIntent().getDataString();
@@ -47,7 +47,7 @@ public class MainActivity extends SherlockFragmentActivity implements Navigation
                 transaction.replace(R.id.container, categoryModifierFrag).commit();
             }else{
                 FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-                Fragment newsFrag = NewsOverViewFragment.getInstance();
+                Fragment newsFrag = NewsOverViewFragment.getInstance(ExpandableNewsFragment.ALL);
                 transaction.replace(R.id.container, newsFrag).commit();
             }
         }
@@ -93,15 +93,28 @@ public class MainActivity extends SherlockFragmentActivity implements Navigation
     }
 
     @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        return super.onOptionsItemSelected(item);
+    }
+
+    public void selectNavigationDrawerItem(int item, boolean check){
+        mNavigationDrawerFragment.checkItem(item, check);
+    }
+
+    @Override
     public void onNavigationDrawerItemSelected(int item) {
         switch (item){
             case NavigationDrawerFragment.HOME:
                 FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-                transaction.replace(R.id.container, NewsOverViewFragment.getInstance()).addToBackStack(null).commit();
+                transaction.replace(R.id.container, NewsOverViewFragment.getInstance(ExpandableNewsFragment.ALL)).addToBackStack(null).commit();
                 break;
             case NavigationDrawerFragment.FAVORITE:
+                transaction = getSupportFragmentManager().beginTransaction();
+                transaction.replace(R.id.container, NewsOverViewFragment.getInstance(ExpandableNewsFragment.FAV)).addToBackStack(null).commit();
                 break;
             case NavigationDrawerFragment.RECENT:
+                transaction = getSupportFragmentManager().beginTransaction();
+                transaction.replace(R.id.container, NewsOverViewFragment.getInstance(ExpandableNewsFragment.RECENT)).addToBackStack(null).commit();
                 break;
             case NavigationDrawerFragment.CATEGORIES:
                 transaction = getSupportFragmentManager().beginTransaction();
@@ -110,6 +123,7 @@ public class MainActivity extends SherlockFragmentActivity implements Navigation
             case NavigationDrawerFragment.SEARCH:
                 break;
             case NavigationDrawerFragment.SETTINGS:
+                startActivityForResult(new Intent(MainActivity.this, PrefActivity.class), 0);
                 break;
             case NavigationDrawerFragment.CHANGELOG:
                 DialogFragment dialog = new ChangeLogDialog();

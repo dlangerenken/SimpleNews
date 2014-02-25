@@ -16,6 +16,7 @@ public class PrefUtilities {
     public static final String ASK_FOR_RATING = "ask_for_rating";
     public static final String LAUNCH_COUNT = "launch_count";
     public static final String FIRST_DAY_OF_LAUNCH = "first_launch_time";
+    public static final String TIME_FOR_REFRESH = "time_for_refresh";
 
     /**
      * Remember the position of the selected item.
@@ -82,7 +83,13 @@ public class PrefUtilities {
         return preferences.getInt(LAUNCH_COUNT, 0);
     }
 
-    public void setXMLAlreadyLoaded(boolean b) {
+    private static long DEFAULT_TIME_FOR_REFRESH = 1000 * 60  * 60; //one hour
 
+    public long getTimeForRefresh() {
+        return Long.parseLong(preferences.getString(TIME_FOR_REFRESH, DEFAULT_TIME_FOR_REFRESH+""));
     }
+    public void setTimeForRefresh(long time) {
+        preferences.edit().putString(TIME_FOR_REFRESH, time+"").commit();
+    }
+
 }

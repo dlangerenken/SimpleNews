@@ -77,7 +77,6 @@ public class CategorySelectionFragment extends SherlockFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         getSherlockActivity().getSupportActionBar().setTitle(getString(R.string.categories_title));
-        getSherlockActivity().getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         this.categoryClicked = UIUtils.getParent(this, OnCategoryClicked.class);
         if (categoryClicked == null){
