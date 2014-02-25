@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog bulletedList="true">
 
-    <changelogversion versionName="0.5+" changeDate="demnächst">
+    <changelogversion versionName="0.8" changeDate="25.02.2014">
         <changelogtext>Personalisierung</changelogtext>
+        <changelogtext>Favoriten</changelogtext>
+        <changelogtext>Zuletzt gesehen</changelogtext>
     </changelogversion>
     <changelogversion versionName="0.5" changeDate="18.01.2014">
         <changelogtext>Teilen von Beiträgen möglich.</changelogtext>
