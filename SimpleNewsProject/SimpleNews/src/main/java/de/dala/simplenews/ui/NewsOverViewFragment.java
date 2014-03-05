@@ -59,7 +59,10 @@ public class NewsOverViewFragment extends SherlockFragment implements ViewPager.
     private int loadingNews = -1;
     private TextView progressText;
     private MainActivity mainActivity;
-    private int entryType;
+    private int entryType = ExpandableNewsFragment.ALL;
+
+    public NewsOverViewFragment(){
+    }
 
     public NewsOverViewFragment(int entryType) {
         this.entryType = entryType;

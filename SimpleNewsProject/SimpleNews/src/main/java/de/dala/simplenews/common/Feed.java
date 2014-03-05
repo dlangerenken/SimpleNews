@@ -8,6 +8,15 @@ import java.util.List;
  * Created by Daniel on 19.12.13.
  */
 public class Feed implements Serializable{
+    public String getType() {
+        return type;
+    }
+
+    public static final int FEEDFILETYPE_FEED = 0;
+    public static final String TYPE_RSS2 = "rss";
+    public static final String TYPE_RSS091 = "rss";
+    public static final String TYPE_ATOM1 = "atom";
+
     private long id;
     private String url;
     private long categoryId;
@@ -15,6 +24,12 @@ public class Feed implements Serializable{
     private String title;
     private String description;
     private boolean visible = true;
+    private String xmlUrl;
+
+    /**
+     * Feed type, for example RSS 2 or Atom
+     */
+    private String type;
 
     public String getTitle(){
         return title;
@@ -88,5 +103,13 @@ public class Feed implements Serializable{
 
     public void setEntries(List<Entry> entries) {
         this.entries = entries;
+    }
+
+    public String getXMLUrl() {
+        return xmlUrl;
+    }
+
+    public void setXmlUrl(String xmlUrl) {
+        this.xmlUrl = xmlUrl;
     }
 }

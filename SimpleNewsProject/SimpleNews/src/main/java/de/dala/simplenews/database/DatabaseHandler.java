@@ -26,7 +26,7 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
     /**
      * Database Name and Version
      */
-    private static final int DATABASE_VERSION = 36;
+    private static final int DATABASE_VERSION = 38;
     private static final String DATABASE_NAME = "news_database";
 
     /**
@@ -140,19 +140,11 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         String upgradeQueryVisited = "ALTER TABLE " + TABLE_ENTRY + " ADD COLUMN " + ENTRY_VISITED_DATE + " LONG";
         String upgradeQueryFavorite = "ALTER TABLE " + TABLE_ENTRY + " ADD COLUMN " + ENTRY_FAVORITE_DATE + " LONG";
+
         if (oldVersion < 35 && newVersion >= 35){
             db.execSQL(upgradeQueryVisited);
             db.execSQL(upgradeQueryFavorite);
         }
-
-        //db.execSQL("DROP TABLE IF EXISTS " + TABLE_CATEGORY);
-        //db.execSQL("DROP TABLE IF EXISTS " + TABLE_FEED);
-        //db.execSQL("DROP TABLE IF EXISTS " + TABLE_ENTRY);
-        //PreferenceManager.getDefaultSharedPreferences(context).edit().clear().commit();
-		/*
-		 * Create tables again
-		 */
-        //onCreate(db);
     }
 
     public List<Category> getCategories(Boolean excludeFeeds, Boolean excludeEntries, Boolean onlyVisible) {
@@ -361,27 +353,32 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
 
     @Override
     public long addEntry(long categoryId, long feedId, Entry entry) {
-        ContentValues values = new ContentValues();
-        values.put(ENTRY_CATEGORY_ID, categoryId);
-        values.put(ENTRY_FEED_ID, feedId);
-        values.put(ENTRY_TITLE, entry.getTitle());
-        values.put(ENTRY_DESCRIPTION, entry.getDescription());
-        values.put(ENTRY_DATE, entry.getDate());
-        values.put(ENTRY_SRC_NAME, entry.getSrcName());
-        values.put(ENTRY_URL, entry.getLink());
-        values.put(ENTRY_SHORTENED_URL, entry.getShortenedLink());
-        values.put(ENTRY_IMAGE_URL, entry.getImageLink());
-        values.put(ENTRY_VISIBLE, entry.isVisible() ? 1 : 0);
-        values.put(ENTRY_VISITED_DATE, entry.getVisitedDate());
-        values.put(ENTRY_FAVORITE_DATE, entry.getFavoriteDate());
+        List<Entry> similarEntries = getSimilarEntries(entry);
+        if (similarEntries == null || similarEntries.isEmpty()){
+            ContentValues values = new ContentValues();
+            values.put(ENTRY_CATEGORY_ID, categoryId);
+            values.put(ENTRY_FEED_ID, feedId);
+            values.put(ENTRY_TITLE, entry.getTitle());
+            values.put(ENTRY_DESCRIPTION, entry.getDescription());
+            values.put(ENTRY_DATE, entry.getDate());
+            values.put(ENTRY_SRC_NAME, entry.getSrcName());
+            values.put(ENTRY_URL, entry.getLink());
+            values.put(ENTRY_SHORTENED_URL, entry.getShortenedLink());
+            values.put(ENTRY_IMAGE_URL, entry.getImageLink());
+            values.put(ENTRY_VISIBLE, entry.isVisible() ? 1 : 0);
+            values.put(ENTRY_VISITED_DATE, entry.getVisitedDate());
+            values.put(ENTRY_FAVORITE_DATE, entry.getFavoriteDate());
 
-		/*
-		 * Inserting Row
-		 */
-        long rowId = db.insert(TABLE_ENTRY, null, values);
-        entry.setId(rowId);
-        return rowId;
+            /*
+             * Inserting Row
+             */
+            long rowId = db.insert(TABLE_ENTRY, null, values);
+            entry.setId(rowId);
+            return rowId;
+        }
+        return -1;
     }
+
 
     @Override
     public int updateEntry(Entry entry){
@@ -446,6 +443,44 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
 
         Cursor cursor = db.query(TABLE_ENTRY, null,
                 query, null, null, null, ENTRY_FAVORITE_DATE + " DESC", maxEntries+"");
+
+                /*
+                 * looping through all rows and adding to list
+                 */
+        if (cursor.moveToFirst()) {
+            do {
+                Entry entry = getEntryByCursor(cursor);
+                entries.add(entry);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return entries;
+    }
+
+    @Override
+    public List<Entry> getSimilarEntries(Entry oldEntry) {
+        List<Entry> entries = new ArrayList<Entry>();
+        /*String query = null;
+        if (oldEntry != null){
+            if (oldEntry.getDescription() != null){
+                query = concatenateQueries(query, ENTRY_DESCRIPTION + "=" + oldEntry.getDescription());
+            }
+            if (oldEntry.getTitle() != null){
+                query = concatenateQueries(query, ENTRY_TITLE + "=" + oldEntry.getTitle());
+            }
+            if (oldEntry.getDate() != null){
+                query = concatenateQueries(query, ENTRY_DATE + "=" + oldEntry.getDate());
+            }
+        }
+        Cursor cursor = db.query(TABLE_ENTRY, null,
+                query, null, null, null, null);
+        */
+        Cursor cursor = db.rawQuery("SELECT * FROM " +
+                TABLE_ENTRY + " WHERE " +
+                ENTRY_DESCRIPTION + "=? AND "
+                + ENTRY_TITLE + "=?",
+                new String[]{oldEntry.getDescription(), oldEntry.getTitle()});
+
 
                 /*
                  * looping through all rows and adding to list

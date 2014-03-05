@@ -35,5 +35,8 @@ public interface IDatabaseHandler {
     Cursor getEntriesCursor(Long categoryId, Long feedId);
 
     List<Entry> getFavoriteEntries(long categoryId);
+
+    List<Entry> getSimilarEntries(Entry oldEntry);
+
     List<Entry> getVisitedEntries(long categoryId);
 }

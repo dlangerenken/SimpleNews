@@ -188,8 +188,6 @@ public class NavigationDrawerFragment extends SherlockFragment {
                     .obtainTypedArray(R.array.nav_drawer_icons);
             navDrawerItems = new ArrayList<NavDrawerItem>();
             navDrawerItems.add(new NavDrawerItem(navMenuTitles[0], navMenuIcons.getResourceId(HOME, -1)));
-            //navDrawerItems.add(new NavDrawerItem(navMenuTitles[1], navMenuIcons.getResourceId(FAVORITE, -1), true, favCount > 10 ? "10+" : favCount+""));
-            //navDrawerItems.add(new NavDrawerItem(navMenuTitles[2], navMenuIcons.getResourceId(RECENT, -1), true, recentCount > 10 ? "10+" : recentCount+""));
             navDrawerItems.add(new NavDrawerItem(navMenuTitles[3], navMenuIcons.getResourceId(CATEGORIES, -1)));
             navDrawerItems.add(new NavDrawerItem(navMenuTitles[4], navMenuIcons.getResourceId(CHANGELOG, -1)));
             navDrawerItems.add(new NavDrawerItem(navMenuTitles[5], navMenuIcons.getResourceId(SETTINGS, -1)));

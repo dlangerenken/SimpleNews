@@ -105,7 +105,6 @@ public class Entry implements Comparable<Entry>, Serializable{
         this.link = link;
     }
 
-
     public String getShortenedLink() {
         return shortenedLink;
     }
@@ -130,6 +129,7 @@ public class Entry implements Comparable<Entry>, Serializable{
         this.visible = visible;
     }
 
+
     @Override
     public int compareTo(Entry another) {
         return getDate().compareTo(another.getDate());
@@ -142,6 +142,7 @@ public class Entry implements Comparable<Entry>, Serializable{
         }
         return String.format("%s - %s", title, link);
     }
+
 
     public Long getVisitedDate() {
         return visitedDate;
@@ -162,4 +163,23 @@ public class Entry implements Comparable<Entry>, Serializable{
     public void setFavoriteDate(Long favoriteDate) {
         this.favoriteDate = favoriteDate;
     }
+
+/*
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || !(o instanceof Entry)){
+            return false;
+        }
+        Entry other = (Entry) o;
+        return other.getDescription().equals(description)
+                && other.getTitle().equals(title);
+    }
+
+    @Override
+    public int hashCode() {
+        int a = description.hashCode() * 7;
+        a = a + title.hashCode() * 13;
+        return a;
+    }
+    */
 }
