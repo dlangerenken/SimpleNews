@@ -6,6 +6,9 @@ So this is a News-Feed-Reader based on the current State of the Art in User-Inte
 
 The app is available in the [Google PlayStore](https://play.google.com/store/apps/details?id=de.dala.simplenews)
 
+Recent implementead features:
+* hide/show categories and entries
+* recent viewed articles, favorite articles
 
 Some screenshots of the application:
 
@@ -21,6 +24,4 @@ Some screenshots of the application:
 ![ScreenShot](https://raw.github.com/Dalanie/SimpleNews/master/screenshot3.png)
 </td>
 
-Recent implementead features:
-* hide/show categories and entries
-* recent viewed articles, favorite articles
+
