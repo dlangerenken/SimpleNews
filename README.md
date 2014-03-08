@@ -21,12 +21,6 @@ Some screenshots of the application:
 ![ScreenShot](https://raw.github.com/Dalanie/SimpleNews/master/screenshot3.png)
 </td>
 
-Upcoming features:
-
-* Implementing a basic feed-search (based on google-news)
-* Sharing Categories with friends
-* ShowCase-View for using the app the first time
+Recent implementead features:
 * hide/show categories and entries
-* "today, yesterday, last-week"-feature to visited articles
-* more languages, more feeds
-* tablet-support
+* recent viewed articles, favorite articles
