@@ -23,8 +23,6 @@ public class ChangeLogDialog extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
-
-
         LayoutInflater layoutInflater = (LayoutInflater) getActivity().getSystemService(
                 Context.LAYOUT_INFLATER_SERVICE);
         ChangeLogListView chgList=(ChangeLogListView)layoutInflater.inflate(R.layout.changelog_fragment_dialog, null);

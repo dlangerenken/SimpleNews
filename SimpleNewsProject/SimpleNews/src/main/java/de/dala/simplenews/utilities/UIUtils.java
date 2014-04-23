@@ -43,7 +43,7 @@ public class UIUtils {
      */
     private static final Pattern REGEX_HTML_ESCAPE = Pattern.compile(".*&\\S;.*");
 
-    private static final Pattern VALID_URL = Pattern.compile("/((([A-Za-z]{3,9}:(?:\\/\\/)?)(?:[-;:&=\\+\\$,\\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\\+\\$,\\w]+@)[A-Za-z0-9.-]+)((?:\\/[\\+~%\\/]*)?\\??(?:[-\\+=&;%@.\\w_]*)#?(?:[\\w]*))?)/");
+    private static final Pattern VALID_URL = Pattern.compile("/((([A-Za-z]{3,9}:(?://)?)(?:[-;:&=\\+\\$,\\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\\+\\$,\\w]+@)[A-Za-z0-9.-]+)((?:/[\\+~%/]*)?\\??(?:[-\\+=&;%@.\\w_]*)#?(?:[\\w]*))?)/");
 
     public static boolean isValideUrl(String url){
         return URLUtil.isValidUrl(url);

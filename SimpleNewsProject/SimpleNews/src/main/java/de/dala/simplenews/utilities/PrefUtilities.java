@@ -17,6 +17,7 @@ public class PrefUtilities {
     public static final String LAUNCH_COUNT = "launch_count";
     public static final String FIRST_DAY_OF_LAUNCH = "first_launch_time";
     public static final String TIME_FOR_REFRESH = "time_for_refresh";
+    public static final String SHORTEN_LINKS = "shorten_links";
 
     /**
      * Remember the position of the selected item.
@@ -64,6 +65,10 @@ public class PrefUtilities {
     }
     public boolean shouldAskForRatingAgain() {
         return preferences.getBoolean(ASK_FOR_RATING, true);
+    }
+
+    public boolean shouldShortenLinks() {
+        return preferences.getBoolean(SHORTEN_LINKS, true);
     }
 
     public void increaseLaunchCountForRating() {

@@ -5,7 +5,7 @@ mavenCentral()
 
 }
     dependencies {
-        classpath 'com.android.tools.build:gradle:0.7.+'
+        classpath 'com.android.tools.build:gradle:0.9.+'
         classpath 'com.crashlytics.tools.gradle:crashlytics-gradle:1.+'
 
     }
@@ -24,7 +24,7 @@ repositories {
 
 android {
     compileSdkVersion 19
-    buildToolsVersion '19.0.0'
+    buildToolsVersion '19.0.3'
 
     defaultConfig {
         minSdkVersion 8
@@ -33,24 +33,18 @@ android {
 }
 
 dependencies {
-    compile 'com.google.android.gms:play-services:4.0.30'
     compile 'com.nineoldandroids:library:2.4.0'
-    compile 'com.android.support:support-v4:19.0.0'
-
     compile 'com.astuetz:pagerslidingtabstrip:1.0.1'
     compile 'com.github.gabrielemariotti.changeloglib:library:1.4.0'
-    compile files('libs/volley.jar')
-    compile files('libs/gson-2.2.4.jar')
-    compile files('libs/CWAC-LoaderEx.jar')
+    compile 'com.mcxiaoke.volley:library:1.0.+@aar'
+    compile 'com.google.code.gson:gson:2.2.4'
     compile ('de.keyboardsurfer.android.widget:crouton:1.8.1') {
         exclude module: 'support-v4'
     }
     compile 'com.ocpsoft:ocpsoft-pretty-time:1.0.7'
     compile 'com.github.castorflex.smoothprogressbar:library:0.2.0'
-    compile 'com.actionbarsherlock:actionbarsherlock:4.4.0@aar'
-    compile 'com.github.chrisbanes.actionbarpulltorefresh:extra-abs:0.9.3'
+    compile 'com.android.support:appcompat-v7:19.1.0'
     compile 'com.rosaloves:bitlyj:2.0.0'
     compile 'com.nhaarman.listviewanimations:library:2.6.0'
     compile 'com.crashlytics.android:crashlytics:1.+'
-
 }

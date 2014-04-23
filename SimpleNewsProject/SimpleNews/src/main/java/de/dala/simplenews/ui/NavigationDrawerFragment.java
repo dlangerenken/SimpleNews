@@ -7,20 +7,20 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockFragment;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
-import com.actionbarsherlock.view.MenuItem;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +37,7 @@ import de.dala.simplenews.utilities.PrefUtilities;
  * See the <a href="https://developer.android.com/design/patterns/navigation-drawer.html#Interaction">
  * design guidelines</a> for a complete explanation of the behaviors implemented here.
  */
-public class NavigationDrawerFragment extends SherlockFragment {
+public class NavigationDrawerFragment extends Fragment {
     /**
      * A pointer to the current callbacks instance (the Activity).
      */
@@ -69,9 +69,10 @@ public class NavigationDrawerFragment extends SherlockFragment {
     public static final int CATEGORIES = 1;
     public static final int CHANGELOG = 2;
     public static final int SETTINGS = 3;
-    public static final int SEARCH = 4;
-    public static final int FAVORITE = 5;
-    public static final int RECENT = 6;
+    public static final int RATING = 4;
+    public static final int SEARCH = 5;
+    public static final int FAVORITE = 6;
+    public static final int RECENT = 7;
 
     public NavigationDrawerFragment() {
     }
@@ -115,7 +116,7 @@ public class NavigationDrawerFragment extends SherlockFragment {
      * @param drawerLayout The DrawerLayout containing this fragment's UI.
      */
     public void setUp(int fragmentId, DrawerLayout drawerLayout) {
-        mFragmentContainerView = getSherlockActivity().findViewById(fragmentId);
+        mFragmentContainerView = getActivity().findViewById(fragmentId);
         mDrawerLayout = drawerLayout;
 
         // set a custom shadow that overlays the main content when the drawer opens
@@ -131,7 +132,7 @@ public class NavigationDrawerFragment extends SherlockFragment {
         // ActionBarDrawerToggle ties together the the proper interactions
         // between the navigation drawer and the action bar app icon.
         mDrawerToggle = new ActionBarDrawerToggle(
-                getSherlockActivity(),                    /* host Activity */
+                getActivity(),                    /* host Activity */
                 mDrawerLayout,                    /* DrawerLayout object */
                 R.drawable.ic_navigation_drawer,             /* nav drawer image to replace 'Up' caret */
                 R.string.navigation_drawer_open,  /* "open drawer" description for accessibility */
@@ -143,7 +144,7 @@ public class NavigationDrawerFragment extends SherlockFragment {
                 if (!isAdded()) {
                     return;
                 }
-                getSherlockActivity().supportInvalidateOptionsMenu();// calls onPrepareOptionsMenu()
+                getActivity().supportInvalidateOptionsMenu();// calls onPrepareOptionsMenu()
             }
 
             @Override
@@ -158,7 +159,7 @@ public class NavigationDrawerFragment extends SherlockFragment {
                     // the navigation drawer automatically in the future.
                     PrefUtilities.getInstance().setUserLearnedDrawer(true);
                 }
-                getSherlockActivity().supportInvalidateOptionsMenu();// calls onPrepareOptionsMenu()
+                getActivity().supportInvalidateOptionsMenu();// calls onPrepareOptionsMenu()
             }
         };
 
@@ -191,11 +192,12 @@ public class NavigationDrawerFragment extends SherlockFragment {
             navDrawerItems.add(new NavDrawerItem(navMenuTitles[3], navMenuIcons.getResourceId(CATEGORIES, -1)));
             navDrawerItems.add(new NavDrawerItem(navMenuTitles[4], navMenuIcons.getResourceId(CHANGELOG, -1)));
             navDrawerItems.add(new NavDrawerItem(navMenuTitles[5], navMenuIcons.getResourceId(SETTINGS, -1)));
-            //navDrawerItems.add(new NavDrawerItem(navMenuTitles[6], navMenuIcons.getResourceId(SEARCH, -1)));
+            navDrawerItems.add(new NavDrawerItem(navMenuTitles[6], navMenuIcons.getResourceId(RATING, -1)));
+            //navDrawerItems.add(new NavDrawerItem(navMenuTitles[7], navMenuIcons.getResourceId(SEARCH, -1)));
 
             navMenuIcons.recycle();
             // set up the drawer's list view with items and click listener
-            navDrawAdapter = new NavDrawerListAdapter(getSherlockActivity(), navDrawerItems);
+            navDrawAdapter = new NavDrawerListAdapter(getActivity(), navDrawerItems);
             mDrawerList.setAdapter(navDrawAdapter);
         }
     }
@@ -231,11 +233,6 @@ public class NavigationDrawerFragment extends SherlockFragment {
     public void onDetach() {
         super.onDetach();
         mCallbacks = null;
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
     }
 
     @Override
@@ -283,7 +280,7 @@ public class NavigationDrawerFragment extends SherlockFragment {
     }
 
     private ActionBar getActionBar() {
-        return getSherlockActivity().getSupportActionBar();
+        return ((ActionBarActivity)getActivity()).getSupportActionBar();
     }
 
     public void changeColor(Drawable colorDrawable, int color) {

@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/white"
-    class="it.gmariotti.changelibs.library.view.ChangeLogListView"
     android:id="@+id/view"
+    class="it.gmariotti.changelibs.library.view.ChangeLogListView"
     android:layout_gravity="center"
 />

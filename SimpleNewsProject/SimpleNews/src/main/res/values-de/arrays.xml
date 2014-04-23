@@ -8,10 +8,14 @@
         <item >Kategorien</item>
         <item >Änderungen</item>
         <item >Einstellungen</item>
+        <item >Bewerte SimpleNews!</item>
         <item >Suche</item>
     </string-array>
 
     <string-array name="listOptions">
+        <item>Jede 5 Minuten</item>
+        <item>Jede 15 Minuten</item>
+        <item>Jede halbe Stunde</item>
         <item>Jede Stunde</item>
         <item>Jede 4 Stunden</item>
         <item>Jede 8 Stunden</item>

@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <uk.co.senab.actionbarpulltorefresh.extras.actionbarsherlock.PullToRefreshLayout
+    <android.support.v4.widget.SwipeRefreshLayoutExtended
         android:id="@+id/ptr_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -16,9 +16,10 @@
             android:layout_marginTop="5dp"
             android:divider="@null"/>
 
-    </uk.co.senab.actionbarpulltorefresh.extras.actionbarsherlock.PullToRefreshLayout>
+    </android.support.v4.widget.SwipeRefreshLayoutExtended>
 
     <LinearLayout
+        android:baselineAligned="false"
         android:background="@drawable/card_background_white"
         android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"

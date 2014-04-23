@@ -2,10 +2,7 @@ package de.dala.simplenews.parser;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.util.Log;
 import android.util.Xml;
-
-import com.android.volley.toolbox.StringRequest;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -178,10 +175,6 @@ public class XmlParser  {
         String categoryName = parser.getAttributeValue(null, ATTRIBUTE_NAME);
         String color= parser.getAttributeValue(null, ATTRIBUTE_COLOR);
         String visible = parser.getAttributeValue(null, ATTRIBUTE_VISIBLE);
-        if (categoryName==null){
-            //throw new ChangeLogException("VersionName required in changeLogVersion node");
-        }
-
         Category category = new Category();
         category.setColor(Color.parseColor(color));
         category.setName(categoryName);
@@ -253,5 +246,14 @@ public class XmlParser  {
             return shortenedLink.substring(startIndex,endIndex);
         }
         return null;
+    }
+
+    private static XmlParser _instance;
+
+    public static void Init(Context context){
+        _instance = new XmlParser(context);
+    }
+    public static XmlParser getInstance() {
+        return _instance;
     }
 }

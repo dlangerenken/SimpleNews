@@ -5,8 +5,14 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.view.ActionMode;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -16,8 +22,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.SherlockFragment;
-import com.actionbarsherlock.view.ActionMode;
 import com.nhaarman.listviewanimations.ArrayAdapter;
 
 import de.dala.simplenews.utilities.MyDynamicListView;
@@ -39,7 +43,7 @@ import de.keyboardsurfer.android.widget.crouton.Style;
 /**
  * Created by Daniel on 29.12.13.
  */
-public class CategorySelectionFragment extends SherlockFragment {
+public class CategorySelectionFragment extends Fragment {
 
     public interface OnCategoryClicked {
         void onMoreClicked(Category category);
@@ -61,6 +65,7 @@ public class CategorySelectionFragment extends SherlockFragment {
 
     private TextView topTextView;
     private ViewGroup topView;
+
     public CategorySelectionFragment(){
     }
 
@@ -76,7 +81,7 @@ public class CategorySelectionFragment extends SherlockFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        getSherlockActivity().getSupportActionBar().setTitle(getString(R.string.categories_title));
+        ((ActionBarActivity)getActivity()).getSupportActionBar().setTitle(getString(R.string.categories_title));
 
         this.categoryClicked = UIUtils.getParent(this, OnCategoryClicked.class);
         if (categoryClicked == null){
@@ -96,10 +101,7 @@ public class CategorySelectionFragment extends SherlockFragment {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
                 onListItemCheck(position);
-                if (adapter.getSelectedCount() > 1){
-                    return true;
-                }
-                return false;
+                return adapter.getSelectedCount() > 1;
             }
         });
 
@@ -117,12 +119,12 @@ public class CategorySelectionFragment extends SherlockFragment {
     }
 
     @Override
-    public void onCreateOptionsMenu(com.actionbarsherlock.view.Menu menu, com.actionbarsherlock.view.MenuInflater inflater) {
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.category_selection_menu, menu);
     }
 
     @Override
-    public boolean onOptionsItemSelected(com.actionbarsherlock.view.MenuItem item) {
+    public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case R.id.new_category:
                 createCategoryClicked();
@@ -145,9 +147,9 @@ public class CategorySelectionFragment extends SherlockFragment {
                         }).create().show();
                 return true;
             case android.R.id.home:
-                Intent intent = new Intent(getSherlockActivity(), MainActivity.class);
+                Intent intent = new Intent(getActivity(), MainActivity.class);
                 startActivity(intent);
-                getSherlockActivity().finish();
+                getActivity().finish();
                 return true;
         }
         return false;
@@ -218,7 +220,9 @@ public class CategorySelectionFragment extends SherlockFragment {
         }
 
         private void switchBackgroundOfView(int position, View view){
-            view.setBackgroundResource(mSelectedItemIds.get(position) ? R.drawable.card_background_blue : R.drawable.card_background_white);
+            if (view != null && mSelectedItemIds.size() > position) {
+                view.setBackgroundResource(mSelectedItemIds.get(position) ? R.drawable.card_background_blue : R.drawable.card_background_white);
+            }
         }
 
         @Override
@@ -326,7 +330,7 @@ public class CategorySelectionFragment extends SherlockFragment {
 
         if (hasCheckedItems && mActionMode == null){
             // there are some selected items, start the actionMode
-            mActionMode = getSherlockActivity().startActionMode(new ActionModeCallBack());
+            mActionMode = ((ActionBarActivity)getActivity()).startSupportActionMode(new ActionModeCallBack());
         }
         else if (!hasCheckedItems && mActionMode != null){
             // there no selected items, finish the actionMode
@@ -346,7 +350,7 @@ public class CategorySelectionFragment extends SherlockFragment {
                 public void onClick(DialogInterface dialog, int which) {
                     switch (which){
                         case DialogInterface.BUTTON_POSITIVE:
-                            String categoryName = input.getText().toString();
+                            String categoryName = input.getText() != null ? input.getText().toString() : "";
                             selectColor(categoryName);
                             break;
                         case DialogInterface.BUTTON_NEGATIVE:
@@ -369,7 +373,7 @@ public class CategorySelectionFragment extends SherlockFragment {
             public void onClick(DialogInterface dialog, int which) {
                 switch (which){
                     case DialogInterface.BUTTON_POSITIVE:
-                        String newName = input.getText().toString();
+                        String newName = input.getText() != null ? input.getText().toString() : "";
                         category.setName(newName);
                         adapter.notifyDataSetChanged();
                         DatabaseHandler.getInstance().updateCategory(category);
@@ -418,7 +422,7 @@ public class CategorySelectionFragment extends SherlockFragment {
                 newCategory.setId(id);
                 adapter.add(newCategory);
                 adapter.notifyDataSetChanged();
-                Crouton.makeText(getActivity(), R.string.category_created, Style.CONFIRM,  topView).show();
+                Crouton.makeText(getActivity(), R.string.category_created, Style.CONFIRM, topView).show();
             }
         });
         colorCalendar.show(getChildFragmentManager(), "dash");
@@ -427,7 +431,7 @@ public class CategorySelectionFragment extends SherlockFragment {
     private class ActionModeCallBack implements ActionMode.Callback {
 
         @Override
-        public boolean onCreateActionMode(ActionMode mode, com.actionbarsherlock.view.Menu menu) {
+        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
             // inflate contextual menu
             mode.getMenuInflater().inflate(R.menu.contextual_category_selection_menu, menu);
             return true;
@@ -435,12 +439,12 @@ public class CategorySelectionFragment extends SherlockFragment {
 
 
         @Override
-        public boolean onPrepareActionMode(ActionMode mode, com.actionbarsherlock.view.Menu menu) {
+        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
             return false;
         }
 
         @Override
-        public boolean onActionItemClicked(ActionMode mode, com.actionbarsherlock.view.MenuItem item) {
+        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
             // retrieve selected items and print them out
             SparseBooleanArray selected = adapter.getSelectedIds();
             List<Category> selectedCategories = new ArrayList<Category>();
@@ -468,6 +472,8 @@ public class CategorySelectionFragment extends SherlockFragment {
             adapter.removeSelection();
             mActionMode = null;
         }
+
+
     }
 
     private void removeSelectedCategories(List<Category> selectedCategories) {

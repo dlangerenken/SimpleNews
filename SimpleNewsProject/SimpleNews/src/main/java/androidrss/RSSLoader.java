@@ -296,7 +296,7 @@ public class RSSLoader {
     @Override
     public void run() {
       try {
-        RSSFuture future = null;
+        RSSFuture future;
         RSSFeed feed;
         while ((future = in.take()) != SENTINEL) {
 

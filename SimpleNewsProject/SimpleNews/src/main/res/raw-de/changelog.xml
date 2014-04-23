@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog bulletedList="true">
-
+    <changelogversion versionName="0.95" changeDate="22.04.2014">
+        <changelogtext>Bessere Unterstützung für Sonderzeichen (z.B. Umlaute)</changelogtext>
+        <changelogtext>Schöneres Design, weniger Frameworks</changelogtext>
+        <changelogtext>Bewerten und Aktualiseren Buttons hinzugefügt</changelogtext>
+    </changelogversion>
     <changelogversion versionName="0.8" changeDate="25.02.2014">
         <changelogtext>Personalisierung</changelogtext>
         <changelogtext>Favoriten</changelogtext>

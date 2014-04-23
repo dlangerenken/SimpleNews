@@ -8,6 +8,7 @@
         <item >Categories</item>
         <item >Changelog</item>
         <item >Settings</item>
+        <item >Rate SimpleNews!</item>
         <item >Search</item>
     </string-array>
 
@@ -17,12 +18,14 @@
         <item>@drawable/ic_nav_categories</item>
         <item>@android:drawable/ic_menu_agenda</item>
         <item>@android:drawable/ic_menu_preferences</item>
-        <item>@android:drawable/ic_search_category_default</item>
         <item>@drawable/ic_nav_fav</item>
-        <item>@drawable/ic_nav_recently_used</item>
+        <item>@android:drawable/ic_search_category_default</item>
     </array>
 
         <string-array name="listOptions">
+            <item>Every 5 minutes</item>
+            <item>Every 15 minutes</item>
+            <item>Every 30 minutes</item>
             <item>Every hour</item>
             <item>Every 4 hours</item>
             <item>Every 8 hours</item>
@@ -30,6 +33,9 @@
         </string-array>
 
         <string-array name="listValues">
+            <item>300000</item>
+            <item>900000</item>
+            <item>1800000</item>
             <item>3600000</item>
             <item>14400000</item>
             <item>28800000</item>

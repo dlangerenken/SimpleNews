@@ -2,9 +2,10 @@ package de.dala.simplenews.ui;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.view.ActionMode;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -19,11 +20,9 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ShareActionProvider;
 import android.widget.TextView;
 
-import com.actionbarsherlock.app.SherlockFragment;
-import com.actionbarsherlock.view.ActionMode;
-import com.actionbarsherlock.widget.ShareActionProvider;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.nhaarman.listviewanimations.ArrayAdapter;
@@ -43,7 +42,6 @@ import androidrss.RSSFeed;
 import androidrss.RSSParser;
 import de.dala.simplenews.R;
 import de.dala.simplenews.common.Category;
-import de.dala.simplenews.common.Entry;
 import de.dala.simplenews.common.Feed;
 import de.dala.simplenews.database.DatabaseHandler;
 import de.dala.simplenews.network.NetworkCommunication;
@@ -54,7 +52,7 @@ import de.keyboardsurfer.android.widget.crouton.Style;
 /**
  * Created by Daniel on 29.12.13.
  */
-public class CategoryFeedsFragment extends SherlockFragment implements ContextualUndoAdapter.DeleteItemCallback {
+public class CategoryFeedsFragment extends Fragment implements ContextualUndoAdapter.DeleteItemCallback {
 
 
     private ListView feedListView;
@@ -81,8 +79,8 @@ public class CategoryFeedsFragment extends SherlockFragment implements Contextua
         feedListView = (ListView) rootView.findViewById(R.id.listView);
         feedListView.setDivider(null);
         initAdapter();
-        getSherlockActivity().getSupportActionBar().setTitle(String.format("%s - Feeds", category.getName()));
-        getSherlockActivity().getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        ((ActionBarActivity)getActivity()).getSupportActionBar().setTitle(String.format("%s - Feeds", category.getName()));
+        ((ActionBarActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         return rootView;
     }
 
@@ -95,18 +93,18 @@ public class CategoryFeedsFragment extends SherlockFragment implements Contextua
 
 
     @Override
-    public void onCreateOptionsMenu(com.actionbarsherlock.view.Menu menu, com.actionbarsherlock.view.MenuInflater inflater) {
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.feed_selection_menu, menu);
     }
 
     @Override
-    public boolean onOptionsItemSelected(com.actionbarsherlock.view.MenuItem item) {
+    public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case R.id.new_feed:
                 createFeedClicked();
                 return true;
             case android.R.id.home:
-                getSherlockActivity().onBackPressed();
+                getActivity().onBackPressed();
                 return true;
         }
         return false;
@@ -122,13 +120,8 @@ public class CategoryFeedsFragment extends SherlockFragment implements Contextua
         feedListView.setAdapter(undoAdapter);
     }
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-    }
 
-
-        public void deleteItem(int position) {
+    public void deleteItem(int position) {
             Feed feed = adapter.getItem(position);
             adapter.remove(position);
             adapter.notifyDataSetChanged();
@@ -182,7 +175,7 @@ public class CategoryFeedsFragment extends SherlockFragment implements Contextua
 
             if (convertView == null){
                 LayoutInflater inflater = LayoutInflater.from(context);
-                convertView = inflater.inflate(R.layout.feed_modify_item, null, false);
+                convertView = inflater.inflate(R.layout.feed_modify_item, parent, false);
                 ViewHolder viewHolder = new ViewHolder();
                 viewHolder.name = (TextView) convertView.findViewById(R.id.name);
                 viewHolder.link = (TextView) convertView.findViewById(R.id.link);
@@ -282,7 +275,8 @@ public class CategoryFeedsFragment extends SherlockFragment implements Contextua
             public void onClick(View v) {
                 switch (v.getId()){
                     case R.id.positive:
-                        String feedUrl = input.getText().toString();
+                        String feedUrl = input.getText() != null ? input.getText().toString() : "";
+
                         if (!feedUrl.startsWith("http://")){
                             feedUrl = "http://" + feedUrl;
                         }
@@ -336,24 +330,29 @@ public class CategoryFeedsFragment extends SherlockFragment implements Contextua
                 }
             }
             private void invalidFeedUrl(final boolean hideProgressBar) {
-                Animation shake = AnimationUtils.loadAnimation(getActivity(),
-                        R.anim.shake);
-                view.startAnimation(shake);
-                shake.setAnimationListener(new Animation.AnimationListener() {
-                    @Override
-                    public void onAnimationStart(Animation animation) {}
-
-                    @Override
-                    public void onAnimationEnd(Animation animation) {
-                        if (hideProgressBar){
-                            crossfade(inputLayout, progress);
-                            Crouton.makeText(getActivity(),getActivity().getString(R.string.not_valid_format), Style.ALERT, inputLayout).show();
+                Context context = getActivity();
+                if (context != null){
+                    Animation shake = AnimationUtils.loadAnimation(context,
+                            R.anim.shake);
+                    view.startAnimation(shake);
+                    shake.setAnimationListener(new Animation.AnimationListener() {
+                        @Override
+                        public void onAnimationStart(Animation animation) {
                         }
-                    }
 
-                    @Override
-                    public void onAnimationRepeat(Animation animation) {}
-                });
+                        @Override
+                        public void onAnimationEnd(Animation animation) {
+                            if (hideProgressBar) {
+                                crossfade(inputLayout, progress);
+                                Crouton.makeText(getActivity(), getActivity().getString(R.string.not_valid_format), Style.ALERT, inputLayout).show();
+                            }
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animation animation) {
+                        }
+                    });
+                }
             }
         };
 
@@ -487,7 +486,7 @@ public class CategoryFeedsFragment extends SherlockFragment implements Contextua
     private class ActionModeCallBack implements ActionMode.Callback {
 
         @Override
-        public boolean onCreateActionMode(ActionMode mode, com.actionbarsherlock.view.Menu menu) {
+        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
             // inflate contextual menu
             mode.getMenuInflater().inflate(R.menu.contextual_feed_selection_menu, menu);
             /*com.actionbarsherlock.view.MenuItem item = menu.findItem(R.id.menu_item_share);
@@ -507,12 +506,12 @@ public class CategoryFeedsFragment extends SherlockFragment implements Contextua
         }
 
         @Override
-        public boolean onPrepareActionMode(ActionMode mode, com.actionbarsherlock.view.Menu menu) {
+        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
             return false;
         }
 
         @Override
-        public boolean onActionItemClicked(ActionMode mode, com.actionbarsherlock.view.MenuItem item) {
+        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
             // retrieve selected items and print them out
             SparseBooleanArray selected = adapter.getSelectedIds();
             List<Feed> selectedEntries = new ArrayList<Feed>();
@@ -546,7 +545,7 @@ public class CategoryFeedsFragment extends SherlockFragment implements Contextua
 
         if (hasCheckedItems && mActionMode == null){
             // there are some selected items, start the actionMode
-            mActionMode = getSherlockActivity().startActionMode(new ActionModeCallBack());
+            mActionMode = ((ActionBarActivity)getActivity()).startSupportActionMode(new ActionModeCallBack());
         }
         else if (!hasCheckedItems && mActionMode != null){
             // there no selected items, finish the actionMode

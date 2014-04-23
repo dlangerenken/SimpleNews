@@ -67,8 +67,8 @@ public class Feed implements Serializable{
         this.id = id;
         this.categoryId =categoryId;
         this.entries = entries;
-        if (entries==null){
-            entries = new ArrayList<Entry>();
+        if (this.entries==null){
+            this.entries = new ArrayList<Entry>();
         }
         this.url = url;
     }

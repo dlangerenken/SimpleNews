@@ -19,6 +19,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.AttributeSet;
 import android.view.animation.Animation;
+
 import com.android.volley.toolbox.NetworkImageView;
 
 /**

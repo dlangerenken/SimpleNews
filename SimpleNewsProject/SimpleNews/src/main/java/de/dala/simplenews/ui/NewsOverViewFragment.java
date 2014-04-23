@@ -10,6 +10,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBarActivity;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,7 +18,6 @@ import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.actionbarsherlock.app.SherlockFragment;
 import com.astuetz.PagerSlidingTabStrip;
 
 import org.xmlpull.v1.XmlPullParserException;
@@ -39,13 +39,10 @@ import de.keyboardsurfer.android.widget.crouton.Crouton;
 /**
  * Created by Daniel on 20.02.14.
  */
-public class NewsOverViewFragment extends SherlockFragment implements ViewPager.OnPageChangeListener {
+public class NewsOverViewFragment extends Fragment implements ViewPager.OnPageChangeListener, ExpandableNewsFragment.INewsInteraction {
     private static String TAG = "NewsOverViewFragment";
 
     private IDatabaseHandler databaseHandler;
-
-    private CharSequence mDrawerTitle;
-    private CharSequence mTitle;
     private PagerSlidingTabStrip tabs;
     private ViewPager pager;
     private MyPagerAdapter adapter;
@@ -80,6 +77,7 @@ public class NewsOverViewFragment extends SherlockFragment implements ViewPager.
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        setHasOptionsMenu(true);
         View rootView = inflater.inflate(R.layout.news_overview, container, false);
         databaseHandler = DatabaseHandler.getInstance();
         if (!PrefUtilities.getInstance().xmlIsAlreadyLoaded()) {
@@ -117,11 +115,11 @@ public class NewsOverViewFragment extends SherlockFragment implements ViewPager.
         LayerDrawable ld = new LayerDrawable(new Drawable[]{colorDrawable, bottomDrawable});
 
         if (oldBackground == null) {
-            getSherlockActivity().getSupportActionBar().setBackgroundDrawable(ld);
+            ((ActionBarActivity)getActivity()).getSupportActionBar().setBackgroundDrawable(ld);
         } else {
             //getSupportActionBar().setBackgroundDrawable(ld); //BUG otherwise
             TransitionDrawable td = new TransitionDrawable(new Drawable[] { oldBackground, ld });
-            getSherlockActivity().getSupportActionBar().setBackgroundDrawable(td);
+            ((ActionBarActivity)getActivity()).getSupportActionBar().setBackgroundDrawable(td);
             td.startTransition(400);
         }
         mainActivity.changeDrawerColor(ld, newColor);
@@ -131,8 +129,8 @@ public class NewsOverViewFragment extends SherlockFragment implements ViewPager.
         currentColor = newColor;
 
         // http://stackoverflow.com/questions/11002691/actionbar-setbackgrounddrawable-nulling-background-from-thread-handler
-        getSherlockActivity().getSupportActionBar().setDisplayShowTitleEnabled(false);
-        getSherlockActivity().getSupportActionBar().setDisplayShowTitleEnabled(true);
+        ((ActionBarActivity)getActivity()).getSupportActionBar().setDisplayShowTitleEnabled(false);
+        ((ActionBarActivity)getActivity()).getSupportActionBar().setDisplayShowTitleEnabled(true);
     }
 
     @Override
@@ -161,11 +159,12 @@ public class NewsOverViewFragment extends SherlockFragment implements ViewPager.
             crouton.cancel();
         }
         Configuration config = new Configuration.Builder().setOutAnimation(R.anim.abc_slide_out_bottom).setInAnimation(R.anim.abc_slide_in_bottom).setDuration(Configuration.DURATION_INFINITE).build();
-        crouton = Crouton.make( getSherlockActivity(), createProgressView(), bottomView);
+        crouton = Crouton.make( getActivity(), createProgressView(), bottomView);
         crouton.setConfiguration(config);
         crouton.show();
     }
 
+    @Override
     public void showLoadingNews() {
         loadingNews++;
         if (loadingNews == 0) {
@@ -173,6 +172,7 @@ public class NewsOverViewFragment extends SherlockFragment implements ViewPager.
         }
     }
 
+    @Override
     public void cancelLoadingNews() {
         loadingNews--;
         if (loadingNews >= -1) {
@@ -181,6 +181,7 @@ public class NewsOverViewFragment extends SherlockFragment implements ViewPager.
         }
     }
 
+    @Override
     public void updateNews(String text, long categoryId) {
         if (progressText != null){
             progressText.setText(text);
@@ -210,14 +211,15 @@ public class NewsOverViewFragment extends SherlockFragment implements ViewPager.
 
         @Override
         public Fragment getItem(int position) {
-            Fragment fragment = ExpandableNewsFragment.newInstance(categories.get(position), entryType);
+            ExpandableNewsFragment fragment = ExpandableNewsFragment.newInstance(categories.get(position), entryType);
+            fragment.setNewsInteraction(NewsOverViewFragment.this);
             return fragment;
         }
     }
 
     private void loadXml() {
         try {
-            News news = new XmlParser(getSherlockActivity()).readDefaultNewsFile();
+            News news = new XmlParser(getActivity()).readDefaultNewsFile();
             for (Category category : news.getCategories()) {
                 if (category != null) {
                     databaseHandler.addCategory(category, false, false);

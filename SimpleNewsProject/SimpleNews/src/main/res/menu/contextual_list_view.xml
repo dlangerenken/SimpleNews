@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto" >
     <item
         android:id="@+id/menu_item_save"
-        android:showAsAction="ifRoom"
-        android:title="Save"
-        android:icon="@drawable/ic_menu_star"></item>
+        app:showAsAction="ifRoom"
+        android:title="@string/selection_save"
+        android:icon="@drawable/ic_menu_star"/>
     <item
         android:id="@+id/menu_item_share"
-        android:showAsAction="ifRoom"
-        android:title="Share"
-        android:actionProviderClass=
-            "com.actionbarsherlock.widget.ShareActionProvider" />
+        app:showAsAction="ifRoom"
+        android:title="@string/selection_share"
+        app:actionProviderClass="android.support.v7.widget.ShareActionProvider" />
 
 
 </menu>

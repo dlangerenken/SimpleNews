@@ -2,17 +2,16 @@
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-    android:id="@+id/menu_item_remove"
-    android:showAsAction="ifRoom"
-        android:title="Save"
-        android:icon="@android:drawable/ic_menu_delete"></item>
-   <!-- <item
-        android:id="@+id/menu_item_share"
+        android:id="@+id/menu_item_remove"
         android:showAsAction="ifRoom"
-        android:title="Share"
-        android:icon="@android:drawable/ic_menu_share"
-        />
-        -->
-
+        android:title="@string/feed_selection_remove"
+        android:icon="@android:drawable/ic_menu_delete"></item>
+    <!-- <item
+         android:id="@+id/menu_item_share"
+         android:showAsAction="ifRoom"
+         android:title="Share"
+         android:icon="@android:drawable/ic_menu_share"
+         />
+         -->
 
 </menu>

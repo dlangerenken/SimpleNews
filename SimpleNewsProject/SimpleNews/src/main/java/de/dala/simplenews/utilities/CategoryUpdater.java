@@ -8,16 +8,15 @@ import android.util.Log;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.rosaloves.bitlyj.BitlyMethod;
+import com.rosaloves.bitlyj.data.Pair;
 
 import java.io.ByteArrayInputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.security.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import androidrss.MediaEnclosure;
 import androidrss.RSSConfig;
@@ -33,21 +32,17 @@ import de.dala.simplenews.database.DatabaseHandler;
 import de.dala.simplenews.database.IDatabaseHandler;
 import de.dala.simplenews.network.NetworkCommunication;
 import de.dala.simplenews.parser.XmlParser;
-import de.dala.toasty.Toasty;
 
-import com.rosaloves.bitlyj.BitlyMethod;
-import com.rosaloves.bitlyj.data.Pair;
-
-import org.w3c.dom.Document;
-
-import static com.rosaloves.bitlyj.Bitly.*;
+import static com.rosaloves.bitlyj.Bitly.shorten;
 
 /**
  * Created by Daniel on 27.12.13.
  */
 public class CategoryUpdater {
 
+    private static final String TAG = "CategoryUpdater";
     public static final int ERROR = -1;
+    public static final int CANCEL = -2;
     public static final int STATUS_CHANGED = 3;
     public static final int RESULT = 4;
 
@@ -64,7 +59,8 @@ public class CategoryUpdater {
     public boolean start() {
         if (!isRunning){
             isRunning = true;
-            sendMessage(context.getString(R.string.update_news), STATUS_CHANGED);
+            String msg = context != null ? context.getString(R.string.update_news) : "";
+            sendMessage(msg, STATUS_CHANGED);
             results = new ArrayList<FetchingResult>();
             currentWorkingThreads = category.getFeeds().size();
             if (currentWorkingThreads == 0){
@@ -100,7 +96,7 @@ public class CategoryUpdater {
     }
     private Context context;
 
-    public CategoryUpdater(Handler handler, Category category, Context context, boolean updateDatabase){
+    public CategoryUpdater(Handler handler, Category category, boolean updateDatabase, Context context){
         this.handler = handler;
         this.category = category;
         this.context = context;
@@ -148,10 +144,15 @@ public class CategoryUpdater {
                 }
                 String title = rssFeed.getTitle();
                 for (RSSItem item : rssFeed.getItems()){
-                    entries.add(getEntryFromRSSItem(item, fetchingResult.feed.getId(), title));
+                    Entry entry = getEntryFromRSSItem(item, fetchingResult.feed.getId(), title);
+                    if (entry != null) {
+                        entries.add(entry);
+                    }
                 }
             } catch (UnsupportedEncodingException ex){
+                Log.e(TAG, "UnsupportedEncoding", ex);
             } catch (RSSFault e){
+                Log.e(TAG, "RSSFault", e);
             }
 
         }
@@ -180,11 +181,17 @@ public class CategoryUpdater {
 
     private void getNewItems(List<Entry> entries) {
         //sleep(500);
-        category.setLastUpdateTime(new Date().getTime());
-        databaseHandler.updateCategory(category);
+        if (entries != null && !entries.isEmpty()) {
+            category.setLastUpdateTime(new Date().getTime());
+            databaseHandler.updateCategory(category);
+            sendMessage(null, RESULT);
+            if (PrefUtilities.getInstance().shouldShortenLinks()) {
+                getShortenedLinks(entries);
+            }
+        }else{
+            sendMessage(null, CANCEL);
+        }
 
-        sendMessage(entries, RESULT);
-        getShortenedLinks(entries);
     }
 
     private void getShortenedLinks(final List<Entry> entries) {
@@ -199,12 +206,13 @@ public class CategoryUpdater {
     }
 
     private void shortenWithBitly(final Entry entry){
-        String urlForCall = getUrlForCall(shorten(entry.getLink()));
+        if (entry != null) {
+            String urlForCall = getUrlForCall(shorten(entry.getLink()));
             NetworkCommunication.loadShortenedUrl(urlForCall, new Response.Listener<String>() {
                         @Override
                         public void onResponse(String s) {
-                            String shortenedUrl = new XmlParser(context).readShortenedLink(s);
-                            if (shortenedUrl != null){
+                            String shortenedUrl = XmlParser.getInstance().readShortenedLink(s);
+                            if (shortenedUrl != null) {
                                 //Toasty.toastI(shortenedUrl);
                                 entry.setShortenedLink(shortenedUrl);
                                 databaseHandler.updateEntry(entry);
@@ -217,6 +225,7 @@ public class CategoryUpdater {
                         }
                     }
             );
+        }
     }
 
     private void shortenWithAdfly(final Entry entry) {
@@ -240,15 +249,14 @@ public class CategoryUpdater {
     }
 
     protected String getUrlForCall(BitlyMethod<?> m) {
-        StringBuilder sb = new StringBuilder("http://api.bit.ly/v3/")
-                .append(m.getName() + "?")
-                .append("&login=").append(context.getString(R.string.api_user))
-                .append("&apiKey=").append(context.getString(R.string.api_key))
+        StringBuilder sb = new StringBuilder("http://api.bit.ly/v3/").append(m.getName()).append("?")
+                .append("&login=").append(Constants.USER)
+                .append("&apiKey=").append(Constants.API_KEY)
                 .append("&format=xml");
 
         try {
             for(Pair<String, String> p : m.getParameters()) {
-                sb.append("&" + p.getOne() + "=" + URLEncoder.encode(p.getTwo(), "UTF-8"));
+                sb.append("&").append(p.getOne()).append("=").append(URLEncoder.encode(p.getTwo(), "UTF-8"));
             }
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
@@ -261,25 +269,28 @@ public class CategoryUpdater {
 
 
     private Entry getEntryFromRSSItem(RSSItem item, long feedId, String source) {
-        MediaEnclosure enclose = item.getEnclosure();
-        String mediaUri = null;
-        if (enclose != null){
-            if (enclose.getMimeType().equals(IMAGE_JPEG)){
-                mediaUri = enclose.getUrl().toString();
+        if (item != null) {
+            MediaEnclosure enclose = item.getEnclosure();
+            String mediaUri = null;
+            if (enclose != null) {
+                if (enclose.getMimeType().equals(IMAGE_JPEG)) {
+                    mediaUri = enclose.getUrl().toString();
+                }
             }
-        }
-        String url = item.getLink().toString();
-        Date pubDate = item.getPubDate();
-        Long time = null;
-        if (pubDate != null){
-            time = pubDate.getTime();
-        }
-        String desc = item.getDescription();
-        if (desc != null) {
-            desc = desc.replaceAll("\\<.*?>","").replace("()", "").replace("&nbsp;", "");
-        }
+            String url = item.getLink().toString();
+            Date pubDate = item.getPubDate();
+            Long time = null;
+            if (pubDate != null) {
+                time = pubDate.getTime();
+            }
+            String desc = item.getDescription();
+            if (desc != null) {
+                desc = desc.replaceAll("<.*?>", "").replace("()", "").replace("&nbsp;", "");
+            }
 
-        return new Entry(-1, feedId, category.getId(), item.getTitle() != null ? item.getTitle().trim() : item.getTitle(), desc, time, source, url, mediaUri, null, null);
+            return new Entry(-1, feedId, category.getId(), item.getTitle() != null ? item.getTitle().trim() : item.getTitle(), desc != null ? desc.trim() : desc, time, source, url, mediaUri, null, null);
+        }
+        return null;
     }
 
     private void sendMessage(Object message, int type){
@@ -287,5 +298,9 @@ public class CategoryUpdater {
         msg.what = type;
         msg.obj = message;
         handler.sendMessage(msg);
+    }
+
+    public boolean isRunning(){
+        return isRunning;
     }
 }

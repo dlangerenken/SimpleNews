@@ -22,6 +22,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
 import android.util.AttributeSet;
+
 import com.android.volley.toolbox.NetworkImageView;
 
 /**

@@ -29,6 +29,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ProgressBar;
 
+import java.io.Serializable;
+
 import de.dala.simplenews.R;
 
 
@@ -107,7 +109,10 @@ public class ColorPickerDialog extends DialogFragment implements OnColorSelected
 
         if (savedInstanceState != null) {
             mColors = savedInstanceState.getIntArray(KEY_COLORS);
-            mSelectedColor = (Integer) savedInstanceState.getSerializable(KEY_SELECTED_COLOR);
+            Serializable obj = savedInstanceState.getSerializable(KEY_SELECTED_COLOR);
+            if (obj != null && obj instanceof Integer){
+                mSelectedColor = (Integer) obj;
+            }
         }
     }
 

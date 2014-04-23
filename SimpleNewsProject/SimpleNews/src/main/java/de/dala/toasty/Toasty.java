@@ -32,7 +32,7 @@ public class Toasty {
     private static int LOG_PREFIX_LENGTH = LOG_PREFIX.length();
     private static final int MAX_LOG_TAG_LENGTH = 23;
 
-    private enum LogType {TOAST, LOG, BOTH};
+    private enum LogType {TOAST, LOG, BOTH}
 
     private Toast currentToast;
 

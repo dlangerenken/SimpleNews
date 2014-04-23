@@ -170,7 +170,9 @@ public abstract class ExpandableListItemAdapter<T> extends ArrayAdapter<T> imple
         viewHolder.contentParent.setTag(getItemId(position));
 
         ViewGroup.LayoutParams layoutParams = viewHolder.contentParent.getLayoutParams();
-        layoutParams.height = LayoutParams.WRAP_CONTENT;
+        if (layoutParams != null){
+            layoutParams.height = LayoutParams.WRAP_CONTENT;
+        }
         viewHolder.contentParent.setLayoutParams(layoutParams);
 
         return view;
@@ -377,7 +379,7 @@ public abstract class ExpandableListItemAdapter<T> extends ArrayAdapter<T> imple
 
         if (contentParent == null && isExpanded) {
             mExpandedIds.remove(itemId);
-        } else if (contentParent == null && !isExpanded) {
+        } else if (contentParent == null) {
             mExpandedIds.add(itemId);
         }
     }

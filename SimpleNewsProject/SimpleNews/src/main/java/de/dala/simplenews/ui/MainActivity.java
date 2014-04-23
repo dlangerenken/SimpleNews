@@ -1,26 +1,26 @@
 package de.dala.simplenews.ui;
 import android.content.Intent;
 import android.graphics.drawable.LayerDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
-
 import com.crashlytics.android.Crashlytics;
+
 import java.util.List;
 
 import de.dala.simplenews.R;
 import de.dala.simplenews.common.Entry;
 import de.dala.simplenews.dialog.ChangeLogDialog;
+import de.dala.simplenews.parser.XmlParser;
 
-public class MainActivity extends SherlockFragmentActivity implements NavigationDrawerFragment.NavigationDrawerCallbacks{
+public class MainActivity extends ActionBarActivity implements NavigationDrawerFragment.NavigationDrawerCallbacks{
 
     private static String TAG = "MainActivity";
     /**
@@ -32,6 +32,7 @@ public class MainActivity extends SherlockFragmentActivity implements Navigation
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Crashlytics.start(this);
+        XmlParser.Init(this);
 
         setContentView(R.layout.activity_main);
         setupDrawer();
@@ -77,15 +78,11 @@ public class MainActivity extends SherlockFragmentActivity implements Navigation
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getSupportMenuInflater().inflate(R.menu.main, menu);
-        return true;
+    public boolean onCreateOptionsMenu(android.view.Menu menu) {
+        getMenuInflater().inflate(R.menu.main, menu);
+        return super.onCreateOptionsMenu(menu);
     }
 
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        return super.onPrepareOptionsMenu(menu);
-    }
 
     protected void setupDrawer(){
         mNavigationDrawerFragment = (NavigationDrawerFragment)
@@ -96,17 +93,20 @@ public class MainActivity extends SherlockFragmentActivity implements Navigation
                 (DrawerLayout) findViewById(R.id.drawer_layout));
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        return super.onOptionsItemSelected(item);
-    }
-
     public void selectNavigationDrawerItem(int item, boolean check){
         mNavigationDrawerFragment.checkItem(item, check);
     }
 
+    private PrefFragment prefFragment;
+
     @Override
     public void onNavigationDrawerItemSelected(int item) {
+        if (prefFragment != null && item != NavigationDrawerFragment.CHANGELOG){
+            if (Build.VERSION.SDK_INT > 11) {
+                getFragmentManager().beginTransaction().remove(prefFragment).commit();
+                prefFragment = null;
+            }
+        }
         switch (item){
             case NavigationDrawerFragment.HOME:
                 FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
@@ -126,8 +126,16 @@ public class MainActivity extends SherlockFragmentActivity implements Navigation
                 break;
             case NavigationDrawerFragment.SEARCH:
                 break;
+            case NavigationDrawerFragment.RATING:
+                RateMyApp.showRateDialog(this);
+                break;
             case NavigationDrawerFragment.SETTINGS:
-                startActivityForResult(new Intent(MainActivity.this, PrefActivity.class), 0);
+                //if (Build.VERSION.SDK_INT < 11) {
+                    startActivity(new Intent(this, PrefActivity.class));
+                //} else {
+                //    prefFragment = new PrefFragment();
+                //    getFragmentManager().beginTransaction().replace(R.id.container, prefFragment).addToBackStack(null).commit();
+                //}
                 break;
             case NavigationDrawerFragment.CHANGELOG:
                 DialogFragment dialog = new ChangeLogDialog();

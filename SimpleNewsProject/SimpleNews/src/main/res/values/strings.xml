@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <string name="app_name">SimpleNews</string>
     <string name="hello_world">Hello world!</string>
@@ -13,14 +13,15 @@
     <string name="quick_contact">Quick Contact</string>
     <string name="item1">Item1</string>
     <string name="refresh">Refresh</string>
-    <string name="update_news">Updating news...</string>
-    <string name="coming_soon">Coming soon...</string>
+    <string name="update_news">Updating news…</string>
+    <string name="coming_soon">Coming soon…</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="categories">Categories</string>
     <string name="pref_config" >Color Picker</string>
     <string name="new_category">New Category</string>
     <string name="add">Add</string>
+    <string name="description_refresh">Refresh</string>
 
     <plurals name="countdown_seconds">
         <item quantity="one">Removing in 1...</item>
@@ -32,11 +33,11 @@
     <string name="taptoundo">Tap to undo</string>
     <string name="select_color_create_category">Select Color for Category</string>
     <string name="create_category_2_2">Create Category 2 / 2</string>
-    <string name="create_category_1_2">Create Category 1 / 2</string>
+    <string name="create_category_1_2" tools:ignore="TypographyFractions">Create Category 1 / 2</string>
     <string name="not_valid_format">Address not valid - XML/RSS-Format required.</string>
     <string name="category_add">Select Category to add Feed</string>
     <string name="cancel">Cancel</string>
-    <string name="submit">Ok</string>
+    <string name="submit">@android:string/ok</string>
     <string name="name_of_category">Name for the Category</string>
     <string name="new_name">New name: %s</string>
     <string name="rename">Rename</string>
@@ -47,8 +48,6 @@
     <string name="new_feed_url_header">New Feed Url</string>
     <string name="simple_news_title">News</string>
     <string name="categories_title"><![CDATA[Categories]]></string>
-    <string name="api_key">R_5a8cd2843ed14ce896d469cb22235f18</string>
-    <string name="api_user">dalanie91</string>
     <string name="cancel_menu">Cancel</string>
     <string name="hint_add_entry">Insert Address</string>
     <string name="rate_my_app_desc">If you enjoy using %s, please take a moment to rate the app. Thank you for your support!</string>
@@ -64,7 +63,6 @@
     <string name="restore_categories_title">Do you want to restore the default settings?</string>
     <string name="restore_categories_message">Careful! All saved data will be removed!</string>
     <string name="feed_title_not_found">No title found</string>
-    <string name="nav_more">More</string>
     <string name="nav_favorites">Favorites</string>
     <string name="nav_no_entries">No entries found</string>
     <string name="nav_recently_opened">Recently Opened</string>
@@ -81,5 +79,11 @@
     <string name="menu_favorites">Favorites</string>
     <string name="menu_all">All</string>
     <string name="reset_categories">Reset Categories</string>
+    <string name="selection_save">Save</string>
+    <string name="selection_share">Share</string>
+    <string name="shorten_links_title">Shorten links for sharing?</string>
+    <string name="shorten_links_summary">Should the shared links be shortened? (e.g. www.thisismyverylongnewssite.com to www.bit.ly/newname)</string>
+    <string name="feed_selection_remove">Remove</string>
+    <string name="feed_selection_add">Add</string>
 
 </resources>

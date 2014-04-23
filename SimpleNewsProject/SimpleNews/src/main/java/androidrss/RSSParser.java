@@ -18,6 +18,8 @@ package androidrss;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -25,7 +27,6 @@ import javax.xml.parsers.SAXParserFactory;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
 
 /**
  * Thread-safe RSS parser SPI implementation.
@@ -61,6 +62,10 @@ public class RSSParser implements RSSParserSPI {
 
       final SAXParser parser = factory.newSAXParser();
 
+      Reader isr = new InputStreamReader(feed);
+      InputSource is = new InputSource();
+      is.setCharacterStream(isr);
+
       return parse(parser, feed);
     } catch (ParserConfigurationException e) {
       throw new RSSFault(e);
@@ -88,11 +93,11 @@ public class RSSParser implements RSSParserSPI {
     // SAX automatically detects the correct character encoding from the stream
     // See also http://www.w3.org/TR/REC-xml/#sec-guessing
     final InputSource source = new InputSource(feed);
-    final XMLReader xmlreader = parser.getXMLReader();
+    Reader isr = new InputStreamReader(feed);
+    source.setCharacterStream(isr);
     final RSSHandler handler = new RSSHandler(config);
 
-    xmlreader.setContentHandler(handler);
-    xmlreader.parse(source);
+    parser.parse(source, handler);
 
     return handler.feed();
   }

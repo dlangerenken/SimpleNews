@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
-import android.widget.Toast;
 
 import de.dala.simplenews.R;
 import de.dala.simplenews.utilities.PrefUtilities;
@@ -28,7 +27,7 @@ public class RateMyApp {
     public static void appLaunched(Context mContext){
         PrefUtilities utilities = PrefUtilities.getInstance();
         boolean rateAgain = utilities.shouldAskForRatingAgain();
-        if (rateAgain == false){
+        if (!rateAgain){
             return;
         }
         utilities.increaseLaunchCountForRating();

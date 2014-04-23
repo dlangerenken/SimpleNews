@@ -9,5 +9,10 @@
             android:key="time_for_refresh"
             android:summary="@string/refresh_summary"
             android:title="@string/refresh_title" />
+        <CheckBoxPreference
+            android:title="@string/shorten_links_title"
+            android:key="shorten_links"
+            android:defaultValue="true"
+            android:summary="@string/shorten_links_summary"/>
     </PreferenceCategory>
 </PreferenceScreen>

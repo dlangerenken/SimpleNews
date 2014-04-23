@@ -30,7 +30,7 @@ public class Category implements Serializable, Parcelable {
         this.id = in.readLong();
         this.color = in.readInt();
         this.order = in.readInt();
-        this.isVisible = in.readInt() > 0 ? true : false;
+        this.isVisible = in.readInt() > 0;
     }
 
     public long getLastUpdateTime() {

@@ -1,13 +1,12 @@
 package de.dala.simplenews.network;
 
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-
-import com.actionbarsherlock.R;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.toolbox.StringRequest;
 import com.google.gson.reflect.TypeToken;
+
+import java.lang.reflect.Type;
+import java.util.ArrayList;
 
 
 import de.dala.simplenews.common.Category;

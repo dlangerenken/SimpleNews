@@ -12,7 +12,6 @@
             android:layout_width="match_parent"
             android:background="@android:color/white"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
             android:id="@+id/topView">
         <TextView
             android:layout_width="wrap_content"
@@ -27,6 +26,7 @@
             android:layout_centerHorizontal="true" />
         </RelativeLayout>
         <de.dala.simplenews.utilities.MyDynamicListView
+
             android:layout_below="@id/topView"
             android:id="@+id/listView"
             android:layout_width="match_parent"

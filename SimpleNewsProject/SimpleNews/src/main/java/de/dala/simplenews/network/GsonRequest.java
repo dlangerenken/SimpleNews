@@ -1,33 +1,31 @@
 package de.dala.simplenews.network;
 
-import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Type;
-
 import com.android.volley.NetworkResponse;
 import com.android.volley.ParseError;
 import com.android.volley.Request;
 import com.android.volley.Response;
-import com.android.volley.Response.ErrorListener;
-import com.android.volley.Response.Listener;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
+import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Type;
+
 public class GsonRequest<T> extends Request<T> {
 	private final Gson mGson;
 	private final Type mType;
-	private final Listener<T> mListener;
+	private final Response.Listener<T> mListener;
 
-	public GsonRequest(int method, String url, Type type, Listener<T> listener,
-			ErrorListener errorListener) {
+	public GsonRequest(int method, String url, Type type, Response.Listener<T> listener,
+			Response.ErrorListener errorListener) {
 		super(Method.GET, url, errorListener);
 		this.mType = type;
 		this.mListener = listener;
 		mGson = new Gson();
 	}
 
-	public GsonRequest(int method, String url, Type type, Listener<T> listener,
-			ErrorListener errorListener, Gson gson) {
+	public GsonRequest(int method, String url, Type type, Response.Listener<T> listener,
+			Response.ErrorListener errorListener, Gson gson) {
 		super(Method.GET, url, errorListener);
 		this.mType = type;
 		this.mListener = listener;
@@ -44,7 +42,7 @@ public class GsonRequest<T> extends Request<T> {
 		try {
 			String json = new String(response.data,
 					HttpHeaderParser.parseCharset(response.headers));
-			T jsonObject = null;
+			T jsonObject;
 			jsonObject = mGson.fromJson(json, mType);
 			return Response.success(jsonObject,
 					HttpHeaderParser.parseCacheHeaders(response));
