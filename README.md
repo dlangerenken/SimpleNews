@@ -6,6 +6,9 @@ So this is a News-Feed-Reader based on the current State of the Art in User-Inte
 
 The app is available in the [Google PlayStore](https://play.google.com/store/apps/details?id=de.dala.simplenews)
 
+Recent implementead features:
+* hide/show categories and entries
+* recent viewed articles, favorite articles
 
 Some screenshots of the application:
 
@@ -21,12 +24,4 @@ Some screenshots of the application:
 ![ScreenShot](https://raw.github.com/Dalanie/SimpleNews/master/screenshot3.png)
 </td>
 
-Upcoming features:
 
-* Implementing a basic feed-search (based on google-news)
-* Sharing Categories with friends
-* ShowCase-View for using the app the first time
-* hide/show categories and entries
-* "today, yesterday, last-week"-feature to visited articles
-* more languages, more feeds
-* tablet-support
