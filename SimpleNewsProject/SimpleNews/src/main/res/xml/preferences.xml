@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory
         android:summary="General Feed-Reading Information"
-        android:title="Feeds" >
+        android:title="Feeds">
         <ListPreference
             android:entries="@array/listOptions"
             android:entryValues="@array/listValues"
@@ -10,9 +10,9 @@
             android:summary="@string/refresh_summary"
             android:title="@string/refresh_title" />
         <CheckBoxPreference
-            android:title="@string/shorten_links_title"
-            android:key="shorten_links"
             android:defaultValue="true"
-            android:summary="@string/shorten_links_summary"/>
+            android:key="shorten_links"
+            android:summary="@string/shorten_links_summary"
+            android:title="@string/shorten_links_title" />
     </PreferenceCategory>
 </PreferenceScreen>

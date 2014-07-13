@@ -2,16 +2,15 @@
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-    android:id="@+id/menu_item_remove"
+        android:id="@+id/menu_item_remove"
+        android:icon="@android:drawable/ic_menu_delete"
         android:showAsAction="ifRoom"
-        android:title="@string/selection_save"
-        android:icon="@android:drawable/ic_menu_delete"/>
+        android:title="@string/selection_save" />
     <item
         android:id="@+id/menu_item_share"
-        android:showAsAction="ifRoom"
-        android:title="@string/selection_share"
         android:icon="@android:drawable/ic_menu_share"
-        />
+        android:showAsAction="ifRoom"
+        android:title="@string/selection_share" />
 
 
 </menu>

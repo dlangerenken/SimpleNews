@@ -5,19 +5,18 @@
     android:orientation="horizontal">
 
     <View
-        android:layout_alignParentLeft="true"
         android:id="@+id/colorBorder"
         android:layout_width="10dp"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:layout_alignParentLeft="true" />
 
     <TextView
         android:id="@+id/expand_card_main_inner_simple_title"
-        android:layout_marginLeft="10dp"
         android:layout_width="wrap_content"
-        android:singleLine="false"
         android:layout_height="wrap_content"
         android:layout_marginBottom="2dp"
-        />
+        android:layout_marginLeft="10dp"
+        android:singleLine="false" />
 
 
 </LinearLayout>

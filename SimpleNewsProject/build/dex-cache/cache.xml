@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<pre-dex-items>
+
+    <item
+        dex="D:\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\pre-dexed\debug\classes-bc30e2d9bd8fb3ca0c24702a29a5467d995c336b.jar"
+        jar="D:\SimpleNews\SimpleNewsRepo\SimpleNewsProject\build\exploded-aar\com.github.gabrielemariotti.changeloglib\library\1.4.0\classes.jar"
+        jumboMode="false"
+        revision="19.0.3"
+        sha1="d7caf85a00dde2c4f58c9dddf0f3e2e994ffb54e"/>
+    <item
+        dex="D:\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\pre-dexed\debug\classes-ead009135870a4963cb5a201dbe611eba360906f.jar"
+        jar="D:\SimpleNews\SimpleNewsRepo\SimpleNewsProject\build\exploded-aar\com.github.castorflex.smoothprogressbar\library\0.2.0\classes.jar"
+        jumboMode="false"
+        revision="19.0.3"
+        sha1="6c4d079ac3911c38d4d9c5383f786f258115633d"/>
+    <item
+        dex="D:\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\pre-dexed\debug\classes-c989c5521bc0313743d664c37273dad133c37bc6.jar"
+        jar="D:\SimpleNews\SimpleNewsRepo\SimpleNewsProject\build\exploded-aar\com.astuetz\pagerslidingtabstrip\1.0.1\classes.jar"
+        jumboMode="false"
+        revision="19.0.3"
+        sha1="7912610ed96381c25c36d986eba422731b9641b6"/>
+    <item
+        dex="D:\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\pre-dexed\debug\classes-45e90568f35ad153f4851e23e143e6d2c714f811.jar"
+        jar="D:\SimpleNews\SimpleNewsRepo\SimpleNewsProject\build\exploded-aar\com.android.support\appcompat-v7\19.1.0\classes.jar"
+        jumboMode="false"
+        revision="19.0.3"
+        sha1="3499ceba05ca1f6037c6a2fad73df8f636224a28"/>
+    <item
+        dex="D:\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\pre-dexed\debug\classes-ed7aa3e54ab573805b89dea77f5c861740957bd4.jar"
+        jar="D:\SimpleNews\SimpleNewsRepo\SimpleNewsProject\build\exploded-aar\com.mcxiaoke.volley\library\1.0.4\classes.jar"
+        jumboMode="false"
+        revision="19.0.3"
+        sha1="a7c645fbed858d19fa2619c45f4d7e1d12a21bbe"/>
+
+</pre-dex-items>

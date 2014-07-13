@@ -40,7 +40,7 @@ public class ColorPickerSwatch extends FrameLayout implements View.OnClickListen
     private OnColorSelectedListener mOnColorSelectedListener;
 
 
-    public ColorPickerSwatch(Context context, AttributeSet set){
+    public ColorPickerSwatch(Context context, AttributeSet set) {
         super(context, set);
         LayoutInflater.from(context).inflate(R.layout.calendar_color_picker_swatch, this);
         mSwatchImage = (ImageView) findViewById(R.id.color_picker_swatch);
@@ -49,7 +49,7 @@ public class ColorPickerSwatch extends FrameLayout implements View.OnClickListen
     }
 
     public ColorPickerSwatch(Context context, int color, boolean checked,
-            OnColorSelectedListener listener) {
+                             OnColorSelectedListener listener) {
         super(context);
         mColor = color;
         mOnColorSelectedListener = listener;
@@ -64,10 +64,10 @@ public class ColorPickerSwatch extends FrameLayout implements View.OnClickListen
 
     protected void setColor(int color) {
         Resources res = getContext() != null ? getContext().getResources() : null;
-            if (res != null){
-                Drawable[] colorDrawable = new Drawable[]
-                        {res.getDrawable(R.drawable.calendar_color_picker_swatch)};
-                mSwatchImage.setImageDrawable(new ColorStateDrawable(colorDrawable, color));
+        if (res != null) {
+            Drawable[] colorDrawable = new Drawable[]
+                    {res.getDrawable(R.drawable.calendar_color_picker_swatch)};
+            mSwatchImage.setImageDrawable(new ColorStateDrawable(colorDrawable, color));
         }
     }
 

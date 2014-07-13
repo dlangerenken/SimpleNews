@@ -2,6 +2,7 @@ package de.dala.simplenews.parser;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.util.Log;
 import android.util.Xml;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -10,38 +11,37 @@ import org.xmlpull.v1.XmlPullParserException;
 import java.io.IOException;
 import java.io.InputStream;
 
+import de.dala.simplenews.R;
 import de.dala.simplenews.common.Category;
 import de.dala.simplenews.common.Feed;
 import de.dala.simplenews.common.News;
-import de.dala.simplenews.R;
-import de.dala.toasty.Toasty;
 
 /**
  * Created by Daniel on 23.12.13.
  */
-public class XmlParser  {
-    /** TAG for logging **/
-    private static String TAG="XmlParser";
-    private String newsFeedResource = null;
-    private int mNewsFeedResourceFileId = R.raw.categories;
+public class XmlParser {
+    private static final String TAG_NEWS = "news";
+    private static final String TAG_CATEGORY = "category";
+    private static final String TAG_FEED = "feed";
 
     //--------------------------------------------------------------------------------
     //TAGs and ATTRIBUTEs in xml file
     //--------------------------------------------------------------------------------
-
-    private static final String TAG_NEWS="news";
-    private static final String TAG_CATEGORY="category";
-    private static final String TAG_FEED="feed";
-
-    private static final String ATTRIBUTE_NAME="name";
-    private static final String ATTRIBUTE_COLOR="color";
-    private static final String ATTRIBUTE_VISIBLE="visible";
-    private static final String ATTRIBUTE_FEED_TITLE="title";
+    private static final String ATTRIBUTE_NAME = "name";
+    private static final String ATTRIBUTE_COLOR = "color";
+    private static final String ATTRIBUTE_VISIBLE = "visible";
+    private static final String ATTRIBUTE_FEED_TITLE = "title";
+    /**
+     * TAG for logging *
+     */
+    private static String TAG = "XmlParser";
+    private static XmlParser _instance;
+    private String newsFeedResource = null;
 
     //--------------------------------------------------------------------------------
     //Constructors
     //--------------------------------------------------------------------------------
-
+    private int mNewsFeedResourceFileId = R.raw.categories;
     /**
      * Create a new instance for a context.
      *
@@ -49,45 +49,52 @@ public class XmlParser  {
      */
     private Context context;
 
-    public XmlParser(Context context){
+    public XmlParser(Context context) {
         this.context = context;
     }
 
     /**
      * Create a new instance for a context and for a custom news-file.
-     *
+     * <p/>
      * You have to use file in res/raw folder.
      *
-     * @param context  current Context
-     * @param newsFeedResourceFileId  reference for a custom xml file
+     * @param context                current Context
+     * @param newsFeedResourceFileId reference for a custom xml file
      */
-    public XmlParser(Context context,int newsFeedResourceFileId){
+    public XmlParser(Context context, int newsFeedResourceFileId) {
         this.context = context;
-        this.mNewsFeedResourceFileId =newsFeedResourceFileId;
-    }
-
-    /**
-     * Create a new instance for a context and with a custom url .
-     *
-     * @param context  current Context
-     * @param changeLogFileResourceUrl  url with xml files
-     */
-    public XmlParser(Context context,String changeLogFileResourceUrl){
-        this.context = context;
-        this.newsFeedResource =changeLogFileResourceUrl;
+        this.mNewsFeedResourceFileId = newsFeedResourceFileId;
     }
 
     //--------------------------------------------------------------------------------
 
 
     /**
+     * Create a new instance for a context and with a custom url .
+     *
+     * @param context                  current Context
+     * @param changeLogFileResourceUrl url with xml files
+     */
+    public XmlParser(Context context, String changeLogFileResourceUrl) {
+        this.context = context;
+        this.newsFeedResource = changeLogFileResourceUrl;
+    }
+
+    public static void Init(Context context) {
+        _instance = new XmlParser(context);
+    }
+
+    public static XmlParser getInstance() {
+        return _instance;
+    }
+
+    /**
      * Read and parse res/raw/categories.xml or custom file
      *
-     * @throws Exception if categories.xml or custom file is not found or if there are errors on parsing
-     *
      * @return {@link News} obj with all data
+     * @throws Exception if categories.xml or custom file is not found or if there are errors on parsing
      */
-    public News readDefaultNewsFile() throws XmlPullParserException, IOException{
+    public News readDefaultNewsFile() throws XmlPullParserException, IOException {
 
         News news = null;
 
@@ -95,7 +102,7 @@ public class XmlParser  {
             InputStream is;
 
             is = context.getResources().openRawResource(mNewsFeedResourceFileId);
-            if (is!=null){
+            if (is != null) {
 
                 // Create a new XML Pull Parser.
                 XmlPullParser parser = Xml.newPullParser();
@@ -104,30 +111,29 @@ public class XmlParser  {
                 parser.nextTag();
 
                 // Create changelog obj that will contain all data
-                news=new News();
+                news = new News();
                 // Parse file
                 readNews(parser, news);
 
                 // Close inputstream
                 is.close();
-            }else{
-                Toasty.LOGD(TAG, "categories.xml not found");
+            } else {
+                Log.d(TAG, "categories.xml not found");
             }
         } catch (XmlPullParserException xpe) {
-            Toasty.LOGD(TAG,"XmlPullParseException while parsing changelog file",xpe);
-            throw  xpe;
-        } catch (IOException ioe){
-            Toasty.LOGD(TAG,"Error i/o with categories.xml",ioe);
+            Log.d(TAG, "XmlPullParseException while parsing changelog file", xpe);
+            throw xpe;
+        } catch (IOException ioe) {
+            Log.d(TAG, "Error i/o with categories.xml", ioe);
             throw ioe;
         }
 
-        if (news!=null){
-            Toasty.LOGD(TAG,"Process ended. News:" + news);
+        if (news != null) {
+            Log.d(TAG, "Process ended. News:" + news);
         }
 
         return news;
     }
-
 
     /**
      * Parse changelog node
@@ -135,13 +141,13 @@ public class XmlParser  {
      * @param parser
      * @param news
      */
-    protected void readNews(XmlPullParser parser, News news) throws  XmlPullParserException, IOException{
+    protected void readNews(XmlPullParser parser, News news) throws XmlPullParserException, IOException {
 
-        if (parser==null || news==null) return;
+        if (parser == null || news == null) return;
 
         // Parse changelog node
         parser.require(XmlPullParser.START_TAG, null, TAG_NEWS);
-        Toasty.LOGD(TAG,"Processing main tag=");
+        Log.d(TAG, "Processing main tag=");
 
         //Parse nested nodes
         while (parser.next() != XmlPullParser.END_TAG) {
@@ -150,7 +156,7 @@ public class XmlParser  {
             }
 
             String tag = parser.getName();
-            Toasty.LOGD(TAG,"Processing tag="+tag);
+            Log.d(TAG, "Processing tag=" + tag);
 
             if (tag.equals(TAG_CATEGORY)) {
                 readCategory(parser, news);
@@ -165,20 +171,20 @@ public class XmlParser  {
      * @param news
      * @throws Exception
      */
-    protected void readCategory(XmlPullParser parser, News news) throws  XmlPullParserException, IOException{
+    protected void readCategory(XmlPullParser parser, News news) throws XmlPullParserException, IOException {
 
-        if (parser==null) return;
+        if (parser == null) return;
 
-        parser.require(XmlPullParser.START_TAG, null,TAG_CATEGORY);
+        parser.require(XmlPullParser.START_TAG, null, TAG_CATEGORY);
 
         // Read attributes
         String categoryName = parser.getAttributeValue(null, ATTRIBUTE_NAME);
-        String color= parser.getAttributeValue(null, ATTRIBUTE_COLOR);
+        String color = parser.getAttributeValue(null, ATTRIBUTE_COLOR);
         String visible = parser.getAttributeValue(null, ATTRIBUTE_VISIBLE);
         Category category = new Category();
         category.setColor(Color.parseColor(color));
         category.setName(categoryName);
-        if (visible != null){
+        if (visible != null) {
             category.setVisible(!"false".equals(visible));
         }
 
@@ -188,11 +194,11 @@ public class XmlParser  {
                 continue;
             }
             String tag = parser.getName();
-            Toasty.LOGD(TAG,"Processing tag="+tag);
+            Log.d(TAG, "Processing tag=" + tag);
 
-            if (tag.equals(TAG_FEED)){
+            if (tag.equals(TAG_FEED)) {
                 Feed feed = readFeed(parser, news);
-                if (feed != null){
+                if (feed != null) {
                     category.getFeeds().add(feed);
                 }
             }
@@ -201,33 +207,33 @@ public class XmlParser  {
     }
 
     /**
-     *  Parse changeLogText node
+     * Parse changeLogText node
      *
      * @param parser
      * @param news
      * @throws Exception
      */
-    private Feed readFeed(XmlPullParser parser, News news) throws  XmlPullParserException, IOException{
+    private Feed readFeed(XmlPullParser parser, News news) throws XmlPullParserException, IOException {
         Feed feed = null;
-        if (parser==null) return null;
+        if (parser == null) return null;
 
-        parser.require(XmlPullParser.START_TAG, null,TAG_FEED);
+        parser.require(XmlPullParser.START_TAG, null, TAG_FEED);
 
         String tag = parser.getName();
-        if (tag.equals(TAG_FEED)){
+        if (tag.equals(TAG_FEED)) {
             // Read attributes
-            String feedTitle = parser.getAttributeValue(null,ATTRIBUTE_FEED_TITLE);
+            String feedTitle = parser.getAttributeValue(null, ATTRIBUTE_FEED_TITLE);
             String feedVisible = parser.getAttributeValue(null, ATTRIBUTE_VISIBLE);
 
             // Read text
             if (parser.next() == XmlPullParser.TEXT) {
-                String feedText =parser.getText();
-                if (feedText!=null){
+                String feedText = parser.getText();
+                if (feedText != null) {
                     feed = new Feed(feedText);
-                    if (feedTitle!=null){
+                    if (feedTitle != null) {
                         feed.setTitle(feedTitle);
                     }
-                    if (feedVisible != null){
+                    if (feedVisible != null) {
                         feed.setVisible(!"false".equals(feedVisible));
                     }
                 }
@@ -235,25 +241,16 @@ public class XmlParser  {
             }
 
         }
-        parser.require(XmlPullParser.END_TAG, null,TAG_FEED);
+        parser.require(XmlPullParser.END_TAG, null, TAG_FEED);
         return feed;
     }
 
     public String readShortenedLink(String shortenedLink) {
         int startIndex = shortenedLink.indexOf("<url>") + "<url>".length();
         int endIndex = shortenedLink.indexOf("</url>");
-        if (startIndex > -1 && endIndex > -1){
-            return shortenedLink.substring(startIndex,endIndex);
+        if (startIndex > -1 && endIndex > -1) {
+            return shortenedLink.substring(startIndex, endIndex);
         }
         return null;
-    }
-
-    private static XmlParser _instance;
-
-    public static void Init(Context context){
-        _instance = new XmlParser(context);
-    }
-    public static XmlParser getInstance() {
-        return _instance;
     }
 }

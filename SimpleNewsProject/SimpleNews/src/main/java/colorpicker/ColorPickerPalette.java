@@ -20,7 +20,6 @@ package colorpicker;
  */
 
 
-
 import android.content.Context;
 import android.content.res.Resources;
 import android.util.AttributeSet;
@@ -145,7 +144,7 @@ public class ColorPickerPalette extends TableLayout {
      * will arrange them for accessibility purposes.
      */
     private void setSwatchDescription(int rowNumber, int index, int rowElements, boolean selected,
-            View swatch) {
+                                      View swatch) {
         int accessibilityIndex;
         if (rowNumber % 2 == 0) {
             // We're in a regular-ordered row

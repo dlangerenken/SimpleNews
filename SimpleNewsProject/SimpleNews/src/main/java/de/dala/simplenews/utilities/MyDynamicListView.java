@@ -39,47 +39,46 @@ import com.nhaarman.listviewanimations.widget.DynamicListView;
 public class MyDynamicListView extends DynamicListView {
 
 
-        private OnItemLongClickListener first;
-        private OnItemLongClickListener mAdditionalOnLongItemClickListener;
-
-        public MyDynamicListView(Context context) {
-            super(context);
-            super.init(context);
-            first = getOnItemLongClickListener();
-            super.setOnItemLongClickListener(mOnItemLongClickListener);
-        }
-
-        public MyDynamicListView(Context context, AttributeSet attrs, int defStyle) {
-            super(context, attrs, defStyle);
-            super.init(context);
-            first = getOnItemLongClickListener();
-            super.setOnItemLongClickListener(mOnItemLongClickListener);
-        }
-
-        public MyDynamicListView(Context context, AttributeSet attrs) {
-            super(context, attrs);
-            super.init(context);
-            first = getOnItemLongClickListener();
-            super.setOnItemLongClickListener(mOnItemLongClickListener);
-        }
-
-        /**
-         * Listens for long clicks on any items in the listview. When a cell has
-         * been selected, the hover cell is created and set up.
-         */
-        private OnItemLongClickListener mOnItemLongClickListener = new OnItemLongClickListener() {
-            public boolean onItemLongClick(AdapterView<?> arg0, View arg1, int pos, long id) {
-                if (mAdditionalOnLongItemClickListener != null){
-                    boolean result = mAdditionalOnLongItemClickListener.onItemLongClick(arg0, arg1, pos, id);
-                    if (result){
-                        return true;
-                    }
+    private OnItemLongClickListener first;
+    private OnItemLongClickListener mAdditionalOnLongItemClickListener;
+    /**
+     * Listens for long clicks on any items in the listview. When a cell has
+     * been selected, the hover cell is created and set up.
+     */
+    private OnItemLongClickListener mOnItemLongClickListener = new OnItemLongClickListener() {
+        public boolean onItemLongClick(AdapterView<?> arg0, View arg1, int pos, long id) {
+            if (mAdditionalOnLongItemClickListener != null) {
+                boolean result = mAdditionalOnLongItemClickListener.onItemLongClick(arg0, arg1, pos, id);
+                if (result) {
+                    return true;
                 }
-               return first.onItemLongClick(arg0, arg1, pos, id);
             }
-        };
+            return first.onItemLongClick(arg0, arg1, pos, id);
+        }
+    };
 
-    public void setAdditionalOnLongItemClickListener(OnItemLongClickListener additionalListener){
+    public MyDynamicListView(Context context) {
+        super(context);
+        super.init(context);
+        first = getOnItemLongClickListener();
+        super.setOnItemLongClickListener(mOnItemLongClickListener);
+    }
+
+    public MyDynamicListView(Context context, AttributeSet attrs, int defStyle) {
+        super(context, attrs, defStyle);
+        super.init(context);
+        first = getOnItemLongClickListener();
+        super.setOnItemLongClickListener(mOnItemLongClickListener);
+    }
+
+    public MyDynamicListView(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        super.init(context);
+        first = getOnItemLongClickListener();
+        super.setOnItemLongClickListener(mOnItemLongClickListener);
+    }
+
+    public void setAdditionalOnLongItemClickListener(OnItemLongClickListener additionalListener) {
         this.mAdditionalOnLongItemClickListener = additionalListener;
     }
 

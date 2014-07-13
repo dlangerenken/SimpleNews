@@ -5,7 +5,7 @@ import java.io.Serializable;
 /**
  * Created by Daniel on 19.12.13.
  */
-public class Entry implements Comparable<Entry>, Serializable{
+public class Entry implements Comparable<Entry>, Serializable {
     private long id;
     private long feedId;
     private long categoryId;
@@ -23,11 +23,10 @@ public class Entry implements Comparable<Entry>, Serializable{
     private Long visitedDate;
 
 
-
-    public Entry(){
+    public Entry() {
     }
 
-    public Entry(long id, long feedId, long categoryId, String title, String description, Long date, String srcName, String link, String imageLink, Long visitedDate, Long favoriteDate){
+    public Entry(long id, long feedId, long categoryId, String title, String description, Long date, String srcName, String link, String imageLink, Long visitedDate, Long favoriteDate) {
         this.id = id;
         this.feedId = feedId;
         this.categoryId = categoryId;
@@ -85,6 +84,10 @@ public class Entry implements Comparable<Entry>, Serializable{
         return date;
     }
 
+    public void setDate(Long date) {
+        this.date = date;
+    }
+
     public void setDate(long date) {
         this.date = date;
     }
@@ -129,7 +132,6 @@ public class Entry implements Comparable<Entry>, Serializable{
         this.visible = visible;
     }
 
-
     @Override
     public int compareTo(Entry another) {
         return getDate().compareTo(another.getDate());
@@ -137,12 +139,11 @@ public class Entry implements Comparable<Entry>, Serializable{
 
     @Override
     public String toString() {
-        if (shortenedLink != null){
+        if (shortenedLink != null) {
             return String.format("%s - %s", title, shortenedLink);
         }
         return String.format("%s - %s", title, link);
     }
-
 
     public Long getVisitedDate() {
         return visitedDate;
@@ -150,10 +151,6 @@ public class Entry implements Comparable<Entry>, Serializable{
 
     public void setVisitedDate(Long visitedDate) {
         this.visitedDate = visitedDate;
-    }
-
-    public void setDate(Long date) {
-        this.date = date;
     }
 
     public Long getFavoriteDate() {

@@ -7,22 +7,22 @@ import java.util.List;
 /**
  * Created by Daniel on 23.12.13.
  */
-public class News implements Serializable{
+public class News implements Serializable {
     private List<Category> categories;
 
-    public News(List<Category> categories){
+    public News(List<Category> categories) {
         this.categories = categories;
     }
 
-    public News(){
+    public News() {
         this.categories = new ArrayList<Category>();
     }
 
-    public void setCategories(List<Category> categories){
-        this.categories = categories;
+    public List<Category> getCategories() {
+        return categories;
     }
 
-    public List<Category> getCategories(){
-        return categories;
+    public void setCategories(List<Category> categories) {
+        this.categories = categories;
     }
 }

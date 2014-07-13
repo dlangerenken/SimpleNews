@@ -24,8 +24,6 @@ import android.widget.Toast;
 
 import com.nhaarman.listviewanimations.ArrayAdapter;
 
-import de.dala.simplenews.utilities.MyDynamicListView;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,6 +33,7 @@ import colorpicker.OnColorSelectedListener;
 import de.dala.simplenews.R;
 import de.dala.simplenews.common.Category;
 import de.dala.simplenews.database.DatabaseHandler;
+import de.dala.simplenews.utilities.MyDynamicListView;
 import de.dala.simplenews.utilities.PrefUtilities;
 import de.dala.simplenews.utilities.UIUtils;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
@@ -45,31 +44,22 @@ import de.keyboardsurfer.android.widget.crouton.Style;
  */
 public class CategorySelectionFragment extends Fragment {
 
-    public interface OnCategoryClicked {
-        void onMoreClicked(Category category);
-        void onRSSSavedClick(Category category, String rssPath);
-        void onRestore();
-    }
-
+    private static final String CATEGORIES_KEY = "categories";
+    private static final String FROM_RSS_KEY = "rss";
+    private static final String RSS_PATH_KEY = "path";
+    OnCategoryClicked categoryClicked;
     private ActionMode mActionMode;
-
     private List<Category> categories;
     private MyDynamicListView categoryListView;
     private CategoryListAdapter adapter;
     private boolean fromRSS;
     private String rssPath;
-    private static final String CATEGORIES_KEY = "categories";
-    private static final String FROM_RSS_KEY = "rss";
-    private static final String RSS_PATH_KEY = "path";
-    OnCategoryClicked categoryClicked;
-
     private TextView topTextView;
     private ViewGroup topView;
-
-    public CategorySelectionFragment(){
+    public CategorySelectionFragment() {
     }
 
-    public static CategorySelectionFragment newInstance(ArrayList<Category> categories, boolean fromRSS, String path){
+    public static CategorySelectionFragment newInstance(ArrayList<Category> categories, boolean fromRSS, String path) {
         CategorySelectionFragment fragment = new CategorySelectionFragment();
         Bundle b = new Bundle();
         b.putParcelableArrayList(CATEGORIES_KEY, categories);
@@ -81,15 +71,15 @@ public class CategorySelectionFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        ((ActionBarActivity)getActivity()).getSupportActionBar().setTitle(getString(R.string.categories_title));
+        ((ActionBarActivity) getActivity()).getSupportActionBar().setTitle(getString(R.string.categories_title));
 
         this.categoryClicked = UIUtils.getParent(this, OnCategoryClicked.class);
-        if (categoryClicked == null){
+        if (categoryClicked == null) {
             throw new ClassCastException("No Parent with Interface OnCategoryClicked");
         }
         View rootView = inflater.inflate(R.layout.category_selection, container, false);
         topView = (ViewGroup) rootView.findViewById(R.id.topView);
-        if (fromRSS){
+        if (fromRSS) {
             topTextView = (TextView) rootView.findViewById(R.id.topTextView);
             topTextView.setText(getActivity().getString(R.string.category_add));
             topTextView.setVisibility(View.VISIBLE);
@@ -125,7 +115,7 @@ public class CategorySelectionFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.new_category:
                 createCategoryClicked();
                 return true;
@@ -160,6 +150,125 @@ public class CategorySelectionFragment extends Fragment {
         categoryListView.setAdapter(adapter);
     }
 
+    private void onListItemCheck(int position) {
+        adapter.toggleSelection(position);
+        boolean hasCheckedItems = adapter.getSelectedCount() > 0;
+
+        if (hasCheckedItems && mActionMode == null) {
+            // there are some selected items, start the actionMode
+            mActionMode = ((ActionBarActivity) getActivity()).startSupportActionMode(new ActionModeCallBack());
+        } else if (!hasCheckedItems && mActionMode != null) {
+            // there no selected items, finish the actionMode
+            mActionMode.finish();
+        }
+
+        if (mActionMode != null) {
+            mActionMode.setTitle(String.valueOf(adapter.getSelectedCount()));
+        }
+    }
+
+    private void createCategoryClicked() {
+        final EditText input = new EditText(getActivity());
+        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which) {
+                    case DialogInterface.BUTTON_POSITIVE:
+                        String categoryName = input.getText() != null ? input.getText().toString() : "";
+                        selectColor(categoryName);
+                        break;
+                    case DialogInterface.BUTTON_NEGATIVE:
+                        break;
+                }
+            }
+        };
+
+        new AlertDialog.Builder(getActivity()).
+                setPositiveButton(getActivity().getString(R.string.submit), dialogClickListener).setNegativeButton(getActivity().getString(R.string.cancel), dialogClickListener).setTitle(getActivity().getString(R.string.create_category_1_2))
+                .setMessage(getActivity().getString(R.string.name_of_category)).setView(input).show();
+    }
+
+    private void editClicked(final Category category) {
+        final EditText input = new EditText(getActivity());
+        input.setText(category.getName());
+        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which) {
+                    case DialogInterface.BUTTON_POSITIVE:
+                        String newName = input.getText() != null ? input.getText().toString() : "";
+                        category.setName(newName);
+                        adapter.notifyDataSetChanged();
+                        DatabaseHandler.getInstance().updateCategory(category);
+                        Toast.makeText(getActivity(), String.format(getActivity().getString(R.string.new_name), newName), Toast.LENGTH_SHORT).show();
+                        break;
+                    case DialogInterface.BUTTON_NEGATIVE:
+                        break;
+                }
+            }
+        };
+
+        new AlertDialog.Builder(getActivity()).
+                setPositiveButton(R.string.rename, dialogClickListener).setNegativeButton(R.string.cancel, dialogClickListener).setTitle(R.string.category)
+                .setMessage(R.string.change_category_name).setView(input).show();
+    }
+
+    private void onColorClicked(final Category category) {
+        ColorPickerDialog colorCalendar = ColorPickerDialog.newInstance(
+                category.getName(),
+                ColorUtils.colorChoice(getActivity()), category.getColor(), 4,
+                ColorUtils.isTablet(getActivity()) ? ColorPickerDialog.SIZE_LARGE : ColorPickerDialog.SIZE_SMALL, String.format("%s %s:", getString(R.string.color_picker_default_title), category.getName()));
+        colorCalendar.setOnColorSelectedListener(new OnColorSelectedListener() {
+            @Override
+            public void onColorSelected(int color) {
+                category.setColor(color);
+                DatabaseHandler.getInstance().updateCategory(category);
+                adapter.notifyDataSetChanged();
+            }
+        });
+        colorCalendar.show(getChildFragmentManager(), "dash");
+    }
+
+    private void selectColor(final String categoryName) {
+        ColorPickerDialog colorCalendar = ColorPickerDialog.newInstance(
+                getString(R.string.create_category_2_2),
+                ColorUtils.colorChoice(getActivity()), 0, 4,
+                ColorUtils.isTablet(getActivity()) ? ColorPickerDialog.SIZE_LARGE : ColorPickerDialog.SIZE_SMALL, getString(R.string.select_color_create_category));
+        colorCalendar.setOnColorSelectedListener(new OnColorSelectedListener() {
+            @Override
+            public void onColorSelected(int color) {
+                Category newCategory = new Category();
+                newCategory.setName(categoryName);
+                newCategory.setColor(color);
+
+                long id = DatabaseHandler.getInstance().addCategory(newCategory, true, true);
+                newCategory.setId(id);
+                adapter.add(newCategory);
+                adapter.notifyDataSetChanged();
+                Crouton.makeText(getActivity(), R.string.category_created, Style.CONFIRM, topView).show();
+            }
+        });
+        colorCalendar.show(getChildFragmentManager(), "dash");
+    }
+
+    private void removeSelectedCategories(List<Category> selectedCategories) {
+        for (Category category : selectedCategories) {
+            adapter.remove(category);
+            DatabaseHandler.getInstance().removeCategory(category.getId(), false, false);
+            categories.remove(category);
+        }
+        adapter.notifyDataSetChanged();
+    }
+
+    public interface OnCategoryClicked {
+        void onMoreClicked(Category category);
+
+        void onRSSSavedClick(Category category, String rssPath);
+
+        void onRestore();
+    }
 
     private class CategoryListAdapter extends ArrayAdapter<Category> {
 
@@ -189,7 +298,7 @@ public class CategorySelectionFragment extends Fragment {
         public View getView(final int position, View convertView, ViewGroup parent) {
             Category category = getItem(position);
 
-            if (convertView == null){
+            if (convertView == null) {
                 LayoutInflater inflater = LayoutInflater.from(context);
                 convertView = inflater.inflate(R.layout.category_modify_item, null, false);
                 ViewHolder viewHolder = new ViewHolder();
@@ -204,22 +313,22 @@ public class CategorySelectionFragment extends Fragment {
             holder.name.setText(category.getName());
             holder.color.setBackgroundColor(category.getColor());
             holder.show.setChecked(category.isVisible());
-            if (!fromRSS){
+            if (!fromRSS) {
                 holder.edit.setOnClickListener(new CategoryItemClickListener(category));
                 holder.color.setOnClickListener(new CategoryItemClickListener(category));
                 holder.show.setOnClickListener(new CategoryItemClickListener(category));
                 holder.more.setOnClickListener(new CategoryItemClickListener(category));
-            }else{
+            } else {
                 holder.edit.setVisibility(View.GONE);
                 holder.show.setVisibility(View.GONE);
                 holder.more.setVisibility(View.GONE);
                 convertView.setOnClickListener(new CategoryItemRSSClickListener(category));
             }
             switchBackgroundOfView(position, convertView);
-           return convertView;
+            return convertView;
         }
 
-        private void switchBackgroundOfView(int position, View view){
+        private void switchBackgroundOfView(int position, View view) {
             if (view != null && mSelectedItemIds.size() > position) {
                 view.setBackgroundResource(mSelectedItemIds.get(position) ? R.drawable.card_background_blue : R.drawable.card_background_white);
             }
@@ -237,18 +346,10 @@ public class CategorySelectionFragment extends Fragment {
             database.updateCategory(one);
             database.updateCategory(two);
 
-            if (mActionMode != null){
+            if (mActionMode != null) {
                 mActionMode.finish();
             }
             adapter.removeSelection();
-        }
-
-        class ViewHolder {
-            public TextView name;
-            public ImageView color;
-            public ImageView more;
-            public ImageView edit;
-            public CheckBox show;
         }
 
         public void toggleSelection(int position) {
@@ -256,11 +357,10 @@ public class CategorySelectionFragment extends Fragment {
             selectView(position, !mSelectedItemIds.get(position));
         }
 
-        public void selectView(int position, boolean value)
-        {
-            if(value){
+        public void selectView(int position, boolean value) {
+            if (value) {
                 mSelectedItemIds.put(position, value);
-            }else{
+            } else {
                 mSelectedItemIds.delete(position);
             }
 
@@ -277,9 +377,17 @@ public class CategorySelectionFragment extends Fragment {
 
         public void removeSelection() {
             mSelectedItemIds = new SparseBooleanArray();
-            if (recentChangedViewId > -1){
+            if (recentChangedViewId > -1) {
                 switchBackgroundOfView(recentChangedViewId, categoryListView.getChildAt(recentChangedViewId));
             }
+        }
+
+        class ViewHolder {
+            public TextView name;
+            public ImageView color;
+            public ImageView more;
+            public ImageView edit;
+            public CheckBox show;
         }
     }
 
@@ -305,7 +413,7 @@ public class CategorySelectionFragment extends Fragment {
 
         @Override
         public void onClick(View v) {
-            switch (v.getId()){
+            switch (v.getId()) {
                 case R.id.color:
                     onColorClicked(category);
                     break;
@@ -322,110 +430,6 @@ public class CategorySelectionFragment extends Fragment {
                     break;
             }
         }
-    }
-
-    private void onListItemCheck(int position) {
-        adapter.toggleSelection(position);
-        boolean hasCheckedItems = adapter.getSelectedCount() > 0;
-
-        if (hasCheckedItems && mActionMode == null){
-            // there are some selected items, start the actionMode
-            mActionMode = ((ActionBarActivity)getActivity()).startSupportActionMode(new ActionModeCallBack());
-        }
-        else if (!hasCheckedItems && mActionMode != null){
-            // there no selected items, finish the actionMode
-            mActionMode.finish();
-        }
-
-        if(mActionMode != null){
-            mActionMode.setTitle(String.valueOf(adapter.getSelectedCount()));
-        }
-    }
-
-    private void createCategoryClicked(){
-            final EditText input = new EditText(getActivity());
-            DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
-
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    switch (which){
-                        case DialogInterface.BUTTON_POSITIVE:
-                            String categoryName = input.getText() != null ? input.getText().toString() : "";
-                            selectColor(categoryName);
-                            break;
-                        case DialogInterface.BUTTON_NEGATIVE:
-                            break;
-                    }
-                }
-            };
-
-            new AlertDialog.Builder(getActivity()).
-                    setPositiveButton(getActivity().getString(R.string.submit), dialogClickListener).setNegativeButton(getActivity().getString(R.string.cancel), dialogClickListener).setTitle(getActivity().getString(R.string.create_category_1_2))
-                    .setMessage(getActivity().getString(R.string.name_of_category)).setView(input).show();
-    }
-
-    private void editClicked(final Category category) {
-        final EditText input = new EditText(getActivity());
-        input.setText(category.getName());
-        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
-
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                switch (which){
-                    case DialogInterface.BUTTON_POSITIVE:
-                        String newName = input.getText() != null ? input.getText().toString() : "";
-                        category.setName(newName);
-                        adapter.notifyDataSetChanged();
-                        DatabaseHandler.getInstance().updateCategory(category);
-                        Toast.makeText(getActivity(), String.format(getActivity().getString(R.string.new_name), newName), Toast.LENGTH_SHORT).show();
-                        break;
-                    case DialogInterface.BUTTON_NEGATIVE:
-                        break;
-                }
-            }
-        };
-
-        new AlertDialog.Builder(getActivity()).
-                setPositiveButton(R.string.rename, dialogClickListener).setNegativeButton(R.string.cancel, dialogClickListener).setTitle(R.string.category)
-                .setMessage(R.string.change_category_name).setView(input).show();
-    }
-
-    private void onColorClicked(final Category category){
-        ColorPickerDialog colorCalendar = ColorPickerDialog.newInstance(
-                category.getName(),
-                ColorUtils.colorChoice(getActivity()), category.getColor(), 4,
-                ColorUtils.isTablet(getActivity()) ? ColorPickerDialog.SIZE_LARGE : ColorPickerDialog.SIZE_SMALL, String.format("%s %s:", getString(R.string.color_picker_default_title), category.getName()));
-        colorCalendar.setOnColorSelectedListener(new OnColorSelectedListener() {
-            @Override
-            public void onColorSelected(int color) {
-                category.setColor(color);
-                DatabaseHandler.getInstance().updateCategory(category);
-                adapter.notifyDataSetChanged();
-            }
-        });
-        colorCalendar.show(getChildFragmentManager(), "dash");
-    }
-
-    private void selectColor(final String categoryName){
-        ColorPickerDialog colorCalendar = ColorPickerDialog.newInstance(
-                getString(R.string.create_category_2_2),
-                ColorUtils.colorChoice(getActivity()), 0, 4,
-                ColorUtils.isTablet(getActivity()) ? ColorPickerDialog.SIZE_LARGE : ColorPickerDialog.SIZE_SMALL, getString(R.string.select_color_create_category));
-        colorCalendar.setOnColorSelectedListener(new OnColorSelectedListener() {
-            @Override
-            public void onColorSelected(int color) {
-                Category newCategory = new Category();
-                newCategory.setName(categoryName);
-                newCategory.setColor(color);
-
-                long id = DatabaseHandler.getInstance().addCategory(newCategory, true, true);
-                newCategory.setId(id);
-                adapter.add(newCategory);
-                adapter.notifyDataSetChanged();
-                Crouton.makeText(getActivity(), R.string.category_created, Style.CONFIRM, topView).show();
-            }
-        });
-        colorCalendar.show(getChildFragmentManager(), "dash");
     }
 
     private class ActionModeCallBack implements ActionMode.Callback {
@@ -448,14 +452,14 @@ public class CategorySelectionFragment extends Fragment {
             // retrieve selected items and print them out
             SparseBooleanArray selected = adapter.getSelectedIds();
             List<Category> selectedCategories = new ArrayList<Category>();
-            for (int i = 0; i < selected.size(); i++){
+            for (int i = 0; i < selected.size(); i++) {
                 if (selected.valueAt(i)) {
                     Category selectedItem = adapter.getItem(selected.keyAt(i));
                     selectedCategories.add(selectedItem);
                 }
             }
             // close action mode
-            switch (item.getItemId()){
+            switch (item.getItemId()) {
                 case R.id.menu_item_remove:
                     removeSelectedCategories(selectedCategories);
                     break;
@@ -474,14 +478,5 @@ public class CategorySelectionFragment extends Fragment {
         }
 
 
-    }
-
-    private void removeSelectedCategories(List<Category> selectedCategories) {
-        for (Category category : selectedCategories){
-            adapter.remove(category);
-            DatabaseHandler.getInstance().removeCategory(category.getId(), false, false);
-            categories.remove(category);
-        }
-        adapter.notifyDataSetChanged();
     }
 }

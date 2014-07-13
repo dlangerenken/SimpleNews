@@ -18,27 +18,26 @@ package androidrss;
 
 /**
  * Internal helper class for integer conversions.
- * 
+ *
  * @author Alexander Ivanov
  */
 final class Integers {
 
-	/* Hide constructor */
-	private Integers() {
-	}
+    /* Hide constructor */
+    private Integers() {
+    }
 
-	/**
-	 * Parses string as an integer.
-	 * 
-	 * @throws RSSFault
-	 *             if the string is not a valid integer
-	 */
-	static Integer parseInteger(String value) {
-		try {
-			return Integer.valueOf(value);
-		} catch (NumberFormatException e) {
-			throw new RSSFault(e);
-		}
-	}
+    /**
+     * Parses string as an integer.
+     *
+     * @throws RSSFault if the string is not a valid integer
+     */
+    static Integer parseInteger(String value) {
+        try {
+            return Integer.valueOf(value);
+        } catch (NumberFormatException e) {
+            throw new RSSFault(e);
+        }
+    }
 
 }

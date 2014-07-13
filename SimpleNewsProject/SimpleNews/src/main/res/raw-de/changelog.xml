@@ -1,31 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog bulletedList="true">
-    <changelogversion versionName="0.95" changeDate="22.04.2014">
+    <changelogversion changeDate="22.04.2014" versionName="0.95">
         <changelogtext>Bessere Unterstützung für Sonderzeichen (z.B. Umlaute)</changelogtext>
         <changelogtext>Schöneres Design, weniger Frameworks</changelogtext>
         <changelogtext>Bewerten und Aktualiseren Buttons hinzugefügt</changelogtext>
     </changelogversion>
-    <changelogversion versionName="0.8" changeDate="25.02.2014">
+    <changelogversion changeDate="25.02.2014" versionName="0.8">
         <changelogtext>Personalisierung</changelogtext>
         <changelogtext>Favoriten</changelogtext>
         <changelogtext>Zuletzt gesehen</changelogtext>
     </changelogversion>
-    <changelogversion versionName="0.5" changeDate="18.01.2014">
+    <changelogversion changeDate="18.01.2014" versionName="0.5">
         <changelogtext>Teilen von Beiträgen möglich.</changelogtext>
     </changelogversion>
-    <changelogversion versionName="0.4" changeDate="11.01.2014">
+    <changelogversion changeDate="11.01.2014" versionName="0.4">
         <changelogtext>Interaktion mit RSS-Buttons.</changelogtext>
     </changelogversion>
-    <changelogversion versionName="0.3" changeDate="03.01.2014">
+    <changelogversion changeDate="03.01.2014" versionName="0.3">
         <changelogtext>Hinzufügen und Entfernen von Kategorien.</changelogtext>
         <changelogtext>Füge RSS-Feeds zu Kategorien hinzu.</changelogtext>
         <changelogtext>Entferne RSS-Feeds von Kategorien.</changelogtext>
     </changelogversion>
-    <changelogversion versionName="0.2" changeDate="22.12.2013">
+    <changelogversion changeDate="22.12.2013" versionName="0.2">
         <changelogtext>Mehrsprachigkeit hinzugefügt.</changelogtext>
         <changelogtext>Fortschrittsbalken und Aktualisierungs-Button eingefügt.</changelogtext>
     </changelogversion>
-    <changelogversion versionName="0.1" changeDate="21.12.2013">
+    <changelogversion changeDate="21.12.2013" versionName="0.1">
         <changelogtext>Initialer Upload.</changelogtext>
     </changelogversion>
 

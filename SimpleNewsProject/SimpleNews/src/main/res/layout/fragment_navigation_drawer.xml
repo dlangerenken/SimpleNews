@@ -12,11 +12,12 @@
         android:background="@color/list_background"
         android:choiceMode="singleChoice"
         android:divider="@color/list_divider"
-        android:dividerHeight="1dp" android:listSelector="@drawable/list_selector"
-        />
+        android:dividerHeight="1dp"
+        android:listSelector="@drawable/list_selector" />
 
     <View
         android:id="@+id/vertical_line"
         android:layout_width="3dp"
-        android:layout_height="fill_parent" android:background="@android:color/black"/>
+        android:layout_height="fill_parent"
+        android:background="@android:color/black" />
 </LinearLayout>

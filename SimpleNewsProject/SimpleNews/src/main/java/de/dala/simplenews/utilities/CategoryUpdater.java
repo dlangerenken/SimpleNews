@@ -40,33 +40,40 @@ import static com.rosaloves.bitlyj.Bitly.shorten;
  */
 public class CategoryUpdater {
 
-    private static final String TAG = "CategoryUpdater";
     public static final int ERROR = -1;
     public static final int CANCEL = -2;
     public static final int STATUS_CHANGED = 3;
     public static final int RESULT = 4;
-
+    public static final String IMAGE_JPEG = "image/jpeg";
+    private static final String TAG = "CategoryUpdater";
     private Handler handler;
     private Category category;
-
     private List<FetchingResult> results;
     private int currentWorkingThreads = 0;
     private IDatabaseHandler databaseHandler;
     private boolean updateDatabase;
     private boolean isRunning = false;
+    private Context context;
 
+    public CategoryUpdater(Handler handler, Category category, boolean updateDatabase, Context context) {
+        this.handler = handler;
+        this.category = category;
+        this.context = context;
+        databaseHandler = DatabaseHandler.getInstance();
+        this.updateDatabase = updateDatabase;
+    }
 
     public boolean start() {
-        if (!isRunning){
+        if (!isRunning) {
             isRunning = true;
             String msg = context != null ? context.getString(R.string.update_news) : "";
             sendMessage(msg, STATUS_CHANGED);
             results = new ArrayList<FetchingResult>();
             currentWorkingThreads = category.getFeeds().size();
-            if (currentWorkingThreads == 0){
+            if (currentWorkingThreads == 0) {
                 sendMessage("No Feeds found", ERROR);
             }
-            for(final Feed feed : category.getFeeds()){
+            for (final Feed feed : category.getFeeds()) {
                 NetworkCommunication.loadRSSFeed(feed.getUrl(), new Response.Listener<String>() {
                             @Override
                             public void onResponse(String feedStringResult) {
@@ -85,25 +92,6 @@ public class CategoryUpdater {
         return false;
     }
 
-    private class FetchingResult {
-        public Feed feed;
-        public String stringResult;
-
-        public FetchingResult(Feed feed, String result){
-            this.feed = feed;
-            this.stringResult = result;
-        }
-    }
-    private Context context;
-
-    public CategoryUpdater(Handler handler, Category category, boolean updateDatabase, Context context){
-        this.handler = handler;
-        this.category = category;
-        this.context = context;
-        databaseHandler = DatabaseHandler.getInstance();
-        this.updateDatabase = updateDatabase;
-    }
-
     private void dropCategory() {
         databaseHandler.removeEntries(category.getId(), null, null);
     }
@@ -111,17 +99,17 @@ public class CategoryUpdater {
 
     private void resultFetched(FetchingResult result) {
         currentWorkingThreads--;
-        if (result != null){
+        if (result != null) {
             results.add(result);
         }
 
-        if (currentWorkingThreads <= 0){
+        if (currentWorkingThreads <= 0) {
             //every thread has catched the information
-            new AsyncTask<Void, Void, Void>(){
+            new AsyncTask<Void, Void, Void>() {
 
                 @Override
                 protected Void doInBackground(Void... params) {
-                    if (updateDatabase){
+                    if (updateDatabase) {
                         dropCategory();
                     }
                     parseInformation();
@@ -135,29 +123,29 @@ public class CategoryUpdater {
         //sendMessage("Parsing Information", STATUS_CHANGED);
         RSSParser parser = new RSSParser(new RSSConfig());
         List<Entry> entries = new ArrayList<Entry>();
-        for(FetchingResult fetchingResult : results){
+        for (FetchingResult fetchingResult : results) {
             try {
                 RSSFeed rssFeed = parser.parse(new ByteArrayInputStream(fetchingResult.stringResult.getBytes("UTF-8")));
-                if (fetchingResult.feed.getTitle() == null){
+                if (fetchingResult.feed.getTitle() == null) {
                     fetchingResult.feed.setTitle(rssFeed.getTitle());
                     databaseHandler.updateFeed(fetchingResult.feed);
                 }
                 String title = rssFeed.getTitle();
-                for (RSSItem item : rssFeed.getItems()){
+                for (RSSItem item : rssFeed.getItems()) {
                     Entry entry = getEntryFromRSSItem(item, fetchingResult.feed.getId(), title);
                     if (entry != null) {
                         entries.add(entry);
                     }
                 }
-            } catch (UnsupportedEncodingException ex){
+            } catch (UnsupportedEncodingException ex) {
                 Log.e(TAG, "UnsupportedEncoding", ex);
-            } catch (RSSFault e){
+            } catch (RSSFault e) {
                 Log.e(TAG, "RSSFault", e);
             }
 
         }
         //sleep(250);
-        if (updateDatabase){
+        if (updateDatabase) {
             addToDatabase(entries);
         }
         //sleep(250);
@@ -166,7 +154,7 @@ public class CategoryUpdater {
 
     private void addToDatabase(List<Entry> entries) {
         //sendMessage("Adding to database", STATUS_CHANGED);
-        for (Entry entry : entries){
+        for (Entry entry : entries) {
             databaseHandler.addEntry(category.getId(), entry.getFeedId(), entry);
         }
     }
@@ -188,15 +176,15 @@ public class CategoryUpdater {
             if (PrefUtilities.getInstance().shouldShortenLinks()) {
                 getShortenedLinks(entries);
             }
-        }else{
+        } else {
             sendMessage(null, CANCEL);
         }
 
     }
 
     private void getShortenedLinks(final List<Entry> entries) {
-        for (final Entry entry : entries){
-            if (entry.getShortenedLink() != null){
+        for (final Entry entry : entries) {
+            if (entry.getShortenedLink() != null) {
                 continue;
             }
             //shortenWithAdfly(entry);
@@ -205,7 +193,7 @@ public class CategoryUpdater {
         isRunning = false;
     }
 
-    private void shortenWithBitly(final Entry entry){
+    private void shortenWithBitly(final Entry entry) {
         if (entry != null) {
             String urlForCall = getUrlForCall(shorten(entry.getLink()));
             NetworkCommunication.loadShortenedUrl(urlForCall, new Response.Listener<String>() {
@@ -234,7 +222,7 @@ public class CategoryUpdater {
         NetworkCommunication.loadShortenedUrl(urlForCall, new Response.Listener<String>() {
                     @Override
                     public void onResponse(String shortenedLink) {
-                        if (!"error".equalsIgnoreCase(shortenedLink)){
+                        if (!"error".equalsIgnoreCase(shortenedLink)) {
                             entry.setShortenedLink(shortenedLink);
                             databaseHandler.updateEntry(entry);
                         }
@@ -242,7 +230,7 @@ public class CategoryUpdater {
                 }, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError volleyError) {
-                        Log.e("CategoryUpdater", String.format("Entry with id: %s could not be shortened", entry.getId()+""));
+                        Log.e("CategoryUpdater", String.format("Entry with id: %s could not be shortened", entry.getId() + ""));
                     }
                 }
         );
@@ -255,7 +243,7 @@ public class CategoryUpdater {
                 .append("&format=xml");
 
         try {
-            for(Pair<String, String> p : m.getParameters()) {
+            for (Pair<String, String> p : m.getParameters()) {
                 sb.append("&").append(p.getOne()).append("=").append(URLEncoder.encode(p.getTwo(), "UTF-8"));
             }
         } catch (UnsupportedEncodingException e) {
@@ -263,10 +251,6 @@ public class CategoryUpdater {
         }
         return sb.toString();
     }
-
-
-    public static final String IMAGE_JPEG = "image/jpeg";
-
 
     private Entry getEntryFromRSSItem(RSSItem item, long feedId, String source) {
         if (item != null) {
@@ -293,14 +277,24 @@ public class CategoryUpdater {
         return null;
     }
 
-    private void sendMessage(Object message, int type){
+    private void sendMessage(Object message, int type) {
         Message msg = new Message();
         msg.what = type;
         msg.obj = message;
         handler.sendMessage(msg);
     }
 
-    public boolean isRunning(){
+    public boolean isRunning() {
         return isRunning;
+    }
+
+    private class FetchingResult {
+        public Feed feed;
+        public String stringResult;
+
+        public FetchingResult(Feed feed, String result) {
+            this.feed = feed;
+            this.stringResult = result;
+        }
     }
 }

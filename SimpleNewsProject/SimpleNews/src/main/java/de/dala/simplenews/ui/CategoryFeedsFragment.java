@@ -55,17 +55,18 @@ import de.keyboardsurfer.android.widget.crouton.Style;
 public class CategoryFeedsFragment extends Fragment implements ContextualUndoAdapter.DeleteItemCallback {
 
 
+    private static final String CATEGORY_KEY = "category";
     private ListView feedListView;
     private FeedListAdapter adapter;
     private ContextualUndoAdapter undoAdapter;
-    private static final String CATEGORY_KEY = "category";
     private Category category;
     private ActionMode mActionMode;
+    private ShareActionProvider shareActionProvider;
 
-    public CategoryFeedsFragment(){
+    public CategoryFeedsFragment() {
     }
 
-    public static CategoryFeedsFragment newInstance(Category category){
+    public static CategoryFeedsFragment newInstance(Category category) {
         CategoryFeedsFragment fragment = new CategoryFeedsFragment();
         Bundle b = new Bundle();
         b.putParcelable(CATEGORY_KEY, category);
@@ -79,8 +80,8 @@ public class CategoryFeedsFragment extends Fragment implements ContextualUndoAda
         feedListView = (ListView) rootView.findViewById(R.id.listView);
         feedListView.setDivider(null);
         initAdapter();
-        ((ActionBarActivity)getActivity()).getSupportActionBar().setTitle(String.format("%s - Feeds", category.getName()));
-        ((ActionBarActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        ((ActionBarActivity) getActivity()).getSupportActionBar().setTitle(String.format("%s - Feeds", category.getName()));
+        ((ActionBarActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         return rootView;
     }
 
@@ -91,7 +92,6 @@ public class CategoryFeedsFragment extends Fragment implements ContextualUndoAda
         this.category = getArguments().getParcelable(CATEGORY_KEY);
     }
 
-
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.feed_selection_menu, menu);
@@ -99,7 +99,7 @@ public class CategoryFeedsFragment extends Fragment implements ContextualUndoAda
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.new_feed:
                 createFeedClicked();
                 return true;
@@ -110,7 +110,6 @@ public class CategoryFeedsFragment extends Fragment implements ContextualUndoAda
         return false;
     }
 
-
     private void initAdapter() {
         adapter = new FeedListAdapter(getActivity(), category.getFeeds());
         //buggy because of handler
@@ -120,148 +119,17 @@ public class CategoryFeedsFragment extends Fragment implements ContextualUndoAda
         feedListView.setAdapter(undoAdapter);
     }
 
-
     public void deleteItem(int position) {
-            Feed feed = adapter.getItem(position);
-            adapter.remove(position);
-            adapter.notifyDataSetChanged();
+        Feed feed = adapter.getItem(position);
+        adapter.remove(position);
+        adapter.notifyDataSetChanged();
 
-            DatabaseHandler.getInstance().removeFeeds(null, feed.getId(), false);
-            category.getFeeds().remove(feed);
-        }
-
-    private class MyFormatCountDownCallback implements ContextualUndoAdapter.CountDownFormatter {
-
-        @Override
-        public String getCountDownString(long millisUntilFinished) {
-            if (getActivity() == null)
-            {
-                return "";
-            }
-            int seconds = (int) Math.ceil((millisUntilFinished / 1000.0));
-            if (seconds > 0) {
-                    return getResources().getQuantityString(R.plurals.countdown_seconds, seconds, seconds);
-            }
-            return getString(R.string.countdown_dismissing);
-        }
+        DatabaseHandler.getInstance().removeFeeds(null, feed.getId(), false);
+        category.getFeeds().remove(feed);
     }
 
-    private class FeedListAdapter extends ArrayAdapter<Feed> {
-
-        private Context context;
-        private DatabaseHandler database;
-        private SparseBooleanArray mSelectedItemIds;
-
-        public FeedListAdapter(Context context, List<Feed> feeds) {
-            super(feeds);
-            this.context = context;
-            this.database = DatabaseHandler.getInstance();
-            mSelectedItemIds = new SparseBooleanArray();
-        }
-
-        @Override
-        public boolean hasStableIds() {
-            return true;
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return getItem(position).getId();
-        }
-
-        @Override
-        public View getView(final int position, View convertView, ViewGroup parent) {
-            Feed feed = getItem(position);
-
-            if (convertView == null){
-                LayoutInflater inflater = LayoutInflater.from(context);
-                convertView = inflater.inflate(R.layout.feed_modify_item, parent, false);
-                ViewHolder viewHolder = new ViewHolder();
-                viewHolder.name = (TextView) convertView.findViewById(R.id.name);
-                viewHolder.link = (TextView) convertView.findViewById(R.id.link);
-                viewHolder.show = (CheckBox) convertView.findViewById(R.id.show);
-                viewHolder.edit = (ImageView) convertView.findViewById(R.id.edit);
-                convertView.setTag(viewHolder);
-            }
-            ViewHolder holder = (ViewHolder) convertView.getTag();
-            holder.name.setText(feed.getTitle() == null ? context.getString(R.string.feed_title_not_found) : feed.getTitle());
-            holder.link.setText(feed.getUrl());
-            holder.show.setOnClickListener(new FeedItemClickListener(feed));
-            holder.show.setChecked(feed.isVisible());
-            holder.edit.setOnClickListener(new FeedItemClickListener(feed));
-
-            convertView.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View v) {
-                    onListItemCheck(position);
-                    return false;
-                }
-            });
-            convertView.setBackgroundResource(mSelectedItemIds.get(position) ? R.drawable.card_background_blue : R.drawable.card_background_white);
-            int pad = getResources().getDimensionPixelSize(R.dimen.card_layout_padding);
-            convertView.setPadding(pad,pad,pad,pad);
-            return convertView;
-        }
-
-        class ViewHolder {
-            public TextView name;
-            public TextView link;
-            public CheckBox show;
-            public ImageView edit;
-        }
-
-        public void toggleSelection(int position) {
-            selectView(position, !mSelectedItemIds.get(position));
-        }
-
-        public void selectView(int position, boolean value)
-        {
-            if(value){
-                mSelectedItemIds.put(position, value);
-            }else{
-                mSelectedItemIds.delete(position);
-            }
-            notifyDataSetChanged();
-        }
-
-        public int getSelectedCount() {
-            return mSelectedItemIds.size();// mSelectedCount;
-        }
-
-        public SparseBooleanArray getSelectedIds() {
-            return mSelectedItemIds;
-        }
-
-        public void removeSelection() {
-            mSelectedItemIds = new SparseBooleanArray();
-            notifyDataSetChanged();
-        }
-    }
-
-    class FeedItemClickListener implements View.OnClickListener {
-        private Feed feed;
-
-        public FeedItemClickListener(Feed feed) {
-            this.feed = feed;
-        }
-
-        @Override
-        public void onClick(View v) {
-            switch (v.getId()){
-                case R.id.edit:
-                    editClicked(feed);
-                    break;
-                case R.id.show:
-                    boolean visible = !feed.isVisible();
-                    feed.setVisible(visible);
-                    DatabaseHandler.getInstance().updateFeed(feed);
-                    break;
-            }
-        }
-    }
-
-    private void createFeedClicked(){
-        final View view =  LayoutInflater.from(getActivity()).inflate(R.layout.check_valid_rss_dialog, null);
+    private void createFeedClicked() {
+        final View view = LayoutInflater.from(getActivity()).inflate(R.layout.check_valid_rss_dialog, null);
         final ViewGroup inputLayout = (ViewGroup) view.findViewById(R.id.inputLayout);
         final View progress = view.findViewById(R.id.m_progress);
         final Button positive = (Button) inputLayout.findViewById(R.id.positive);
@@ -273,54 +141,54 @@ public class CategoryFeedsFragment extends Fragment implements ContextualUndoAda
         View.OnClickListener dialogClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                switch (v.getId()){
+                switch (v.getId()) {
                     case R.id.positive:
                         String feedUrl = input.getText() != null ? input.getText().toString() : "";
 
-                        if (!feedUrl.startsWith("http://")){
+                        if (!feedUrl.startsWith("http://")) {
                             feedUrl = "http://" + feedUrl;
                         }
                         final String formattedFeedUrl = feedUrl;
 
-                        if (UIUtils.isValideUrl(feedUrl)){
+                        if (UIUtils.isValideUrl(feedUrl)) {
                             crossfade(progress, inputLayout);
 
                             NetworkCommunication.loadRSSFeed(feedUrl, new Response.Listener<String>() {
-                                        @Override
-                                        public void onResponse(String result) {
-                                            try {
-                                                RSSFeed rssFeed = new RSSParser(new RSSConfig()).parse(new ByteArrayInputStream(result.getBytes("UTF-8")));
-                                                if (rssFeed.getItems() == null || rssFeed.getItems().isEmpty()){
-                                                    invalidFeedUrl(true);
-                                                }else{
-                                                    Feed feed = new Feed();
-                                                    feed.setCategoryId(category.getId());
-                                                    feed.setTitle(rssFeed.getTitle());
-                                                    feed.setDescription(rssFeed.getDescription());
-                                                    feed.setUrl(formattedFeedUrl);
-                                                    long id = DatabaseHandler.getInstance().addFeed(category.getId(), feed, true);
-                                                    feed.setId(id);
-                                                    adapter.add(feed);
-                                                    adapter.notifyDataSetChanged();
-                                                    dialog.dismiss();
-                                                }
-                                            } catch (RSSFault ex){
-                                                ex.printStackTrace();
-                                                invalidFeedUrl(true);
-                                            } catch (UnsupportedEncodingException e) {
-                                                e.printStackTrace();
-                                                invalidFeedUrl(true);
-                                            }
-                                        }
-
-
-                                    }, new Response.ErrorListener() {
-                                        @Override
-                                        public void onErrorResponse(VolleyError volleyError) {
+                                @Override
+                                public void onResponse(String result) {
+                                    try {
+                                        RSSFeed rssFeed = new RSSParser(new RSSConfig()).parse(new ByteArrayInputStream(result.getBytes("UTF-8")));
+                                        if (rssFeed.getItems() == null || rssFeed.getItems().isEmpty()) {
                                             invalidFeedUrl(true);
+                                        } else {
+                                            Feed feed = new Feed();
+                                            feed.setCategoryId(category.getId());
+                                            feed.setTitle(rssFeed.getTitle());
+                                            feed.setDescription(rssFeed.getDescription());
+                                            feed.setUrl(formattedFeedUrl);
+                                            long id = DatabaseHandler.getInstance().addFeed(category.getId(), feed, true);
+                                            feed.setId(id);
+                                            adapter.add(feed);
+                                            adapter.notifyDataSetChanged();
+                                            dialog.dismiss();
                                         }
-                                    });
-                        }else{
+                                    } catch (RSSFault ex) {
+                                        ex.printStackTrace();
+                                        invalidFeedUrl(true);
+                                    } catch (UnsupportedEncodingException e) {
+                                        e.printStackTrace();
+                                        invalidFeedUrl(true);
+                                    }
+                                }
+
+
+                            }, new Response.ErrorListener() {
+                                @Override
+                                public void onErrorResponse(VolleyError volleyError) {
+                                    invalidFeedUrl(true);
+                                }
+                            });
+                        } else {
                             invalidFeedUrl(false);
                         }
                         break;
@@ -329,9 +197,10 @@ public class CategoryFeedsFragment extends Fragment implements ContextualUndoAda
                         break;
                 }
             }
+
             private void invalidFeedUrl(final boolean hideProgressBar) {
                 Context context = getActivity();
-                if (context != null){
+                if (context != null) {
                     Animation shake = AnimationUtils.loadAnimation(context,
                             R.anim.shake);
                     view.startAnimation(shake);
@@ -361,7 +230,6 @@ public class CategoryFeedsFragment extends Fragment implements ContextualUndoAda
 
         dialog.show();
     }
-
 
     private void crossfade(final View firstView, final View secondView) {
         int mShortAnimationDuration = getActivity().getResources().getInteger(
@@ -402,49 +270,49 @@ public class CategoryFeedsFragment extends Fragment implements ContextualUndoAda
 
             @Override
             public void onClick(View view) {
-                switch (view.getId()){
+                switch (view.getId()) {
                     case R.id.positive:
 
                         String feedUrl = input.getText().toString();
-                        if (!feedUrl.startsWith("http://")){
+                        if (!feedUrl.startsWith("http://")) {
                             feedUrl = "http://" + feedUrl;
                         }
                         final String formattedFeedUrl = feedUrl;
 
-                        if (UIUtils.isValideUrl(feedUrl)){
+                        if (UIUtils.isValideUrl(feedUrl)) {
                             crossfade(progress, inputLayout);
 
                             NetworkCommunication.loadRSSFeed(formattedFeedUrl, new Response.Listener<String>() {
-                                        @Override
-                                        public void onResponse(String result) {
-                                            try {
-                                                RSSFeed rssFeed = new RSSParser(new RSSConfig()).parse(new ByteArrayInputStream(result.getBytes("UTF-8")));
-                                                if (rssFeed.getItems() == null || rssFeed.getItems().isEmpty()){
-                                                    invalidFeedUrl(true);
-                                                }else{
-                                                    feed.setUrl(formattedFeedUrl);
-                                                    if (rssFeed.getTitle() != null){
-                                                        feed.setTitle(rssFeed.getTitle());
-                                                    }
-                                                    adapter.notifyDataSetChanged();
-                                                    DatabaseHandler.getInstance().updateFeed(feed);
-                                                    dialog.dismiss();
-                                                }
-                                            } catch (RSSFault ex){
-                                                ex.printStackTrace();
-                                                invalidFeedUrl(true);
-                                            } catch (UnsupportedEncodingException e) {
-                                                e.printStackTrace();
-                                                invalidFeedUrl(true);
-                                            }
-                                        }
-                                    }, new Response.ErrorListener() {
-                                        @Override
-                                        public void onErrorResponse(VolleyError volleyError) {
+                                @Override
+                                public void onResponse(String result) {
+                                    try {
+                                        RSSFeed rssFeed = new RSSParser(new RSSConfig()).parse(new ByteArrayInputStream(result.getBytes("UTF-8")));
+                                        if (rssFeed.getItems() == null || rssFeed.getItems().isEmpty()) {
                                             invalidFeedUrl(true);
+                                        } else {
+                                            feed.setUrl(formattedFeedUrl);
+                                            if (rssFeed.getTitle() != null) {
+                                                feed.setTitle(rssFeed.getTitle());
+                                            }
+                                            adapter.notifyDataSetChanged();
+                                            DatabaseHandler.getInstance().updateFeed(feed);
+                                            dialog.dismiss();
                                         }
-                                    });
-                        }else{
+                                    } catch (RSSFault ex) {
+                                        ex.printStackTrace();
+                                        invalidFeedUrl(true);
+                                    } catch (UnsupportedEncodingException e) {
+                                        e.printStackTrace();
+                                        invalidFeedUrl(true);
+                                    }
+                                }
+                            }, new Response.ErrorListener() {
+                                @Override
+                                public void onErrorResponse(VolleyError volleyError) {
+                                    invalidFeedUrl(true);
+                                }
+                            });
+                        } else {
                             invalidFeedUrl(false);
                         }
                         break;
@@ -460,18 +328,20 @@ public class CategoryFeedsFragment extends Fragment implements ContextualUndoAda
                 view.startAnimation(shake);
                 shake.setAnimationListener(new Animation.AnimationListener() {
                     @Override
-                    public void onAnimationStart(Animation animation) {}
+                    public void onAnimationStart(Animation animation) {
+                    }
 
                     @Override
                     public void onAnimationEnd(Animation animation) {
-                        if (hideProgressBar){
+                        if (hideProgressBar) {
                             crossfade(inputLayout, progress);
-                            Crouton.makeText(getActivity(),getActivity().getString(R.string.not_valid_format), Style.ALERT, inputLayout).show();
+                            Crouton.makeText(getActivity(), getActivity().getString(R.string.not_valid_format), Style.ALERT, inputLayout).show();
                         }
                     }
 
                     @Override
-                    public void onAnimationRepeat(Animation animation) {}
+                    public void onAnimationRepeat(Animation animation) {
+                    }
                 });
             }
         };
@@ -481,7 +351,160 @@ public class CategoryFeedsFragment extends Fragment implements ContextualUndoAda
         dialog.show();
     }
 
-    private ShareActionProvider shareActionProvider;
+    private void onListItemCheck(int position) {
+        adapter.toggleSelection(position);
+        boolean hasCheckedItems = adapter.getSelectedCount() > 0;
+
+        if (hasCheckedItems && mActionMode == null) {
+            // there are some selected items, start the actionMode
+            mActionMode = ((ActionBarActivity) getActivity()).startSupportActionMode(new ActionModeCallBack());
+        } else if (!hasCheckedItems && mActionMode != null) {
+            // there no selected items, finish the actionMode
+            mActionMode.finish();
+        }
+
+        if (mActionMode != null) {
+            mActionMode.setTitle(String.valueOf(adapter.getSelectedCount()));
+        }
+    }
+
+    private void removeSelectedFeeds(List<Feed> selectedFeeds) {
+        for (Feed feed : selectedFeeds) {
+            adapter.remove(feed);
+            adapter.notifyDataSetChanged();
+
+            DatabaseHandler.getInstance().removeFeeds(null, feed.getId(), false);
+            category.getFeeds().remove(feed);
+        }
+    }
+
+    private class MyFormatCountDownCallback implements ContextualUndoAdapter.CountDownFormatter {
+
+        @Override
+        public String getCountDownString(long millisUntilFinished) {
+            if (getActivity() == null) {
+                return "";
+            }
+            int seconds = (int) Math.ceil((millisUntilFinished / 1000.0));
+            if (seconds > 0) {
+                return getResources().getQuantityString(R.plurals.countdown_seconds, seconds, seconds);
+            }
+            return getString(R.string.countdown_dismissing);
+        }
+    }
+
+    private class FeedListAdapter extends ArrayAdapter<Feed> {
+
+        private Context context;
+        private DatabaseHandler database;
+        private SparseBooleanArray mSelectedItemIds;
+
+        public FeedListAdapter(Context context, List<Feed> feeds) {
+            super(feeds);
+            this.context = context;
+            this.database = DatabaseHandler.getInstance();
+            mSelectedItemIds = new SparseBooleanArray();
+        }
+
+        @Override
+        public boolean hasStableIds() {
+            return true;
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return getItem(position).getId();
+        }
+
+        @Override
+        public View getView(final int position, View convertView, ViewGroup parent) {
+            Feed feed = getItem(position);
+
+            if (convertView == null) {
+                LayoutInflater inflater = LayoutInflater.from(context);
+                convertView = inflater.inflate(R.layout.feed_modify_item, parent, false);
+                ViewHolder viewHolder = new ViewHolder();
+                viewHolder.name = (TextView) convertView.findViewById(R.id.name);
+                viewHolder.link = (TextView) convertView.findViewById(R.id.link);
+                viewHolder.show = (CheckBox) convertView.findViewById(R.id.show);
+                viewHolder.edit = (ImageView) convertView.findViewById(R.id.edit);
+                convertView.setTag(viewHolder);
+            }
+            ViewHolder holder = (ViewHolder) convertView.getTag();
+            holder.name.setText(feed.getTitle() == null ? context.getString(R.string.feed_title_not_found) : feed.getTitle());
+            holder.link.setText(feed.getUrl());
+            holder.show.setOnClickListener(new FeedItemClickListener(feed));
+            holder.show.setChecked(feed.isVisible());
+            holder.edit.setOnClickListener(new FeedItemClickListener(feed));
+
+            convertView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    onListItemCheck(position);
+                    return false;
+                }
+            });
+            convertView.setBackgroundResource(mSelectedItemIds.get(position) ? R.drawable.card_background_blue : R.drawable.card_background_white);
+            int pad = getResources().getDimensionPixelSize(R.dimen.card_layout_padding);
+            convertView.setPadding(pad, pad, pad, pad);
+            return convertView;
+        }
+
+        public void toggleSelection(int position) {
+            selectView(position, !mSelectedItemIds.get(position));
+        }
+
+        public void selectView(int position, boolean value) {
+            if (value) {
+                mSelectedItemIds.put(position, value);
+            } else {
+                mSelectedItemIds.delete(position);
+            }
+            notifyDataSetChanged();
+        }
+
+        public int getSelectedCount() {
+            return mSelectedItemIds.size();// mSelectedCount;
+        }
+
+        public SparseBooleanArray getSelectedIds() {
+            return mSelectedItemIds;
+        }
+
+        public void removeSelection() {
+            mSelectedItemIds = new SparseBooleanArray();
+            notifyDataSetChanged();
+        }
+
+        class ViewHolder {
+            public TextView name;
+            public TextView link;
+            public CheckBox show;
+            public ImageView edit;
+        }
+    }
+
+    class FeedItemClickListener implements View.OnClickListener {
+        private Feed feed;
+
+        public FeedItemClickListener(Feed feed) {
+            this.feed = feed;
+        }
+
+        @Override
+        public void onClick(View v) {
+            switch (v.getId()) {
+                case R.id.edit:
+                    editClicked(feed);
+                    break;
+                case R.id.show:
+                    boolean visible = !feed.isVisible();
+                    feed.setVisible(visible);
+                    DatabaseHandler.getInstance().updateFeed(feed);
+                    break;
+            }
+        }
+    }
 
     private class ActionModeCallBack implements ActionMode.Callback {
 
@@ -515,14 +538,14 @@ public class CategoryFeedsFragment extends Fragment implements ContextualUndoAda
             // retrieve selected items and print them out
             SparseBooleanArray selected = adapter.getSelectedIds();
             List<Feed> selectedEntries = new ArrayList<Feed>();
-            for (int i = 0; i < selected.size(); i++){
+            for (int i = 0; i < selected.size(); i++) {
                 if (selected.valueAt(i)) {
                     Feed selectedItem = adapter.getItem(selected.keyAt(i));
                     selectedEntries.add(selectedItem);
                 }
             }
             // close action mode
-            switch (item.getItemId()){
+            switch (item.getItemId()) {
                 case R.id.menu_item_remove:
                     removeSelectedFeeds(selectedEntries);
                     break;
@@ -536,34 +559,6 @@ public class CategoryFeedsFragment extends Fragment implements ContextualUndoAda
             // remove selection
             adapter.removeSelection();
             mActionMode = null;
-        }
-    }
-
-    private void onListItemCheck(int position) {
-        adapter.toggleSelection(position);
-        boolean hasCheckedItems = adapter.getSelectedCount() > 0;
-
-        if (hasCheckedItems && mActionMode == null){
-            // there are some selected items, start the actionMode
-            mActionMode = ((ActionBarActivity)getActivity()).startSupportActionMode(new ActionModeCallBack());
-        }
-        else if (!hasCheckedItems && mActionMode != null){
-            // there no selected items, finish the actionMode
-            mActionMode.finish();
-        }
-
-        if(mActionMode != null){
-            mActionMode.setTitle(String.valueOf(adapter.getSelectedCount()));
-        }
-    }
-
-    private void removeSelectedFeeds(List<Feed> selectedFeeds) {
-        for (Feed feed : selectedFeeds){
-            adapter.remove(feed);
-            adapter.notifyDataSetChanged();
-
-            DatabaseHandler.getInstance().removeFeeds(null, feed.getId(), false);
-            category.getFeeds().remove(feed);
         }
     }
 

@@ -4,16 +4,10 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.AbsListView;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import android.view.ViewGroup.LayoutParams;
 
 import com.nhaarman.listviewanimations.ArrayAdapter;
 import com.nhaarman.listviewanimations.ListViewSetter;
@@ -22,6 +16,11 @@ import com.nhaarman.listviewanimations.util.AdapterViewUtil;
 import com.nineoldandroids.animation.Animator;
 import com.nineoldandroids.animation.AnimatorListenerAdapter;
 import com.nineoldandroids.animation.ValueAnimator;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * An {@link ArrayAdapter} which allows items to be expanded using an animation.
@@ -33,12 +32,11 @@ public abstract class ExpandableListItemAdapter<T> extends ArrayAdapter<T> imple
     private static final int DEFAULTCONTENTPARENTRESID = 10001;
 
     private final Context mContext;
-    private int mViewLayoutResId;
     private final int mTitleParentResId;
     private final int mContentParentResId;
-    private int mActionViewResId;
     private final List<Long> mExpandedIds;
-
+    private int mViewLayoutResId;
+    private int mActionViewResId;
     private int mLimit;
 
     private AbsListView mAbsListView;
@@ -170,7 +168,7 @@ public abstract class ExpandableListItemAdapter<T> extends ArrayAdapter<T> imple
         viewHolder.contentParent.setTag(getItemId(position));
 
         ViewGroup.LayoutParams layoutParams = viewHolder.contentParent.getLayoutParams();
-        if (layoutParams != null){
+        if (layoutParams != null) {
             layoutParams.height = LayoutParams.WRAP_CONTENT;
         }
         viewHolder.contentParent.setLayoutParams(layoutParams);
@@ -422,20 +420,6 @@ public abstract class ExpandableListItemAdapter<T> extends ArrayAdapter<T> imple
         }
     }
 
-    private class TitleViewOnClickListener implements View.OnClickListener {
-
-        private final View mContentParent;
-
-        private TitleViewOnClickListener(final View contentParent) {
-            mContentParent = contentParent;
-        }
-
-        @Override
-        public void onClick(final View view) {
-            toggle(mContentParent);
-        }
-    }
-
     private static class RootView extends LinearLayout {
 
         private ViewGroup mTitleViewGroup;
@@ -534,6 +518,20 @@ public abstract class ExpandableListItemAdapter<T> extends ArrayAdapter<T> imple
                 }
             });
             return animator;
+        }
+    }
+
+    private class TitleViewOnClickListener implements View.OnClickListener {
+
+        private final View mContentParent;
+
+        private TitleViewOnClickListener(final View contentParent) {
+            mContentParent = contentParent;
+        }
+
+        @Override
+        public void onClick(final View view) {
+            toggle(mContentParent);
         }
     }
 }

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:myapp="http://schemas.android.com/apk/res-auto">
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item android:id="@+id/new_feed"
-        android:title="@string/feed_selection_add"
+    <item
+        android:id="@+id/new_feed"
         android:icon="@drawable/ic_action_new"
         android:orderInCategory="101"
-        android:showAsAction="always" />
+        android:showAsAction="always"
+        android:title="@string/feed_selection_add" />
 </menu>

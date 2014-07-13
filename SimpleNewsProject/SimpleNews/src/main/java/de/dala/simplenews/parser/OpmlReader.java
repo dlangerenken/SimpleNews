@@ -16,12 +16,15 @@ import java.util.List;
 
 import de.dala.simplenews.common.Feed;
 
-/** Reads OPML documents. */
+/**
+ * Reads OPML documents.
+ */
 public abstract class OpmlReader {
 
     public static List<Feed> importFile(Reader reader) throws IOException, XmlPullParserException {
         return convertOpmlListToFeedList(readDocument(reader));
     }
+
     /**
      * Reads an Opml document and returns a list of all OPML elements it can
      * find
@@ -62,15 +65,15 @@ public abstract class OpmlReader {
         return elementList;
     }
 
-    public static List<Feed> convertOpmlListToFeedList(List<OpmlElement> elements){
+    public static List<Feed> convertOpmlListToFeedList(List<OpmlElement> elements) {
         List<Feed> feeds = new ArrayList<Feed>();
-        for (OpmlElement element : elements){
+        for (OpmlElement element : elements) {
             feeds.add(convertOpmlToFeed(element));
         }
         return feeds;
     }
 
-    public static Feed convertOpmlToFeed(OpmlElement element){
+    public static Feed convertOpmlToFeed(OpmlElement element) {
         Feed feed = new Feed();
         feed.setDescription(element.getDescription());
         feed.setTitle(element.getTitle());

@@ -7,6 +7,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
 import java.util.ArrayList;
 
 import de.dala.simplenews.R;
@@ -20,10 +21,23 @@ import de.dala.simplenews.database.DatabaseHandler;
 public class CategoryModifierFragment extends Fragment implements CategorySelectionFragment.OnCategoryClicked {
     private static final String CATEGORY_FEEDS_TAG = "feed";
     private static final String CATEGORY_SELECTION_TAG = "selection";
-    private static final String FROM_RSS =  "from_rss";
+    private static final String FROM_RSS = "from_rss";
     private ArrayList<Category> categories;
     private boolean fromRSS = false;
-    public CategoryModifierFragment(){
+
+    public CategoryModifierFragment() {
+    }
+
+    public static Fragment getInstance() {
+        return new CategoryModifierFragment();
+    }
+
+    public static Fragment getInstance(String path) {
+        Bundle bundle = new Bundle();
+        bundle.putString(FROM_RSS, path);
+        CategoryModifierFragment frag = new CategoryModifierFragment();
+        frag.setArguments(bundle);
+        return frag;
     }
 
     @Override
@@ -33,12 +47,12 @@ public class CategoryModifierFragment extends Fragment implements CategorySelect
         FragmentTransaction t = getChildFragmentManager().beginTransaction();
         Fragment fragment = null;
         String rssPath = getArguments() != null ? getArguments().getString(FROM_RSS) : null;
-        if (rssPath != null){
+        if (rssPath != null) {
             fromRSS = true;
             fragment = CategorySelectionFragment.newInstance(categories, fromRSS, rssPath);
-        }else{
-            if (!fromRSS){
-                ((ActionBarActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        } else {
+            if (!fromRSS) {
+                ((ActionBarActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
                 fragment = CategorySelectionFragment.newInstance(categories, fromRSS, null);
             }
         }
@@ -58,7 +72,6 @@ public class CategoryModifierFragment extends Fragment implements CategorySelect
         setHasOptionsMenu(true);
         return inflater.inflate(R.layout.category_modifier, container, false);
     }
-
 
     @Override
     public void onMoreClicked(Category category) {
@@ -82,17 +95,5 @@ public class CategoryModifierFragment extends Fragment implements CategorySelect
     @Override
     public void onRestore() {
         //restore-clicked
-    }
-
-    public static Fragment getInstance() {
-        return new CategoryModifierFragment();
-    }
-
-    public static Fragment getInstance(String path) {
-        Bundle bundle = new Bundle();
-        bundle.putString(FROM_RSS, path);
-        CategoryModifierFragment frag = new CategoryModifierFragment();
-        frag.setArguments(bundle);
-        return frag;
     }
 }

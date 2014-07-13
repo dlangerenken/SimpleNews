@@ -12,44 +12,44 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
 
 public class GsonRequest<T> extends Request<T> {
-	private final Gson mGson;
-	private final Type mType;
-	private final Response.Listener<T> mListener;
+    private final Gson mGson;
+    private final Type mType;
+    private final Response.Listener<T> mListener;
 
-	public GsonRequest(int method, String url, Type type, Response.Listener<T> listener,
-			Response.ErrorListener errorListener) {
-		super(Method.GET, url, errorListener);
-		this.mType = type;
-		this.mListener = listener;
-		mGson = new Gson();
-	}
+    public GsonRequest(int method, String url, Type type, Response.Listener<T> listener,
+                       Response.ErrorListener errorListener) {
+        super(Method.GET, url, errorListener);
+        this.mType = type;
+        this.mListener = listener;
+        mGson = new Gson();
+    }
 
-	public GsonRequest(int method, String url, Type type, Response.Listener<T> listener,
-			Response.ErrorListener errorListener, Gson gson) {
-		super(Method.GET, url, errorListener);
-		this.mType = type;
-		this.mListener = listener;
-		mGson = gson;
-	}
+    public GsonRequest(int method, String url, Type type, Response.Listener<T> listener,
+                       Response.ErrorListener errorListener, Gson gson) {
+        super(Method.GET, url, errorListener);
+        this.mType = type;
+        this.mListener = listener;
+        mGson = gson;
+    }
 
-	@Override
-	protected void deliverResponse(T response) {
-		mListener.onResponse(response);
-	}
+    @Override
+    protected void deliverResponse(T response) {
+        mListener.onResponse(response);
+    }
 
-	@Override
-	protected Response<T> parseNetworkResponse(NetworkResponse response) {
-		try {
-			String json = new String(response.data,
-					HttpHeaderParser.parseCharset(response.headers));
-			T jsonObject;
-			jsonObject = mGson.fromJson(json, mType);
-			return Response.success(jsonObject,
-					HttpHeaderParser.parseCacheHeaders(response));
-		} catch (UnsupportedEncodingException e) {
-			return Response.error(new ParseError(e));
-		} catch (JsonSyntaxException e) {
-			return Response.error(new ParseError(e));
-		}
-	}
+    @Override
+    protected Response<T> parseNetworkResponse(NetworkResponse response) {
+        try {
+            String json = new String(response.data,
+                    HttpHeaderParser.parseCharset(response.headers));
+            T jsonObject;
+            jsonObject = mGson.fromJson(json, mType);
+            return Response.success(jsonObject,
+                    HttpHeaderParser.parseCacheHeaders(response));
+        } catch (UnsupportedEncodingException e) {
+            return Response.error(new ParseError(e));
+        } catch (JsonSyntaxException e) {
+            return Response.error(new ParseError(e));
+        }
+    }
 }

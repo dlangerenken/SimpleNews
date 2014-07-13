@@ -14,9 +14,10 @@ import java.util.List;
 
 import de.dala.simplenews.common.Feed;
 
-/** Writes OPML documents.
+/**
+ * Writes OPML documents.
  * https://github.com/danieloeh/AntennaPod/blob/master/src/de/danoeh/antennapod/opml/OpmlWriter.java
- * */
+ */
 public abstract class OpmlWriter {
     private static final String ENCODING = "UTF-8";
     private static final String OPML_VERSION = "2.0";

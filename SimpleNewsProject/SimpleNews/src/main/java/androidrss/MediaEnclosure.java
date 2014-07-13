@@ -28,6 +28,15 @@ public final class MediaEnclosure {
     private final String mimeType;
 
     /**
+     * Internal constructor for RSSHandler
+     */
+    MediaEnclosure(android.net.Uri url, int length, String mimeType) {
+        this.url = url;
+        this.length = length;
+        this.mimeType = mimeType;
+    }
+
+    /**
      * Returns the URL of the enclosure. The return value is never {@code null}.
      */
     public android.net.Uri getUrl() {
@@ -47,15 +56,6 @@ public final class MediaEnclosure {
      */
     public String getMimeType() {
         return mimeType;
-    }
-
-    /**
-     * Internal constructor for RSSHandler
-     */
-    MediaEnclosure(android.net.Uri url, int length, String mimeType) {
-        this.url = url;
-        this.length = length;
-        this.mimeType = mimeType;
     }
 
 }

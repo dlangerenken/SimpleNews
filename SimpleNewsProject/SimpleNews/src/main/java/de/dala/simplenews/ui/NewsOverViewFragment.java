@@ -11,6 +11,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,7 +33,6 @@ import de.dala.simplenews.database.DatabaseHandler;
 import de.dala.simplenews.database.IDatabaseHandler;
 import de.dala.simplenews.parser.XmlParser;
 import de.dala.simplenews.utilities.PrefUtilities;
-import de.dala.toasty.Toasty;
 import de.keyboardsurfer.android.widget.crouton.Configuration;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 
@@ -58,21 +58,26 @@ public class NewsOverViewFragment extends Fragment implements ViewPager.OnPageCh
     private MainActivity mainActivity;
     private int entryType = ExpandableNewsFragment.ALL;
 
-    public NewsOverViewFragment(){
+    public NewsOverViewFragment() {
     }
 
-    public NewsOverViewFragment(int entryType) {
-        this.entryType = entryType;
+    public static Fragment getInstance(int entryType) {
+        Fragment fragment = new NewsOverViewFragment();
+        Bundle bundle = new Bundle();
+        bundle.putInt("entryType", entryType);
+        fragment.setArguments(bundle);
+        return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getActivity() instanceof MainActivity){
-            this.mainActivity = (MainActivity)getActivity();
-        }else{
+        if (getActivity() instanceof MainActivity) {
+            this.mainActivity = (MainActivity) getActivity();
+        } else {
             throw new ActivityNotFoundException("MainActivity not found");
         }
+        entryType = getArguments().getInt("entryType", ExpandableNewsFragment.ALL);
     }
 
     @Override
@@ -87,7 +92,7 @@ public class NewsOverViewFragment extends Fragment implements ViewPager.OnPageCh
         mainActivity.getSupportActionBar().setHomeButtonEnabled(true);
         categories = databaseHandler.getCategories(null, null, true);
 
-        if (categories != null && !categories.isEmpty()){
+        if (categories != null && !categories.isEmpty()) {
             pager = (ViewPager) rootView.findViewById(R.id.pager);
             adapter = new MyPagerAdapter(getChildFragmentManager());
             pager.setAdapter(adapter);
@@ -115,11 +120,11 @@ public class NewsOverViewFragment extends Fragment implements ViewPager.OnPageCh
         LayerDrawable ld = new LayerDrawable(new Drawable[]{colorDrawable, bottomDrawable});
 
         if (oldBackground == null) {
-            ((ActionBarActivity)getActivity()).getSupportActionBar().setBackgroundDrawable(ld);
+            ((ActionBarActivity) getActivity()).getSupportActionBar().setBackgroundDrawable(ld);
         } else {
             //getSupportActionBar().setBackgroundDrawable(ld); //BUG otherwise
-            TransitionDrawable td = new TransitionDrawable(new Drawable[] { oldBackground, ld });
-            ((ActionBarActivity)getActivity()).getSupportActionBar().setBackgroundDrawable(td);
+            TransitionDrawable td = new TransitionDrawable(new Drawable[]{oldBackground, ld});
+            ((ActionBarActivity) getActivity()).getSupportActionBar().setBackgroundDrawable(td);
             td.startTransition(400);
         }
         mainActivity.changeDrawerColor(ld, newColor);
@@ -129,8 +134,8 @@ public class NewsOverViewFragment extends Fragment implements ViewPager.OnPageCh
         currentColor = newColor;
 
         // http://stackoverflow.com/questions/11002691/actionbar-setbackgrounddrawable-nulling-background-from-thread-handler
-        ((ActionBarActivity)getActivity()).getSupportActionBar().setDisplayShowTitleEnabled(false);
-        ((ActionBarActivity)getActivity()).getSupportActionBar().setDisplayShowTitleEnabled(true);
+        ((ActionBarActivity) getActivity()).getSupportActionBar().setDisplayShowTitleEnabled(false);
+        ((ActionBarActivity) getActivity()).getSupportActionBar().setDisplayShowTitleEnabled(true);
     }
 
     @Override
@@ -139,7 +144,7 @@ public class NewsOverViewFragment extends Fragment implements ViewPager.OnPageCh
 
     @Override
     public void onPageSelected(int i) {
-        if (categories != null && categories.size() > i){
+        if (categories != null && categories.size() > i) {
             changeColor(categories.get(i).getColor());
         }
     }
@@ -159,7 +164,7 @@ public class NewsOverViewFragment extends Fragment implements ViewPager.OnPageCh
             crouton.cancel();
         }
         Configuration config = new Configuration.Builder().setOutAnimation(R.anim.abc_slide_out_bottom).setInAnimation(R.anim.abc_slide_in_bottom).setDuration(Configuration.DURATION_INFINITE).build();
-        crouton = Crouton.make( getActivity(), createProgressView(), bottomView);
+        crouton = Crouton.make(getActivity(), createProgressView(), bottomView);
         crouton.setConfiguration(config);
         crouton.show();
     }
@@ -183,15 +188,36 @@ public class NewsOverViewFragment extends Fragment implements ViewPager.OnPageCh
 
     @Override
     public void updateNews(String text, long categoryId) {
-        if (progressText != null){
+        if (progressText != null) {
             progressText.setText(text);
         }
     }
 
-    public static Fragment getInstance(int entryType) {
-        return new NewsOverViewFragment(entryType);
+    private void loadXml() {
+        try {
+            News news = new XmlParser(getActivity()).readDefaultNewsFile();
+            for (Category category : news.getCategories()) {
+                if (category != null) {
+                    databaseHandler.addCategory(category, false, false);
+                }
+            }
+            PrefUtilities.getInstance().saveLoading(true);
+        } catch (XmlPullParserException e) {
+            Log.e(TAG, "Error in adding xml to Database");
+            e.printStackTrace();
+        } catch (IOException io) {
+            Log.e(TAG, "Error in adding xml to Database");
+            io.printStackTrace();
+        }
     }
 
+    private View createProgressView() {
+        progressView = mainActivity.getLayoutInflater().inflate(R.layout.progress_layout, null);
+        progressView.setBackgroundColor(currentColor);
+        progressText = (TextView) progressView.findViewById(R.id.progress_text);
+        progressText.setText(getString(R.string.update_news));
+        return progressView;
+    }
 
     public class MyPagerAdapter extends FragmentPagerAdapter {
 
@@ -215,32 +241,6 @@ public class NewsOverViewFragment extends Fragment implements ViewPager.OnPageCh
             fragment.setNewsInteraction(NewsOverViewFragment.this);
             return fragment;
         }
-    }
-
-    private void loadXml() {
-        try {
-            News news = new XmlParser(getActivity()).readDefaultNewsFile();
-            for (Category category : news.getCategories()) {
-                if (category != null) {
-                    databaseHandler.addCategory(category, false, false);
-                }
-            }
-            PrefUtilities.getInstance().saveLoading(true);
-        } catch (XmlPullParserException e) {
-            Toasty.LOGE(TAG, "Error in adding xml to Database");
-            e.printStackTrace();
-        } catch (IOException io) {
-            Toasty.LOGE(TAG, "Error in adding xml to Database");
-            io.printStackTrace();
-        }
-    }
-
-    private View createProgressView() {
-        progressView = mainActivity.getLayoutInflater().inflate(R.layout.progress_layout, null);
-        progressView.setBackgroundColor(currentColor);
-        progressText = (TextView) progressView.findViewById(R.id.progress_text);
-        progressText.setText(getString(R.string.update_news));
-        return progressView;
     }
 
 }

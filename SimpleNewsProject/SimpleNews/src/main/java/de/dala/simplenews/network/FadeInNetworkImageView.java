@@ -43,7 +43,7 @@ public class FadeInNetworkImageView extends NetworkImageView {
         super(context, attrs, defStyle);
     }
 
-    public void setTransitionTime(int time){
+    public void setTransitionTime(int time) {
         this.transitionTime = time;
     }
 

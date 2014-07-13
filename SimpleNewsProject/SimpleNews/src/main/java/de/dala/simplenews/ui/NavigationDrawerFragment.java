@@ -38,33 +38,6 @@ import de.dala.simplenews.utilities.PrefUtilities;
  * design guidelines</a> for a complete explanation of the behaviors implemented here.
  */
 public class NavigationDrawerFragment extends Fragment {
-    /**
-     * A pointer to the current callbacks instance (the Activity).
-     */
-    private NavigationDrawerCallbacks mCallbacks;
-
-    /**
-     * Helper component that ties the action bar to the navigation drawer.
-     */
-    private ActionBarDrawerToggle mDrawerToggle;
-
-    private DrawerLayout mDrawerLayout;
-    private View mFragmentContainerView;
-
-
-    private LinearLayout mDrawerView;
-    private View verticalLine;
-    private ListView mDrawerList;
-    private NavDrawerListAdapter navDrawAdapter;
-    private Drawable colorDrawable;
-    private int color;
-
-    // slide menu items
-    private String[] navMenuTitles;
-    private TypedArray navMenuIcons;
-
-    private ArrayList<NavDrawerItem> navDrawerItems;
-
     public static final int HOME = 0;
     public static final int CATEGORIES = 1;
     public static final int CHANGELOG = 2;
@@ -73,6 +46,26 @@ public class NavigationDrawerFragment extends Fragment {
     public static final int SEARCH = 5;
     public static final int FAVORITE = 6;
     public static final int RECENT = 7;
+    /**
+     * A pointer to the current callbacks instance (the Activity).
+     */
+    private NavigationDrawerCallbacks mCallbacks;
+    /**
+     * Helper component that ties the action bar to the navigation drawer.
+     */
+    private ActionBarDrawerToggle mDrawerToggle;
+    private DrawerLayout mDrawerLayout;
+    private View mFragmentContainerView;
+    private LinearLayout mDrawerView;
+    private View verticalLine;
+    private ListView mDrawerList;
+    private NavDrawerListAdapter navDrawAdapter;
+    private Drawable colorDrawable;
+    private int color;
+    // slide menu items
+    private String[] navMenuTitles;
+    private TypedArray navMenuIcons;
+    private ArrayList<NavDrawerItem> navDrawerItems;
 
     public NavigationDrawerFragment() {
     }
@@ -123,7 +116,7 @@ public class NavigationDrawerFragment extends Fragment {
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
         // set up the drawer's list view with items and click listener
 
-        initNavDrawerAdapter(0,0);
+        initNavDrawerAdapter(0, 0);
 
         ActionBar actionBar = getActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
@@ -181,7 +174,7 @@ public class NavigationDrawerFragment extends Fragment {
     }
 
     private void initNavDrawerAdapter(int favCount, int recentCount) {
-        if (isAdded()){
+        if (isAdded()) {
             // load slide menu items
             navMenuTitles = getResources().getStringArray(R.array.nav_drawer_items);
             // nav drawer icons from resources
@@ -213,7 +206,7 @@ public class NavigationDrawerFragment extends Fragment {
         }
     }
 
-    public void checkItem(int position, boolean checkPosition){
+    public void checkItem(int position, boolean checkPosition) {
         if (mDrawerList != null) {
             mDrawerList.setItemChecked(position, checkPosition);
         }
@@ -280,7 +273,7 @@ public class NavigationDrawerFragment extends Fragment {
     }
 
     private ActionBar getActionBar() {
-        return ((ActionBarActivity)getActivity()).getSupportActionBar();
+        return ((ActionBarActivity) getActivity()).getSupportActionBar();
     }
 
     public void changeColor(Drawable colorDrawable, int color) {
@@ -304,6 +297,7 @@ public class NavigationDrawerFragment extends Fragment {
     public static interface NavigationDrawerCallbacks {
         /**
          * Called when an item in the navigation drawer is selected.
+         *
          * @param item
          */
         void onNavigationDrawerItemSelected(int item);

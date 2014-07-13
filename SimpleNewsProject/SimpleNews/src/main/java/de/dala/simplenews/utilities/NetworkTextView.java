@@ -5,8 +5,8 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
-import android.widget.TextView;
 import android.view.ViewGroup.LayoutParams;
+import android.widget.TextView;
 
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
@@ -14,8 +14,10 @@ import com.android.volley.toolbox.ImageLoader;
 /**
  * Created by Daniel on 20.12.13.
  */
-public class NetworkTextView extends TextView{
-    /** The URL of the network image to load */
+public class NetworkTextView extends TextView {
+    /**
+     * The URL of the network image to load
+     */
     private String mUrl;
 
     /**
@@ -28,10 +30,14 @@ public class NetworkTextView extends TextView{
      */
     private int mErrorImageId;
 
-    /** Local copy of the ImageLoader. */
+    /**
+     * Local copy of the ImageLoader.
+     */
     private ImageLoader mImageLoader;
 
-    /** Current ImageContainer. (either in-flight or finished) */
+    /**
+     * Current ImageContainer. (either in-flight or finished)
+     */
     private ImageLoader.ImageContainer mImageContainer;
 
     public NetworkTextView(Context context) {
@@ -71,6 +77,7 @@ public class NetworkTextView extends TextView{
 
     /**
      * Loads the image for the view if it isn't already loaded.
+     *
      * @param isInLayoutPass True if this was invoked from a layout pass, false otherwise.
      */
     private void loadImageIfNecessary(final boolean isInLayoutPass) {
@@ -145,18 +152,18 @@ public class NetworkTextView extends TextView{
                             setCompoundDrawablesWithIntrinsicBounds(d, null, null, null);
                         }
                     }
-                });
+                }
+        );
 
         // update the ImageContainer to be the new bitmap container.
         mImageContainer = newContainer;
     }
 
     private void setDefaultImageOrNull() {
-        if(mDefaultImageId != 0) {
+        if (mDefaultImageId != 0) {
             Drawable d = getResources().getDrawable(mDefaultImageId);
             setCompoundDrawablesWithIntrinsicBounds(d, null, null, null);
-        }
-        else {
+        } else {
             setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
         }
     }

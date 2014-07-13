@@ -6,7 +6,7 @@
     android:background="#33333333"
     android:gravity="center"
     android:orientation="horizontal"
-    android:paddingRight="8dp" >
+    android:paddingRight="8dp">
 
     <TextView
         android:id="@+id/undo_row_texttv"

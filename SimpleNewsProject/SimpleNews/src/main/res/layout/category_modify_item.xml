@@ -1,78 +1,88 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/card_background_white">
+    android:background="@drawable/card_background_white"
+    android:orientation="horizontal">
 
     <LinearLayout
-        android:layout_alignParentLeft="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_gravity="left|center_vertical">
+        android:layout_alignParentLeft="true"
+        android:layout_gravity="left|center_vertical"
+        android:orientation="horizontal">
+
         <ImageView
-            android:minHeight="35dp"
-            android:minWidth="35dp"
+            android:id="@+id/color"
             android:layout_width="35dp"
             android:layout_height="35dp"
             android:layout_margin="3dp"
-            android:id="@+id/color" />
+            android:minHeight="35dp"
+            android:minWidth="35dp" />
 
         <TextView
-            android:layout_marginLeft="5dp"
+            android:id="@+id/name"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:gravity="center_vertical"
             android:layout_gravity="center_vertical"
-            android:id="@+id/name" />
+            android:layout_marginLeft="5dp"
+            android:gravity="center_vertical"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
 
-</LinearLayout>
-    <LinearLayout android:layout_alignParentRight="true"
+    </LinearLayout>
+
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
+        android:layout_alignParentRight="true"
         android:orientation="horizontal">
+
         <ImageView
-            android:layout_height="30dp"
-            android:layout_width="30dp"
-            android:layout_gravity="center"
             android:id="@+id/edit"
-            android:background="@drawable/ic_action_edit" />
-        <View
-            android:layout_width="2dp"
-            android:visibility="gone"
-            android:layout_margin="5dp"
-            android:layout_gravity="center"
-            android:layout_height="match_parent"
-            android:background="#818285" />
-        <View
-            android:layout_width="2dp"
-            android:layout_gravity="center"
-            android:layout_margin="5dp"
-            android:layout_height="match_parent"
-            android:background="#818285" />
-        <ImageView
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:layout_gravity="center"
-            android:id="@+id/more"
-            android:background="@drawable/ic_action_overflow" />
+            android:background="@drawable/ic_action_edit" />
+
         <View
             android:layout_width="2dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_margin="5dp"
+            android:background="#818285"
+            android:visibility="gone" />
+
+        <View
+            android:layout_width="2dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_margin="5dp"
+            android:background="#818285" />
+
+        <ImageView
+            android:id="@+id/more"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center"
+            android:background="@drawable/ic_action_overflow" />
+
+        <View
+            android:layout_width="2dp"
+            android:layout_height="match_parent"
             android:layout_gravity="center"
             android:layout_margin="3dp"
-            android:layout_height="match_parent"
             android:background="#818285" />
+
         <CheckBox
+            android:id="@+id/show"
             android:layout_width="35dp"
             android:layout_height="35dp"
-            android:focusable="false"
-            android:id="@+id/show"
             android:background="@drawable/checkbox_visible_drawable"
-            android:button="@null"/>
+            android:button="@null"
+            android:focusable="false" />
 
 
-        </LinearLayout>
+    </LinearLayout>
 
 </RelativeLayout>

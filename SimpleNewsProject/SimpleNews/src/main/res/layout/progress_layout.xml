@@ -17,22 +17,23 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/progress_layout"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content" 
+    android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:paddingTop="4dp"
-    android:paddingBottom="4dp">
+    android:paddingBottom="4dp"
+    android:paddingTop="4dp">
 
     <TextView
         android:id="@+id/progress_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:textColor="@android:color/white"/>
+        android:textColor="@android:color/white" />
+
     <fr.castorflex.android.smoothprogressbar.SmoothProgressBar
         android:id="@+id/smooth_progress"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:spb_color="@android:color/white"
-        android:indeterminate="true"/>
+        android:indeterminate="true"
+        app:spb_color="@android:color/white" />
 
- </LinearLayout>
+</LinearLayout>

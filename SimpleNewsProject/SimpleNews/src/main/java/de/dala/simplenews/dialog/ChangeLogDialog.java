@@ -25,7 +25,7 @@ public class ChangeLogDialog extends DialogFragment {
 
         LayoutInflater layoutInflater = (LayoutInflater) getActivity().getSystemService(
                 Context.LAYOUT_INFLATER_SERVICE);
-        ChangeLogListView chgList=(ChangeLogListView)layoutInflater.inflate(R.layout.changelog_fragment_dialog, null);
+        ChangeLogListView chgList = (ChangeLogListView) layoutInflater.inflate(R.layout.changelog_fragment_dialog, null);
 
         return new AlertDialog.Builder(getActivity())
                 .setTitle(R.string.changelog_title)

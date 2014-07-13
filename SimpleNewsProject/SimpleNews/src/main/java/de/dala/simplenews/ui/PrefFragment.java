@@ -4,9 +4,9 @@ package de.dala.simplenews.ui;
  * Created by Daniel on 22.04.2014.
  */
 
-import android.annotation.TargetApi;
 import android.os.Bundle;
-import android.preference.PreferenceFragment;
+import android.support.v4.app.Fragment;
+import android.support.v4.preference.PreferenceFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,8 +16,12 @@ import de.dala.simplenews.R;
 /**
  * Created by Daniel on 22.02.14.
  */
-@TargetApi(11)
 public class PrefFragment extends PreferenceFragment {
+
+    public static Fragment getInstance() {
+        Fragment fragment = new PrefFragment();
+        return fragment;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

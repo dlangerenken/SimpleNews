@@ -37,7 +37,7 @@ public class UIUtils {
 
     /**
      * Regex to search for HTML escape sequences.
-     *
+     * <p/>
      * <p></p>Searches for any continuous string of characters starting with an ampersand and ending with a
      * semicolon. (Example: &amp;amp;)
      */
@@ -45,9 +45,10 @@ public class UIUtils {
 
     private static final Pattern VALID_URL = Pattern.compile("/((([A-Za-z]{3,9}:(?://)?)(?:[-;:&=\\+\\$,\\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\\+\\$,\\w]+@)[A-Za-z0-9.-]+)((?:/[\\+~%/]*)?\\??(?:[-\\+=&;%@.\\w_]*)#?(?:[\\w]*))?)/");
 
-    public static boolean isValideUrl(String url){
+    public static boolean isValideUrl(String url) {
         return URLUtil.isValidUrl(url);
     }
+
     /**
      * Populate the given {@link TextView} with the requested text, formatting
      * through {@link Html#fromHtml(String)} when applicable. Also sets
@@ -89,49 +90,51 @@ public class UIUtils {
 
     public static StateListDrawable getStateListDrawableByColorDrawable(Drawable colorDrawable) {
         StateListDrawable stateList = new StateListDrawable();
-        stateList.addState(new int[] { android.R.attr.state_pressed }, colorDrawable);
-        stateList.addState(new int[] { android.R.attr.state_focused }, colorDrawable);
-        stateList.addState(new int[] { android.R.attr.state_checked }, colorDrawable);
-        stateList.addState(new int[] { android.R.attr.state_selected }, colorDrawable);
+        stateList.addState(new int[]{android.R.attr.state_pressed}, colorDrawable);
+        stateList.addState(new int[]{android.R.attr.state_focused}, colorDrawable);
+        stateList.addState(new int[]{android.R.attr.state_checked}, colorDrawable);
+        stateList.addState(new int[]{android.R.attr.state_selected}, colorDrawable);
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.GINGERBREAD_MR1) {
-            stateList.addState(new int[] { android.R.attr.state_activated }, colorDrawable);
+            stateList.addState(new int[]{android.R.attr.state_activated}, colorDrawable);
         }
-        stateList.addState(new int[] {}, new ColorDrawable(Color.WHITE));
+        stateList.addState(new int[]{}, new ColorDrawable(Color.WHITE));
         return stateList;
     }
 
     public static ColorStateList getColorTextStateList() {
         ColorStateList colorStateList;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.GINGERBREAD_MR1) {
-            colorStateList = new ColorStateList (
-                    new int [] [] {
-                            new int [] {android.R.attr.state_pressed},
-                            new int [] {android.R.attr.state_focused},
-                            new int [] {android.R.attr.state_activated},
-                            new int [] {android.R.attr.state_selected},
-                            new int [] {}
+            colorStateList = new ColorStateList(
+                    new int[][]{
+                            new int[]{android.R.attr.state_pressed},
+                            new int[]{android.R.attr.state_focused},
+                            new int[]{android.R.attr.state_activated},
+                            new int[]{android.R.attr.state_selected},
+                            new int[]{}
                     },
-                    new int [] {
+                    new int[]{
                             Color.WHITE,
                             Color.WHITE,
                             Color.WHITE,
                             Color.WHITE,
                             Color.BLACK
-                    });
-        }else{
-            colorStateList = new ColorStateList (
-                    new int [] [] {
-                            new int [] {android.R.attr.state_pressed},
-                            new int [] {android.R.attr.state_focused},
-                            new int [] {android.R.attr.state_selected},
-                            new int [] {}
+                    }
+            );
+        } else {
+            colorStateList = new ColorStateList(
+                    new int[][]{
+                            new int[]{android.R.attr.state_pressed},
+                            new int[]{android.R.attr.state_focused},
+                            new int[]{android.R.attr.state_selected},
+                            new int[]{}
                     },
-                    new int [] {
+                    new int[]{
                             Color.WHITE,
                             Color.WHITE,
                             Color.WHITE,
                             Color.BLACK
-                    });
+                    }
+            );
         }
         return colorStateList;
     }

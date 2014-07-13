@@ -6,10 +6,10 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
+import android.widget.Toast;
 
 import de.dala.simplenews.R;
 import de.dala.simplenews.utilities.PrefUtilities;
-import de.dala.toasty.Toasty;
 
 /**
  * Created by Daniel on 20.01.14.
@@ -21,24 +21,24 @@ public class RateMyApp {
     private final static int DAYS_UNTIL_PROMPT = 5;
     private final static int LAUNCHES_UNTIL_PROMPT = 7;
 
-    private RateMyApp(){
+    private RateMyApp() {
     }
 
-    public static void appLaunched(Context mContext){
+    public static void appLaunched(Context mContext) {
         PrefUtilities utilities = PrefUtilities.getInstance();
         boolean rateAgain = utilities.shouldAskForRatingAgain();
-        if (!rateAgain){
+        if (!rateAgain) {
             return;
         }
         utilities.increaseLaunchCountForRating();
         long date = PrefUtilities.getInstance().getDateOfFirstLaunch();
-        if (date == 0){
+        if (date == 0) {
             date = System.currentTimeMillis();
             utilities.setDateOfFirstLaunch(date);
         }
 
-        if (utilities.getLaunchCount()  >= LAUNCHES_UNTIL_PROMPT){
-            if (System.currentTimeMillis() >= date + (DAYS_UNTIL_PROMPT * 24 * 60 * 60 * 1000)){
+        if (utilities.getLaunchCount() >= LAUNCHES_UNTIL_PROMPT) {
+            if (System.currentTimeMillis() >= date + (DAYS_UNTIL_PROMPT * 24 * 60 * 60 * 1000)) {
                 showRateDialog(mContext);
             }
         }
@@ -62,13 +62,15 @@ public class RateMyApp {
                                     mContext.startActivity(new Intent(
                                             Intent.ACTION_VIEW, Uri
                                             .parse("market://details?id="
-                                                    + APP_PACKAGE_NAME)));
+                                                    + APP_PACKAGE_NAME)
+                                    ));
                                 } catch (ActivityNotFoundException e) {
-                                    Toasty.toast(mContext.getString(R.string.playstore_not_found));
+                                    Toast.makeText(mContext, mContext.getString(R.string.playstore_not_found), Toast.LENGTH_LONG);
                                 }
                                 dialog.dismiss();
                             }
-                        })
+                        }
+                )
                 .setNeutralButton(mContext.getString(R.string.rate_my_app_later),
                         new DialogInterface.OnClickListener() {
 
@@ -78,7 +80,8 @@ public class RateMyApp {
                                 dialog.dismiss();
 
                             }
-                        })
+                        }
+                )
                 .setNegativeButton(mContext.getString(R.string.rate_my_app_never),
                         new DialogInterface.OnClickListener() {
 
@@ -89,7 +92,8 @@ public class RateMyApp {
                                 dialog.dismiss();
 
                             }
-                        });
+                        }
+                );
         builder.create().show();
     }
 }

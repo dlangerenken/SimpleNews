@@ -5,12 +5,12 @@ mavenCentral()
 
 }
     dependencies {
-        classpath 'com.android.tools.build:gradle:0.9.+'
+        classpath 'com.android.tools.build:gradle:0.12+'
         classpath 'com.crashlytics.tools.gradle:crashlytics-gradle:1.+'
 
     }
 }
-apply plugin: 'android'
+apply plugin: 'com.android.application'
 apply plugin: 'crashlytics'
 
 repositories {
@@ -20,15 +20,19 @@ repositories {
     mavenCentral()
     maven { url 'http://download.crashlytics.com/maven' }
 
+    maven { url "https://raw.github.com/kolavar/android-support-v4-preferencefragment/master/maven-repository/" }
 }
 
 android {
     compileSdkVersion 19
-    buildToolsVersion '19.0.3'
+    buildToolsVersion '19.1.0'
 
     defaultConfig {
         minSdkVersion 8
         targetSdkVersion 19
+    }
+    lintOptions {
+        abortOnError false
     }
 }
 
@@ -38,11 +42,15 @@ dependencies {
     compile 'com.github.gabrielemariotti.changeloglib:library:1.4.0'
     compile 'com.mcxiaoke.volley:library:1.0.+@aar'
     compile 'com.google.code.gson:gson:2.2.4'
-    compile ('de.keyboardsurfer.android.widget:crouton:1.8.1') {
+    compile ('de.keyboardsurfer.android.widget:crouton:1.8.4') {
+        exclude module: 'support-v4'
+    }
+    compile ('com.android.support:support-v4-preferencefragment:1.0.0@aar'){
         exclude module: 'support-v4'
     }
     compile 'com.ocpsoft:ocpsoft-pretty-time:1.0.7'
-    compile 'com.github.castorflex.smoothprogressbar:library:0.2.0'
+    compile 'com.github.castorflex.smoothprogressbar:library:0.5.2'
+    compile 'com.android.support:support-v4:19.1.0'
     compile 'com.android.support:appcompat-v7:19.1.0'
     compile 'com.rosaloves:bitlyj:2.0.0'
     compile 'com.nhaarman.listviewanimations:library:2.6.0'
