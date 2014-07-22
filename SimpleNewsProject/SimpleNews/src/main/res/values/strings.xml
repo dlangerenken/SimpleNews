@@ -85,5 +85,10 @@
     <string name="shorten_links_summary">Should the shared links be shortened? (e.g. www.thisismyverylongnewssite.com to www.bit.ly/newname)</string>
     <string name="feed_selection_remove">Remove</string>
     <string name="feed_selection_add">Add</string>
+    <string name="mark_read">Mark as read</string>
+    <string name="mark_unread">Mark as unread</string>
+    <string name="menu_unread">Unread</string>
+    <string name="multiple_columns">View with multiple columns</string>
+    <string name="single_columns">View with a single column</string>
 
 </resources>

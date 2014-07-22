@@ -22,13 +22,12 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.WeakHashMap;
 
 /**
  * An {@link com.nhaarman.listviewanimations.ArrayAdapter} which allows items to be expanded using an animation.
  */
 @SuppressWarnings("UnusedDeclaration")
-public abstract class ExpandableListItemCursorAdapter extends CursorAdapter implements ListViewSetter {
+public abstract class ExpandableGridItemCursorAdapter extends CursorAdapter implements ListViewSetter {
 
     private static final int DEFAULTTITLEPARENTRESID = 10000;
     private static final int DEFAULTCONTENTPARENTRESID = 10001;
@@ -46,10 +45,10 @@ public abstract class ExpandableListItemCursorAdapter extends CursorAdapter impl
     private ExpandCollapseListener mExpandCollapseListener;
 
     /**
-     * Creates a new {@link de.dala.simplenews.utilities.ExpandableListItemCursorAdapter} with the specified list,
+     * Creates a new {@link ExpandableGridItemCursorAdapter} with the specified list,
      * or an empty list if items == null.
      */
-    public ExpandableListItemCursorAdapter(final Context context, final Cursor cursor) {
+    public ExpandableGridItemCursorAdapter(final Context context, final Cursor cursor) {
         super(context, cursor, 0);
         mContext = context;
         mTitleParentResId = DEFAULTTITLEPARENTRESID;
@@ -63,7 +62,7 @@ public abstract class ExpandableListItemCursorAdapter extends CursorAdapter impl
      * layout resource for the view; titleParentResId and contentParentResId
      * should be identifiers for ViewGroups within that layout.
      */
-    public ExpandableListItemCursorAdapter(final Context context, final int layoutResId, final int titleParentResId, final int contentParentResId) {
+    public ExpandableGridItemCursorAdapter(final Context context, final int layoutResId, final int titleParentResId, final int contentParentResId) {
         this(context, layoutResId, titleParentResId, contentParentResId, null);
     }
 
@@ -73,7 +72,7 @@ public abstract class ExpandableListItemCursorAdapter extends CursorAdapter impl
      * titleParentResId and contentParentResId should be identifiers for
      * ViewGroups within that layout.
      */
-    public ExpandableListItemCursorAdapter(final Context context, final int layoutResId, final int titleParentResId, final int contentParentResId, final Cursor cursor) {
+    public ExpandableGridItemCursorAdapter(final Context context, final int layoutResId, final int titleParentResId, final int contentParentResId, final Cursor cursor) {
         super(context, cursor, 0);
         mContext = context;
         mViewLayoutResId = layoutResId;
@@ -125,7 +124,9 @@ public abstract class ExpandableListItemCursorAdapter extends CursorAdapter impl
     @Override
     public void bindView(View view, Context context, Cursor cursor)
     {
-        int position = cursor.getPosition();
+       int position = cursor.getPosition();
+       long id = cursor.getLong(0);
+
        ViewHolder viewHolder = (ViewHolder) view.getTag();
 
         View titleView = getTitleView(position, viewHolder.titleView, viewHolder.titleParent);
@@ -148,8 +149,8 @@ public abstract class ExpandableListItemCursorAdapter extends CursorAdapter impl
         }
         viewHolder.contentView = contentView;
 
-        viewHolder.contentParent.setVisibility(mExpandedIds.contains(getItemId(position)) ? View.VISIBLE : View.GONE);
-        viewHolder.contentParent.setTag(getItemId(position));
+        viewHolder.contentParent.setVisibility(mExpandedIds.contains(id) ? View.VISIBLE : View.GONE);
+        viewHolder.contentParent.setTag(id);
 
         LayoutParams layoutParams = viewHolder.contentParent.getLayoutParams();
         if (layoutParams != null) {
@@ -360,13 +361,19 @@ public abstract class ExpandableListItemCursorAdapter extends CursorAdapter impl
         View contentParent = getContentParent(position);
         if (contentParent != null) {
             toggle(contentParent);
+        }else{
+            if (isExpanded){
+                mExpandedIds.remove(itemId);
+            }else{
+                mExpandedIds.add(itemId);
+            }
         }
+    }
 
-        if (contentParent == null && isExpanded) {
-            mExpandedIds.remove(itemId);
-        } else if (contentParent == null) {
-            mExpandedIds.add(itemId);
-        }
+    @Override
+    public long getItemId(int position){
+        Cursor cursor = (Cursor)getItem(position);
+        return cursor.getLong(0);
     }
 
     private void toggle(final View contentParent) {

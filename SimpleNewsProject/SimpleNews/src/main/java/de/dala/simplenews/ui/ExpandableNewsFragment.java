@@ -1,8 +1,8 @@
 package de.dala.simplenews.ui;
 
-import android.app.LoaderManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -22,19 +22,14 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AccelerateInterpolator;
-import android.view.animation.Animation;
-import android.view.animation.TranslateAnimation;
-import android.widget.AbsListView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.etsy.android.grid.StaggeredGridView;
 import com.nhaarman.listviewanimations.swinginadapters.AnimationAdapter;
 import com.nhaarman.listviewanimations.swinginadapters.prepared.SwingBottomInAnimationAdapter;
 import com.ocpsoft.pretty.time.PrettyTime;
@@ -51,49 +46,40 @@ import de.dala.simplenews.database.DatabaseHandler;
 import de.dala.simplenews.database.IDatabaseHandler;
 import de.dala.simplenews.database.SimpleCursorLoader;
 import de.dala.simplenews.network.FadeInNetworkImageView;
+import de.dala.simplenews.network.VolleySingleton;
 import de.dala.simplenews.utilities.CategoryUpdater;
-import de.dala.simplenews.utilities.ExpandableListItemCursorAdapter;
+import de.dala.simplenews.utilities.ExpandableGridItemCursorAdapter;
 import de.dala.simplenews.utilities.PrefUtilities;
+import de.dala.simplenews.utilities.SparseBooleanArrayParcelable;
 import de.dala.simplenews.utilities.UIUtils;
 
 /**
  * Created by Daniel on 18.12.13.
  */
-public class ExpandableNewsFragment extends Fragment implements SwipeRefreshLayoutExtended.OnRefreshListener, SimpleCursorLoader.OnLoadCompleteListener {
-    public static final int ALL = 0;
-    private int entryType = ALL;
-    public static final int FAV = 1;
-    public static final int RECENT = 2;
+public class ExpandableNewsFragment extends Fragment implements SwipeRefreshLayoutExtended.OnRefreshListener, SimpleCursorLoader.OnLoadCompleteListener, NewsTypeBar.INewsTypeClicked {
+
+
     private static final String ARG_CATEGORY = "category";
     private static final String ARG_ENTRY_TYPE = "entryType";
-    private MyExpandableListItemAdapter myExpandableListItemAdapter;
+    private MyExpandableGridItemAdapter myExpandableListItemAdapter;
     private ActionMode mActionMode;
-    private ListView mListView;
+    private StaggeredGridView mGridView;
     private SwipeRefreshLayoutExtended mSwipeRefreshLayout;
-    private AnimationAdapter animCardArrayAdapter;
+    private AnimationAdapter swingBottomInAnimationAdapter;
 
     private List<Feed> feeds;
-
     private IDatabaseHandler databaseHandler;
-
     private Category category;
-
-    private CategoryUpdater pullUpdater;
-    private CategoryUpdater autoUpdater;
-    private LinearLayout categoryView;
-    private View allEntryButton;
-    private View favEntryButton;
-    private View recentEntryButton;
-    private TextView allEntryTextView;
-    private TextView favEntryTextView;
-    private TextView recentEntryTextView;
-    private ScrollClass myScrollClass;
-
+    private CategoryUpdater updater;
+    private NewsTypeBar newsTypeBar;
     private Menu menu;
+    private MenuItem columnsMenu;
     private INewsInteraction newsInteraction;
     private ShareActionProvider shareActionProvider;
 
     private SimpleCursorLoader simpleCursorLoader;
+
+    private int newsTypeMode = NewsTypeBar.ALL;
 
     public ExpandableNewsFragment() {
         //shouldn't be called
@@ -116,9 +102,19 @@ public class ExpandableNewsFragment extends Fragment implements SwipeRefreshLayo
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.category = getArguments().getParcelable(ARG_CATEGORY);
-        this.entryType = getArguments().getInt(ARG_ENTRY_TYPE);
-    }
+        newsTypeMode = getArguments().getInt(ARG_ENTRY_TYPE);
 
+        if (savedInstanceState != null) {
+            Object feedsObject = savedInstanceState.getSerializable("feeds");
+            if (feedsObject != null && feedsObject instanceof ArrayList<?>) {
+                feeds = (ArrayList<Feed>) feedsObject;
+            }
+            SparseBooleanArrayParcelable selected = savedInstanceState.getParcelable("SelectedItems");
+            if (selected != null) {
+                myExpandableListItemAdapter.setSelectedIds(selected);
+            }
+        }
+    }
 
     @Override
     public void setMenuVisibility(final boolean visible) {
@@ -128,8 +124,8 @@ public class ExpandableNewsFragment extends Fragment implements SwipeRefreshLayo
                 mActionMode.finish();
             }
         } else {
-            if (myScrollClass != null) {
-                myScrollClass.fadeIn();
+            if (newsTypeBar != null) {
+                newsTypeBar.fadeIn();
             }
         }
     }
@@ -145,12 +141,6 @@ public class ExpandableNewsFragment extends Fragment implements SwipeRefreshLayo
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         setHasOptionsMenu(true);
-        if (savedInstanceState != null) {
-            Object feedsObject = savedInstanceState.getSerializable("feeds");
-            if (feedsObject != null && feedsObject instanceof ArrayList<?>) {
-                feeds = (ArrayList<Feed>) feedsObject;
-            }
-        }
         databaseHandler = DatabaseHandler.getInstance();
 
         if (feeds == null) {
@@ -159,220 +149,123 @@ public class ExpandableNewsFragment extends Fragment implements SwipeRefreshLayo
         category.setFeeds(feeds);
 
         View rootView = inflater.inflate(R.layout.news_list, container, false);
-        categoryView = (LinearLayout) rootView.findViewById(R.id.entry_types);
 
-        initButtons(rootView);
-
-        mListView = (ListView) rootView.findViewById(R.id.news_listview);
-
-        myScrollClass = new ScrollClass() {
-            int mLastFirstVisibleItem = 0;
-            boolean sliding = false;
-
-            @Override
-            public void onScrollStateChanged(AbsListView view, int scrollState) {
-            }
-
-            @Override
-            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                if (view.getId() == mListView.getId()) {
-                    final int currentFirstVisibleItem = mListView.getFirstVisiblePosition();
-                    if (currentFirstVisibleItem < mLastFirstVisibleItem) {
-                        fadeIn();
-                    } else if (currentFirstVisibleItem > mLastFirstVisibleItem) {
-                        fadeOut();
-                    }
-                    mLastFirstVisibleItem = currentFirstVisibleItem;
-                }
-            }
-
-            @Override
-            public void fadeOut() {
-                if (!sliding) {
-                    final int height = categoryView.getMeasuredHeight();
-                    if (categoryView.getVisibility() == View.VISIBLE) {
-                        Animation animation = new TranslateAnimation(0, 0, 0,
-                                height);
-                        animation.setInterpolator(new AccelerateInterpolator(1.0f));
-                        animation.setDuration(400);
-
-                        categoryView.startAnimation(animation);
-                        animation.setAnimationListener(new Animation.AnimationListener() {
-
-                            @Override
-                            public void onAnimationStart(Animation animation) {
-                                sliding = true;
-                                interrupt();
-                            }
-
-                            @Override
-                            public void onAnimationRepeat(Animation animation) {
-                            }
-
-                            @Override
-                            public void onAnimationEnd(Animation animation) {
-                                sliding = false;
-                                categoryView.setVisibility(View.INVISIBLE);
-                            }
-                        });
-                    }
-                }
-            }
-
-            @Override
-            public void fadeIn() {
-                if (!sliding) {
-                    final int height = categoryView.getMeasuredHeight();
-                    if (categoryView.getVisibility() == View.INVISIBLE) {
-
-                        Animation animation = new TranslateAnimation(0, 0,
-                                height, 0);
-
-                        animation.setInterpolator(new AccelerateInterpolator(1.0f));
-                        animation.setDuration(400);
-                        categoryView.startAnimation(animation);
-                        animation.setAnimationListener(new Animation.AnimationListener() {
-                            @Override
-                            public void onAnimationStart(Animation animation) {
-                                sliding = true;
-                                categoryView.setVisibility(View.VISIBLE);
-                            }
-
-                            @Override
-                            public void onAnimationRepeat(Animation animation) {
-                            }
-
-                            @Override
-                            public void onAnimationEnd(Animation animation) {
-                                sliding = false;
-                                disappear();
-                            }
-                        });
-                    } else {
-                        disappear();
-                    }
-                }
-            }
-
-        };
-
-        mListView.setOnScrollListener(myScrollClass);
-        mListView.setOnTouchListener(new View.OnTouchListener() {
-            private int mLastMotionY;
-
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                final int y = (int) event.getY();
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_MOVE:
-                        if (y < mLastMotionY && mListView.getFirstVisiblePosition() == 0) {
-                            myScrollClass.fadeIn();
-                        }
-                        break;
-                    case MotionEvent.ACTION_DOWN:
-                        mLastMotionY = (int) event.getY();
-                        break;
-                }
-                return false;
-            }
-
-        });
-        myScrollClass.fadeIn();
+        mGridView = (StaggeredGridView) rootView.findViewById(R.id.news_gridview);
         initCardsAdapter();
-        loadEntries(true);
+        initNewsTypeBar(rootView);
+
+        loadEntries(false, true);
         return rootView;
+    }
+
+    private void initNewsTypeBar(View rootView) {
+        newsTypeBar = (NewsTypeBar) rootView.findViewById(R.id.news_type_bar);
+        newsTypeBar.init(category.getColor(), this, mGridView);
+        newsTypeBar.fadeIn();
+    }
+
+
+    private void updateColumnCount() {
+        switch (getResources().getConfiguration().orientation) {
+            case Configuration.ORIENTATION_LANDSCAPE:
+                boolean useMultipleLandscape = PrefUtilities.getInstance().useMultipleColumnsLandscape();
+                if (mGridView != null) {
+                    mGridView.setColumnCountLandscape(useMultipleLandscape ? 2 : 1);
+                }
+                break;
+            case Configuration.ORIENTATION_PORTRAIT:
+                boolean useMultiplePortrait = PrefUtilities.getInstance().useMultipleColumnsPortrait();
+                if (mGridView != null) {
+                    mGridView.setColumnCountPortrait(useMultiplePortrait ? 2 : 1);
+                }
+                break;
+        }
+    }
+
+    private boolean shouldUseMultipleColumns(){
+        boolean useMultiple = false;
+        switch (getResources().getConfiguration().orientation) {
+            case Configuration.ORIENTATION_LANDSCAPE:
+                useMultiple = PrefUtilities.getInstance().useMultipleColumnsLandscape();
+                break;
+            case Configuration.ORIENTATION_PORTRAIT:
+                useMultiple = PrefUtilities.getInstance().useMultipleColumnsPortrait();
+                break;
+        }
+        return useMultiple;
+    }
+
+    private void updateMenu(){
+        boolean useMultiple = shouldUseMultipleColumns();
+        if (columnsMenu != null){
+            columnsMenu.setTitle(useMultiple ? getString(R.string.single_columns) : getString(R.string.multiple_columns));
+        }
     }
 
     @Override
     public void onRefresh() {
-        if (autoUpdater != null && autoUpdater.isRunning()) {
+        if (updater != null && updater.isRunning()) {
             mSwipeRefreshLayout.setRefreshing(false);
         } else {
-            refreshThroughPull();
+            loadEntries(true, false);
         }
-    }
-
-    private void initButtons(View rootView) {
-        allEntryButton = rootView.findViewById(R.id.entry_type_all);
-        favEntryButton = rootView.findViewById(R.id.entry_type_fav);
-        recentEntryButton = rootView.findViewById(R.id.entry_type_recently);
-
-        allEntryTextView = (TextView) rootView.findViewById(R.id.entry_type_text_all);
-        favEntryTextView = (TextView) rootView.findViewById(R.id.entry_type_text_fav);
-        recentEntryTextView = (TextView) rootView.findViewById(R.id.entry_type_text_recently);
-
-        allEntryTextView.setTextColor(UIUtils.getColorTextStateList());
-        favEntryTextView.setTextColor(UIUtils.getColorTextStateList());
-        recentEntryTextView.setTextColor(UIUtils.getColorTextStateList());
-
-        allEntryButton.setBackgroundDrawable(UIUtils.getStateListDrawableByColor(category.getColor()));
-        favEntryButton.setBackgroundDrawable(UIUtils.getStateListDrawableByColor(category.getColor()));
-        recentEntryButton.setBackgroundDrawable(UIUtils.getStateListDrawableByColor(category.getColor()));
-        switch (entryType) {
-            case ALL:
-                allEntryButton.setSelected(true);
-                allEntryTextView.setSelected(true);
-                break;
-            case FAV:
-                favEntryButton.setSelected(true);
-                favEntryTextView.setSelected(true);
-                break;
-            case RECENT:
-                recentEntryButton.setSelected(true);
-                recentEntryTextView.setSelected(true);
-                break;
-        }
-        allEntryButton.setOnClickListener(new EntryTypeClickListener(ALL));
-        favEntryButton.setOnClickListener(new EntryTypeClickListener(FAV));
-        recentEntryButton.setOnClickListener(new EntryTypeClickListener(RECENT));
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_refresh:
-                refreshFeeds();
+                loadEntries(true, true);
                 return true;
+            case R.id.menu_columns:
+                switch (getResources().getConfiguration().orientation) {
+                    case Configuration.ORIENTATION_LANDSCAPE:
+                        PrefUtilities.getInstance().setMultipleColumnsLandscape(!PrefUtilities.getInstance().useMultipleColumnsLandscape());
+                        break;
+                    case Configuration.ORIENTATION_PORTRAIT:
+                        PrefUtilities.getInstance().setMultipleColumnsPortrait(!PrefUtilities.getInstance().useMultipleColumnsPortrait());
+                        break;
+                }
+                updateMenu();
+                updateColumnCount();
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
 
     private void initCardsAdapter() {
-        myExpandableListItemAdapter = new MyExpandableListItemAdapter(getActivity(), null);
-        animCardArrayAdapter = new SwingBottomInAnimationAdapter(myExpandableListItemAdapter);
-        animCardArrayAdapter.setAbsListView(mListView);
-        if (mListView != null) {
-            mListView.setAdapter(animCardArrayAdapter);
+        myExpandableListItemAdapter = new MyExpandableGridItemAdapter(getActivity(), null);
+        //myExpandableListItemAdapter.setLimit(1);
+        swingBottomInAnimationAdapter = new SwingBottomInAnimationAdapter(myExpandableListItemAdapter);
+        swingBottomInAnimationAdapter.setAbsListView(mGridView);
+        swingBottomInAnimationAdapter.setInitialDelayMillis(300);
+
+        if (mGridView != null) {
+            mGridView.setAdapter(swingBottomInAnimationAdapter);
         }
         simpleCursorLoader = new SimpleCursorLoader(getActivity()) {
             @Override
             public Cursor loadInBackground() {
-                switch (entryType) {
-                    case ALL:
+                switch (newsTypeMode) {
+                    case NewsTypeBar.ALL:
                         return DatabaseHandler.getInstance().getEntriesCursor(category.getId());
-                    case FAV:
+                    case NewsTypeBar.FAV:
                         return DatabaseHandler.getInstance().getFavoriteEntriesCursor(category.getId());
-                    case RECENT:
+                    case NewsTypeBar.RECENT:
                         return DatabaseHandler.getInstance().getRecentEntriesCursor(category.getId());
+                    case NewsTypeBar.UNREAD:
+                        return DatabaseHandler.getInstance().getUnreadEntriesCursor(category.getId());
                 }
                 return null;
             }
         };
         simpleCursorLoader.registerListener(0, this);
-
+        updateColumnCount();
     }
 
     private void onListItemCheck(int position) {
         myExpandableListItemAdapter.toggleSelection(position);
-        boolean hasCheckedItems = myExpandableListItemAdapter.getSelectedCount() > 0;
-
-        if (hasCheckedItems && mActionMode == null) {
-            // there are some selected items, start the actionMode
-            mActionMode = ((ActionBarActivity) getActivity()).startSupportActionMode(new ActionModeCallBack());
-        } else if (!hasCheckedItems && mActionMode != null) {
-            // there no selected items, finish the actionMode
-            mActionMode.finish();
-        }
+        OpenActionModeIfNecessary();
 
         if (mActionMode != null) {
             mActionMode.setTitle(String.valueOf(myExpandableListItemAdapter.getSelectedCount()));
@@ -382,37 +275,44 @@ public class ExpandableNewsFragment extends Fragment implements SwipeRefreshLayo
         }
     }
 
-    private void refreshThroughPull() {
-        if (pullUpdater == null) {
-            pullUpdater = new CategoryUpdater(new CategoryPullUpdateHandler(), category, true, getActivity());
-        }
-        if (pullUpdater.start()) {
-            setRefreshActionButtonState(true);
+    private void OpenActionModeIfNecessary(){
+        boolean hasCheckedItems = myExpandableListItemAdapter.getSelectedCount() > 0;
+        if (hasCheckedItems && mActionMode == null) {
+            // there are some selected items, start the actionMode
+            mActionMode = ((ActionBarActivity) getActivity()).startSupportActionMode(new ActionModeCallBack());
+        } else if (!hasCheckedItems && mActionMode != null) {
+            // there no selected items, finish the actionMode
+            mActionMode.finish();
         }
     }
 
-    public void refreshFeeds() {
-        if (autoUpdater == null) {
-            autoUpdater = new CategoryUpdater(new CategoryUpdateHandler(), category, true, getActivity());
+    public void refreshFeeds(boolean showNewsInteraction) {
+        if (updater == null) {
+            updater = new CategoryUpdater(new CategoryUpdateHandler(), category, true, getActivity());
         }
-        if (autoUpdater.start()) {
-            if (newsInteraction != null) {
+        if (updater.start()) {
+            if (newsInteraction != null && showNewsInteraction) {
                 newsInteraction.showLoadingNews();
             }
             setRefreshActionButtonState(true);
-        } else {
-            //already running
         }
     }
 
-    private void updateFinished() {
+    private void updateFinished(boolean success) {
         if (mSwipeRefreshLayout != null) {
             mSwipeRefreshLayout.setRefreshing(false);
         }
         if (mActionMode != null) {
             mActionMode.finish();
         }
+        if (newsInteraction != null) {
+            newsInteraction.cancelLoadingNews();
+        }
         setRefreshActionButtonState(false);
+
+        if (success){
+            simpleCursorLoader.startLoading();
+        }
     }
 
     private void setRefreshActionButtonState(boolean refreshing) {
@@ -435,26 +335,32 @@ public class ExpandableNewsFragment extends Fragment implements SwipeRefreshLayo
         this.menu = menu;
         menu.clear();
         inflater.inflate(R.menu.expandable_news_menu, menu);
+        columnsMenu = menu.findItem(R.id.menu_columns);
+        updateMenu();
         super.onCreateOptionsMenu(menu, inflater);
     }
 
-    private void loadEntries(boolean withRefresh) {
+
+    private void loadEntries(boolean forceRefresh, boolean showNewsInteraction) {
         long timeForRefresh = PrefUtilities.getInstance().getTimeForRefresh();
-        if (withRefresh && category.getLastUpdateTime() < new Date().getTime() - timeForRefresh) {
-            refreshFeeds();
+        if (forceRefresh || category.getLastUpdateTime() < new Date().getTime() - timeForRefresh) {
+            refreshFeeds(showNewsInteraction);
+        }else{
+            simpleCursorLoader.startLoading();
         }
-        simpleCursorLoader.startLoading();
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
         outState.putSerializable("feeds", (ArrayList<Feed>) feeds);
+        // Save isInActionMode value
+        outState.putParcelable("SelectedItems", myExpandableListItemAdapter.getSelectedIds());
+        super.onSaveInstanceState(outState);
     }
 
     private Intent createShareIntent() {
         // retrieve selected items and print them out
-        SparseBooleanArray selected = myExpandableListItemAdapter.getSelectedIds();
+        SparseBooleanArrayParcelable selected = myExpandableListItemAdapter.getSelectedIds();
         ArrayList<Entry> entries = new ArrayList<Entry>();
         for (int i = 0; i < selected.size(); i++) {
             if (selected.valueAt(i)) {
@@ -478,92 +384,52 @@ public class ExpandableNewsFragment extends Fragment implements SwipeRefreshLayo
         }
     }
 
+    private void markEntriesAsRead(List<Entry> selectedEntries) {
+        for (Entry entry : selectedEntries) {
+            entry.setVisitedDate((entry.getVisitedDate() == null || entry.getVisitedDate() == 0) ? new Date().getTime() : null);
+            DatabaseHandler.getInstance().updateEntry(entry);
+        }
+    }
+
     @Override
     public void onLoadComplete(Loader loader, Object data) {
         if (data instanceof  Cursor){
             Cursor cursor = (Cursor) data;
-            animCardArrayAdapter.reset();
+            swingBottomInAnimationAdapter.reset();
             myExpandableListItemAdapter.changeCursor(cursor);
         }
     }
 
+    @Override
+    public void newsTypeClicked(int type) {
+        newsTypeMode = type;
+        loadEntries(false, false);
+        if (mActionMode != null) {
+            mActionMode.finish();
+        }
+    }
 
     public interface INewsInteraction {
         void showLoadingNews();
-
         void cancelLoadingNews();
-
-        void updateNews(String msg, long id);
     }
 
-    private abstract class ScrollClass implements AbsListView.OnScrollListener {
-        Handler mHandler = new Handler();
-        Runnable mRunnable = new Runnable() {
-            @Override
-            public void run() {
-                fadeOut();
-            }
-        };
-
-        abstract void fadeIn();
-
-        public void disappear() {
-            mHandler.removeCallbacks(mRunnable);
-            mHandler.postDelayed(mRunnable, 5 * 1000);
-        }
-
-        public void interrupt() {
-            mHandler.removeCallbacks(mRunnable);
-        }
-
-        abstract void fadeOut();
-    }
-
-    private class CategoryPullUpdateHandler extends Handler {
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case CategoryUpdater.RESULT:
-                    loadEntries(false);
-                    updateFinished();
-                    break;
-                case CategoryUpdater.STATUS_CHANGED:
-                    break;
-                case CategoryUpdater.ERROR:
-                    updateFinished();
-                    break;
-                case CategoryUpdater.CANCEL:
-                    updateFinished();
-                    break;
-            }
-        }
-    }
 
     private class CategoryUpdateHandler extends Handler {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case CategoryUpdater.RESULT:
-                    loadEntries(false);
-                    if (newsInteraction != null) {
-                        newsInteraction.cancelLoadingNews();
-                    }
-                    setRefreshActionButtonState(false);
+                    updateFinished(true);
                     break;
                 case CategoryUpdater.STATUS_CHANGED:
-                    if (newsInteraction != null) {
-                        newsInteraction.updateNews((String) msg.obj, category.getId());
-                    }
                     break;
                 case CategoryUpdater.ERROR:
+                    updateFinished(false);
                     Toast.makeText(getActivity(), (String) msg.obj, Toast.LENGTH_SHORT).show();
-                    if (newsInteraction != null) {
-                        newsInteraction.cancelLoadingNews();
-                    }
-                    setRefreshActionButtonState(false);
                     break;
                 case CategoryUpdater.CANCEL:
-                    updateFinished();
+                    updateFinished(false);
                     break;
             }
         }
@@ -573,19 +439,19 @@ public class ExpandableNewsFragment extends Fragment implements SwipeRefreshLayo
         return DatabaseHandler.getEntryByCursor(cursor);
     }
 
-    private class MyExpandableListItemAdapter extends ExpandableListItemCursorAdapter {
+    private class MyExpandableGridItemAdapter extends ExpandableGridItemCursorAdapter {
 
         private Context mContext;
-        private SparseBooleanArray mSelectedItemIds;
+        private SparseBooleanArrayParcelable mSelectedItemIds;
 
         /**
          * Creates a new ExpandableListItemAdapter with the specified list, or an empty list if
          * items == null.
          */
-        private MyExpandableListItemAdapter(Context context, Cursor cursor) {
+        private MyExpandableGridItemAdapter(Context context, Cursor cursor) {
             super(context, R.layout.expandable_card, R.id.card_title, R.id.expandable_card_content, cursor);
             mContext = context;
-            mSelectedItemIds = new SparseBooleanArray();
+            mSelectedItemIds = new SparseBooleanArrayParcelable();
         }
 
         @Override
@@ -611,7 +477,11 @@ public class ExpandableNewsFragment extends Fragment implements SwipeRefreshLayo
             LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             LinearLayout layout = (LinearLayout) inflater.inflate(R.layout.news_card, null);
             FadeInNetworkImageView imageView = (FadeInNetworkImageView) layout.findViewById(R.id.card_header_imageView);
-            imageView.setVisibility(View.GONE);
+            if (entry.getImageLink() != null) {
+                imageView.setImageUrl(entry.getImageLink(), VolleySingleton.getImageLoader());
+            }else{
+                imageView.setVisibility(View.GONE);
+            }
             TextView titleTextView = (TextView) layout.findViewById(R.id.title);
             TextView infoTextView = (TextView) layout.findViewById(R.id.info);
             ImageView entryType = (ImageView) layout.findViewById(R.id.image);
@@ -619,7 +489,7 @@ public class ExpandableNewsFragment extends Fragment implements SwipeRefreshLayo
             UIUtils.setTextMaybeHtml(titleTextView, entry.getTitle());
 
             if (entry.getFavoriteDate() != null && entry.getFavoriteDate() > 0) {
-                entryType.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_nav_fav));
+                entryType.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_nav_favorite));
             } else if (entry.getVisitedDate() != null && entry.getVisitedDate() > 0) {
                 entryType.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_nav_recently_used));
             }
@@ -679,13 +549,35 @@ public class ExpandableNewsFragment extends Fragment implements SwipeRefreshLayo
             return mSelectedItemIds.size();// mSelectedCount;
         }
 
-        public SparseBooleanArray getSelectedIds() {
+        public SparseBooleanArrayParcelable getSelectedIds() {
             return mSelectedItemIds;
         }
 
+        public void setSelectedIds(SparseBooleanArrayParcelable selectedIds) {
+            mSelectedItemIds = selectedIds;
+        }
+
         public void removeSelection() {
-            mSelectedItemIds = new SparseBooleanArray();
+            mSelectedItemIds = new SparseBooleanArrayParcelable();
             notifyDataSetChanged();
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (mActionMode != null) {
+            mActionMode.invalidate();
+        }
+        OpenActionModeIfNecessary();
+    }
+
+    @Override
+    public void onPause()
+    {
+        super.onPause();
+        if (mActionMode != null) {
+            mActionMode.finish();
         }
     }
 
@@ -712,7 +604,7 @@ public class ExpandableNewsFragment extends Fragment implements SwipeRefreshLayo
 
         @Override
         public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-            return false;
+            return true;
         }
 
         @Override
@@ -731,42 +623,21 @@ public class ExpandableNewsFragment extends Fragment implements SwipeRefreshLayo
                 case R.id.menu_item_save:
                     saveSelectedEntries(selectedEntries);
                     break;
+                case R.id.menu_item_read:
+                    markEntriesAsRead(selectedEntries);
+                    break;
+
             }
             mode.finish();
+            myExpandableListItemAdapter.removeSelection();
             return false;
         }
 
         @Override
         public void onDestroyActionMode(ActionMode mode) {
-            // remove selection
-            myExpandableListItemAdapter.removeSelection();
             mActionMode = null;
         }
     }
 
-    private class EntryTypeClickListener implements View.OnClickListener {
-        private int type;
 
-        public EntryTypeClickListener(int type) {
-            this.type = type;
-        }
-
-        @Override
-        public void onClick(View v) {
-            allEntryButton.setSelected(ALL == type);
-            allEntryTextView.setSelected(ALL == type);
-
-            favEntryButton.setSelected(FAV == type);
-            favEntryTextView.setSelected(FAV == type);
-
-            recentEntryButton.setSelected(RECENT == type);
-            recentEntryTextView.setSelected(RECENT == type);
-
-            entryType = type;
-            loadEntries(true);
-            if (mActionMode != null) {
-                mActionMode.finish();
-            }
-        }
-    }
 }

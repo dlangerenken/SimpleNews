@@ -23,7 +23,6 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
     private NavigationDrawerFragment mNavigationDrawerFragment;
-    private PrefFragment prefFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +47,7 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
                 transaction.replace(R.id.container, categoryModifierFrag).commit();
             } else {
                 FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-                Fragment newsFrag = NewsOverViewFragment.getInstance(ExpandableNewsFragment.ALL);
+                Fragment newsFrag = NewsOverViewFragment.getInstance(NewsTypeBar.ALL);
                 transaction.replace(R.id.container, newsFrag).commit();
             }
         }
@@ -97,15 +96,15 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
         switch (item) {
             case NavigationDrawerFragment.HOME:
                 FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-                transaction.replace(R.id.container, NewsOverViewFragment.getInstance(ExpandableNewsFragment.ALL)).addToBackStack(null).commit();
+                transaction.replace(R.id.container, NewsOverViewFragment.getInstance(NewsTypeBar.ALL)).addToBackStack(null).commit();
                 break;
             case NavigationDrawerFragment.FAVORITE:
                 transaction = getSupportFragmentManager().beginTransaction();
-                transaction.replace(R.id.container, NewsOverViewFragment.getInstance(ExpandableNewsFragment.FAV)).addToBackStack(null).commit();
+                transaction.replace(R.id.container, NewsOverViewFragment.getInstance(NewsTypeBar.FAV)).addToBackStack(null).commit();
                 break;
             case NavigationDrawerFragment.RECENT:
                 transaction = getSupportFragmentManager().beginTransaction();
-                transaction.replace(R.id.container, NewsOverViewFragment.getInstance(ExpandableNewsFragment.RECENT)).addToBackStack(null).commit();
+                transaction.replace(R.id.container, NewsOverViewFragment.getInstance(NewsTypeBar.RECENT)).addToBackStack(null).commit();
                 break;
             case NavigationDrawerFragment.CATEGORIES:
                 transaction = getSupportFragmentManager().beginTransaction();

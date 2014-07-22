@@ -377,7 +377,7 @@ public abstract class ExpandableListItemAdapter<T> extends ArrayAdapter<T> imple
 
         if (contentParent == null && isExpanded) {
             mExpandedIds.remove(itemId);
-        } else if (contentParent == null) {
+        } else if (contentParent == null && !isExpanded) {
             mExpandedIds.add(itemId);
         }
     }

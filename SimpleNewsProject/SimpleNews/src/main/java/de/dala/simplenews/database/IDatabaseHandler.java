@@ -57,5 +57,6 @@ public interface IDatabaseHandler {
     Cursor getEntriesCursor(Long categoryId);
     Cursor getFavoriteEntriesCursor(long categoryId);
     Cursor getRecentEntriesCursor(long categoryId);
+    Cursor getUnreadEntriesCursor(long categoryId);
 
 }

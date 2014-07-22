@@ -5,7 +5,13 @@
     <item
         android:id="@+id/menu_refresh"
         android:icon="@drawable/ic_menu_refresh_holo_dark"
-        android:orderInCategory="999"
+        android:orderInCategory="0"
         android:title="@string/description_refresh"
         compat:showAsAction="always" />
+    <item
+        android:id="@+id/menu_columns"
+        android:title="@string/multiple_columns"
+        android:orderInCategory="1"
+        compat:showAsAction="never"
+        />
 </menu>

@@ -56,7 +56,7 @@ public class NewsOverViewFragment extends Fragment implements ViewPager.OnPageCh
     private int loadingNews = -1;
     private TextView progressText;
     private MainActivity mainActivity;
-    private int entryType = ExpandableNewsFragment.ALL;
+    private int entryType = NewsTypeBar.ALL;
 
     public NewsOverViewFragment() {
     }
@@ -77,7 +77,7 @@ public class NewsOverViewFragment extends Fragment implements ViewPager.OnPageCh
         } else {
             throw new ActivityNotFoundException("MainActivity not found");
         }
-        entryType = getArguments().getInt("entryType", ExpandableNewsFragment.ALL);
+        entryType = getArguments().getInt("entryType", NewsTypeBar.ALL);
     }
 
     @Override
@@ -183,13 +183,6 @@ public class NewsOverViewFragment extends Fragment implements ViewPager.OnPageCh
         if (loadingNews >= -1) {
             crouton.cancel();
             loadingNews = -1;
-        }
-    }
-
-    @Override
-    public void updateNews(String text, long categoryId) {
-        if (progressText != null) {
-            progressText.setText(text);
         }
     }
 

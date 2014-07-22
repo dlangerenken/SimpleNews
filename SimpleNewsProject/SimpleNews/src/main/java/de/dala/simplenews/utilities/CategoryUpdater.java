@@ -45,6 +45,7 @@ public class CategoryUpdater {
     public static final int STATUS_CHANGED = 3;
     public static final int RESULT = 4;
     public static final String IMAGE_JPEG = "image/jpeg";
+    public static final String IMAGE_PNG = "image/png";
     private static final String TAG = "CategoryUpdater";
     private Handler handler;
     private Category category;
@@ -64,32 +65,33 @@ public class CategoryUpdater {
     }
 
     public boolean start() {
-        if (!isRunning) {
-            isRunning = true;
-            String msg = context != null ? context.getString(R.string.update_news) : "";
-            sendMessage(msg, STATUS_CHANGED);
-            results = new ArrayList<FetchingResult>();
-            currentWorkingThreads = category.getFeeds().size();
-            if (currentWorkingThreads == 0) {
-                sendMessage("No Feeds found", ERROR);
-            }
-            for (final Feed feed : category.getFeeds()) {
-                NetworkCommunication.loadRSSFeed(feed.getUrl(), new Response.Listener<String>() {
-                            @Override
-                            public void onResponse(String feedStringResult) {
-                                resultFetched(new FetchingResult(feed, feedStringResult));
-                            }
-                        }, new Response.ErrorListener() {
-                            @Override
-                            public void onErrorResponse(VolleyError error) {
-                                resultFetched(null);
-                            }
-                        }
-                );
-            }
-            return true;
+        if (isRunning) {
+            return false;
         }
-        return false;
+
+        isRunning = true;
+        String msg = context != null ? context.getString(R.string.update_news) : "";
+        sendMessage(msg, STATUS_CHANGED);
+        results = new ArrayList<FetchingResult>();
+        currentWorkingThreads = category.getFeeds().size();
+        if (currentWorkingThreads == 0) {
+            sendMessage("No Feeds found", ERROR);
+        }
+        for (final Feed feed : category.getFeeds()) {
+            NetworkCommunication.loadRSSFeed(feed.getUrl(), new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String feedStringResult) {
+                            resultFetched(new FetchingResult(feed, feedStringResult));
+                        }
+                    }, new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            resultFetched(null);
+                        }
+                    }
+            );
+        }
+        return true;
     }
 
     private void dropCategory() {
@@ -120,7 +122,6 @@ public class CategoryUpdater {
     }
 
     private void parseInformation() {
-        //sendMessage("Parsing Information", STATUS_CHANGED);
         RSSParser parser = new RSSParser(new RSSConfig());
         List<Entry> entries = new ArrayList<Entry>();
         for (FetchingResult fetchingResult : results) {
@@ -142,33 +143,22 @@ public class CategoryUpdater {
             } catch (RSSFault e) {
                 Log.e(TAG, "RSSFault", e);
             }
-
         }
-        //sleep(250);
+
         if (updateDatabase) {
             addToDatabase(entries);
         }
-        //sleep(250);
+
         getNewItems(entries);
     }
 
     private void addToDatabase(List<Entry> entries) {
-        //sendMessage("Adding to database", STATUS_CHANGED);
         for (Entry entry : entries) {
             databaseHandler.addEntry(category.getId(), entry.getFeedId(), entry);
         }
     }
 
-    private void sleep(int i) {
-        try {
-            Thread.sleep(i);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
     private void getNewItems(List<Entry> entries) {
-        //sleep(500);
         if (entries != null && !entries.isEmpty()) {
             category.setLastUpdateTime(new Date().getTime());
             databaseHandler.updateCategory(category);
@@ -179,7 +169,7 @@ public class CategoryUpdater {
         } else {
             sendMessage(null, CANCEL);
         }
-
+        isRunning = false;
     }
 
     private void getShortenedLinks(final List<Entry> entries) {
@@ -190,7 +180,6 @@ public class CategoryUpdater {
             //shortenWithAdfly(entry);
             shortenWithBitly(entry);
         }
-        isRunning = false;
     }
 
     private void shortenWithBitly(final Entry entry) {
@@ -201,7 +190,6 @@ public class CategoryUpdater {
                         public void onResponse(String s) {
                             String shortenedUrl = XmlParser.getInstance().readShortenedLink(s);
                             if (shortenedUrl != null) {
-                                //Toasty.toastI(shortenedUrl);
                                 entry.setShortenedLink(shortenedUrl);
                                 databaseHandler.updateEntry(entry);
                             }
@@ -257,7 +245,7 @@ public class CategoryUpdater {
             MediaEnclosure enclose = item.getEnclosure();
             String mediaUri = null;
             if (enclose != null) {
-                if (enclose.getMimeType().equals(IMAGE_JPEG)) {
+                if (enclose.getMimeType().equals(IMAGE_JPEG) || enclose.getMimeType().equals(IMAGE_PNG)) {
                     mediaUri = enclose.getUrl().toString();
                 }
             }
@@ -272,7 +260,7 @@ public class CategoryUpdater {
                 desc = desc.replaceAll("<.*?>", "").replace("()", "").replace("&nbsp;", "");
             }
 
-            return new Entry(-1, feedId, category.getId(), item.getTitle() != null ? item.getTitle().trim() : item.getTitle(), desc != null ? desc.trim() : desc, time, source, url, mediaUri, null, null);
+            return new Entry(-1, feedId, category.getId(), item.getTitle() != null ? item.getTitle().trim() : item.getTitle(), desc != null ? desc.trim() : desc, time, source, url, mediaUri, null, null, false);
         }
         return null;
     }

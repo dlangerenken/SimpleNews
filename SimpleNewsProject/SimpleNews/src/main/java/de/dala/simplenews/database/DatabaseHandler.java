@@ -2,17 +2,12 @@ package de.dala.simplenews.database;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.CursorLoader;
-import android.content.Loader;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
 import de.dala.simplenews.common.Category;
 import de.dala.simplenews.common.Entry;
 import de.dala.simplenews.common.Feed;
@@ -29,7 +24,7 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
     /**
      * Database Name and Version
      */
-    private static final int DATABASE_VERSION = 38;
+    private static final int DATABASE_VERSION = 39;
     private static final String DATABASE_NAME = "news_database";
 
     /**
@@ -65,13 +60,13 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
     private static final String ENTRY_VISIBLE = "visible";
     private static final String ENTRY_VISITED_DATE = "visited";
     private static final String ENTRY_FAVORITE_DATE = "favorite";
+    private static final String ENTRY_IS_EXPANDED = "expanded";
+
     private static SQLiteDatabase db;
     private static DatabaseHandler instance;
-    private Context context;
 
     private DatabaseHandler(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
-        this.context = context;
     }
 
     /**
@@ -151,7 +146,8 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
                 + ENTRY_IMAGE_URL + " TEXT,"
                 + ENTRY_VISIBLE + " INTEGER,"
                 + ENTRY_VISITED_DATE + " LONG,"
-                + ENTRY_FAVORITE_DATE + " LONG" + ")";
+                + ENTRY_FAVORITE_DATE + " LONG,"
+                + ENTRY_IS_EXPANDED + " INTEGER"+ ")";
         db.execSQL(createCategoryTable);
         db.execSQL(createFeedTable);
         db.execSQL(createEntryTable);
@@ -161,10 +157,15 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         String upgradeQueryVisited = "ALTER TABLE " + TABLE_ENTRY + " ADD COLUMN " + ENTRY_VISITED_DATE + " LONG";
         String upgradeQueryFavorite = "ALTER TABLE " + TABLE_ENTRY + " ADD COLUMN " + ENTRY_FAVORITE_DATE + " LONG";
+        String upgradeQueryEntry = "ALTER TABLE " + TABLE_ENTRY + " ADD COLUMN " + ENTRY_IS_EXPANDED + " INTEGER";
 
         if (oldVersion < 35 && newVersion >= 35) {
             db.execSQL(upgradeQueryVisited);
             db.execSQL(upgradeQueryFavorite);
+        }
+
+        if (oldVersion < 39 && newVersion >= 39) {
+            db.execSQL(upgradeQueryEntry);
         }
     }
 
@@ -385,6 +386,7 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
             values.put(ENTRY_VISIBLE, entry.isVisible() ? 1 : 0);
             values.put(ENTRY_VISITED_DATE, entry.getVisitedDate());
             values.put(ENTRY_FAVORITE_DATE, entry.getFavoriteDate());
+            values.put(ENTRY_IS_EXPANDED, entry.isExpanded() ? 1 : 0);
 
             /*
              * Inserting Row
@@ -409,6 +411,7 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
         values.put(ENTRY_VISIBLE, entry.isVisible() ? 1 : 0);
         values.put(ENTRY_VISITED_DATE, entry.getVisitedDate());
         values.put(ENTRY_FAVORITE_DATE, entry.getFavoriteDate());
+        values.put(ENTRY_IS_EXPANDED, entry.isExpanded() ? 1 : 0);
 
         int affected = db.update(TABLE_ENTRY, values, ENTRY_ID + "=" + entry.getId(), null);
         return affected;
@@ -534,28 +537,37 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
 
     @Override
     public Cursor getFavoriteEntriesCursor(long categoryId) {
-        int maxEntries = 5;
         String query = null;
         query = concatenateQueries(query, ENTRY_CATEGORY_ID + "=" + categoryId);
         query = concatenateQueries(query, ENTRY_FAVORITE_DATE + " IS NOT NULL");
         query = concatenateQueries(query, ENTRY_FAVORITE_DATE + " > 0");
 
         Cursor cursor = db.query(TABLE_ENTRY, null,
-                query, null, null, null, ENTRY_FAVORITE_DATE + " DESC", maxEntries + "");
+                query, null, null, null, ENTRY_FAVORITE_DATE + " DESC", null);
 
         return cursor;
     }
 
     @Override
     public Cursor getRecentEntriesCursor(long categoryId) {
-        int maxEntries = 5;
         String query = null;
         query = concatenateQueries(query, ENTRY_CATEGORY_ID + "=" + categoryId);
         query = concatenateQueries(query, ENTRY_VISITED_DATE + " IS NOT NULL");
         query = concatenateQueries(query, ENTRY_VISITED_DATE + " > 0");
 
         Cursor cursor = db.query(TABLE_ENTRY, null,
-                query, null, null, null, ENTRY_VISITED_DATE + " DESC", maxEntries + "");
+                query, null, null, null, ENTRY_VISITED_DATE + " DESC", null);
+        return cursor;
+    }
+
+    @Override
+    public Cursor getUnreadEntriesCursor(long categoryId) {
+        String query = null;
+        query = concatenateQueries(query, ENTRY_CATEGORY_ID + "=" + categoryId);
+        query = concatenateQueries(query, ENTRY_VISITED_DATE + " IS NULL");
+
+        Cursor cursor = db.query(TABLE_ENTRY, null,
+                query, null, null, null, ENTRY_VISITED_DATE + " DESC", null);
         return cursor;
     }
 
@@ -641,6 +653,7 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
         int visible = cursor.getInt(10);
         Long visited = cursor.getLong(11);
         Long favorite = cursor.getLong(12);
+        int isExpanded = cursor.getInt(13);
 
         Entry entry = new Entry();
         entry.setId(id);
@@ -656,6 +669,7 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
         entry.setShortenedLink(shortenedUrl);
         entry.setVisitedDate(visited);
         entry.setFavoriteDate(favorite);
+        entry.setExpanded(isExpanded > 0);
         return entry;
     }
 }

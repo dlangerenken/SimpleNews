@@ -70,4 +70,9 @@
     <string name="shorten_links_summary">Sollen Links zum Teilen gekürzt werden? (z.B. www.sehrsehrlangewebsite.de -> www.bit.ly/kurzername)</string>
     <string name="feed_selection_remove">Entfernen</string>
     <string name="feed_selection_add">Hinzufügen</string>
+    <string name="mark_read">Gelesen markieren</string>
+    <string name="mark_unread">Ungelesen markieren</string>
+    <string name="menu_unread">Ungelesen</string>
+    <string name="multiple_columns">Ansicht mit mehreren Spalten</string>
+    <string name="single_columns">Ansicht mit einer Spalte</string>
 </resources>

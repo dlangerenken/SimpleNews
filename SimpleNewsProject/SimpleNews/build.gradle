@@ -28,7 +28,7 @@ android {
     buildToolsVersion '19.1.0'
 
     defaultConfig {
-        minSdkVersion 8
+        minSdkVersion 10
         targetSdkVersion 19
     }
     lintOptions {
@@ -55,4 +55,5 @@ dependencies {
     compile 'com.rosaloves:bitlyj:2.0.0'
     compile 'com.nhaarman.listviewanimations:library:2.6.0'
     compile 'com.crashlytics.android:crashlytics:1.+'
+    compile 'com.etsy.android.grid:library:1.0.5'
 }

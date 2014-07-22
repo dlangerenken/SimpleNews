@@ -15,6 +15,8 @@ public class PrefUtilities {
     public static final String FIRST_DAY_OF_LAUNCH = "first_launch_time";
     public static final String TIME_FOR_REFRESH = "time_for_refresh";
     public static final String SHORTEN_LINKS = "shorten_links";
+    public static final String MULTIPLE_COLUMNS_PORTRAIT = "multiple_columns_portrait";
+    public static final String MULTIPLE_COLUMNS_LANDSCAPE = "multiple_columns_landscape";
     /**
      * Remember the position of the selected item.
      */
@@ -63,6 +65,22 @@ public class PrefUtilities {
 
     public boolean shouldAskForRatingAgain() {
         return preferences.getBoolean(ASK_FOR_RATING, true);
+    }
+
+    public boolean useMultipleColumnsLandscape() {
+        return preferences.getBoolean(MULTIPLE_COLUMNS_LANDSCAPE, true);
+    }
+
+    public void setMultipleColumnsLandscape(boolean multipleColumns) {
+        preferences.edit().putBoolean(MULTIPLE_COLUMNS_LANDSCAPE, multipleColumns).commit();
+    }
+
+    public boolean useMultipleColumnsPortrait() {
+        return preferences.getBoolean(MULTIPLE_COLUMNS_PORTRAIT, false);
+    }
+
+    public void setMultipleColumnsPortrait(boolean multipleColumns) {
+        preferences.edit().putBoolean(MULTIPLE_COLUMNS_PORTRAIT, multipleColumns).commit();
     }
 
     public boolean shouldShortenLinks() {

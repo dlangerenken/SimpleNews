@@ -18,7 +18,7 @@ public class Entry implements Comparable<Entry>, Serializable {
     private String shortenedLink;
 
     private boolean visible = true;
-
+    private boolean expanded = false;
     private Long favoriteDate;
     private Long visitedDate;
 
@@ -26,7 +26,7 @@ public class Entry implements Comparable<Entry>, Serializable {
     public Entry() {
     }
 
-    public Entry(long id, long feedId, long categoryId, String title, String description, Long date, String srcName, String link, String imageLink, Long visitedDate, Long favoriteDate) {
+    public Entry(long id, long feedId, long categoryId, String title, String description, Long date, String srcName, String link, String imageLink, Long visitedDate, Long favoriteDate, boolean isExpanded) {
         this.id = id;
         this.feedId = feedId;
         this.categoryId = categoryId;
@@ -38,7 +38,16 @@ public class Entry implements Comparable<Entry>, Serializable {
         this.imageLink = imageLink;
         this.favoriteDate = favoriteDate;
         this.visitedDate = visitedDate;
+        this.expanded = isExpanded;
     }
+    public boolean isExpanded() {
+        return expanded;
+    }
+
+    public void setExpanded(boolean expanded) {
+        this.expanded = expanded;
+    }
+
 
     public long getId() {
         return id;
