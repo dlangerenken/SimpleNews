@@ -414,6 +414,10 @@ public abstract class ExpandableGridItemCursorAdapter extends CursorAdapter impl
         }
     }
 
+    public abstract void selectAllIds();
+    public abstract void deselectAllIds();
+
+
     private static class RootView extends LinearLayout {
 
         private ViewGroup mTitleViewGroup;

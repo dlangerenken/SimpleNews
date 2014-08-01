@@ -165,7 +165,7 @@ public class CategoryFeedsFragment extends Fragment implements ContextualUndoAda
                                             feed.setCategoryId(category.getId());
                                             feed.setTitle(rssFeed.getTitle());
                                             feed.setDescription(rssFeed.getDescription());
-                                            feed.setUrl(formattedFeedUrl);
+                                            feed.setXmlUrl(formattedFeedUrl);
                                             long id = DatabaseHandler.getInstance().addFeed(category.getId(), feed, true);
                                             feed.setId(id);
                                             adapter.add(feed);
@@ -265,7 +265,7 @@ public class CategoryFeedsFragment extends Fragment implements ContextualUndoAda
 
         final AlertDialog dialog = new AlertDialog.Builder(getActivity()).setView(view).setTitle(R.string.rename_feed).create();
 
-        input.setText(feed.getUrl());
+        input.setText(feed.getXmlUrl());
         View.OnClickListener dialogClickListener = new View.OnClickListener() {
 
             @Override
@@ -290,7 +290,7 @@ public class CategoryFeedsFragment extends Fragment implements ContextualUndoAda
                                         if (rssFeed.getItems() == null || rssFeed.getItems().isEmpty()) {
                                             invalidFeedUrl(true);
                                         } else {
-                                            feed.setUrl(formattedFeedUrl);
+                                            feed.setXmlUrl(formattedFeedUrl);
                                             if (rssFeed.getTitle() != null) {
                                                 feed.setTitle(rssFeed.getTitle());
                                             }
@@ -432,7 +432,7 @@ public class CategoryFeedsFragment extends Fragment implements ContextualUndoAda
             }
             ViewHolder holder = (ViewHolder) convertView.getTag();
             holder.name.setText(feed.getTitle() == null ? context.getString(R.string.feed_title_not_found) : feed.getTitle());
-            holder.link.setText(feed.getUrl());
+            holder.link.setText(feed.getXmlUrl());
             holder.show.setOnClickListener(new FeedItemClickListener(feed));
             holder.show.setChecked(feed.isVisible());
             holder.edit.setOnClickListener(new FeedItemClickListener(feed));

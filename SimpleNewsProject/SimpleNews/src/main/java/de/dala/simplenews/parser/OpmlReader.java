@@ -68,16 +68,21 @@ public abstract class OpmlReader {
     public static List<Feed> convertOpmlListToFeedList(List<OpmlElement> elements) {
         List<Feed> feeds = new ArrayList<Feed>();
         for (OpmlElement element : elements) {
-            feeds.add(convertOpmlToFeed(element));
+            if (IsValidFeed(element)) {
+                feeds.add(convertOpmlToFeed(element));
+            }
         }
         return feeds;
+    }
+
+    private static boolean IsValidFeed(OpmlElement element) {
+        return element != null && element.getXmlUrl() != null &&  element.getXmlUrl() != "";
     }
 
     public static Feed convertOpmlToFeed(OpmlElement element) {
         Feed feed = new Feed();
         feed.setDescription(element.getDescription());
         feed.setTitle(element.getTitle());
-        feed.setUrl(element.getHtmlUrl());
         feed.setXmlUrl(element.getXmlUrl());
         return feed;
     }

@@ -44,8 +44,8 @@ import de.dala.simplenews.common.Entry;
 import de.dala.simplenews.common.Feed;
 import de.dala.simplenews.database.DatabaseHandler;
 import de.dala.simplenews.database.IDatabaseHandler;
+import de.dala.simplenews.database.PersistableEntries;
 import de.dala.simplenews.database.SimpleCursorLoader;
-import de.dala.simplenews.network.FadeInNetworkImageView;
 import de.dala.simplenews.network.VolleySingleton;
 import de.dala.simplenews.utilities.CategoryUpdater;
 import de.dala.simplenews.utilities.ExpandableGridItemCursorAdapter;
@@ -80,6 +80,9 @@ public class ExpandableNewsFragment extends Fragment implements SwipeRefreshLayo
     private SimpleCursorLoader simpleCursorLoader;
 
     private int newsTypeMode = NewsTypeBar.ALL;
+
+    private TextView emptyText;
+
 
     public ExpandableNewsFragment() {
         //shouldn't be called
@@ -135,7 +138,7 @@ public class ExpandableNewsFragment extends Fragment implements SwipeRefreshLayo
         super.onViewCreated(view, savedInstanceState);
         mSwipeRefreshLayout = (SwipeRefreshLayoutExtended) view.findViewById(R.id.ptr_layout);
         mSwipeRefreshLayout.setOnRefreshListener(this);
-        mSwipeRefreshLayout.setColorSchemeFromColors(category.getColor(), getResources().getColor(R.color.background_window), category.getColor(), getResources().getColor(R.color.background_window));
+        mSwipeRefreshLayout.setColorSchemeFromColors(category.getPrimaryColor(), getResources().getColor(R.color.background_window), category.getPrimaryColor(), getResources().getColor(R.color.background_window));
     }
 
     @Override
@@ -151,6 +154,9 @@ public class ExpandableNewsFragment extends Fragment implements SwipeRefreshLayo
         View rootView = inflater.inflate(R.layout.news_list, container, false);
 
         mGridView = (StaggeredGridView) rootView.findViewById(R.id.news_gridview);
+        mGridView.setEmptyView(rootView.findViewById(R.id.emptyView));
+        emptyText = (TextView) rootView.findViewById(R.id.emptyMessage);
+
         initCardsAdapter();
         initNewsTypeBar(rootView);
 
@@ -160,10 +166,17 @@ public class ExpandableNewsFragment extends Fragment implements SwipeRefreshLayo
 
     private void initNewsTypeBar(View rootView) {
         newsTypeBar = (NewsTypeBar) rootView.findViewById(R.id.news_type_bar);
-        newsTypeBar.init(category.getColor(), this, mGridView);
+        newsTypeBar.init(category.getPrimaryColor(), this, mGridView, newsTypeMode);
         newsTypeBar.fadeIn();
     }
 
+    private void setEmptyText(boolean isLoading){
+        String textToShow = getResources().getString(R.string.no_entries);
+        if (isLoading){
+            textToShow = getResources().getString(R.string.is_loading);
+        }
+        emptyText.setText(textToShow);
+    }
 
     private void updateColumnCount() {
         switch (getResources().getConfiguration().orientation) {
@@ -218,14 +231,6 @@ public class ExpandableNewsFragment extends Fragment implements SwipeRefreshLayo
                 loadEntries(true, true);
                 return true;
             case R.id.menu_columns:
-                switch (getResources().getConfiguration().orientation) {
-                    case Configuration.ORIENTATION_LANDSCAPE:
-                        PrefUtilities.getInstance().setMultipleColumnsLandscape(!PrefUtilities.getInstance().useMultipleColumnsLandscape());
-                        break;
-                    case Configuration.ORIENTATION_PORTRAIT:
-                        PrefUtilities.getInstance().setMultipleColumnsPortrait(!PrefUtilities.getInstance().useMultipleColumnsPortrait());
-                        break;
-                }
                 updateMenu();
                 updateColumnCount();
                 break;
@@ -261,6 +266,10 @@ public class ExpandableNewsFragment extends Fragment implements SwipeRefreshLayo
         };
         simpleCursorLoader.registerListener(0, this);
         updateColumnCount();
+    }
+
+    private void onListItemCheck(int position, boolean value) {
+        myExpandableListItemAdapter.selectView(position, value);
     }
 
     private void onListItemCheck(int position) {
@@ -313,6 +322,7 @@ public class ExpandableNewsFragment extends Fragment implements SwipeRefreshLayo
         if (success){
             simpleCursorLoader.startLoading();
         }
+        setEmptyText(false);
     }
 
     private void setRefreshActionButtonState(boolean refreshing) {
@@ -342,6 +352,7 @@ public class ExpandableNewsFragment extends Fragment implements SwipeRefreshLayo
 
 
     private void loadEntries(boolean forceRefresh, boolean showNewsInteraction) {
+        setEmptyText(true);
         long timeForRefresh = PrefUtilities.getInstance().getTimeForRefresh();
         if (forceRefresh || category.getLastUpdateTime() < new Date().getTime() - timeForRefresh) {
             refreshFeeds(showNewsInteraction);
@@ -398,6 +409,7 @@ public class ExpandableNewsFragment extends Fragment implements SwipeRefreshLayo
             swingBottomInAnimationAdapter.reset();
             myExpandableListItemAdapter.changeCursor(cursor);
         }
+        setEmptyText(false);
     }
 
     @Override
@@ -436,7 +448,7 @@ public class ExpandableNewsFragment extends Fragment implements SwipeRefreshLayo
     }
 
     public Entry GetEntryByCursor(Cursor cursor){
-        return DatabaseHandler.getEntryByCursor(cursor);
+        return PersistableEntries.loadFromCursor(cursor);
     }
 
     private class MyExpandableGridItemAdapter extends ExpandableGridItemCursorAdapter {
@@ -476,12 +488,7 @@ public class ExpandableNewsFragment extends Fragment implements SwipeRefreshLayo
 
             LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             LinearLayout layout = (LinearLayout) inflater.inflate(R.layout.news_card, null);
-            FadeInNetworkImageView imageView = (FadeInNetworkImageView) layout.findViewById(R.id.card_header_imageView);
-            if (entry.getImageLink() != null) {
-                imageView.setImageUrl(entry.getImageLink(), VolleySingleton.getImageLoader());
-            }else{
-                imageView.setVisibility(View.GONE);
-            }
+
             TextView titleTextView = (TextView) layout.findViewById(R.id.title);
             TextView infoTextView = (TextView) layout.findViewById(R.id.info);
             ImageView entryType = (ImageView) layout.findViewById(R.id.image);
@@ -494,13 +501,15 @@ public class ExpandableNewsFragment extends Fragment implements SwipeRefreshLayo
                 entryType.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_nav_recently_used));
             }
 
+
             long current = new Date().getTime();
             if (current > entry.getDate()) {
                 current = entry.getDate();
             }
             String prettyTimeString = new PrettyTime().format(new Date(current));
+
             infoTextView.setText(String.format("%s - %s", entry.getSrcName(), prettyTimeString));
-            infoTextView.setTextColor(category.getColor());
+            infoTextView.setTextColor(category.getSecondaryColor());
             infoTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
 
             return layout;
@@ -514,7 +523,7 @@ public class ExpandableNewsFragment extends Fragment implements SwipeRefreshLayo
             LinearLayout layout = (LinearLayout) inflater.inflate(R.layout.news_card_expand, null);
 
             View colorBorder = layout.findViewById(R.id.colorBorder);
-            colorBorder.setBackgroundColor(category.getColor());
+            colorBorder.setBackgroundColor(category.getSecondaryColor());
 
             final TextView description = (TextView) layout.findViewById(R.id.expand_card_main_inner_simple_title);
             UIUtils.setTextMaybeHtml(description, entry.getDescription());
@@ -530,6 +539,38 @@ public class ExpandableNewsFragment extends Fragment implements SwipeRefreshLayo
                 }
             });
             return layout;
+        }
+
+        @Override
+        public void selectAllIds() {
+            for(int i = 0; i < mCursor.getCount(); i++){
+                onListItemCheck(i, true);
+            }
+            OpenActionModeIfNecessary();
+
+            if (mActionMode != null) {
+                mActionMode.setTitle(String.valueOf(myExpandableListItemAdapter.getSelectedCount()));
+            }
+            if (shareActionProvider != null) {
+                shareActionProvider.setShareIntent(createShareIntent());
+            }
+            notifyDataSetChanged();
+        }
+
+        @Override
+        public void deselectAllIds() {
+            for(int i = 0; i < mCursor.getCount(); i++){
+                onListItemCheck(i, false);
+            }
+            OpenActionModeIfNecessary();
+
+            if (mActionMode != null) {
+                mActionMode.setTitle(String.valueOf(myExpandableListItemAdapter.getSelectedCount()));
+            }
+            if (shareActionProvider != null) {
+                shareActionProvider.setShareIntent(createShareIntent());
+            }
+            notifyDataSetChanged();
         }
 
         public void toggleSelection(int position) {
@@ -618,6 +659,7 @@ public class ExpandableNewsFragment extends Fragment implements SwipeRefreshLayo
                     selectedEntries.add(selectedEntry);
                 }
             }
+            boolean shouldFinish = true;
             // close action mode
             switch (item.getItemId()) {
                 case R.id.menu_item_save:
@@ -626,10 +668,19 @@ public class ExpandableNewsFragment extends Fragment implements SwipeRefreshLayo
                 case R.id.menu_item_read:
                     markEntriesAsRead(selectedEntries);
                     break;
+                case R.id.menu_item_select_all:
+                    myExpandableListItemAdapter.selectAllIds();
+                    shouldFinish = false;
+                    break;
+                case R.id.menu_item_deselect_all:
+                    myExpandableListItemAdapter.deselectAllIds();
+                    break;
 
             }
-            mode.finish();
-            myExpandableListItemAdapter.removeSelection();
+            if (shouldFinish) {
+                mode.finish();
+                myExpandableListItemAdapter.removeSelection();
+            }
             return false;
         }
 

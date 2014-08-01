@@ -14,6 +14,9 @@ import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
@@ -49,6 +52,7 @@ public class NewsOverViewFragment extends Fragment implements ViewPager.OnPageCh
 
     private View progressView;
     private Drawable oldBackground = null;
+    private Drawable oldDarkBackground = null;
     private int currentColor = 0xFF666666;
     private List<Category> categories;
     private RelativeLayout bottomView;
@@ -80,13 +84,30 @@ public class NewsOverViewFragment extends Fragment implements ViewPager.OnPageCh
         entryType = getArguments().getInt("entryType", NewsTypeBar.ALL);
     }
 
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_columns:
+                switch (getResources().getConfiguration().orientation) {
+                    case android.content.res.Configuration.ORIENTATION_LANDSCAPE:
+                        PrefUtilities.getInstance().setMultipleColumnsLandscape(!PrefUtilities.getInstance().useMultipleColumnsLandscape());
+                        break;
+                    case android.content.res.Configuration.ORIENTATION_PORTRAIT:
+                        PrefUtilities.getInstance().setMultipleColumnsPortrait(!PrefUtilities.getInstance().useMultipleColumnsPortrait());
+                        break;
+                }
+        }
+        return false;
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         setHasOptionsMenu(true);
         View rootView = inflater.inflate(R.layout.news_overview, container, false);
         databaseHandler = DatabaseHandler.getInstance();
         if (!PrefUtilities.getInstance().xmlIsAlreadyLoaded()) {
-            loadXml();
+            DatabaseHandler.getInstance().loadXml();
         }
         mainActivity.getSupportActionBar().setTitle(getString(R.string.simple_news_title));
         mainActivity.getSupportActionBar().setHomeButtonEnabled(true);
@@ -112,12 +133,17 @@ public class NewsOverViewFragment extends Fragment implements ViewPager.OnPageCh
         return rootView;
     }
 
-    private void changeColor(int newColor) {
-        tabs.setIndicatorColor(newColor);
+    private void changeColor(Category category) {
 
-        Drawable colorDrawable = new ColorDrawable(newColor);
+        tabs.setIndicatorColor(category.getSecondaryColor());
+
+        Drawable colorDrawable = new ColorDrawable(category.getPrimaryColor());
+        Drawable darkColorDrawable = new ColorDrawable(category.getSecondaryColor());
+
         Drawable bottomDrawable = getResources().getDrawable(R.drawable.actionbar_bottom);
+
         LayerDrawable ld = new LayerDrawable(new Drawable[]{colorDrawable, bottomDrawable});
+        LayerDrawable ldDark = new LayerDrawable(new Drawable[]{darkColorDrawable});
 
         if (oldBackground == null) {
             ((ActionBarActivity) getActivity()).getSupportActionBar().setBackgroundDrawable(ld);
@@ -127,11 +153,13 @@ public class NewsOverViewFragment extends Fragment implements ViewPager.OnPageCh
             ((ActionBarActivity) getActivity()).getSupportActionBar().setBackgroundDrawable(td);
             td.startTransition(400);
         }
-        mainActivity.changeDrawerColor(ld, newColor);
 
-        progressView.setBackgroundColor(newColor);
+        mainActivity.changeDrawerColor(ld, category.getPrimaryColor());
+
+        progressView.setBackgroundColor(category.getPrimaryColor());
         oldBackground = ld;
-        currentColor = newColor;
+        oldDarkBackground = ldDark;
+        currentColor = category.getPrimaryColor();
 
         // http://stackoverflow.com/questions/11002691/actionbar-setbackgrounddrawable-nulling-background-from-thread-handler
         ((ActionBarActivity) getActivity()).getSupportActionBar().setDisplayShowTitleEnabled(false);
@@ -145,7 +173,7 @@ public class NewsOverViewFragment extends Fragment implements ViewPager.OnPageCh
     @Override
     public void onPageSelected(int i) {
         if (categories != null && categories.size() > i) {
-            changeColor(categories.get(i).getColor());
+            changeColor(categories.get(i));
         }
     }
 
@@ -186,23 +214,6 @@ public class NewsOverViewFragment extends Fragment implements ViewPager.OnPageCh
         }
     }
 
-    private void loadXml() {
-        try {
-            News news = new XmlParser(getActivity()).readDefaultNewsFile();
-            for (Category category : news.getCategories()) {
-                if (category != null) {
-                    databaseHandler.addCategory(category, false, false);
-                }
-            }
-            PrefUtilities.getInstance().saveLoading(true);
-        } catch (XmlPullParserException e) {
-            Log.e(TAG, "Error in adding xml to Database");
-            e.printStackTrace();
-        } catch (IOException io) {
-            Log.e(TAG, "Error in adding xml to Database");
-            io.printStackTrace();
-        }
-    }
 
     private View createProgressView() {
         progressView = mainActivity.getLayoutInflater().inflate(R.layout.progress_layout, null);

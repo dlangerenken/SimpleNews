@@ -1,1 +1,1 @@
-include ':SimpleNews', ':toasty'
+include ':SimpleNews'

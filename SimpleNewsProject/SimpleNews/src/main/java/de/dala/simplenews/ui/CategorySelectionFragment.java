@@ -3,9 +3,9 @@ package de.dala.simplenews.ui;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.view.ActionMode;
 import android.util.SparseBooleanArray;
@@ -33,6 +33,7 @@ import colorpicker.OnColorSelectedListener;
 import de.dala.simplenews.R;
 import de.dala.simplenews.common.Category;
 import de.dala.simplenews.database.DatabaseHandler;
+import de.dala.simplenews.utilities.ColorManager;
 import de.dala.simplenews.utilities.MyDynamicListView;
 import de.dala.simplenews.utilities.PrefUtilities;
 import de.dala.simplenews.utilities.UIUtils;
@@ -137,9 +138,7 @@ public class CategorySelectionFragment extends Fragment {
                         }).create().show();
                 return true;
             case android.R.id.home:
-                Intent intent = new Intent(getActivity(), MainActivity.class);
-                startActivity(intent);
-                getActivity().finish();
+                NavUtils.navigateUpFromSameTask(getActivity());
                 return true;
         }
         return false;
@@ -218,12 +217,12 @@ public class CategorySelectionFragment extends Fragment {
     private void onColorClicked(final Category category) {
         ColorPickerDialog colorCalendar = ColorPickerDialog.newInstance(
                 category.getName(),
-                ColorUtils.colorChoice(getActivity()), category.getColor(), 4,
+                ColorUtils.colorChoice(getActivity()), category.getPrimaryColor(), 4,
                 ColorUtils.isTablet(getActivity()) ? ColorPickerDialog.SIZE_LARGE : ColorPickerDialog.SIZE_SMALL, String.format("%s %s:", getString(R.string.color_picker_default_title), category.getName()));
         colorCalendar.setOnColorSelectedListener(new OnColorSelectedListener() {
             @Override
             public void onColorSelected(int color) {
-                category.setColor(color);
+                category.setColorId(ColorManager.getInstance().getIdByColor(color));
                 DatabaseHandler.getInstance().updateCategory(category);
                 adapter.notifyDataSetChanged();
             }
@@ -241,7 +240,7 @@ public class CategorySelectionFragment extends Fragment {
             public void onColorSelected(int color) {
                 Category newCategory = new Category();
                 newCategory.setName(categoryName);
-                newCategory.setColor(color);
+                newCategory.setColorId(ColorManager.getInstance().getIdByColor(color));
 
                 long id = DatabaseHandler.getInstance().addCategory(newCategory, true, true);
                 newCategory.setId(id);
@@ -311,7 +310,7 @@ public class CategorySelectionFragment extends Fragment {
             }
             ViewHolder holder = (ViewHolder) convertView.getTag();
             holder.name.setText(category.getName());
-            holder.color.setBackgroundColor(category.getColor());
+            holder.color.setBackgroundColor(category.getPrimaryColor());
             holder.show.setChecked(category.isVisible());
             if (!fromRSS) {
                 holder.edit.setOnClickListener(new CategoryItemClickListener(category));

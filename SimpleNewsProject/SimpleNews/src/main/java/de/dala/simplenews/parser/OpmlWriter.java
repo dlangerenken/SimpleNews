@@ -54,9 +54,9 @@ public abstract class OpmlWriter {
             if (feed.getType() != null) {
                 xs.attribute(null, OpmlSymbols.TYPE, feed.getType());
             }
-            xs.attribute(null, OpmlSymbols.XMLURL, feed.getXMLUrl());
-            if (feed.getUrl() != null) {
-                xs.attribute(null, OpmlSymbols.HTMLURL, feed.getUrl());
+            xs.attribute(null, OpmlSymbols.XMLURL, feed.getXmlUrl());
+            if (feed.getHtmlUrl() != null) {
+                xs.attribute(null, OpmlSymbols.HTMLURL, feed.getHtmlUrl());
             }
             xs.endTag(null, OpmlSymbols.OUTLINE);
         }

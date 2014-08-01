@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:compat="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/menu_item_remove"
         android:icon="@android:drawable/ic_menu_delete"
-        android:showAsAction="ifRoom"
+        compat:showAsAction="ifRoom"
         android:title="@string/selection_save" />
     <item
         android:id="@+id/menu_item_share"
         android:icon="@android:drawable/ic_menu_share"
-        android:showAsAction="ifRoom"
+        compat:showAsAction="ifRoom"
         android:title="@string/selection_share" />
 
 

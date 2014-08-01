@@ -7,6 +7,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.dala.simplenews.utilities.ColorManager;
+
 /**
  * Created by Daniel on 19.12.13.
  */
@@ -21,12 +23,12 @@ public class Category implements Serializable, Parcelable {
         }
     };
     private String name;
-    private long id;
-    private int color;
+    private Long id;
+    private int colorId;
     private int order;
     private transient List<Feed> feeds;
     private boolean isVisible = true;
-    private long lastUpdateTime;
+    private Long lastUpdateTime;
 
     public Category() {
         feeds = new ArrayList<Feed>();
@@ -35,16 +37,16 @@ public class Category implements Serializable, Parcelable {
     public Category(Parcel in) {
         this.name = in.readString();
         this.id = in.readLong();
-        this.color = in.readInt();
+        this.colorId = in.readInt();
         this.order = in.readInt();
         this.isVisible = in.readInt() > 0;
     }
 
-    public long getLastUpdateTime() {
+    public Long getLastUpdateTime() {
         return lastUpdateTime;
     }
 
-    public void setLastUpdateTime(long lastUpdateTime) {
+    public void setLastUpdateTime(Long lastUpdateTime) {
         this.lastUpdateTime = lastUpdateTime;
     }
 
@@ -57,19 +59,27 @@ public class Category implements Serializable, Parcelable {
         this.name = name;
     }
 
-    public int getColor() {
-        return color;
+    public int getPrimaryColor(){
+        return ColorManager.getInstance().getColorByCategory(this);
     }
 
-    public void setColor(int color) {
-        this.color = color;
+    public int getSecondaryColor(){
+        return ColorManager.getInstance().getDarkColorByCategory(this);
     }
 
-    public long getId() {
+    public int getColorId() {
+        return colorId;
+    }
+
+    public void setColorId(int colorId) {
+        this.colorId = colorId;
+    }
+
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -106,7 +116,7 @@ public class Category implements Serializable, Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(name);
         dest.writeLong(id);
-        dest.writeInt(color);
+        dest.writeInt(colorId);
         dest.writeInt(order);
         dest.writeInt(isVisible ? 1 : 0);
     }

@@ -22,7 +22,7 @@ import de.dala.simplenews.utilities.UIUtils;
 public class NewsTypeBar extends LinearLayout {
 
     public static final int ALL = 0;
-    private int entryType = ALL;
+    private int mEntryType = ALL;
     public static final int FAV = 1;
     public static final int RECENT = 2;
     public static final int UNREAD = 3;
@@ -40,6 +40,7 @@ public class NewsTypeBar extends LinearLayout {
 
 
     private ScrollClass myScrollClass;
+
 
     public interface INewsTypeClicked {
         void newsTypeClicked(int type);
@@ -65,8 +66,9 @@ public class NewsTypeBar extends LinearLayout {
         }
     }
 
-    public void init(final int color, final INewsTypeClicked newsTypeClicked, final AbsListView view) {
+    public void init(final int color, final INewsTypeClicked newsTypeClicked, final AbsListView view, int entryType) {
         newsTypeClickedInterface = newsTypeClicked;
+        mEntryType = entryType;
         init(getContext());
         allEntryButton.setBackgroundDrawable(UIUtils.getStateListDrawableByColor(color));
         favEntryButton.setBackgroundDrawable(UIUtils.getStateListDrawableByColor(color));
@@ -80,11 +82,16 @@ public class NewsTypeBar extends LinearLayout {
         myScrollClass = new ScrollClass() {
             int mLastFirstVisibleItem = 0;
             boolean sliding = false;
+            int mTotalItemCount = 0;
 
             @Override public void onScrollStateChanged(AbsListView view, int scrollState) {}
 
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                mTotalItemCount = totalItemCount;
+                if (totalItemCount == 0){
+                    fadeIn();
+                }
                 if (view.getId() == view.getId()) {
                     final int currentFirstVisibleItem = view.getFirstVisiblePosition();
                     if (currentFirstVisibleItem < mLastFirstVisibleItem) {
@@ -98,7 +105,7 @@ public class NewsTypeBar extends LinearLayout {
 
             @Override
             public void fadeOut() {
-                if (!sliding) {
+                if (!sliding && mTotalItemCount > 0) {
                     final int height = getMeasuredHeight();
                     if (getVisibility() == View.VISIBLE) {
                         Animation animation = new TranslateAnimation(0, 0, 0,
@@ -171,7 +178,7 @@ public class NewsTypeBar extends LinearLayout {
                 final int y = (int) event.getY();
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_MOVE:
-                        if (y < mLastMotionY && view.getFirstVisiblePosition() == 0) {
+                        if (y < mLastMotionY && view.getFirstVisiblePosition() <= 0) {
                             myScrollClass.fadeIn();
                         }
                         break;
@@ -202,7 +209,7 @@ public class NewsTypeBar extends LinearLayout {
         unreadEntryTextView.setTextColor(UIUtils.getColorTextStateList());
 
 
-        switch (entryType) {
+        switch (mEntryType) {
             case ALL:
                 allEntryButton.setSelected(true);
                 allEntryTextView.setSelected(true);
@@ -247,10 +254,10 @@ public class NewsTypeBar extends LinearLayout {
             unreadEntryButton.setSelected(UNREAD == type);
             unreadEntryTextView.setSelected(UNREAD == type);
 
-            entryType = type;
+            mEntryType = type;
 
             if (newsTypeClickedInterface != null){
-                newsTypeClickedInterface.newsTypeClicked(entryType);
+                newsTypeClickedInterface.newsTypeClicked(mEntryType);
             }
         }
     }

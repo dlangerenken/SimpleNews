@@ -43,7 +43,7 @@ public class CategoryModifierFragment extends Fragment implements CategorySelect
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        categories = new ArrayList<Category>(DatabaseHandler.getInstance().getCategories(false, true, false));
+        categories = new ArrayList<Category>(DatabaseHandler.getInstance().getCategories(false, true, null));
         FragmentTransaction t = getChildFragmentManager().beginTransaction();
         Fragment fragment = null;
         String rssPath = getArguments() != null ? getArguments().getString(FROM_RSS) : null;
@@ -86,7 +86,7 @@ public class CategoryModifierFragment extends Fragment implements CategorySelect
     @Override
     public void onRSSSavedClick(Category category, String rssPath) {
         Feed feed = new Feed();
-        feed.setUrl(rssPath);
+        feed.setXmlUrl(rssPath);
         feed.setCategoryId(category.getId());
         DatabaseHandler.getInstance().addFeed(category.getId(), feed, true);
         getActivity().finish();
@@ -94,6 +94,7 @@ public class CategoryModifierFragment extends Fragment implements CategorySelect
 
     @Override
     public void onRestore() {
-        //restore-clicked
+        DatabaseHandler.getInstance().removeAllCategories();
+        DatabaseHandler.getInstance().loadXml();
     }
 }

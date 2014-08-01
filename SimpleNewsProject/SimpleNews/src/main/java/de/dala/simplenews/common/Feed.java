@@ -12,36 +12,26 @@ public class Feed implements Serializable {
     public static final String TYPE_RSS2 = "rss";
     public static final String TYPE_RSS091 = "rss";
     public static final String TYPE_ATOM1 = "atom";
-    private long id;
-    private String url;
-    private long categoryId;
+    private Long id;
+    private String xmlUrl;
+    private String htmlUrl;
+    private Long categoryId;
     private List<Entry> entries;
     private String title;
     private String description;
     private boolean visible = true;
-    private String xmlUrl;
     /**
      * Feed type, for example RSS 2 or Atom
      */
     private String type;
 
-    public Feed(String url) {
+    public Feed(String xmlUrl) {
         this.entries = new ArrayList<Entry>();
-        this.url = url;
+        this.xmlUrl = xmlUrl;
     }
 
     public Feed() {
         this.entries = new ArrayList<Entry>();
-    }
-
-    public Feed(long id, String url, long categoryId, List<Entry> entries) {
-        this.id = id;
-        this.categoryId = categoryId;
-        this.entries = entries;
-        if (this.entries == null) {
-            this.entries = new ArrayList<Entry>();
-        }
-        this.url = url;
     }
 
     public String getType() {
@@ -72,27 +62,27 @@ public class Feed implements Serializable {
         this.description = description;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-    public String getUrl() {
-        return url;
+    public String getXmlUrl() {
+        return xmlUrl;
     }
 
-    public void setUrl(String url) {
-        this.url = url;
+    public void setXmlUrl(String xmlUrl) {
+        this.xmlUrl = xmlUrl;
     }
 
-    public long getCategoryId() {
+    public Long getCategoryId() {
         return categoryId;
     }
 
-    public void setCategoryId(long categoryId) {
+    public void setCategoryId(Long categoryId) {
         this.categoryId = categoryId;
     }
 
@@ -104,11 +94,11 @@ public class Feed implements Serializable {
         this.entries = entries;
     }
 
-    public String getXMLUrl() {
-        return xmlUrl;
+    public String getHtmlUrl() {
+        return htmlUrl;
     }
 
-    public void setXmlUrl(String xmlUrl) {
-        this.xmlUrl = xmlUrl;
+    public void setHtmlUrl(String htmlUrl){
+        this.htmlUrl = htmlUrl;
     }
 }

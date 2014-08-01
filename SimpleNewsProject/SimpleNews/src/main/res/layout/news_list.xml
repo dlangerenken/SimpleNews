@@ -23,6 +23,32 @@
             android:stretchMode="columnWidth" />
 
     </android.support.v4.widget.SwipeRefreshLayoutExtended>
+    <RelativeLayout
+        android:id="@+id/emptyView"
+        android:layout_width="match_parent"
+        android:padding="30dp"
+        android:visibility="gone"
+        android:layout_height="match_parent" android:orientation="vertical">
+        <TextView
+            android:layout_centerInParent="true"
+            android:layout_centerHorizontal="true"
+            android:gravity="center"
+            android:textAppearance="@android:style/TextAppearance.Medium"
+            android:id="@+id/emptyMessage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+        <ImageView
+            android:layout_above="@id/emptyMessage"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingLeft="50dp"
+            android:paddingRight="50dp"
+            android:paddingTop="50dp"
+            android:paddingBottom="15dp"
+            android:src="@drawable/ic_launcher"
+            />
+    </RelativeLayout>
+
 
    <de.dala.simplenews.ui.NewsTypeBar
        android:id="@+id/news_type_bar"

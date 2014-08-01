@@ -25,10 +25,18 @@ import android.support.v4.app.FragmentActivity;
 import android.text.Html;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
+import android.util.Log;
 import android.webkit.URLUtil;
 import android.widget.TextView;
 
+import org.xmlpull.v1.XmlPullParserException;
+
+import java.io.IOException;
 import java.util.regex.Pattern;
+
+import de.dala.simplenews.common.Category;
+import de.dala.simplenews.common.News;
+import de.dala.simplenews.parser.XmlParser;
 
 /**
  * Created by Daniel on 29.12.13.
@@ -138,4 +146,7 @@ public class UIUtils {
         }
         return colorStateList;
     }
+
+
+
 }

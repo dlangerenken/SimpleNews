@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:compat="http://schemas.android.com/apk/res-auto">
 
     <item
         android:id="@+id/new_category"
         android:icon="@drawable/ic_action_new"
         android:orderInCategory="101"
-        android:showAsAction="always"
+        compat:showAsAction="always"
         android:title="@string/add_category" />
     <item
         android:id="@+id/restore_categories"
-        android:showAsAction="never"
+        compat:showAsAction="never"
         android:title="@string/restore_categories" />
 </menu>

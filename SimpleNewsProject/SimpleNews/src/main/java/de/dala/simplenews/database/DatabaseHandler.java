@@ -1,16 +1,22 @@
 package de.dala.simplenews.database;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
+import org.xmlpull.v1.XmlPullParserException;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import de.dala.simplenews.common.Category;
 import de.dala.simplenews.common.Entry;
 import de.dala.simplenews.common.Feed;
+import de.dala.simplenews.common.News;
+import de.dala.simplenews.parser.XmlParser;
+import de.dala.simplenews.utilities.PrefUtilities;
 
 /**
  * The DatabaseHandler for the communication between Client and Client-Database
@@ -24,49 +30,52 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
     /**
      * Database Name and Version
      */
-    private static final int DATABASE_VERSION = 39;
+    private static final int DATABASE_VERSION = 43;
     private static final String DATABASE_NAME = "news_database";
 
     /**
      * Table names
      */
-    private static final String TABLE_CATEGORY = "category";
-    private static final String TABLE_FEED = "feed";
-    private static final String TABLE_ENTRY = "entry";
-    private static final String CATEGORY_ID = "_id";
-    private static final String CATEGORY_COLOR = "color";
-    private static final String CATEGORY_NAME = "name";
-    private static final String CATEGORY_VISIBLE = "visible";
-    private static final String CATEGORY_LAST_UPDATE = "last_update";
-    private static final String CATEGORY_ORDER = "_order";
+    public static final String TABLE_CATEGORY = "category";
+    public static final String TABLE_FEED = "feed";
+    public static final String TABLE_ENTRY = "entry";
+    public static final String CATEGORY_ID = "_id";
+    public static final String CATEGORY_COLOR = "color";
+    public static final String CATEGORY_NAME = "name";
+    public static final String CATEGORY_VISIBLE = "visible";
+    public static final String CATEGORY_LAST_UPDATE = "last_update";
+    public static final String CATEGORY_ORDER = "_order";
 
-    private static final String FEED_ID = "_id";
-    private static final String FEED_CATEGORY_ID = "category_id";
-    private static final String FEED_TITLE = "title";
-    private static final String FEED_DESCRIPTION = "description";
-    private static final String FEED_URL = "url";
-    private static final String FEED_VISIBLE = "visible";
+    public static final String FEED_ID = "_id";
+    public static final String FEED_CATEGORY_ID = "category_id";
+    public static final String FEED_TITLE = "title";
+    public static final String FEED_DESCRIPTION = "description";
+    public static final String FEED_URL = "url";
+    public static final String FEED_HTML_URL = "html_url";
+    public static final String FEED_VISIBLE = "visible";
 
-    private static final String ENTRY_ID = "_id";
-    private static final String ENTRY_CATEGORY_ID = "category_id";
-    private static final String ENTRY_FEED_ID = "feed_id";
-    private static final String ENTRY_TITLE = "title";
-    private static final String ENTRY_DESCRIPTION = "description";
-    private static final String ENTRY_DATE = "date";
-    private static final String ENTRY_SRC_NAME = "src_name";
-    private static final String ENTRY_URL = "url";
-    private static final String ENTRY_SHORTENED_URL = "shortened_url";
-    private static final String ENTRY_IMAGE_URL = "image_url";
-    private static final String ENTRY_VISIBLE = "visible";
-    private static final String ENTRY_VISITED_DATE = "visited";
-    private static final String ENTRY_FAVORITE_DATE = "favorite";
-    private static final String ENTRY_IS_EXPANDED = "expanded";
+    public static final String ENTRY_ID = "_id";
+    public static final String ENTRY_CATEGORY_ID = "category_id";
+    public static final String ENTRY_FEED_ID = "feed_id";
+    public static final String ENTRY_TITLE = "title";
+    public static final String ENTRY_DESCRIPTION = "description";
+    public static final String ENTRY_DATE = "date";
+    public static final String ENTRY_SRC_NAME = "src_name";
+    public static final String ENTRY_URL = "url";
+    public static final String ENTRY_SHORTENED_URL = "shortened_url";
+    public static final String ENTRY_IMAGE_URL = "image_url";
+    public static final String ENTRY_VISIBLE = "visible";
+    public static final String ENTRY_VISITED_DATE = "visited";
+    public static final String ENTRY_FAVORITE_DATE = "favorite";
+    public static final String ENTRY_IS_EXPANDED = "expanded";
 
     private static SQLiteDatabase db;
     private static DatabaseHandler instance;
+    private Context mContext;
 
     private DatabaseHandler(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        mContext = context;
     }
 
     /**
@@ -75,6 +84,10 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
     public static synchronized DatabaseHandler getInstance() {
         return instance;
     }
+    public static synchronized SQLiteDatabase getDbInstance() {
+        return db;
+    }
+
 
     public static String concatenateQueries(String query, String additionalQuery) {
         if (query == null) {
@@ -118,7 +131,7 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
     public void onCreate(SQLiteDatabase db) {
         String createCategoryTable = "CREATE TABLE "
                 + TABLE_CATEGORY + "("
-                + CATEGORY_ID + " INTEGER PRIMARY KEY, "
+                + CATEGORY_ID + " LONG PRIMARY KEY, "
                 + CATEGORY_COLOR + " INTEGER,"
                 + CATEGORY_NAME + " TEXT,"
                 + CATEGORY_LAST_UPDATE + " LONG,"
@@ -126,15 +139,16 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
                 + CATEGORY_ORDER + " INTEGER" + ")";
         String createFeedTable = "CREATE TABLE "
                 + TABLE_FEED + "("
-                + FEED_ID + " INTEGER PRIMARY KEY, "
+                + FEED_ID + " LONG PRIMARY KEY, "
                 + FEED_CATEGORY_ID + " LONG,"
                 + FEED_TITLE + " TEXT,"
                 + FEED_DESCRIPTION + " TEXT,"
                 + FEED_URL + " TEXT,"
-                + FEED_VISIBLE + " INTEGER" + ")";
+                + FEED_VISIBLE + " INTEGER,"
+                + FEED_HTML_URL + " TEXT"+ ")";
         String createEntryTable = "CREATE TABLE "
                 + TABLE_ENTRY + "("
-                + ENTRY_ID + " INTEGER PRIMARY KEY, "
+                + ENTRY_ID + " LONG PRIMARY KEY, "
                 + ENTRY_CATEGORY_ID + " LONG,"
                 + ENTRY_FEED_ID + " LONG,"
                 + ENTRY_TITLE + " TEXT,"
@@ -154,522 +168,243 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
     }
 
     @Override
+    public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        db.execSQL("DROP DATABASE " + DATABASE_NAME);
+        onCreate(db);
+    }
+
+    @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         String upgradeQueryVisited = "ALTER TABLE " + TABLE_ENTRY + " ADD COLUMN " + ENTRY_VISITED_DATE + " LONG";
         String upgradeQueryFavorite = "ALTER TABLE " + TABLE_ENTRY + " ADD COLUMN " + ENTRY_FAVORITE_DATE + " LONG";
         String upgradeQueryEntry = "ALTER TABLE " + TABLE_ENTRY + " ADD COLUMN " + ENTRY_IS_EXPANDED + " INTEGER";
+        String upgradeQueryFeed = "ALTER TABLE " + TABLE_FEED + " ADD COLUMN " + FEED_HTML_URL + " TEXT";
 
         if (oldVersion < 35 && newVersion >= 35) {
             db.execSQL(upgradeQueryVisited);
             db.execSQL(upgradeQueryFavorite);
         }
 
-        if (oldVersion < 39 && newVersion >= 39) {
+        if (oldVersion < 42 && newVersion >= 42) {
             db.execSQL(upgradeQueryEntry);
+            db.execSQL(upgradeQueryFeed);
         }
     }
 
-    public List<Category> getCategories(Boolean excludeFeeds, Boolean excludeEntries, Boolean onlyVisible) {
-        List<Category> categories = new ArrayList<Category>();
-        String orderBy = CATEGORY_ORDER + " ASC";
-        String query = null;
-        if (onlyVisible) {
-            query = CATEGORY_VISIBLE + "=" + "1";
-        }
-        Cursor cursor = db.query(TABLE_CATEGORY, null,
-                query, null, null, null, orderBy);
-
-		/*
-         * looping through all rows and adding to list
-		 */
-        if (cursor.moveToFirst()) {
-            do {
-                Category category = getCategoryByCursor(cursor);
-                if (excludeFeeds != null && !excludeFeeds) {
-                    category.setFeeds(getFeeds(category.getId(), excludeEntries));
-                }
-                categories.add(category);
-            } while (cursor.moveToNext());
-        }
-        cursor.close();
-        return categories;
+    public List<Category> getCategories(Boolean excludeFeeds, Boolean excludeEntries, Boolean visible) {
+        IPersistableObject<Category> persistence = new PersistableCategories(null, excludeFeeds, excludeEntries, visible);
+        return load(persistence);
     }
 
     @Override
     public Category getCategory(Long categoryId, Boolean excludeFeeds, Boolean excludeEntries) {
-        Cursor cursor = db.query(TABLE_CATEGORY, null,
-                CATEGORY_ID + " = " + categoryId, null, null, null, null);
-
-        Category category = null;
-        if (cursor.moveToFirst()) {
-            category = getCategoryByCursor(cursor);
-            if (excludeFeeds != null && !excludeFeeds) {
-                category.setFeeds(getFeeds(categoryId, excludeEntries));
-            }
+        IPersistableObject<Category> persistence = new PersistableCategories(categoryId,excludeFeeds, excludeEntries, null);
+        List<Category> result = load(persistence);
+        if (result != null && result.size() == 1){
+            return result.get(0);
         }
-        cursor.close();
-        return category;
+        return null;
     }
 
     @Override
     public long addCategory(Category category, Boolean excludeFeeds, Boolean excludeEntries) {
-        ContentValues values = new ContentValues();
-        values.put(CATEGORY_COLOR, category.getColor());
-        values.put(CATEGORY_NAME, category.getName());
-        values.put(CATEGORY_LAST_UPDATE, category.getLastUpdateTime());
-        values.put(CATEGORY_VISIBLE, category.isVisible() ? 1 : 0);
-
-        long categoryId = db.insert(TABLE_CATEGORY, null, values);
-        values = new ContentValues();
-        values.put(CATEGORY_ORDER, categoryId);
-        db.update(TABLE_CATEGORY, values, CATEGORY_ID + " = " + categoryId, null);
-
-        if (excludeFeeds != null && !excludeFeeds) {
-            for (Feed feed : category.getFeeds()) {
-                addFeed(categoryId, feed, excludeEntries);
-            }
-        }
-        return categoryId;
+        IPersistableObject<Category> persistence = new PersistableCategories(null, excludeFeeds, excludeEntries, null);
+        List<Category> result = new ArrayList<Category>();
+        result.add(category);
+        persistence.store(result);
+        return 0;
     }
 
     @Override
     public int removeCategory(long categoryId, Boolean excludeFeeds, Boolean excludeEntries) {
-        int rowsAffected = db.delete(TABLE_CATEGORY, CATEGORY_ID + "=" + categoryId, null);
-
-        if (excludeFeeds != null && !excludeFeeds) {
-            removeFeeds(categoryId, null, excludeEntries);
-        }
-        return rowsAffected;
+        IPersistableObject<Category> persistence = new PersistableCategories(categoryId, excludeFeeds, excludeEntries, null);
+        persistence.delete();
+        return 0;
     }
 
     @Override
     public List<Feed> getFeeds(Long categoryId, Boolean excludeEntries) {
-        String query = null;
-        if (categoryId != null) {
-            query = concatenateQueries(query, FEED_CATEGORY_ID + "=" + categoryId);
-        }
-        Cursor cursor = db.query(TABLE_FEED, null,
-                query, null, null, null, null);
-
-		/*
-		 * looping through all rows and adding to list
-		 */
-        List<Feed> feeds = new ArrayList<Feed>();
-        if (cursor.moveToFirst()) {
-            do {
-                Feed feed = getFeedByCursor(cursor);
-                if (feed.isVisible() && excludeEntries != null && !excludeEntries) {
-                    feed.setEntries(getEntries(categoryId, feed.getId()));
-                }
-                feeds.add(feed);
-            } while (cursor.moveToNext());
-        }
-        cursor.close();
-        return feeds;
+        IPersistableObject<Feed> persistence = new PersistableFeeds(categoryId, null, excludeEntries, null);
+        return load(persistence);
     }
 
     @Override
     public Feed getFeed(long feedId, Boolean excludeEntries) {
-        Cursor cursor = db.query(TABLE_FEED, null,
-                FEED_ID + " = " + feedId, null, null, null, null);
-
-        Feed feed = null;
-        if (cursor.moveToFirst()) {
-            feed = getFeedByCursor(cursor);
-            if (feed.isVisible() && excludeEntries != null && !excludeEntries) {
-                feed.setEntries(getEntries(null, feed.getId()));
-            }
+        IPersistableObject<Feed> persistence = new PersistableFeeds(null , feedId, excludeEntries, null);
+        List<Feed> result = load(persistence);
+        if (result != null && result.size() == 1){
+            return result.get(0);
         }
-        cursor.close();
-        return feed;
+        return null;
     }
 
     @Override
     public long addFeed(long categoryId, Feed feed, Boolean excludeEntries) {
-        ContentValues values = new ContentValues();
-        values.put(FEED_CATEGORY_ID, categoryId);
-        values.put(FEED_TITLE, feed.getTitle());
-        values.put(FEED_DESCRIPTION, feed.getDescription());
-        values.put(FEED_URL, feed.getUrl());
-        values.put(FEED_VISIBLE, feed.isVisible() ? 1 : 0);
-		/*
-		 * Inserting Row
-		 */
-        long rowId = db.insert(TABLE_FEED, null, values);
-
-        if (excludeEntries != null && !excludeEntries) {
-            if (feed.getEntries() != null) {
-                for (Entry entry : feed.getEntries()) {
-                    addEntry(categoryId, rowId, entry);
-                }
-            }
-        }
-        return rowId;
+        IPersistableObject<Feed> persistence = new PersistableFeeds(categoryId , null, excludeEntries, null);
+        List<Feed> result = new ArrayList<Feed>();
+        result.add(feed);
+        persistence.store(result);
+        return 0;
     }
 
     @Override
     public int removeFeeds(Long categoryId, Long feedId, Boolean excludeEntries) {
-        String query = null;
-        if (categoryId != null) {
-            query = concatenateQueries(query, FEED_CATEGORY_ID + "=" + categoryId);
-        }
-        if (feedId != null) {
-            query = concatenateQueries(query, FEED_ID + "=" + feedId);
-        }
-
-        int rowsAffected = db.delete(TABLE_FEED, query, null);
-
-        if (excludeEntries != null && !excludeEntries) {
-            removeEntries(categoryId, feedId, null);
-        }
-        return rowsAffected;
+        IPersistableObject<Feed> persistence = new PersistableFeeds(categoryId , feedId, excludeEntries, null);
+        persistence.delete();
+        return 0;
     }
 
     @Override
     public List<Entry> getEntries(Long categoryId, Long feedId) {
-        List<Entry> entries = new ArrayList<Entry>();
-
-        if (feedId != null) {
-            Feed feed = getFeed(feedId, true);
-            if (feed != null && feed.isVisible()) {
-                String query = null;
-                if (categoryId != null) {
-                    query = concatenateQueries(query, ENTRY_CATEGORY_ID + "=" + categoryId);
-                }
-                query = concatenateQueries(query, ENTRY_FEED_ID + "=" + feedId);
-
-                Cursor cursor = db.query(TABLE_ENTRY, null,
-                        query, null, null, null, null);
-
-                /*
-                 * looping through all rows and adding to list
-                 */
-                if (cursor.moveToFirst()) {
-                    do {
-                        Entry entry = getEntryByCursor(cursor);
-                        entries.add(entry);
-                    } while (cursor.moveToNext());
-                }
-                cursor.close();
-            }
-        }
-        return entries;
+        IPersistableObject<Entry> persistence = new PersistableEntries(categoryId, feedId, null, null);
+        return load(persistence);
     }
 
     @Override
     public Entry getEntry(long entryId) {
-        Cursor cursor = db.query(TABLE_ENTRY, null,
-                ENTRY_ID + " = " + entryId, null, null, null, null);
-
-        Entry entry = null;
-        if (cursor.moveToFirst()) {
-            entry = getEntryByCursor(cursor);
+        IPersistableObject<Entry> persistence = new PersistableEntries(null, null, entryId, null);
+        List<Entry> result = load(persistence);
+        if (result != null && result.size() == 1){
+            return result.get(0);
         }
-        cursor.close();
-        return entry;
+        return null;
     }
 
     @Override
     public long addEntry(long categoryId, long feedId, Entry entry) {
-        List<Entry> similarEntries = getSimilarEntries(entry);
-        if (similarEntries == null || similarEntries.isEmpty()) {
-            ContentValues values = new ContentValues();
-            values.put(ENTRY_CATEGORY_ID, categoryId);
-            values.put(ENTRY_FEED_ID, feedId);
-            values.put(ENTRY_TITLE, entry.getTitle());
-            values.put(ENTRY_DESCRIPTION, entry.getDescription());
-            values.put(ENTRY_DATE, entry.getDate());
-            values.put(ENTRY_SRC_NAME, entry.getSrcName());
-            values.put(ENTRY_URL, entry.getLink());
-            values.put(ENTRY_SHORTENED_URL, entry.getShortenedLink());
-            values.put(ENTRY_IMAGE_URL, entry.getImageLink());
-            values.put(ENTRY_VISIBLE, entry.isVisible() ? 1 : 0);
-            values.put(ENTRY_VISITED_DATE, entry.getVisitedDate());
-            values.put(ENTRY_FAVORITE_DATE, entry.getFavoriteDate());
-            values.put(ENTRY_IS_EXPANDED, entry.isExpanded() ? 1 : 0);
-
-            /*
-             * Inserting Row
-             */
-            long rowId = db.insert(TABLE_ENTRY, null, values);
-            entry.setId(rowId);
-            return rowId;
-        }
-        return -1;
+        IPersistableObject<Entry> persistence = new PersistableEntries(categoryId, feedId, null, null);
+        List<Entry> result = new ArrayList<Entry>();
+        result.add(entry);
+        persistence.store(result);
+        return 0;
     }
 
     @Override
     public int updateEntry(Entry entry) {
-        ContentValues values = new ContentValues();
-        values.put(ENTRY_TITLE, entry.getTitle());
-        values.put(ENTRY_DESCRIPTION, entry.getDescription());
-        values.put(ENTRY_DATE, entry.getDate());
-        values.put(ENTRY_SRC_NAME, entry.getSrcName());
-        values.put(ENTRY_URL, entry.getLink());
-        values.put(ENTRY_SHORTENED_URL, entry.getShortenedLink());
-        values.put(ENTRY_IMAGE_URL, entry.getImageLink());
-        values.put(ENTRY_VISIBLE, entry.isVisible() ? 1 : 0);
-        values.put(ENTRY_VISITED_DATE, entry.getVisitedDate());
-        values.put(ENTRY_FAVORITE_DATE, entry.getFavoriteDate());
-        values.put(ENTRY_IS_EXPANDED, entry.isExpanded() ? 1 : 0);
-
-        int affected = db.update(TABLE_ENTRY, values, ENTRY_ID + "=" + entry.getId(), null);
-        return affected;
+        IPersistableObject<Entry> persistence = new PersistableEntries(entry.getCategoryId(), entry.getFeedId(), entry.getId(), null);
+        update(persistence, entry);
+        return 0;
     }
 
     @Override
     public int removeEntries(Long categoryId, Long feedId, Long entryId) {
-        String query = null;
-        if (categoryId != null) {
-            query = concatenateQueries(query, ENTRY_CATEGORY_ID + "=" + categoryId);
-        }
-        if (feedId != null) {
-            query = concatenateQueries(query, ENTRY_FEED_ID + "=" + feedId);
-        }
-        if (entryId != null) {
-            query = concatenateQueries(query, ENTRY_ID + "=" + entryId);
-        }
-        query = concatenateQueries(query, ENTRY_FAVORITE_DATE + " is null");
-        query = concatenateQueries(query, ENTRY_VISITED_DATE + " is null");
-        int rowsAffected = db.delete(TABLE_ENTRY, query, null);
-        return rowsAffected;
-    }
-
-    @Override
-    public Cursor getEntriesCursor(Long categoryId, Long feedId) {
-        String query = null;
-        if (categoryId != null) {
-            query = concatenateQueries(query, ENTRY_CATEGORY_ID + "=" + categoryId);
-        }
-        if (feedId != null) {
-            query = concatenateQueries(query, ENTRY_FEED_ID + "=" + feedId);
-        }
-
-        Cursor cursor = db.query(TABLE_ENTRY, null,
-                query, null, null, null, null);
-        return cursor;
-    }
-
-    @Override
-    public Cursor getEntriesCursor(Long categoryId) {
-        String entryTableShortName = "entryTable";
-        String feedTableShortName = "cursorTable";
-
-        String query = null;
-        if (categoryId != null) {
-            query = concatenateQueries(query, entryTableShortName + "." + ENTRY_CATEGORY_ID + "=" + categoryId);
-            query = concatenateQueries(query, entryTableShortName + "." + ENTRY_VISIBLE + "=" + 1);
-            query = concatenateQueries(query, feedTableShortName + "." + FEED_VISIBLE + "=" + 1);
-        }
-
-        String entryQuery = "SELECT * FROM " + TABLE_ENTRY + " " + entryTableShortName
-                + " INNER JOIN "
-                + TABLE_FEED + " " + feedTableShortName + " " +
-                " ON " + entryTableShortName+ "." + ENTRY_FEED_ID
-                +"=" + feedTableShortName +"." + FEED_ID
-                +" WHERE " + query
-                + " ORDER BY " + ENTRY_DATE + " DESC";
-
-        return db.rawQuery(entryQuery, null);
+        IPersistableObject<Entry> persistence = new PersistableEntries(categoryId, feedId, entryId, null);
+        persistence.delete();
+        return 0;
     }
 
     @Override
     public List<Entry> getFavoriteEntries(long categoryId) {
-        List<Entry> entries = new ArrayList<Entry>();
-        Cursor cursor = getFavoriteEntriesCursor(categoryId);
-        /*
-         * looping through all rows and adding to list
-         */
-        if (cursor.moveToFirst()) {
-            do {
-                Entry entry = getEntryByCursor(cursor);
-                entries.add(entry);
-            } while (cursor.moveToNext());
-        }
-        cursor.close();
-        return entries;
+        IPersistableObject<Entry> persistence = new PersistableFavoriteEntries(categoryId, null, null, null);
+        return load(persistence);
     }
-
-    @Override
-    public List<Entry> getSimilarEntries(Entry oldEntry) {
-        List<Entry> entries = new ArrayList<Entry>();
-        if (oldEntry != null) {
-            String desc = oldEntry.getDescription() == null ? "" : oldEntry.getDescription();
-            String title = oldEntry.getTitle() == null ? "" : oldEntry.getTitle();
-            Cursor cursor = db.rawQuery("SELECT * FROM " +
-                            TABLE_ENTRY + " WHERE " +
-                            ENTRY_DESCRIPTION + "=? AND "
-                            + ENTRY_TITLE + "=?",
-                    new String[]{desc, title}
-            );
-            /*
-             * looping through all rows and adding to list
-             */
-            if (cursor.moveToFirst()) {
-                do {
-                    Entry entry = getEntryByCursor(cursor);
-                    entries.add(entry);
-                } while (cursor.moveToNext());
-            }
-            cursor.close();
-        }
-
-        return entries;
-    }
-
 
     @Override
     public List<Entry> getVisitedEntries(long categoryId) {
-        List<Entry> entries = new ArrayList<Entry>();
-        Cursor cursor = getRecentEntriesCursor(categoryId);
-        /*
-         * looping through all rows and adding to list
-         */
-        if (cursor.moveToFirst()) {
-            do {
-                Entry entry = getEntryByCursor(cursor);
-                entries.add(entry);
-            } while (cursor.moveToNext());
-        }
-        cursor.close();
-        return entries;
+        IPersistableObject<Entry> persistence = new PersistableVisibleEntries(categoryId, null, null, null);
+        return load(persistence);
     }
 
     @Override
-    public Cursor getFavoriteEntriesCursor(long categoryId) {
-        String query = null;
-        query = concatenateQueries(query, ENTRY_CATEGORY_ID + "=" + categoryId);
-        query = concatenateQueries(query, ENTRY_FAVORITE_DATE + " IS NOT NULL");
-        query = concatenateQueries(query, ENTRY_FAVORITE_DATE + " > 0");
-
-        Cursor cursor = db.query(TABLE_ENTRY, null,
-                query, null, null, null, ENTRY_FAVORITE_DATE + " DESC", null);
-
-        return cursor;
+    public Cursor getEntriesCursor(Long categoryId, Long feedId) {
+        IPersistableObject<Entry> persistence = new PersistableEntries(categoryId, feedId, null, null);
+        return persistence.getCursor();
     }
 
     @Override
-    public Cursor getRecentEntriesCursor(long categoryId) {
-        String query = null;
-        query = concatenateQueries(query, ENTRY_CATEGORY_ID + "=" + categoryId);
-        query = concatenateQueries(query, ENTRY_VISITED_DATE + " IS NOT NULL");
-        query = concatenateQueries(query, ENTRY_VISITED_DATE + " > 0");
-
-        Cursor cursor = db.query(TABLE_ENTRY, null,
-                query, null, null, null, ENTRY_VISITED_DATE + " DESC", null);
-        return cursor;
+    public Cursor getFavoriteEntriesCursor(Long categoryId, Long feedId) {
+        IPersistableObject<Entry> persistence = new PersistableFavoriteEntries(categoryId, feedId, null, null);
+        return persistence.getCursor();
     }
 
     @Override
-    public Cursor getUnreadEntriesCursor(long categoryId) {
-        String query = null;
-        query = concatenateQueries(query, ENTRY_CATEGORY_ID + "=" + categoryId);
-        query = concatenateQueries(query, ENTRY_VISITED_DATE + " IS NULL");
+    public Cursor getRecentEntriesCursor(Long categoryId, Long feedId) {
+        IPersistableObject<Entry> persistence = new PersistableVisibleEntries(categoryId, feedId, null, null);
+        return persistence.getCursor();
+    }
 
-        Cursor cursor = db.query(TABLE_ENTRY, null,
-                query, null, null, null, ENTRY_VISITED_DATE + " DESC", null);
-        return cursor;
+    @Override
+    public Cursor getUnreadEntriesCursor(Long categoryId, Long feedId) {
+        IPersistableObject<Entry> persistence = new PersistableUnreadEntries(categoryId, feedId, null, null);
+        return persistence.getCursor();
+    }
+
+    @Override
+    public Cursor getEntriesCursor(Long categoryId) {
+        return getEntriesCursor(categoryId, null);
+    }
+
+    @Override
+    public Cursor getFavoriteEntriesCursor(Long categoryId) {
+        return getFavoriteEntriesCursor(categoryId, null);
+    }
+
+    @Override
+    public Cursor getRecentEntriesCursor(Long categoryId) {
+        return getRecentEntriesCursor(categoryId, null);
+    }
+
+    @Override
+    public Cursor getUnreadEntriesCursor(Long categoryId) {
+        return getUnreadEntriesCursor(categoryId, null);
     }
 
     @Override
     public void removeAllCategories() {
-        db.delete(TABLE_CATEGORY, null, null);
-        db.delete(TABLE_ENTRY, null, null);
-        db.delete(TABLE_FEED, null, null);
+        IPersistableObject<Category> persistence = new PersistableCategories(null , null, null, null);
+        persistence.delete();
     }
 
     @Override
     public int updateCategory(Category category) {
-        ContentValues values = new ContentValues();
-        values.put(CATEGORY_COLOR, category.getColor());
-        values.put(CATEGORY_NAME, category.getName());
-        values.put(CATEGORY_LAST_UPDATE, category.getLastUpdateTime());
-        values.put(CATEGORY_VISIBLE, category.isVisible() ? 1 : 0);
-        values.put(CATEGORY_ORDER, category.getOrder());
-
-        int affected = db.update(TABLE_CATEGORY, values, CATEGORY_ID + "=" + category.getId(), null);
-        return affected;
+        IPersistableObject<Category> persistence = new PersistableCategories(category.getId(), null, null, null);
+        update(persistence, category);
+        return 0;
     }
 
     @Override
     public int updateFeed(Feed feed) {
-        ContentValues values = new ContentValues();
-        values.put(FEED_CATEGORY_ID, feed.getCategoryId());
-        values.put(FEED_TITLE, feed.getTitle());
-        values.put(FEED_DESCRIPTION, feed.getDescription());
-        values.put(FEED_URL, feed.getUrl());
-        values.put(FEED_VISIBLE, feed.isVisible() ? 1 : 0);
-        int affected = db.update(TABLE_FEED, values, FEED_ID + "=" + feed.getId(), null);
-        return affected;
+        IPersistableObject<Feed> persistence = new PersistableFeeds(feed.getCategoryId(), feed.getId(), null, null);
+        update(persistence, feed);
+        return 0;
     }
 
-    private Category getCategoryByCursor(Cursor cursor) {
-        long id = cursor.getLong(0);
-        int color = cursor.getInt(1);
-        String name = cursor.getString(2);
-        long lastUpdate = cursor.getLong(3);
-        int visible = cursor.getInt(4);
-        int order = cursor.getInt(5);
-
-        Category category = new Category();
-        category.setId(id);
-        category.setColor(color);
-        category.setName(name);
-        category.setLastUpdateTime(lastUpdate);
-        category.setVisible(visible == 1);
-        category.setOrder(order);
-        return category;
+    private <E> void update(final IPersistableObject<E> persistableResource, E resource){
+        List<E> result = new ArrayList<E>();
+        result.add(resource);
+        persistableResource.store(result);
     }
 
-    private Feed getFeedByCursor(Cursor cursor) {
-        long id = cursor.getLong(0);
-        long categoryId = cursor.getLong(1);
-        String title = cursor.getString(2);
-        String description = cursor.getString(3);
-        String url = cursor.getString(4);
-        int visible = cursor.getInt(5);
-
-        Feed feed = new Feed();
-        feed.setId(id);
-        feed.setCategoryId(categoryId);
-        feed.setTitle(title);
-        feed.setDescription(description);
-        feed.setUrl(url);
-        feed.setVisible(visible == 1);
-        return feed;
+    private <E> List<E> load(final IPersistableObject<E> persistableResource) {
+        Cursor cursor = persistableResource.getCursor();
+        List<E> cached = new ArrayList<E>();
+        try {
+            if (!cursor.moveToFirst()) {
+                return cached;
+            }
+            do {
+                cached.add(persistableResource.loadFrom(cursor));
+            }
+            while (cursor.moveToNext());
+            return cached;
+        } finally {
+            cursor.close();
+        }
     }
 
-    public static Entry getEntryByCursor(Cursor cursor) {
-        long id = cursor.getLong(0);
-        long categoryId = cursor.getLong(1);
-        long feedId = cursor.getLong(2);
-        String title = cursor.getString(3);
-        String description = cursor.getString(4);
-        long date = cursor.getLong(5);
-        String src = cursor.getString(6);
-        String url = cursor.getString(7);
-        String shortenedUrl = cursor.getString(8);
-        String imageUrl = cursor.getString(9);
-        int visible = cursor.getInt(10);
-        Long visited = cursor.getLong(11);
-        Long favorite = cursor.getLong(12);
-        int isExpanded = cursor.getInt(13);
-
-        Entry entry = new Entry();
-        entry.setId(id);
-        entry.setCategoryId(categoryId);
-        entry.setFeedId(feedId);
-        entry.setTitle(title);
-        entry.setDescription(description);
-        entry.setDate(date);
-        entry.setSrcName(src);
-        entry.setLink(url);
-        entry.setImageLink(imageUrl);
-        entry.setVisible(visible > 0);
-        entry.setShortenedLink(shortenedUrl);
-        entry.setVisitedDate(visited);
-        entry.setFavoriteDate(favorite);
-        entry.setExpanded(isExpanded > 0);
-        return entry;
+    public void loadXml() {
+        try {
+            News news = new XmlParser(mContext).readDefaultNewsFile();
+            for (Category category : news.getCategories()) {
+                if (category != null) {
+                    addCategory(category, false, false);
+                }
+            }
+            PrefUtilities.getInstance().saveLoading(true);
+        } catch (XmlPullParserException e) {
+            e.printStackTrace();
+        } catch (IOException io) {
+            io.printStackTrace();
+        }
     }
 }

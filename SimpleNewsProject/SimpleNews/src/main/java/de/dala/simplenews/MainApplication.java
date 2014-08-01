@@ -2,8 +2,12 @@ package de.dala.simplenews;
 
 import android.app.Application;
 
+import com.crashlytics.android.Crashlytics;
+
 import de.dala.simplenews.database.DatabaseHandler;
 import de.dala.simplenews.network.VolleySingleton;
+import de.dala.simplenews.parser.XmlParser;
+import de.dala.simplenews.utilities.ColorManager;
 import de.dala.simplenews.utilities.PrefUtilities;
 
 /**
@@ -13,8 +17,11 @@ public class MainApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        Crashlytics.start(this);
+        XmlParser.Init(this);
         VolleySingleton.init(this);
         DatabaseHandler.init(this);
         PrefUtilities.init(this);
+        ColorManager.init(this);
     }
 }

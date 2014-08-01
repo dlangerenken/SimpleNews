@@ -33,7 +33,6 @@ public class NavDrawerListAdapter extends BaseAdapter {
         this.navDrawerItems = navDrawerItems;
         colorDrawable = new ColorDrawable(Color.BLACK);
         colorStateList = UIUtils.getColorTextStateList();
-
     }
 
     @Override

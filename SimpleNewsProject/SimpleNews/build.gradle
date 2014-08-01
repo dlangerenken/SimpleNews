@@ -39,9 +39,8 @@ android {
 dependencies {
     compile 'com.nineoldandroids:library:2.4.0'
     compile 'com.astuetz:pagerslidingtabstrip:1.0.1'
-    compile 'com.github.gabrielemariotti.changeloglib:library:1.4.0'
+    compile 'com.github.gabrielemariotti.changeloglib:library:1.5.1'
     compile 'com.mcxiaoke.volley:library:1.0.+@aar'
-    compile 'com.google.code.gson:gson:2.2.4'
     compile ('de.keyboardsurfer.android.widget:crouton:1.8.4') {
         exclude module: 'support-v4'
     }

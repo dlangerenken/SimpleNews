@@ -15,7 +15,7 @@
         <!-- Resource id for changelog.xml file. -->
         <attr name="changeLogFileResourceId" format="reference" />
 
-        <!-- Resource url for changelog.xml file. -->
+        <!-- Resource xmlUrl for changelog.xml file. -->
         <attr name="changeLogFileResourceUrl" format="string" />
     </declare-styleable>
     <!-- From: file:/home/gabriele/Lavoro/Android/AndroidStudioProjects/wrks/changeloglib/ChangeLogLibrary/src/main/res/values/dimens.xml -->

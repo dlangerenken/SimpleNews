@@ -12,7 +12,7 @@
         android:background="@color/list_background"
         android:choiceMode="singleChoice"
         android:divider="@color/list_divider"
-        android:dividerHeight="1dp"
+        android:dividerHeight="3dp"
         android:listSelector="@drawable/list_selector" />
 
     <View

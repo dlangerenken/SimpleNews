@@ -78,7 +78,7 @@ public class CategoryUpdater {
             sendMessage("No Feeds found", ERROR);
         }
         for (final Feed feed : category.getFeeds()) {
-            NetworkCommunication.loadRSSFeed(feed.getUrl(), new Response.Listener<String>() {
+            NetworkCommunication.loadRSSFeed(feed.getXmlUrl(), new Response.Listener<String>() {
                         @Override
                         public void onResponse(String feedStringResult) {
                             resultFetched(new FetchingResult(feed, feedStringResult));
@@ -240,7 +240,7 @@ public class CategoryUpdater {
         return sb.toString();
     }
 
-    private Entry getEntryFromRSSItem(RSSItem item, long feedId, String source) {
+    private Entry getEntryFromRSSItem(RSSItem item, Long feedId, String source) {
         if (item != null) {
             MediaEnclosure enclose = item.getEnclosure();
             String mediaUri = null;
@@ -260,7 +260,7 @@ public class CategoryUpdater {
                 desc = desc.replaceAll("<.*?>", "").replace("()", "").replace("&nbsp;", "");
             }
 
-            return new Entry(-1, feedId, category.getId(), item.getTitle() != null ? item.getTitle().trim() : item.getTitle(), desc != null ? desc.trim() : desc, time, source, url, mediaUri, null, null, false);
+            return new Entry(null, feedId, category.getId(), item.getTitle() != null ? item.getTitle().trim() : item.getTitle(), desc != null ? desc.trim() : desc, time, source, url, mediaUri, null, null, false);
         }
         return null;
     }

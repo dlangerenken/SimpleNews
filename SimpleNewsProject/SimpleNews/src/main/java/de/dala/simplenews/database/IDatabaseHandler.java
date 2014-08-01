@@ -49,14 +49,16 @@ public interface IDatabaseHandler {
 
     List<Entry> getFavoriteEntries(long categoryId);
 
-    List<Entry> getSimilarEntries(Entry oldEntry);
-
     List<Entry> getVisitedEntries(long categoryId);
 
     Cursor getEntriesCursor(Long categoryId, Long feedId);
+    Cursor getFavoriteEntriesCursor(Long categoryId, Long feedId);
+    Cursor getRecentEntriesCursor(Long categoryId, Long feedId);
+    Cursor getUnreadEntriesCursor(Long categoryId, Long feedId);
+
     Cursor getEntriesCursor(Long categoryId);
-    Cursor getFavoriteEntriesCursor(long categoryId);
-    Cursor getRecentEntriesCursor(long categoryId);
-    Cursor getUnreadEntriesCursor(long categoryId);
+    Cursor getFavoriteEntriesCursor(Long categoryId);
+    Cursor getRecentEntriesCursor(Long categoryId);
+    Cursor getUnreadEntriesCursor(Long categoryId);
 
 }

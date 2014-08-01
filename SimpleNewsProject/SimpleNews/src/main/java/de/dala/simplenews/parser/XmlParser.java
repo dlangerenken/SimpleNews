@@ -182,7 +182,7 @@ public class XmlParser {
         String color = parser.getAttributeValue(null, ATTRIBUTE_COLOR);
         String visible = parser.getAttributeValue(null, ATTRIBUTE_VISIBLE);
         Category category = new Category();
-        category.setColor(Color.parseColor(color));
+        category.setColorId(Color.parseColor(color));
         category.setName(categoryName);
         if (visible != null) {
             category.setVisible(!"false".equals(visible));

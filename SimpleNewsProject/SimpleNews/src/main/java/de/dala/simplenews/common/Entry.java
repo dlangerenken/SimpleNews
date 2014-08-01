@@ -6,9 +6,9 @@ import java.io.Serializable;
  * Created by Daniel on 19.12.13.
  */
 public class Entry implements Comparable<Entry>, Serializable {
-    private long id;
-    private long feedId;
-    private long categoryId;
+    private Long id;
+    private Long feedId;
+    private Long categoryId;
     private String title;
     private String description;
     private Long date;
@@ -26,7 +26,7 @@ public class Entry implements Comparable<Entry>, Serializable {
     public Entry() {
     }
 
-    public Entry(long id, long feedId, long categoryId, String title, String description, Long date, String srcName, String link, String imageLink, Long visitedDate, Long favoriteDate, boolean isExpanded) {
+    public Entry(Long id, Long feedId, Long categoryId, String title, String description, Long date, String srcName, String link, String imageLink, Long visitedDate, Long favoriteDate, boolean isExpanded) {
         this.id = id;
         this.feedId = feedId;
         this.categoryId = categoryId;
@@ -49,27 +49,27 @@ public class Entry implements Comparable<Entry>, Serializable {
     }
 
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-    public long getFeedId() {
+    public Long getFeedId() {
         return feedId;
     }
 
-    public void setFeedId(long feedId) {
+    public void setFeedId(Long feedId) {
         this.feedId = feedId;
     }
 
-    public long getCategoryId() {
+    public Long getCategoryId() {
         return categoryId;
     }
 
-    public void setCategoryId(long categoryId) {
+    public void setCategoryId(Long categoryId) {
         this.categoryId = categoryId;
     }
 
@@ -94,10 +94,6 @@ public class Entry implements Comparable<Entry>, Serializable {
     }
 
     public void setDate(Long date) {
-        this.date = date;
-    }
-
-    public void setDate(long date) {
         this.date = date;
     }
 

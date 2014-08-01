@@ -75,4 +75,9 @@
     <string name="menu_unread">Ungelesen</string>
     <string name="multiple_columns">Ansicht mit mehreren Spalten</string>
     <string name="single_columns">Ansicht mit einer Spalte</string>
+    <string name="category_name">Name der Kategorie</string>
+    <string name="select_all_context_list">Alle Einträge selektieren</string>
+    <string name="deselect_all_context_list">Selektion entfernen</string>
+    <string name="no_entries">Keine Einträge gefunden.</string>
+    <string name="is_loading">Suche nach Einträgen</string>
 </resources>
