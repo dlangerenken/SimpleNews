@@ -95,5 +95,6 @@
     <string name="deselect_all_context_list">Remove selection</string>
     <string name="no_entries">No entries found.</string>
     <string name="is_loading">Looking for feeds to show</string>
-
+    <string name="remove_old_entries_summary">Delete deprecated news?</string>
+    <string name="remove_old_entries__title">Refresh-Interval</string>
 </resources>

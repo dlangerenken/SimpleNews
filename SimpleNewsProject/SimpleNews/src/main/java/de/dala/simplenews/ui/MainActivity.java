@@ -9,6 +9,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
+import android.view.MenuItem;
 
 import com.crashlytics.android.Crashlytics;
 
@@ -16,7 +17,7 @@ import de.dala.simplenews.R;
 import de.dala.simplenews.dialog.ChangeLogDialog;
 import de.dala.simplenews.parser.XmlParser;
 
-public class MainActivity extends ActionBarActivity implements NavigationDrawerFragment.NavigationDrawerCallbacks, FragmentManager.OnBackStackChangedListener {
+public class MainActivity extends ActionBarActivity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
 
     private static String TAG = "MainActivity";
     /**
@@ -28,18 +29,13 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        getSupportFragmentManager().addOnBackStackChangedListener(this);
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayShowCustomEnabled(true);
-        //Handle when activity is recreated like on orientation Change
-        shouldDisplayHomeUp();
-
         setupDrawer();
-        getSupportActionBar().setTitle(getString(R.string.simple_news_title));
 
-        //opening transition animations
+        getSupportActionBar().setTitle(getString(R.string.simple_news_title));
         overridePendingTransition(R.anim.open_translate, R.anim.close_scale);
+
         RateMyApp.appLaunched(this);
 
         if (savedInstanceState == null) {
@@ -54,17 +50,6 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
                 transaction.replace(R.id.container, newsFrag).commit();
             }
         }
-    }
-
-    @Override
-    public void onBackStackChanged() {
-        shouldDisplayHomeUp();
-    }
-
-    public void shouldDisplayHomeUp(){
-        //Enable Up button only  if there are entries in the back stack
-        boolean canBack = getSupportFragmentManager().getBackStackEntryCount()>0;
-        getSupportActionBar().setDisplayHomeAsUpEnabled(canBack);
     }
 
     @Override
@@ -96,33 +81,18 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
                 (DrawerLayout) findViewById(R.id.drawer_layout));
     }
 
-    public void selectNavigationDrawerItem(int item, boolean check) {
-        mNavigationDrawerFragment.checkItem(item, check);
-    }
-
     @Override
     public void onNavigationDrawerItemSelected(int item) {
         switch (item) {
             case NavigationDrawerFragment.HOME:
+                clearBackStack();
                 FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-                transaction.replace(R.id.container, NewsOverViewFragment.getInstance(NewsTypeBar.ALL)).addToBackStack(null).commit();
-                break;
-            case NavigationDrawerFragment.FAVORITE:
-                transaction = getSupportFragmentManager().beginTransaction();
-                transaction.replace(R.id.container, NewsOverViewFragment.getInstance(NewsTypeBar.FAV)).addToBackStack(null).commit();
-                break;
-            case NavigationDrawerFragment.RECENT:
-                transaction = getSupportFragmentManager().beginTransaction();
-                transaction.replace(R.id.container, NewsOverViewFragment.getInstance(NewsTypeBar.RECENT)).addToBackStack(null).commit();
+                transaction.replace(R.id.container, NewsOverViewFragment.getInstance(NewsTypeBar.ALL)).commit();
                 break;
             case NavigationDrawerFragment.CATEGORIES:
                 transaction = getSupportFragmentManager().beginTransaction();
+                transaction.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_left, R.anim.slide_in_right, R.anim.slide_out_right);
                 transaction.replace(R.id.container, CategoryModifierFragment.getInstance()).addToBackStack(null).commit();
-                break;
-            case NavigationDrawerFragment.SEARCH:
-                break;
-            case NavigationDrawerFragment.RATING:
-                RateMyApp.showRateDialog(this);
                 break;
             case NavigationDrawerFragment.SETTINGS:
                 transaction = getSupportFragmentManager().beginTransaction();
@@ -132,6 +102,18 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
                 DialogFragment dialog = new ChangeLogDialog();
                 dialog.show(getSupportFragmentManager(), "ChangeLog");
                 break;
+            case NavigationDrawerFragment.RATING:
+                RateMyApp.showRateDialog(this);
+                break;
+        }
+    }
+
+
+    private void clearBackStack(){
+        FragmentManager manager = getSupportFragmentManager();
+        if (manager.getBackStackEntryCount() > 0) {
+            FragmentManager.BackStackEntry first = manager.getBackStackEntryAt(0);
+            manager.popBackStack(first.getId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
         }
     }
 

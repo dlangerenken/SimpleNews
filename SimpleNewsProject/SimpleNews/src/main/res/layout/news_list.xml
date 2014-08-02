@@ -38,14 +38,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
         <ImageView
+            android:id="@+id/emptyImageView"
             android:layout_above="@id/emptyMessage"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:paddingLeft="50dp"
-            android:paddingRight="50dp"
-            android:paddingTop="50dp"
-            android:paddingBottom="15dp"
-            android:src="@drawable/ic_launcher"
+            android:scaleType="fitCenter"
             />
     </RelativeLayout>
 

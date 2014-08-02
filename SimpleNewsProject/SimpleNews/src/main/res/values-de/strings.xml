@@ -80,4 +80,7 @@
     <string name="deselect_all_context_list">Selektion entfernen</string>
     <string name="no_entries">Keine Einträge gefunden.</string>
     <string name="is_loading">Suche nach Einträgen</string>
+    <string name="remove_old_entries_summary">Veraltete Nachrichten löschen?</string>
+    <string name="remove_old_entries__title">Aktualisierungs-Intervall</string>
+
 </resources>

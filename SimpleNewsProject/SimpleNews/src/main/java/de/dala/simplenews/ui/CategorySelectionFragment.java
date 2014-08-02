@@ -33,6 +33,7 @@ import colorpicker.OnColorSelectedListener;
 import de.dala.simplenews.R;
 import de.dala.simplenews.common.Category;
 import de.dala.simplenews.database.DatabaseHandler;
+import de.dala.simplenews.database.IDatabaseHandler;
 import de.dala.simplenews.utilities.ColorManager;
 import de.dala.simplenews.utilities.MyDynamicListView;
 import de.dala.simplenews.utilities.PrefUtilities;
@@ -137,11 +138,8 @@ public class CategorySelectionFragment extends Fragment {
                             }
                         }).create().show();
                 return true;
-            case android.R.id.home:
-                NavUtils.navigateUpFromSameTask(getActivity());
-                return true;
         }
-        return false;
+        return super.onOptionsItemSelected(item);
     }
 
     private void initAdapter() {
@@ -242,8 +240,7 @@ public class CategorySelectionFragment extends Fragment {
                 newCategory.setName(categoryName);
                 newCategory.setColorId(ColorManager.getInstance().getIdByColor(color));
 
-                long id = DatabaseHandler.getInstance().addCategory(newCategory, true, true);
-                newCategory.setId(id);
+                 DatabaseHandler.getInstance().addCategory(newCategory, true, true);
                 adapter.add(newCategory);
                 adapter.notifyDataSetChanged();
                 Crouton.makeText(getActivity(), R.string.category_created, Style.CONFIRM, topView).show();
@@ -273,7 +270,7 @@ public class CategorySelectionFragment extends Fragment {
 
         private int recentChangedViewId = -1;
         private Context context;
-        private DatabaseHandler database;
+        private IDatabaseHandler database;
         private SparseBooleanArray mSelectedItemIds;
 
         public CategoryListAdapter(Context context, List<Category> categories) {
@@ -440,7 +437,6 @@ public class CategorySelectionFragment extends Fragment {
             return true;
         }
 
-
         @Override
         public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
             return false;
@@ -475,7 +471,5 @@ public class CategorySelectionFragment extends Fragment {
             adapter.removeSelection();
             mActionMode = null;
         }
-
-
     }
 }

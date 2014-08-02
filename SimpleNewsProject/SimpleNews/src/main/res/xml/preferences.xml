@@ -14,5 +14,11 @@
             android:key="shorten_links"
             android:summary="@string/shorten_links_summary"
             android:title="@string/shorten_links_title" />
+        <ListPreference
+            android:entries="@array/keep_old_entries"
+            android:entryValues="@array/oldEntryValues"
+            android:key="deprecated_time"
+            android:summary="@string/remove_old_entries_summary"
+            android:title="@string/remove_old_entries__title" />
     </PreferenceCategory>
 </PreferenceScreen>

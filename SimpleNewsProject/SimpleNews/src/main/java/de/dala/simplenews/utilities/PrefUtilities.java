@@ -1,19 +1,26 @@
 package de.dala.simplenews.utilities;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import static android.os.Build.VERSION.SDK_INT;
+import static android.os.Build.VERSION_CODES.GINGERBREAD;
+
+import java.util.Date;
 
 
 /**
  * Created by Daniel on 09.01.14.
  */
+@SuppressLint("CommitPrefEdits")
 public class PrefUtilities {
     public static final String XML_LOADED = "xmlLoaded";
     public static final String ASK_FOR_RATING = "ask_for_rating";
     public static final String LAUNCH_COUNT = "launch_count";
     public static final String FIRST_DAY_OF_LAUNCH = "first_launch_time";
     public static final String TIME_FOR_REFRESH = "time_for_refresh";
+    public static final String DEPRECATED_TIME = "deprecated_time";
     public static final String SHORTEN_LINKS = "shorten_links";
     public static final String MULTIPLE_COLUMNS_PORTRAIT = "multiple_columns_portrait";
     public static final String MULTIPLE_COLUMNS_LANDSCAPE = "multiple_columns_landscape";
@@ -27,8 +34,10 @@ public class PrefUtilities {
      */
     private static final String PREF_USER_LEARNED_DRAWER = "navigation_drawer_learned";
     private static PrefUtilities _instance;
-    private static long DEFAULT_TIME_FOR_REFRESH = 1000 * 60 * 60; //one hour
     private SharedPreferences preferences;
+    private static long DEFAULT_TIME_FOR_REFRESH = 1000 * 60 * 60; //one hour
+    private static long DEFAULT_DEPRECATED_TIME = 1000 * 60 * 60 * 24 * 3; // three days
+
 
     private PrefUtilities(Context context) {
         preferences = PreferenceManager
@@ -48,7 +57,7 @@ public class PrefUtilities {
     }
 
     public void saveLoading(boolean save) {
-        preferences.edit().putBoolean(XML_LOADED, save).commit();
+        save(preferences.edit().putBoolean(XML_LOADED, save));
     }
 
     public boolean hasUserLearnedDrawer() {
@@ -56,11 +65,11 @@ public class PrefUtilities {
     }
 
     public void setUserLearnedDrawer(boolean b) {
-        preferences.edit().putBoolean(PREF_USER_LEARNED_DRAWER, b).commit();
+        save(preferences.edit().putBoolean(PREF_USER_LEARNED_DRAWER, b));
     }
 
     public void shouldNotAskForRatingAnymore() {
-        preferences.edit().putBoolean(ASK_FOR_RATING, false).commit();
+        save(preferences.edit().putBoolean(ASK_FOR_RATING, false));
     }
 
     public boolean shouldAskForRatingAgain() {
@@ -72,7 +81,7 @@ public class PrefUtilities {
     }
 
     public void setMultipleColumnsLandscape(boolean multipleColumns) {
-        preferences.edit().putBoolean(MULTIPLE_COLUMNS_LANDSCAPE, multipleColumns).commit();
+        save(preferences.edit().putBoolean(MULTIPLE_COLUMNS_LANDSCAPE, multipleColumns));
     }
 
     public boolean useMultipleColumnsPortrait() {
@@ -80,7 +89,7 @@ public class PrefUtilities {
     }
 
     public void setMultipleColumnsPortrait(boolean multipleColumns) {
-        preferences.edit().putBoolean(MULTIPLE_COLUMNS_PORTRAIT, multipleColumns).commit();
+        save(preferences.edit().putBoolean(MULTIPLE_COLUMNS_PORTRAIT, multipleColumns));
     }
 
     public boolean shouldShortenLinks() {
@@ -89,7 +98,7 @@ public class PrefUtilities {
 
     public void increaseLaunchCountForRating() {
         int count = getLaunchCount();
-        preferences.edit().putInt(LAUNCH_COUNT, count + 1).commit();
+        save(preferences.edit().putInt(LAUNCH_COUNT, count + 1));
     }
 
     public long getDateOfFirstLaunch() {
@@ -97,19 +106,54 @@ public class PrefUtilities {
     }
 
     public void setDateOfFirstLaunch(long date) {
-        preferences.edit().putLong(FIRST_DAY_OF_LAUNCH, date).commit();
+        save(preferences.edit().putLong(FIRST_DAY_OF_LAUNCH, date));
     }
 
     public int getLaunchCount() {
         return preferences.getInt(LAUNCH_COUNT, 0);
     }
 
-    public long getTimeForRefresh() {
+    public Long getTimeForRefresh() {
         return Long.parseLong(preferences.getString(TIME_FOR_REFRESH, DEFAULT_TIME_FOR_REFRESH + ""));
     }
 
-    public void setTimeForRefresh(long time) {
-        preferences.edit().putString(TIME_FOR_REFRESH, time + "").commit();
+    public void setTimeForRefresh(Long time) {
+        save(preferences.edit().putString(TIME_FOR_REFRESH, time + ""));
     }
 
+    public void setDeprecatedTime(Long time) {
+        save(preferences.edit().putString(DEPRECATED_TIME, time + ""));
+    }
+
+    public Long getDeprecatedTime() {
+        String value = preferences.getString(DEPRECATED_TIME, DEFAULT_DEPRECATED_TIME + "");
+        if ("never".equals(value)){
+            return null;
+        }
+        try {
+            Long val = Long.parseLong(value);
+            return new Date().getTime() - val;
+        } catch (NumberFormatException e){
+            return null;
+        }
+    }
+
+    private static boolean isEditorApplyAvailable() {
+        return SDK_INT >= GINGERBREAD;
+    }
+
+    /**
+     * Save preferences in given editor
+     *
+     * @param editor
+     */
+    public static void save(final SharedPreferences.Editor editor) {
+        if (isEditorApplyAvailable()){
+            editor.apply();
+        }
+        else {
+            editor.commit();
+        }
+
+    }
 }

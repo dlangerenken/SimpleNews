@@ -11,7 +11,6 @@ import org.xmlpull.v1.XmlPullParserException;
 import java.io.IOException;
 import java.io.InputStream;
 
-import de.dala.simplenews.R;
 import de.dala.simplenews.common.Category;
 import de.dala.simplenews.common.Feed;
 import de.dala.simplenews.common.News;
@@ -36,12 +35,10 @@ public class XmlParser {
      */
     private static String TAG = "XmlParser";
     private static XmlParser _instance;
-    private String newsFeedResource = null;
 
     //--------------------------------------------------------------------------------
     //Constructors
     //--------------------------------------------------------------------------------
-    private int mNewsFeedResourceFileId = R.raw.categories;
     /**
      * Create a new instance for a context.
      *
@@ -49,9 +46,6 @@ public class XmlParser {
      */
     private Context context;
 
-    public XmlParser(Context context) {
-        this.context = context;
-    }
 
     /**
      * Create a new instance for a context and for a custom news-file.
@@ -59,26 +53,13 @@ public class XmlParser {
      * You have to use file in res/raw folder.
      *
      * @param context                current Context
-     * @param newsFeedResourceFileId reference for a custom xml file
      */
-    public XmlParser(Context context, int newsFeedResourceFileId) {
+    public XmlParser(Context context) {
         this.context = context;
-        this.mNewsFeedResourceFileId = newsFeedResourceFileId;
     }
 
     //--------------------------------------------------------------------------------
 
-
-    /**
-     * Create a new instance for a context and with a custom url .
-     *
-     * @param context                  current Context
-     * @param changeLogFileResourceUrl url with xml files
-     */
-    public XmlParser(Context context, String changeLogFileResourceUrl) {
-        this.context = context;
-        this.newsFeedResource = changeLogFileResourceUrl;
-    }
 
     public static void Init(Context context) {
         _instance = new XmlParser(context);
@@ -94,14 +75,14 @@ public class XmlParser {
      * @return {@link News} obj with all data
      * @throws Exception if categories.xml or custom file is not found or if there are errors on parsing
      */
-    public News readDefaultNewsFile() throws XmlPullParserException, IOException {
+    public News readDefaultNewsFile(int xml) throws XmlPullParserException, IOException {
 
         News news = null;
 
         try {
             InputStream is;
 
-            is = context.getResources().openRawResource(mNewsFeedResourceFileId);
+            is = context.getResources().openRawResource(xml);
             if (is != null) {
 
                 // Create a new XML Pull Parser.
@@ -121,7 +102,7 @@ public class XmlParser {
                 Log.d(TAG, "categories.xml not found");
             }
         } catch (XmlPullParserException xpe) {
-            Log.d(TAG, "XmlPullParseException while parsing changelog file", xpe);
+            Log.d(TAG, "XmlPullParseException while parsing file", xpe);
             throw xpe;
         } catch (IOException ioe) {
             Log.d(TAG, "Error i/o with categories.xml", ioe);

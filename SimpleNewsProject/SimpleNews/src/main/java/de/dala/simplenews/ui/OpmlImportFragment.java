@@ -86,7 +86,7 @@ public class OpmlImportFragment extends Fragment implements ContextualUndoAdapte
     private class OpmlListAdapter extends ArrayAdapter<Feed> {
 
         private Context context;
-        private DatabaseHandler database;
+        private IDatabaseHandler database;
         private SparseBooleanArray mSelectedItemIds;
 
         public OpmlListAdapter(Context context, List<Feed> feeds) {

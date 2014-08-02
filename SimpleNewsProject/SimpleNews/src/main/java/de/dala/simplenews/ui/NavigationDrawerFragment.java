@@ -8,6 +8,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -37,7 +38,7 @@ import de.dala.simplenews.utilities.PrefUtilities;
  * See the <a href="https://developer.android.com/design/patterns/navigation-drawer.html#Interaction">
  * design guidelines</a> for a complete explanation of the behaviors implemented here.
  */
-public class NavigationDrawerFragment extends Fragment {
+public class NavigationDrawerFragment extends Fragment implements FragmentManager.OnBackStackChangedListener {
     public static final int HOME = 0;
     public static final int CATEGORIES = 1;
     public static final int CHANGELOG = 2;
@@ -73,6 +74,13 @@ public class NavigationDrawerFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getActivity().getSupportFragmentManager().addOnBackStackChangedListener(this);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        getActivity().getSupportFragmentManager().removeOnBackStackChangedListener(this);
     }
 
     @Override
@@ -109,19 +117,18 @@ public class NavigationDrawerFragment extends Fragment {
      * @param drawerLayout The DrawerLayout containing this fragment's UI.
      */
     public void setUp(int fragmentId, DrawerLayout drawerLayout) {
-        mFragmentContainerView = getActivity().findViewById(fragmentId);
-        mDrawerLayout = drawerLayout;
-
-        // set a custom shadow that overlays the main content when the drawer opens
-        mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
-        // set up the drawer's list view with items and click listener
-
-        initNavDrawerAdapter(0, 0);
-
         ActionBar actionBar = getActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setHomeButtonEnabled(true);
 
+        mFragmentContainerView = getActivity().findViewById(fragmentId);
+        mDrawerLayout = drawerLayout;
+        initNavDrawerAdapter();
+
+        // set a custom shadow that overlays the main content when the drawer opens
+        mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
+
+        // set up the drawer's list view with items and click listener
         // ActionBarDrawerToggle ties together the the proper interactions
         // between the navigation drawer and the action bar app icon.
         mDrawerToggle = new ActionBarDrawerToggle(
@@ -138,6 +145,7 @@ public class NavigationDrawerFragment extends Fragment {
                     return;
                 }
                 getActivity().supportInvalidateOptionsMenu();// calls onPrepareOptionsMenu()
+                setActionBarArrowDependingOnFragmentsBackStack();
             }
 
             @Override
@@ -153,8 +161,10 @@ public class NavigationDrawerFragment extends Fragment {
                     PrefUtilities.getInstance().setUserLearnedDrawer(true);
                 }
                 getActivity().supportInvalidateOptionsMenu();// calls onPrepareOptionsMenu()
+                mDrawerToggle.setDrawerIndicatorEnabled(true);
             }
         };
+        mDrawerLayout.setDrawerListener(mDrawerToggle);
 
         // If the user hasn't 'learned' about the drawer, open it to introduce them to the drawer,
         // per the navigation drawer design guidelines.
@@ -162,18 +172,32 @@ public class NavigationDrawerFragment extends Fragment {
             mDrawerLayout.openDrawer(mFragmentContainerView);
             PrefUtilities.getInstance().setUserLearnedDrawer(true);
         }
+        updateDrawerToggle();
+    }
 
-        // Defer code dependent on restoration of previous instance state.
+    // Defer code dependent on restoration of previous instance state.
+    public void updateDrawerToggle(boolean drawerIndicatorEnabled) {
         mDrawerLayout.post(new Runnable() {
             @Override
             public void run() {
                 mDrawerToggle.syncState();
             }
         });
-        mDrawerLayout.setDrawerListener(mDrawerToggle);
+        mDrawerToggle.setDrawerIndicatorEnabled(drawerIndicatorEnabled);
     }
 
-    private void initNavDrawerAdapter(int favCount, int recentCount) {
+    // Defer code dependent on restoration of previous instance state.
+    public void updateDrawerToggle() {
+        mDrawerLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                mDrawerToggle.syncState();
+            }
+        });
+    }
+
+
+    private void initNavDrawerAdapter() {
         if (isAdded()) {
             // load slide menu items
             navMenuTitles = getResources().getStringArray(R.array.nav_drawer_items);
@@ -248,15 +272,17 @@ public class NavigationDrawerFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                if (isDrawerOpen()) {
-                    mDrawerLayout.closeDrawer(mFragmentContainerView);
-                } else {
-                    mDrawerLayout.openDrawer(mFragmentContainerView);
+        if (mDrawerToggle.isDrawerIndicatorEnabled() &&
+                mDrawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+        switch (item.getItemId()){
+            case R.id.home:
+                boolean popBackSuccessful = getActivity().getSupportFragmentManager().popBackStackImmediate();
+                if (popBackSuccessful){
+                    return true;
                 }
-                return true;
-
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -286,11 +312,6 @@ public class NavigationDrawerFragment extends Fragment {
         navDrawAdapter.setCategoryDrawable(mColorDrawable);
     }
 
-    public void setInformation(List<Entry> favoriteEntries, List<Entry> visitedEntries) {
-        initNavDrawerAdapter(favoriteEntries.size(), visitedEntries.size());
-        changeColor(colorDrawable, color);
-    }
-
     /**
      * Callbacks interface that all activities using this fragment must implement.
      */
@@ -302,4 +323,15 @@ public class NavigationDrawerFragment extends Fragment {
          */
         void onNavigationDrawerItemSelected(int item);
     }
+
+    @Override
+    public void onBackStackChanged() {
+        setActionBarArrowDependingOnFragmentsBackStack();
+    }
+    private void setActionBarArrowDependingOnFragmentsBackStack() {
+        int backStackEntryCount = getActivity().getSupportFragmentManager().getBackStackEntryCount();
+        mDrawerToggle.setDrawerIndicatorEnabled(backStackEntryCount == 0);
+    }
+
+
 }

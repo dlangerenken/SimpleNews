@@ -52,7 +52,6 @@ public class CategoryModifierFragment extends Fragment implements CategorySelect
             fragment = CategorySelectionFragment.newInstance(categories, fromRSS, rssPath);
         } else {
             if (!fromRSS) {
-                ((ActionBarActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
                 fragment = CategorySelectionFragment.newInstance(categories, fromRSS, null);
             }
         }
@@ -76,9 +75,9 @@ public class CategoryModifierFragment extends Fragment implements CategorySelect
     @Override
     public void onMoreClicked(Category category) {
         FragmentTransaction t = getChildFragmentManager().beginTransaction();
+        t.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_left, R.anim.slide_in_right, R.anim.slide_out_right);
         t.replace(R.id.container, CategoryFeedsFragment.newInstance(category), CATEGORY_FEEDS_TAG);
         t.addToBackStack(null);
-        t.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_left, R.anim.slide_in_right, R.anim.slide_out_right);
         t.commit();
         getActivity().supportInvalidateOptionsMenu();
     }
@@ -95,6 +94,6 @@ public class CategoryModifierFragment extends Fragment implements CategorySelect
     @Override
     public void onRestore() {
         DatabaseHandler.getInstance().removeAllCategories();
-        DatabaseHandler.getInstance().loadXml();
+        DatabaseHandler.getInstance().loadXmlIntoDatabase(R.raw.categories);
     }
 }

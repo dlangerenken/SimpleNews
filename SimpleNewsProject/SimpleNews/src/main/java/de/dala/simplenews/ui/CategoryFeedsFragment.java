@@ -44,6 +44,7 @@ import de.dala.simplenews.R;
 import de.dala.simplenews.common.Category;
 import de.dala.simplenews.common.Feed;
 import de.dala.simplenews.database.DatabaseHandler;
+import de.dala.simplenews.database.IDatabaseHandler;
 import de.dala.simplenews.network.NetworkCommunication;
 import de.dala.simplenews.utilities.UIUtils;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
@@ -103,11 +104,8 @@ public class CategoryFeedsFragment extends Fragment implements ContextualUndoAda
             case R.id.new_feed:
                 createFeedClicked();
                 return true;
-            case android.R.id.home:
-                getActivity().onBackPressed();
-                return true;
         }
-        return false;
+        return super.onOptionsItemSelected(item);
     }
 
     private void initAdapter() {
@@ -396,7 +394,7 @@ public class CategoryFeedsFragment extends Fragment implements ContextualUndoAda
     private class FeedListAdapter extends ArrayAdapter<Feed> {
 
         private Context context;
-        private DatabaseHandler database;
+        private IDatabaseHandler database;
         private SparseBooleanArray mSelectedItemIds;
 
         public FeedListAdapter(Context context, List<Feed> feeds) {

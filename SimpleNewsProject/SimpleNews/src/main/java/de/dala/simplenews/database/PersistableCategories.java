@@ -80,19 +80,19 @@ public class PersistableCategories implements IPersistableObject<Category> {
     public void store(List<Category> items) {
         for(Category category : items){
             ContentValues values = new ContentValues();
-            if (category.getId() != null) {
-                values.put(CATEGORY_ID, category.getId());
-            }
+            values.put(CATEGORY_ID, category.getId());
             values.put(CATEGORY_COLOR, category.getColorId());
             values.put(CATEGORY_NAME, category.getName());
             values.put(CATEGORY_LAST_UPDATE, category.getLastUpdateTime());
             values.put(CATEGORY_VISIBLE, category.isVisible() ? 1 : 0);
 
-            long categoryId = db.replace(TABLE_CATEGORY, null, values);
+            Long categoryId = db.replace(TABLE_CATEGORY, null, values);
+
             category.setId(categoryId);
+
             values = new ContentValues();
             values.put(CATEGORY_ORDER, categoryId);
-            db.update(TABLE_CATEGORY, values, CATEGORY_ID + " = " + categoryId, null);
+            int updates = db.update(TABLE_CATEGORY, values, CATEGORY_ID + " = " + categoryId, null);
 
             if (mExcludeFeeds == null || !mExcludeFeeds) {
                 PersistableFeeds mPersistableFeeds = getPersistableFeeds(categoryId);
@@ -105,7 +105,7 @@ public class PersistableCategories implements IPersistableObject<Category> {
     public void delete() {
         String query = null;
         if (mCategoryId != null) {
-            query = concatenateQueries(query, FEED_CATEGORY_ID + "=" + mCategoryId);
+            query = concatenateQueries(query, CATEGORY_ID + "=" + mCategoryId);
         }
         db.delete(TABLE_CATEGORY, query, null);
 

@@ -11,11 +11,8 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,17 +21,12 @@ import android.widget.TextView;
 
 import com.astuetz.PagerSlidingTabStrip;
 
-import org.xmlpull.v1.XmlPullParserException;
-
-import java.io.IOException;
 import java.util.List;
 
 import de.dala.simplenews.R;
 import de.dala.simplenews.common.Category;
-import de.dala.simplenews.common.News;
 import de.dala.simplenews.database.DatabaseHandler;
 import de.dala.simplenews.database.IDatabaseHandler;
-import de.dala.simplenews.parser.XmlParser;
 import de.dala.simplenews.utilities.PrefUtilities;
 import de.keyboardsurfer.android.widget.crouton.Configuration;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
@@ -98,7 +90,7 @@ public class NewsOverViewFragment extends Fragment implements ViewPager.OnPageCh
                         break;
                 }
         }
-        return false;
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -107,7 +99,7 @@ public class NewsOverViewFragment extends Fragment implements ViewPager.OnPageCh
         View rootView = inflater.inflate(R.layout.news_overview, container, false);
         databaseHandler = DatabaseHandler.getInstance();
         if (!PrefUtilities.getInstance().xmlIsAlreadyLoaded()) {
-            DatabaseHandler.getInstance().loadXml();
+            DatabaseHandler.getInstance().loadXmlIntoDatabase(R.raw.categories);
         }
         mainActivity.getSupportActionBar().setTitle(getString(R.string.simple_news_title));
         mainActivity.getSupportActionBar().setHomeButtonEnabled(true);
@@ -184,7 +176,7 @@ public class NewsOverViewFragment extends Fragment implements ViewPager.OnPageCh
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        setRetainInstance(true);
+        //setRetainInstance(true);
     }
 
     public void updateNews() {
@@ -213,7 +205,6 @@ public class NewsOverViewFragment extends Fragment implements ViewPager.OnPageCh
             loadingNews = -1;
         }
     }
-
 
     private View createProgressView() {
         progressView = mainActivity.getLayoutInflater().inflate(R.layout.progress_layout, null);

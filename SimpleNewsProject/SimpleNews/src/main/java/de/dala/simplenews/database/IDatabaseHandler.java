@@ -18,6 +18,7 @@ public interface IDatabaseHandler {
 
     Category getCategory(Long categoryId, Boolean excludeFeeds, Boolean excludeEntries);
 
+    void addCategories(List<Category> categories, Boolean excludeFeeds, Boolean excludeEntries);
     long addCategory(Category category, Boolean excludeFeeds, Boolean excludeEntries);
 
     int removeCategory(long categoryId, Boolean excludeFeeds, Boolean excludeEntries);
@@ -31,6 +32,7 @@ public interface IDatabaseHandler {
     Feed getFeed(long feedId, Boolean excludeEntries);
 
     long addFeed(long categoryId, Feed feed, Boolean excludeEntries);
+    void addFeeds(long categoryId, List<Feed> feeds, Boolean excludeEntries);
 
     int removeFeeds(Long categoryId, Long feedId, Boolean excludeEntries);
 
@@ -41,6 +43,7 @@ public interface IDatabaseHandler {
     Entry getEntry(long entryId);
 
     long addEntry(long categoryId, long feedId, Entry entry);
+    void addEntries(Long categoryId, Long feedId, List<Entry> entries);
 
     int updateEntry(Entry entry);
 
@@ -61,4 +64,6 @@ public interface IDatabaseHandler {
     Cursor getRecentEntriesCursor(Long categoryId);
     Cursor getUnreadEntriesCursor(Long categoryId);
 
+    void deleteDeprecatedEntries(long deprecatedTime);
+    void loadXmlIntoDatabase(int xml);
 }

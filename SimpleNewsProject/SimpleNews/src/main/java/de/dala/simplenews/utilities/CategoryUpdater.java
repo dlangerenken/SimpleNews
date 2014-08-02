@@ -153,8 +153,11 @@ public class CategoryUpdater {
     }
 
     private void addToDatabase(List<Entry> entries) {
+        Long deprecatedTime = PrefUtilities.getInstance().getDeprecatedTime();
         for (Entry entry : entries) {
-            databaseHandler.addEntry(category.getId(), entry.getFeedId(), entry);
+            if (deprecatedTime == null || (entry.getFavoriteDate() != null && entry.getFavoriteDate() > 0) || (entry.getDate() != null && entry.getDate() > deprecatedTime)){
+                databaseHandler.addEntry(category.getId(), entry.getFeedId(), entry);
+            }
         }
     }
 
@@ -162,6 +165,9 @@ public class CategoryUpdater {
         if (entries != null && !entries.isEmpty()) {
             category.setLastUpdateTime(new Date().getTime());
             databaseHandler.updateCategory(category);
+
+            deleteDeprecatedEntries();
+
             sendMessage(null, RESULT);
             if (PrefUtilities.getInstance().shouldShortenLinks()) {
                 getShortenedLinks(entries);
@@ -170,6 +176,13 @@ public class CategoryUpdater {
             sendMessage(null, CANCEL);
         }
         isRunning = false;
+    }
+
+    private void deleteDeprecatedEntries() {
+        Long deprecatedTime = PrefUtilities.getInstance().getDeprecatedTime();
+        if (deprecatedTime != null){
+            databaseHandler.deleteDeprecatedEntries(deprecatedTime);
+        }
     }
 
     private void getShortenedLinks(final List<Entry> entries) {

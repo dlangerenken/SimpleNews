@@ -66,7 +66,7 @@ public class PersistableFeeds implements IPersistableObject<Feed>{
                 if (entryCursor.moveToFirst()){
                     List<Entry> cached = new ArrayList<Entry>();
                     do {
-                        cached.add(mPersistableEntries.loadFrom(cursor));
+                        cached.add(mPersistableEntries.loadFrom(entryCursor));
                     }
                     while (entryCursor.moveToNext());
                     feed.setEntries(cached);
@@ -85,19 +85,18 @@ public class PersistableFeeds implements IPersistableObject<Feed>{
                 feed.setCategoryId(mCategoryId);
             }
             ContentValues values = new ContentValues();
-            if (feed.getId() != null) {
-                values.put(FEED_ID, feed.getId());
-            }
+            values.put(FEED_ID, feed.getId());
             values.put(FEED_CATEGORY_ID, feed.getCategoryId());
             values.put(FEED_TITLE, feed.getTitle());
             values.put(FEED_DESCRIPTION, feed.getDescription());
             values.put(FEED_URL, feed.getXmlUrl());
             values.put(FEED_VISIBLE, feed.isVisible() ? 1 : 0);
             values.put(FEED_HTML_URL, feed.getHtmlUrl());
+
             /*
 		     * Inserting Row
 		     */
-            long id = db.replace(TABLE_FEED, null, values);
+            Long id = db.replace(TABLE_FEED, null, values);
             feed.setId(id);
 
             if (mExcludeEntries == null || !mExcludeEntries) {

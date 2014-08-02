@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.database.Cursor;
+import android.graphics.drawable.AnimationDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -57,8 +58,6 @@ import de.dala.simplenews.utilities.UIUtils;
  * Created by Daniel on 18.12.13.
  */
 public class ExpandableNewsFragment extends Fragment implements SwipeRefreshLayoutExtended.OnRefreshListener, SimpleCursorLoader.OnLoadCompleteListener, NewsTypeBar.INewsTypeClicked {
-
-
     private static final String ARG_CATEGORY = "category";
     private static final String ARG_ENTRY_TYPE = "entryType";
     private MyExpandableGridItemAdapter myExpandableListItemAdapter;
@@ -67,8 +66,6 @@ public class ExpandableNewsFragment extends Fragment implements SwipeRefreshLayo
     private SwipeRefreshLayoutExtended mSwipeRefreshLayout;
     private AnimationAdapter swingBottomInAnimationAdapter;
 
-    private List<Feed> feeds;
-    private IDatabaseHandler databaseHandler;
     private Category category;
     private CategoryUpdater updater;
     private NewsTypeBar newsTypeBar;
@@ -82,7 +79,9 @@ public class ExpandableNewsFragment extends Fragment implements SwipeRefreshLayo
     private int newsTypeMode = NewsTypeBar.ALL;
 
     private TextView emptyText;
-
+    private ImageView emptyImageView;
+    private String noEntriesText;
+    private String isLoadingText;
 
     public ExpandableNewsFragment() {
         //shouldn't be called
@@ -106,17 +105,8 @@ public class ExpandableNewsFragment extends Fragment implements SwipeRefreshLayo
         super.onCreate(savedInstanceState);
         this.category = getArguments().getParcelable(ARG_CATEGORY);
         newsTypeMode = getArguments().getInt(ARG_ENTRY_TYPE);
-
-        if (savedInstanceState != null) {
-            Object feedsObject = savedInstanceState.getSerializable("feeds");
-            if (feedsObject != null && feedsObject instanceof ArrayList<?>) {
-                feeds = (ArrayList<Feed>) feedsObject;
-            }
-            SparseBooleanArrayParcelable selected = savedInstanceState.getParcelable("SelectedItems");
-            if (selected != null) {
-                myExpandableListItemAdapter.setSelectedIds(selected);
-            }
-        }
+        noEntriesText = getResources().getString(R.string.no_entries);
+        isLoadingText = getResources().getString(R.string.is_loading);
     }
 
     @Override
@@ -144,22 +134,20 @@ public class ExpandableNewsFragment extends Fragment implements SwipeRefreshLayo
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         setHasOptionsMenu(true);
-        databaseHandler = DatabaseHandler.getInstance();
-
-        if (feeds == null) {
-            feeds = databaseHandler.getFeeds(category.getId(), null);
-        }
-        category.setFeeds(feeds);
 
         View rootView = inflater.inflate(R.layout.news_list, container, false);
 
         mGridView = (StaggeredGridView) rootView.findViewById(R.id.news_gridview);
         mGridView.setEmptyView(rootView.findViewById(R.id.emptyView));
         emptyText = (TextView) rootView.findViewById(R.id.emptyMessage);
+        emptyImageView = (ImageView) rootView.findViewById(R.id.emptyImageView);
+        emptyImageView.setImageResource(R.drawable.logo_animation);
 
-        initCardsAdapter();
+        if (savedInstanceState != null) {
+            newsTypeMode = savedInstanceState.getInt("newsTypeMode");
+        }
+        initCardsAdapter(null);
         initNewsTypeBar(rootView);
-
         loadEntries(false, true);
         return rootView;
     }
@@ -170,12 +158,12 @@ public class ExpandableNewsFragment extends Fragment implements SwipeRefreshLayo
         newsTypeBar.fadeIn();
     }
 
-    private void setEmptyText(boolean isLoading){
-        String textToShow = getResources().getString(R.string.no_entries);
-        if (isLoading){
-            textToShow = getResources().getString(R.string.is_loading);
-        }
+    private void setEmptyText(boolean isLoading) {
+        String textToShow = noEntriesText;
         emptyText.setText(textToShow);
+        AnimationDrawable animDrawable = (AnimationDrawable)emptyImageView.getDrawable();
+        animDrawable.setOneShot(!isLoading);
+        animDrawable.start();
     }
 
     private void updateColumnCount() {
@@ -238,9 +226,8 @@ public class ExpandableNewsFragment extends Fragment implements SwipeRefreshLayo
         return super.onOptionsItemSelected(item);
     }
 
-    private void initCardsAdapter() {
-        myExpandableListItemAdapter = new MyExpandableGridItemAdapter(getActivity(), null);
-        //myExpandableListItemAdapter.setLimit(1);
+    private void initCardsAdapter(Cursor cursor) {
+        myExpandableListItemAdapter = new MyExpandableGridItemAdapter(getActivity(), cursor);
         swingBottomInAnimationAdapter = new SwingBottomInAnimationAdapter(myExpandableListItemAdapter);
         swingBottomInAnimationAdapter.setAbsListView(mGridView);
         swingBottomInAnimationAdapter.setInitialDelayMillis(300);
@@ -251,23 +238,26 @@ public class ExpandableNewsFragment extends Fragment implements SwipeRefreshLayo
         simpleCursorLoader = new SimpleCursorLoader(getActivity()) {
             @Override
             public Cursor loadInBackground() {
-                switch (newsTypeMode) {
-                    case NewsTypeBar.ALL:
-                        return DatabaseHandler.getInstance().getEntriesCursor(category.getId());
-                    case NewsTypeBar.FAV:
-                        return DatabaseHandler.getInstance().getFavoriteEntriesCursor(category.getId());
-                    case NewsTypeBar.RECENT:
-                        return DatabaseHandler.getInstance().getRecentEntriesCursor(category.getId());
-                    case NewsTypeBar.UNREAD:
-                        return DatabaseHandler.getInstance().getUnreadEntriesCursor(category.getId());
-                }
-                return null;
+                return getCursorByNewsType(newsTypeMode);
             }
         };
         simpleCursorLoader.registerListener(0, this);
         updateColumnCount();
     }
 
+    private Cursor getCursorByNewsType(int type){
+        switch (type) {
+            case NewsTypeBar.ALL:
+                return DatabaseHandler.getInstance().getEntriesCursor(category.getId());
+            case NewsTypeBar.FAV:
+                return DatabaseHandler.getInstance().getFavoriteEntriesCursor(category.getId());
+            case NewsTypeBar.RECENT:
+                return DatabaseHandler.getInstance().getRecentEntriesCursor(category.getId());
+            case NewsTypeBar.UNREAD:
+                return DatabaseHandler.getInstance().getUnreadEntriesCursor(category.getId());
+        }
+        return null;
+    }
     private void onListItemCheck(int position, boolean value) {
         myExpandableListItemAdapter.selectView(position, value);
     }
@@ -363,9 +353,7 @@ public class ExpandableNewsFragment extends Fragment implements SwipeRefreshLayo
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        outState.putSerializable("feeds", (ArrayList<Feed>) feeds);
-        // Save isInActionMode value
-        outState.putParcelable("SelectedItems", myExpandableListItemAdapter.getSelectedIds());
+        outState.putInt("newsTypeMode", newsTypeMode);
         super.onSaveInstanceState(outState);
     }
 
@@ -425,7 +413,6 @@ public class ExpandableNewsFragment extends Fragment implements SwipeRefreshLayo
         void showLoadingNews();
         void cancelLoadingNews();
     }
-
 
     private class CategoryUpdateHandler extends Handler {
         @Override
@@ -500,7 +487,6 @@ public class ExpandableNewsFragment extends Fragment implements SwipeRefreshLayo
             } else if (entry.getVisitedDate() != null && entry.getVisitedDate() > 0) {
                 entryType.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_nav_recently_used));
             }
-
 
             long current = new Date().getTime();
             if (current > entry.getDate()) {
@@ -594,10 +580,6 @@ public class ExpandableNewsFragment extends Fragment implements SwipeRefreshLayo
             return mSelectedItemIds;
         }
 
-        public void setSelectedIds(SparseBooleanArrayParcelable selectedIds) {
-            mSelectedItemIds = selectedIds;
-        }
-
         public void removeSelection() {
             mSelectedItemIds = new SparseBooleanArrayParcelable();
             notifyDataSetChanged();
@@ -610,7 +592,6 @@ public class ExpandableNewsFragment extends Fragment implements SwipeRefreshLayo
         if (mActionMode != null) {
             mActionMode.invalidate();
         }
-        OpenActionModeIfNecessary();
     }
 
     @Override

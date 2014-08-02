@@ -430,6 +430,7 @@ public abstract class ExpandableListItemAdapter<T> extends ArrayAdapter<T> imple
             init();
         }
 
+        @SuppressWarnings("ResourceType")
         private void init() {
             setOrientation(VERTICAL);
 

@@ -428,6 +428,7 @@ public abstract class ExpandableGridItemCursorAdapter extends CursorAdapter impl
             init();
         }
 
+        @SuppressWarnings("ResourceType")
         private void init() {
             setOrientation(VERTICAL);
 

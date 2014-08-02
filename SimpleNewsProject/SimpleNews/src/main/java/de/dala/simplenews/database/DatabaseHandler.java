@@ -4,7 +4,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -31,7 +30,7 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
      * Database Name and Version
      */
     private static final int DATABASE_VERSION = 43;
-    private static final String DATABASE_NAME = "news_database";
+    public static final String DATABASE_NAME = "news_database.db";
 
     /**
      * Table names
@@ -39,6 +38,7 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
     public static final String TABLE_CATEGORY = "category";
     public static final String TABLE_FEED = "feed";
     public static final String TABLE_ENTRY = "entry";
+
     public static final String CATEGORY_ID = "_id";
     public static final String CATEGORY_COLOR = "color";
     public static final String CATEGORY_NAME = "name";
@@ -71,17 +71,15 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
 
     private static SQLiteDatabase db;
     private static DatabaseHandler instance;
-    private Context mContext;
 
-    private DatabaseHandler(Context context) {
-        super(context, DATABASE_NAME, null, DATABASE_VERSION);
-        mContext = context;
+    private DatabaseHandler(Context context, String databasePath) {
+        super(context, databasePath, null, DATABASE_VERSION);
     }
 
     /**
      * @return the singleton instance.
      */
-    public static synchronized DatabaseHandler getInstance() {
+    public static synchronized IDatabaseHandler getInstance() {
         return instance;
     }
     public static synchronized SQLiteDatabase getDbInstance() {
@@ -102,9 +100,9 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
     *
     * @param context the context to set.
     */
-    public static void init(Context context) {
+    public static void init(Context context, String databasePath) {
         if (instance == null) {
-            instance = new DatabaseHandler(context);
+            instance = new DatabaseHandler(context, databasePath);
             db = instance.getWritableDatabase();
         }
     }
@@ -131,24 +129,24 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
     public void onCreate(SQLiteDatabase db) {
         String createCategoryTable = "CREATE TABLE "
                 + TABLE_CATEGORY + "("
-                + CATEGORY_ID + " LONG PRIMARY KEY, "
+                + CATEGORY_ID + " INTEGER PRIMARY KEY, "
                 + CATEGORY_COLOR + " INTEGER,"
                 + CATEGORY_NAME + " TEXT,"
                 + CATEGORY_LAST_UPDATE + " LONG,"
                 + CATEGORY_VISIBLE + " INTEGER,"
-                + CATEGORY_ORDER + " INTEGER" + ")";
+                + CATEGORY_ORDER + " INTEGER" + ");";
         String createFeedTable = "CREATE TABLE "
                 + TABLE_FEED + "("
-                + FEED_ID + " LONG PRIMARY KEY, "
+                + FEED_ID + " INTEGER PRIMARY KEY, "
                 + FEED_CATEGORY_ID + " LONG,"
                 + FEED_TITLE + " TEXT,"
                 + FEED_DESCRIPTION + " TEXT,"
                 + FEED_URL + " TEXT,"
                 + FEED_VISIBLE + " INTEGER,"
-                + FEED_HTML_URL + " TEXT"+ ")";
+                + FEED_HTML_URL + " TEXT"+ ");";
         String createEntryTable = "CREATE TABLE "
                 + TABLE_ENTRY + "("
-                + ENTRY_ID + " LONG PRIMARY KEY, "
+                + ENTRY_ID + " INTEGER PRIMARY KEY, "
                 + ENTRY_CATEGORY_ID + " LONG,"
                 + ENTRY_FEED_ID + " LONG,"
                 + ENTRY_TITLE + " TEXT,"
@@ -161,7 +159,7 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
                 + ENTRY_VISIBLE + " INTEGER,"
                 + ENTRY_VISITED_DATE + " LONG,"
                 + ENTRY_FAVORITE_DATE + " LONG,"
-                + ENTRY_IS_EXPANDED + " INTEGER"+ ")";
+                + ENTRY_IS_EXPANDED + " INTEGER"+ ");";
         db.execSQL(createCategoryTable);
         db.execSQL(createFeedTable);
         db.execSQL(createEntryTable);
@@ -198,7 +196,7 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
 
     @Override
     public Category getCategory(Long categoryId, Boolean excludeFeeds, Boolean excludeEntries) {
-        IPersistableObject<Category> persistence = new PersistableCategories(categoryId,excludeFeeds, excludeEntries, null);
+        IPersistableObject<Category> persistence = new PersistableCategories(categoryId, excludeFeeds, excludeEntries, null);
         List<Category> result = load(persistence);
         if (result != null && result.size() == 1){
             return result.get(0);
@@ -212,7 +210,13 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
         List<Category> result = new ArrayList<Category>();
         result.add(category);
         persistence.store(result);
-        return 0;
+        return category.getId();
+    }
+
+    @Override
+    public void addCategories(List<Category> categories, Boolean excludeFeeds, Boolean excludeEntries){
+        IPersistableObject<Category> persistence = new PersistableCategories(null, excludeFeeds, excludeEntries, null);
+        persistence.store(categories);
     }
 
     @Override
@@ -244,7 +248,13 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
         List<Feed> result = new ArrayList<Feed>();
         result.add(feed);
         persistence.store(result);
-        return 0;
+        return feed.getId();
+    }
+
+    @Override
+    public void addFeeds(long categoryId, List<Feed> feeds, Boolean excludeEntries) {
+        IPersistableObject<Feed> persistence = new PersistableFeeds(categoryId , null, excludeEntries, null);
+        persistence.store(feeds);
     }
 
     @Override
@@ -276,7 +286,17 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
         List<Entry> result = new ArrayList<Entry>();
         result.add(entry);
         persistence.store(result);
-        return 0;
+        if (entry.getId() == null){
+            //already added to database
+            return -1;
+        }
+        return entry.getId();
+    }
+
+    @Override
+    public void addEntries(Long categoryId, Long feedId, List<Entry> entries) {
+        IPersistableObject<Entry> persistence = new PersistableEntries(categoryId, feedId, null, null);
+        persistence.store(entries);
     }
 
     @Override
@@ -350,6 +370,14 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
     }
 
     @Override
+    public void deleteDeprecatedEntries(long deprecatedTime) {
+        String query = null;
+        query = concatenateQueries(query, "(" + ENTRY_FAVORITE_DATE + " < " + 1 + " OR " + ENTRY_FAVORITE_DATE + " IS NULL)");
+        query = concatenateQueries(query, ENTRY_DATE + " < " + deprecatedTime);
+        db.delete(TABLE_ENTRY, query, null);
+    }
+
+    @Override
     public void removeAllCategories() {
         IPersistableObject<Category> persistence = new PersistableCategories(null , null, null, null);
         persistence.delete();
@@ -392,14 +420,10 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
         }
     }
 
-    public void loadXml() {
+    public void loadXmlIntoDatabase(int xml) {
         try {
-            News news = new XmlParser(mContext).readDefaultNewsFile();
-            for (Category category : news.getCategories()) {
-                if (category != null) {
-                    addCategory(category, false, false);
-                }
-            }
+            News news = XmlParser.getInstance().readDefaultNewsFile(xml);
+            addCategories(news.getCategories(), false, false);
             PrefUtilities.getInstance().saveLoading(true);
         } catch (XmlPullParserException e) {
             e.printStackTrace();

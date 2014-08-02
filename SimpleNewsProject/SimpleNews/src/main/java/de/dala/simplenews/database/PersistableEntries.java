@@ -94,9 +94,7 @@ public class PersistableEntries implements IPersistableObject<Entry>{
             List<Entry> similarEntries = getSimilarEntries(entry);
             if (similarEntries == null || similarEntries.isEmpty()) {
                 ContentValues values = new ContentValues();
-                if (entry.getId() != null) {
-                    values.put(ENTRY_ID, entry.getId());
-                }
+                values.put(ENTRY_ID, entry.getId());
                 Long categoryId = entry.getCategoryId() != null ? entry.getCategoryId() : mCategoryId;
                 Long feedId = entry.getFeedId() != null ? entry.getFeedId() : mFeedId;
                 values.put(ENTRY_CATEGORY_ID, categoryId);

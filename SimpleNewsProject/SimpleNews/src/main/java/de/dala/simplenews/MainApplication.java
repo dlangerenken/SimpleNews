@@ -20,7 +20,7 @@ public class MainApplication extends Application {
         Crashlytics.start(this);
         XmlParser.Init(this);
         VolleySingleton.init(this);
-        DatabaseHandler.init(this);
+        DatabaseHandler.init(this, DatabaseHandler.DATABASE_NAME);
         PrefUtilities.init(this);
         ColorManager.init(this);
     }
