@@ -35,7 +35,6 @@ import de.keyboardsurfer.android.widget.crouton.Crouton;
  * Created by Daniel on 20.02.14.
  */
 public class NewsOverViewFragment extends Fragment implements ViewPager.OnPageChangeListener, ExpandableNewsFragment.INewsInteraction {
-    private static String TAG = "NewsOverViewFragment";
 
     private IDatabaseHandler databaseHandler;
     private PagerSlidingTabStrip tabs;
@@ -44,7 +43,6 @@ public class NewsOverViewFragment extends Fragment implements ViewPager.OnPageCh
 
     private View progressView;
     private Drawable oldBackground = null;
-    private Drawable oldDarkBackground = null;
     private int currentColor = 0xFF666666;
     private List<Category> categories;
     private RelativeLayout bottomView;
@@ -135,7 +133,6 @@ public class NewsOverViewFragment extends Fragment implements ViewPager.OnPageCh
         Drawable bottomDrawable = getResources().getDrawable(R.drawable.actionbar_bottom);
 
         LayerDrawable ld = new LayerDrawable(new Drawable[]{colorDrawable, bottomDrawable});
-        LayerDrawable ldDark = new LayerDrawable(new Drawable[]{darkColorDrawable});
 
         if (oldBackground == null) {
             ((ActionBarActivity) getActivity()).getSupportActionBar().setBackgroundDrawable(ld);
@@ -146,11 +143,10 @@ public class NewsOverViewFragment extends Fragment implements ViewPager.OnPageCh
             td.startTransition(400);
         }
 
-        mainActivity.changeDrawerColor(ld, category.getPrimaryColor());
+        mainActivity.changeDrawerColor(category.getPrimaryColor());
 
         progressView.setBackgroundColor(category.getPrimaryColor());
         oldBackground = ld;
-        oldDarkBackground = ldDark;
         currentColor = category.getPrimaryColor();
 
         // http://stackoverflow.com/questions/11002691/actionbar-setbackgrounddrawable-nulling-background-from-thread-handler
@@ -176,7 +172,6 @@ public class NewsOverViewFragment extends Fragment implements ViewPager.OnPageCh
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        //setRetainInstance(true);
     }
 
     public void updateNews() {

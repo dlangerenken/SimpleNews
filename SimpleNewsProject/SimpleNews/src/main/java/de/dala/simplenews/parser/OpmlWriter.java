@@ -21,7 +21,7 @@ import de.dala.simplenews.common.Feed;
 public abstract class OpmlWriter {
     private static final String ENCODING = "UTF-8";
     private static final String OPML_VERSION = "2.0";
-    private static final String OPML_TITLE = "AntennaPod Subscriptions";
+    private static final String OPML_TITLE = "SimpleNews Subscriptions";
 
     /**
      * Takes a list of feeds and a writer and writes those into an OPML
@@ -49,19 +49,26 @@ public abstract class OpmlWriter {
         xs.startTag(null, OpmlSymbols.BODY);
         for (Feed feed : feeds) {
             xs.startTag(null, OpmlSymbols.OUTLINE);
-            xs.attribute(null, OpmlSymbols.TEXT, feed.getDescription());
-            xs.attribute(null, OpmlSymbols.TITLE, feed.getTitle());
+            xs.attribute(null, OpmlSymbols.TEXT, getStringOrEmpty(feed.getDescription()));
+            xs.attribute(null, OpmlSymbols.TITLE, getStringOrEmpty(feed.getTitle()));
             if (feed.getType() != null) {
-                xs.attribute(null, OpmlSymbols.TYPE, feed.getType());
+                xs.attribute(null, OpmlSymbols.TYPE, getStringOrEmpty(feed.getType()));
             }
-            xs.attribute(null, OpmlSymbols.XMLURL, feed.getXmlUrl());
+            xs.attribute(null, OpmlSymbols.XMLURL, getStringOrEmpty(feed.getXmlUrl()));
             if (feed.getHtmlUrl() != null) {
-                xs.attribute(null, OpmlSymbols.HTMLURL, feed.getHtmlUrl());
+                xs.attribute(null, OpmlSymbols.HTMLURL, getStringOrEmpty(feed.getHtmlUrl()));
             }
             xs.endTag(null, OpmlSymbols.OUTLINE);
         }
         xs.endTag(null, OpmlSymbols.BODY);
         xs.endTag(null, OpmlSymbols.OPML);
         xs.endDocument();
+    }
+
+    private static String getStringOrEmpty(String string){
+        if (string != null){
+            return string;
+        }
+        return "";
     }
 }

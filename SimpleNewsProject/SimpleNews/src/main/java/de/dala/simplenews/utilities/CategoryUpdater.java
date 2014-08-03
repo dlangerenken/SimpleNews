@@ -106,7 +106,7 @@ public class CategoryUpdater {
         }
 
         if (currentWorkingThreads <= 0) {
-            //every thread has catched the information
+            // every thread has catched the information
             new AsyncTask<Void, Void, Void>() {
 
                 @Override

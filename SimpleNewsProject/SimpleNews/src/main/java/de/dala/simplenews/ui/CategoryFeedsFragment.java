@@ -2,10 +2,13 @@ package de.dala.simplenews.ui;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.view.ActionMode;
+import android.support.v7.widget.ShareActionProvider;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -20,7 +23,6 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.ShareActionProvider;
 import android.widget.TextView;
 
 import com.android.volley.Response;
@@ -32,6 +34,8 @@ import com.nineoldandroids.animation.AnimatorListenerAdapter;
 import com.nineoldandroids.view.ViewPropertyAnimator;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,8 +48,8 @@ import de.dala.simplenews.R;
 import de.dala.simplenews.common.Category;
 import de.dala.simplenews.common.Feed;
 import de.dala.simplenews.database.DatabaseHandler;
-import de.dala.simplenews.database.IDatabaseHandler;
 import de.dala.simplenews.network.NetworkCommunication;
+import de.dala.simplenews.parser.OpmlWriter;
 import de.dala.simplenews.utilities.UIUtils;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
@@ -178,8 +182,6 @@ public class CategoryFeedsFragment extends Fragment implements ContextualUndoAda
                                         invalidFeedUrl(true);
                                     }
                                 }
-
-
                             }, new Response.ErrorListener() {
                                 @Override
                                 public void onErrorResponse(VolleyError volleyError) {
@@ -364,6 +366,10 @@ public class CategoryFeedsFragment extends Fragment implements ContextualUndoAda
         if (mActionMode != null) {
             mActionMode.setTitle(String.valueOf(adapter.getSelectedCount()));
         }
+
+        if (shareActionProvider != null) {
+            shareActionProvider.setShareIntent(createShareIntent());
+        }
     }
 
     private void removeSelectedFeeds(List<Feed> selectedFeeds) {
@@ -391,16 +397,40 @@ public class CategoryFeedsFragment extends Fragment implements ContextualUndoAda
         }
     }
 
+    private Intent createShareIntent() {
+        // retrieve selected items and print them out
+        SparseBooleanArray selected = adapter.getSelectedIds();
+
+        ArrayList<Feed> feeds = new ArrayList<Feed>();
+        for (int i = 0; i < selected.size(); i++) {
+            if (selected.valueAt(i)) {
+                Feed feed = adapter.getItem(selected.keyAt(i));
+                feeds.add(feed);
+            }
+        }
+
+        StringWriter writer = new StringWriter();
+        try {
+            OpmlWriter.writeDocument(feeds, writer);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        String finalMessage = writer.toString();
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.setType("text/xml");
+        shareIntent.putExtra(Intent.EXTRA_TEXT,
+                finalMessage);
+        return shareIntent;
+    }
+
     private class FeedListAdapter extends ArrayAdapter<Feed> {
 
         private Context context;
-        private IDatabaseHandler database;
         private SparseBooleanArray mSelectedItemIds;
 
         public FeedListAdapter(Context context, List<Feed> feeds) {
             super(feeds);
             this.context = context;
-            this.database = DatabaseHandler.getInstance();
             mSelectedItemIds = new SparseBooleanArray();
         }
 
@@ -510,19 +540,17 @@ public class CategoryFeedsFragment extends Fragment implements ContextualUndoAda
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
             // inflate contextual menu
             mode.getMenuInflater().inflate(R.menu.contextual_feed_selection_menu, menu);
-            /*com.actionbarsherlock.view.MenuItem item = menu.findItem(R.id.menu_item_share);
-            shareActionProvider = (ShareActionProvider)item.getActionProvider();
+            MenuItem item = menu.findItem(R.id.menu_item_share);
+            shareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(item);
             shareActionProvider.setShareHistoryFileName(
                     ShareActionProvider.DEFAULT_SHARE_HISTORY_FILE_NAME);
             shareActionProvider.setShareIntent(createShareIntent());
             shareActionProvider.setOnShareTargetSelectedListener(new ShareActionProvider.OnShareTargetSelectedListener() {
                 @Override
                 public boolean onShareTargetSelected(ShareActionProvider shareActionProvider, Intent intent) {
-                    //TODO save "sharing-information" in history
                     return false;
                 }
             });
-            */
             return true;
         }
 
@@ -542,21 +570,44 @@ public class CategoryFeedsFragment extends Fragment implements ContextualUndoAda
                     selectedEntries.add(selectedItem);
                 }
             }
+
+            boolean shouldFinish = true;
+
             // close action mode
             switch (item.getItemId()) {
                 case R.id.menu_item_remove:
                     removeSelectedFeeds(selectedEntries);
                     break;
             }
-            mode.finish();
+            if (shouldFinish) {
+                mode.finish();
+                adapter.removeSelection();
+                return true;
+            }
             return false;
         }
 
         @Override
         public void onDestroyActionMode(ActionMode mode) {
-            // remove selection
-            adapter.removeSelection();
             mActionMode = null;
+            adapter.removeSelection();
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (mActionMode != null) {
+            mActionMode.invalidate();
+        }
+    }
+
+    @Override
+    public void onPause()
+    {
+        super.onPause();
+        if (mActionMode != null) {
+            mActionMode.finish();
         }
     }
 

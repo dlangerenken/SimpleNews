@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.drawable.AnimationDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -17,6 +18,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.ShareActionProvider;
 import android.text.TextUtils;
+import android.util.SparseArray;
 import android.util.SparseBooleanArray;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -37,17 +39,13 @@ import com.ocpsoft.pretty.time.PrettyTime;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import de.dala.simplenews.R;
 import de.dala.simplenews.common.Category;
 import de.dala.simplenews.common.Entry;
-import de.dala.simplenews.common.Feed;
 import de.dala.simplenews.database.DatabaseHandler;
-import de.dala.simplenews.database.IDatabaseHandler;
 import de.dala.simplenews.database.PersistableEntries;
 import de.dala.simplenews.database.SimpleCursorLoader;
-import de.dala.simplenews.network.VolleySingleton;
 import de.dala.simplenews.utilities.CategoryUpdater;
 import de.dala.simplenews.utilities.ExpandableGridItemCursorAdapter;
 import de.dala.simplenews.utilities.PrefUtilities;
@@ -160,10 +158,16 @@ public class ExpandableNewsFragment extends Fragment implements SwipeRefreshLayo
 
     private void setEmptyText(boolean isLoading) {
         String textToShow = noEntriesText;
+        if (isLoading){
+            textToShow = isLoadingText;
+        }
         emptyText.setText(textToShow);
         AnimationDrawable animDrawable = (AnimationDrawable)emptyImageView.getDrawable();
         animDrawable.setOneShot(!isLoading);
-        animDrawable.start();
+        animDrawable.stop();
+        if (isLoading) {
+            animDrawable.start();
+        }
     }
 
     private void updateColumnCount() {
@@ -376,17 +380,25 @@ public class ExpandableNewsFragment extends Fragment implements SwipeRefreshLayo
         return shareIntent;
     }
 
-    private void saveSelectedEntries(List<Entry> selectedEntries) {
-        for (Entry entry : selectedEntries) {
+    private void saveSelectedEntries(SparseArray<Entry> selectedEntries) {
+        for (int i = 0; i < selectedEntries.size(); i++){
+            int key = selectedEntries.keyAt(i);
+            Entry entry = selectedEntries.get(key);
             entry.setFavoriteDate((entry.getFavoriteDate() == null || entry.getFavoriteDate() == 0) ? new Date().getTime() : null);
             DatabaseHandler.getInstance().updateEntry(entry);
+            //  ImageView imageView = (ImageView) myExpandableListItemAdapter.getTitleView(key).findViewById(R.id.image);
+            //  setImageDrawable(imageView, entry);
         }
     }
 
-    private void markEntriesAsRead(List<Entry> selectedEntries) {
-        for (Entry entry : selectedEntries) {
+    private void markEntriesAsRead(SparseArray<Entry> selectedEntries) {
+        for (int i = 0; i < selectedEntries.size(); i++){
+            int key = selectedEntries.keyAt(i);
+            Entry entry = selectedEntries.get(key);
             entry.setVisitedDate((entry.getVisitedDate() == null || entry.getVisitedDate() == 0) ? new Date().getTime() : null);
             DatabaseHandler.getInstance().updateEntry(entry);
+            //  ImageView imageView = (ImageView) myExpandableListItemAdapter.getTitleView(key).findViewById(R.id.image);
+            //  setImageDrawable(imageView, entry);
         }
     }
 
@@ -482,11 +494,7 @@ public class ExpandableNewsFragment extends Fragment implements SwipeRefreshLayo
 
             UIUtils.setTextMaybeHtml(titleTextView, entry.getTitle());
 
-            if (entry.getFavoriteDate() != null && entry.getFavoriteDate() > 0) {
-                entryType.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_nav_favorite));
-            } else if (entry.getVisitedDate() != null && entry.getVisitedDate() > 0) {
-                entryType.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_nav_recently_used));
-            }
+            setImageDrawable(entryType, entry);
 
             long current = new Date().getTime();
             if (current > entry.getDate()) {
@@ -586,6 +594,16 @@ public class ExpandableNewsFragment extends Fragment implements SwipeRefreshLayo
         }
     }
 
+    private void setImageDrawable(ImageView entryType, Entry entry) {
+        Drawable drawable = null;
+        if (entry.getFavoriteDate() != null && entry.getFavoriteDate() > 0) {
+            drawable = getResources().getDrawable(R.drawable.ic_nav_favorite);
+        } else if (entry.getVisitedDate() != null && entry.getVisitedDate() > 0) {
+            drawable = getResources().getDrawable(R.drawable.ic_nav_recently_used);
+        }
+        entryType.setImageDrawable(drawable);
+    }
+
     @Override
     public void onResume() {
         super.onResume();
@@ -633,13 +651,14 @@ public class ExpandableNewsFragment extends Fragment implements SwipeRefreshLayo
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
             // retrieve selected items and print them out
             SparseBooleanArray selected = myExpandableListItemAdapter.getSelectedIds();
-            List<Entry> selectedEntries = new ArrayList<Entry>();
+            SparseArray<Entry> selectedEntries = new SparseArray<Entry>();
             for (int i = 0; i < selected.size(); i++) {
                 if (selected.valueAt(i)) {
                     Entry selectedEntry = GetEntryByCursor((Cursor) myExpandableListItemAdapter.getItem(selected.keyAt(i)));
-                    selectedEntries.add(selectedEntry);
+                    selectedEntries.put(i, selectedEntry);
                 }
             }
+
             boolean shouldFinish = true;
             // close action mode
             switch (item.getItemId()) {
@@ -656,11 +675,12 @@ public class ExpandableNewsFragment extends Fragment implements SwipeRefreshLayo
                 case R.id.menu_item_deselect_all:
                     myExpandableListItemAdapter.deselectAllIds();
                     break;
-
             }
+
             if (shouldFinish) {
                 mode.finish();
                 myExpandableListItemAdapter.removeSelection();
+                return true;
             }
             return false;
         }
@@ -668,8 +688,7 @@ public class ExpandableNewsFragment extends Fragment implements SwipeRefreshLayo
         @Override
         public void onDestroyActionMode(ActionMode mode) {
             mActionMode = null;
+            myExpandableListItemAdapter.deselectAllIds();
         }
     }
-
-
 }

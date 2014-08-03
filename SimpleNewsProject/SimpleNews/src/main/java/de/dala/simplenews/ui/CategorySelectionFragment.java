@@ -3,11 +3,16 @@ package de.dala.simplenews.ui;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.NavUtils;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.view.ActionMode;
+import android.support.v7.widget.ShareActionProvider;
+import android.text.TextUtils;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -15,15 +20,19 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.nhaarman.listviewanimations.ArrayAdapter;
 
+import java.io.IOException;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,11 +41,15 @@ import colorpicker.ColorUtils;
 import colorpicker.OnColorSelectedListener;
 import de.dala.simplenews.R;
 import de.dala.simplenews.common.Category;
+import de.dala.simplenews.common.Entry;
+import de.dala.simplenews.common.Feed;
 import de.dala.simplenews.database.DatabaseHandler;
 import de.dala.simplenews.database.IDatabaseHandler;
+import de.dala.simplenews.parser.OpmlWriter;
 import de.dala.simplenews.utilities.ColorManager;
 import de.dala.simplenews.utilities.MyDynamicListView;
 import de.dala.simplenews.utilities.PrefUtilities;
+import de.dala.simplenews.utilities.SparseBooleanArrayParcelable;
 import de.dala.simplenews.utilities.UIUtils;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
@@ -58,6 +71,8 @@ public class CategorySelectionFragment extends Fragment {
     private String rssPath;
     private TextView topTextView;
     private ViewGroup topView;
+    private ShareActionProvider shareActionProvider;
+
     public CategorySelectionFragment() {
     }
 
@@ -161,6 +176,9 @@ public class CategorySelectionFragment extends Fragment {
 
         if (mActionMode != null) {
             mActionMode.setTitle(String.valueOf(adapter.getSelectedCount()));
+        }
+        if (shareActionProvider != null) {
+            shareActionProvider.setShareIntent(createShareIntent());
         }
     }
 
@@ -325,7 +343,7 @@ public class CategorySelectionFragment extends Fragment {
         }
 
         private void switchBackgroundOfView(int position, View view) {
-            if (view != null && mSelectedItemIds.size() > position) {
+            if (view != null) {
                 view.setBackgroundResource(mSelectedItemIds.get(position) ? R.drawable.card_background_blue : R.drawable.card_background_white);
             }
         }
@@ -428,12 +446,49 @@ public class CategorySelectionFragment extends Fragment {
         }
     }
 
+    private Intent createShareIntent() {
+        // retrieve selected items and print them out
+        SparseBooleanArray selected = adapter.getSelectedIds();
+        ArrayList<Feed> feeds = new ArrayList<Feed>();
+        for (int i = 0; i < selected.size(); i++) {
+            if (selected.valueAt(i)) {
+                Category selectedItem = adapter.getItem(i);
+                feeds.addAll(selectedItem.getFeeds());
+            }
+        }
+
+        StringWriter writer = new StringWriter();
+        try {
+            OpmlWriter.writeDocument(feeds, writer);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        String finalMessage = writer.toString();
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.setType("text/xml");
+        shareIntent.putExtra(Intent.EXTRA_TEXT,
+                finalMessage);
+        return shareIntent;
+    }
+
     private class ActionModeCallBack implements ActionMode.Callback {
 
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
             // inflate contextual menu
             mode.getMenuInflater().inflate(R.menu.contextual_category_selection_menu, menu);
+            MenuItem item = menu.findItem(R.id.menu_item_share);
+
+            shareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(item);
+            shareActionProvider.setShareHistoryFileName(
+                    ShareActionProvider.DEFAULT_SHARE_HISTORY_FILE_NAME);
+            shareActionProvider.setShareIntent(createShareIntent());
+            shareActionProvider.setOnShareTargetSelectedListener(new ShareActionProvider.OnShareTargetSelectedListener() {
+                @Override
+                public boolean onShareTargetSelected(ShareActionProvider shareActionProvider, Intent intent) {
+                    return false;
+                }
+            });
             return true;
         }
 
@@ -458,11 +513,10 @@ public class CategorySelectionFragment extends Fragment {
                 case R.id.menu_item_remove:
                     removeSelectedCategories(selectedCategories);
                     break;
-                case R.id.menu_item_share:
-                    break;
             }
             mode.finish();
-            return false;
+            adapter.removeSelection();
+            return true;
         }
 
         @Override
@@ -471,5 +525,8 @@ public class CategorySelectionFragment extends Fragment {
             adapter.removeSelection();
             mActionMode = null;
         }
+
+
+
     }
 }

@@ -24,10 +24,8 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import de.dala.simplenews.R;
-import de.dala.simplenews.common.Entry;
 import de.dala.simplenews.common.NavDrawerItem;
 import de.dala.simplenews.utilities.NavDrawerListAdapter;
 import de.dala.simplenews.utilities.PrefUtilities;
@@ -44,9 +42,9 @@ public class NavigationDrawerFragment extends Fragment implements FragmentManage
     public static final int CHANGELOG = 2;
     public static final int SETTINGS = 3;
     public static final int RATING = 4;
-    public static final int SEARCH = 5;
-    public static final int FAVORITE = 6;
-    public static final int RECENT = 7;
+    public static final int IMPORT = 5;
+    public static final int EXPORT = 6;
+
     /**
      * A pointer to the current callbacks instance (the Activity).
      */
@@ -61,8 +59,7 @@ public class NavigationDrawerFragment extends Fragment implements FragmentManage
     private View verticalLine;
     private ListView mDrawerList;
     private NavDrawerListAdapter navDrawAdapter;
-    private Drawable colorDrawable;
-    private int color;
+
     // slide menu items
     private String[] navMenuTitles;
     private TypedArray navMenuIcons;
@@ -205,12 +202,12 @@ public class NavigationDrawerFragment extends Fragment implements FragmentManage
             navMenuIcons = getResources()
                     .obtainTypedArray(R.array.nav_drawer_icons);
             navDrawerItems = new ArrayList<NavDrawerItem>();
-            navDrawerItems.add(new NavDrawerItem(navMenuTitles[0], navMenuIcons.getResourceId(HOME, -1)));
-            navDrawerItems.add(new NavDrawerItem(navMenuTitles[3], navMenuIcons.getResourceId(CATEGORIES, -1)));
-            navDrawerItems.add(new NavDrawerItem(navMenuTitles[4], navMenuIcons.getResourceId(CHANGELOG, -1)));
-            navDrawerItems.add(new NavDrawerItem(navMenuTitles[5], navMenuIcons.getResourceId(SETTINGS, -1)));
-            navDrawerItems.add(new NavDrawerItem(navMenuTitles[6], navMenuIcons.getResourceId(RATING, -1)));
-            //navDrawerItems.add(new NavDrawerItem(navMenuTitles[7], navMenuIcons.getResourceId(SEARCH, -1)));
+            navDrawerItems.add(new NavDrawerItem(navMenuTitles[HOME], navMenuIcons.getResourceId(HOME, -1)));
+            navDrawerItems.add(new NavDrawerItem(navMenuTitles[CATEGORIES], navMenuIcons.getResourceId(CATEGORIES, -1)));
+            navDrawerItems.add(new NavDrawerItem(navMenuTitles[CHANGELOG], navMenuIcons.getResourceId(CHANGELOG, -1)));
+            navDrawerItems.add(new NavDrawerItem(navMenuTitles[SETTINGS], navMenuIcons.getResourceId(SETTINGS, -1)));
+            navDrawerItems.add(new NavDrawerItem(navMenuTitles[RATING], navMenuIcons.getResourceId(RATING, -1)));
+            //navDrawerItems.add(new NavDrawerItem(navMenuTitles[IMPORT], navMenuIcons.getResourceId(IMPORT, -1)));
 
             navMenuIcons.recycle();
             // set up the drawer's list view with items and click listener
@@ -302,9 +299,7 @@ public class NavigationDrawerFragment extends Fragment implements FragmentManage
         return ((ActionBarActivity) getActivity()).getSupportActionBar();
     }
 
-    public void changeColor(Drawable colorDrawable, int color) {
-        this.colorDrawable = colorDrawable;
-        this.color = color;
+    public void changeColor(int color) {
         Drawable mColorDrawable = new ColorDrawable(color);
         verticalLine.setBackgroundColor(color);
         mDrawerList.setDivider(new ColorDrawable(color));

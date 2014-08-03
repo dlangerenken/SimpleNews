@@ -92,31 +92,43 @@ public class PersistableEntries implements IPersistableObject<Entry>{
     public void store(List<Entry> items) {
         for (Entry entry : items) {
             List<Entry> similarEntries = getSimilarEntries(entry);
-            if (similarEntries == null || similarEntries.isEmpty()) {
-                ContentValues values = new ContentValues();
-                values.put(ENTRY_ID, entry.getId());
-                Long categoryId = entry.getCategoryId() != null ? entry.getCategoryId() : mCategoryId;
-                Long feedId = entry.getFeedId() != null ? entry.getFeedId() : mFeedId;
-                values.put(ENTRY_CATEGORY_ID, categoryId);
-                values.put(ENTRY_FEED_ID, feedId);
-                values.put(ENTRY_TITLE, entry.getTitle());
-                values.put(ENTRY_DESCRIPTION, entry.getDescription());
-                values.put(ENTRY_DATE, entry.getDate());
-                values.put(ENTRY_SRC_NAME, entry.getSrcName());
-                values.put(ENTRY_URL, entry.getLink());
-                values.put(ENTRY_SHORTENED_URL, entry.getShortenedLink());
-                values.put(ENTRY_IMAGE_URL, entry.getImageLink());
-                values.put(ENTRY_VISIBLE, entry.isVisible() ? 1 : 0);
-                values.put(ENTRY_VISITED_DATE, entry.getVisitedDate());
-                values.put(ENTRY_FAVORITE_DATE, entry.getFavoriteDate());
-                values.put(ENTRY_IS_EXPANDED, entry.isExpanded() ? 1 : 0);
+
+            // check if item not already added, if so, only continue if id is equal
+            if (similarEntries != null && !similarEntries.isEmpty()) {
+                boolean shouldUpdate = false;
+                for (Entry sEntry : similarEntries) {
+                    if (sEntry.getId().equals(entry.getId())) {
+                        shouldUpdate = true;
+                    }
+                    break;
+                }
+                if (!shouldUpdate) {
+                    return;
+                }
+            }
+            ContentValues values = new ContentValues();
+            values.put(ENTRY_ID, entry.getId());
+            Long categoryId = entry.getCategoryId() != null ? entry.getCategoryId() : mCategoryId;
+            Long feedId = entry.getFeedId() != null ? entry.getFeedId() : mFeedId;
+            values.put(ENTRY_CATEGORY_ID, categoryId);
+            values.put(ENTRY_FEED_ID, feedId);
+            values.put(ENTRY_TITLE, entry.getTitle());
+            values.put(ENTRY_DESCRIPTION, entry.getDescription());
+            values.put(ENTRY_DATE, entry.getDate());
+            values.put(ENTRY_SRC_NAME, entry.getSrcName());
+            values.put(ENTRY_URL, entry.getLink());
+            values.put(ENTRY_SHORTENED_URL, entry.getShortenedLink());
+            values.put(ENTRY_IMAGE_URL, entry.getImageLink());
+            values.put(ENTRY_VISIBLE, entry.isVisible() ? 1 : 0);
+            values.put(ENTRY_VISITED_DATE, entry.getVisitedDate());
+            values.put(ENTRY_FAVORITE_DATE, entry.getFavoriteDate());
+            values.put(ENTRY_IS_EXPANDED, entry.isExpanded() ? 1 : 0);
 
                 /*
                  * Inserting Row
                  */
-                long rowId = db.replace(TABLE_ENTRY, null, values);
-                entry.setId(rowId);
-            }
+            long rowId = db.replace(TABLE_ENTRY, null, values);
+            entry.setId(rowId);
         }
     }
 

@@ -1,6 +1,5 @@
 package de.dala.simplenews.ui;
 
-import android.graphics.drawable.LayerDrawable;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
@@ -8,14 +7,9 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
-import android.view.MenuItem;
-
-import com.crashlytics.android.Crashlytics;
 
 import de.dala.simplenews.R;
 import de.dala.simplenews.dialog.ChangeLogDialog;
-import de.dala.simplenews.parser.XmlParser;
 
 public class MainActivity extends ActionBarActivity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
 
@@ -105,6 +99,10 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
             case NavigationDrawerFragment.RATING:
                 RateMyApp.showRateDialog(this);
                 break;
+            case NavigationDrawerFragment.IMPORT:
+                //transaction = getSupportFragmentManager().beginTransaction();
+                //transaction.replace(R.id.container, OpmlImportFragment.newInstance(null)).addToBackStack(null).commit();
+                break;
         }
     }
 
@@ -117,8 +115,8 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
         }
     }
 
-    protected void changeDrawerColor(LayerDrawable ld, int newColor) {
-        mNavigationDrawerFragment.changeColor(ld, newColor);
+    protected void changeDrawerColor(int newColor) {
+        mNavigationDrawerFragment.changeColor(newColor);
     }
 
 }
