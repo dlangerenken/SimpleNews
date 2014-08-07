@@ -7,4 +7,24 @@
     <dimen name="action_button_min_width">56dp</dimen>
     <dimen name="indeterminate_progress_size">16dp</dimen>
 
+    <!-- CircularFloatngActionMenu -->
+    <dimen name="action_button_size">72dp</dimen>
+    <dimen name="action_button_content_margin">16dp</dimen>
+    <dimen name="action_button_margin">12dp</dimen>
+    <dimen name="action_menu_radius">86dp</dimen>
+
+    <dimen name="sub_action_button_size">36dp</dimen>
+    <dimen name="sub_action_button_size_medium">46dp</dimen>
+
+    <dimen name="sub_action_button_content_margin">6dp</dimen>
+
+    <dimen name="red_action_button_size">108dp</dimen>
+    <dimen name="red_action_button_margin">48dp</dimen>
+
+    <dimen name="red_action_button_content_size">16dp</dimen>
+    <dimen name="red_action_button_content_margin">36dp</dimen>
+
+    <dimen name="red_action_menu_radius">144dp</dimen>
+    <dimen name="blue_sub_action_button_size">48dp</dimen>
+    <dimen name="blue_sub_action_button_content_margin">16dp</dimen>
 </resources>

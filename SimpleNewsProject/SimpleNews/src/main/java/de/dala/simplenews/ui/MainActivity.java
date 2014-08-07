@@ -18,6 +18,7 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
     private NavigationDrawerFragment mNavigationDrawerFragment;
+    private Fragment currentFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,20 +37,24 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
             if (getIntent().getDataString() != null) {
                 String path = getIntent().getDataString();
                 FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-                Fragment categoryModifierFrag = CategoryModifierFragment.getInstance(path);
-                transaction.replace(R.id.container, categoryModifierFrag).commit();
+                currentFragment = CategoryModifierFragment.getInstance(path);
+                transaction.replace(R.id.container, currentFragment).commit();
             } else {
                 FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-                Fragment newsFrag = NewsOverViewFragment.getInstance(NewsTypeBar.ALL);
-                transaction.replace(R.id.container, newsFrag).commit();
+                currentFragment = NewsOverViewFragment.getInstance(NewsOverViewFragment.ALL);
+                transaction.replace(R.id.container, currentFragment).commit();
             }
         }
     }
 
     @Override
     public boolean onSupportNavigateUp() {
-        //This method is called when the up button is pressed. Just the pop back stack.
-        getSupportFragmentManager().popBackStack();
+        if (currentFragment.getChildFragmentManager().getBackStackEntryCount() > 0){
+            currentFragment.getChildFragmentManager().popBackStack();
+        }else{
+            //This method is called when the up button is pressed. Just the pop back stack.
+            getSupportFragmentManager().popBackStack();
+        }
         return true;
     }
 
@@ -80,17 +85,21 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
         switch (item) {
             case NavigationDrawerFragment.HOME:
                 clearBackStack();
+                currentFragment = NewsOverViewFragment.getInstance(NewsOverViewFragment.ALL);
                 FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-                transaction.replace(R.id.container, NewsOverViewFragment.getInstance(NewsTypeBar.ALL)).commit();
+                transaction.replace(R.id.container, currentFragment).commit();
                 break;
             case NavigationDrawerFragment.CATEGORIES:
+                currentFragment = CategoryModifierFragment.getInstance();
                 transaction = getSupportFragmentManager().beginTransaction();
                 transaction.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_left, R.anim.slide_in_right, R.anim.slide_out_right);
-                transaction.replace(R.id.container, CategoryModifierFragment.getInstance()).addToBackStack(null).commit();
+                transaction.replace(R.id.container, currentFragment).addToBackStack(null).commit();
                 break;
             case NavigationDrawerFragment.SETTINGS:
+                currentFragment = PrefFragment.getInstance();
                 transaction = getSupportFragmentManager().beginTransaction();
-                transaction.replace(R.id.container, PrefFragment.getInstance()).addToBackStack(null).commit();
+                transaction.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_left, R.anim.slide_in_right, R.anim.slide_out_right);
+                transaction.replace(R.id.container, currentFragment).addToBackStack(null).commit();
                 break;
             case NavigationDrawerFragment.CHANGELOG:
                 DialogFragment dialog = new ChangeLogDialog();
@@ -100,8 +109,10 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
                 RateMyApp.showRateDialog(this);
                 break;
             case NavigationDrawerFragment.IMPORT:
-                //transaction = getSupportFragmentManager().beginTransaction();
-                //transaction.replace(R.id.container, OpmlImportFragment.newInstance(null)).addToBackStack(null).commit();
+                currentFragment = OpmlFragment.getInstance();
+                transaction = getSupportFragmentManager().beginTransaction();
+                transaction.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_left, R.anim.slide_in_right, R.anim.slide_out_right);
+                transaction.replace(R.id.container, currentFragment).addToBackStack(null).commit();
                 break;
         }
     }

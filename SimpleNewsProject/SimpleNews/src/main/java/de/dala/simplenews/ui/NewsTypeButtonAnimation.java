@@ -13,52 +13,16 @@ import android.widget.AbsListView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import circularmenu.FloatingActionMenu;
 import de.dala.simplenews.R;
 import de.dala.simplenews.utilities.UIUtils;
 
 /**
  * Created by Daniel on 16.07.2014.
  */
-public class NewsTypeBar extends LinearLayout {
-
-    public static final int ALL = 0;
-    private int mEntryType = ALL;
-    public static final int FAV = 1;
-    public static final int RECENT = 2;
-    public static final int UNREAD = 3;
-
-    private View allEntryButton;
-    private View favEntryButton;
-    private View recentEntryButton;
-    private View unreadEntryButton;
-    private TextView allEntryTextView;
-    private TextView favEntryTextView;
-    private TextView recentEntryTextView;
-    private TextView unreadEntryTextView;
-
-    private INewsTypeClicked newsTypeClickedInterface;
-
-
+public class NewsTypeButtonAnimation  {
+    private FloatingActionMenu mViewToAnimate;
     private ScrollClass myScrollClass;
-
-
-    public interface INewsTypeClicked {
-        void newsTypeClicked(int type);
-    }
-
-    public NewsTypeBar(Context context) {
-        super(context);
-    }
-
-    public NewsTypeBar(Context context, AttributeSet attrs) {
-        super(context, attrs);
-    }
-
-    private void init(Context context){
-        LayoutInflater mInflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        mInflater.inflate(R.layout.news_type_bar, this);
-        initButtons();
-    }
 
     public void fadeIn(){
         if (myScrollClass != null) {
@@ -66,16 +30,24 @@ public class NewsTypeBar extends LinearLayout {
         }
     }
 
-    public void init(final int color, final INewsTypeClicked newsTypeClicked, final AbsListView view, int entryType) {
-        newsTypeClickedInterface = newsTypeClicked;
-        mEntryType = entryType;
-        init(getContext());
-        allEntryButton.setBackgroundDrawable(UIUtils.getStateListDrawableByColor(color));
-        favEntryButton.setBackgroundDrawable(UIUtils.getStateListDrawableByColor(color));
-        recentEntryButton.setBackgroundDrawable(UIUtils.getStateListDrawableByColor(color));
-        unreadEntryButton.setBackgroundDrawable(UIUtils.getStateListDrawableByColor(color));
-
+    public void init(final AbsListView view, FloatingActionMenu viewToAnimate) {
+        mViewToAnimate = viewToAnimate;
         initScrollClass(view);
+        initClick();
+    }
+
+    private void initClick() {
+        mViewToAnimate.setStateChangeListener(new FloatingActionMenu.MenuStateChangeListener() {
+            @Override
+            public void onMenuOpened(FloatingActionMenu menu) {
+
+            }
+
+            @Override
+            public void onMenuClosed(FloatingActionMenu menu) {
+
+            }
+        });
     }
 
     private void initScrollClass(final AbsListView view) {
@@ -106,19 +78,24 @@ public class NewsTypeBar extends LinearLayout {
             @Override
             public void fadeOut() {
                 if (!sliding && mTotalItemCount > 0) {
-                    final int height = getMeasuredHeight();
-                    if (getVisibility() == View.VISIBLE) {
+                    final int height = mViewToAnimate.getMainActionView().getMeasuredHeight();
+                    if (mViewToAnimate.getMainActionView().getVisibility() == View.VISIBLE) {
                         Animation animation = new TranslateAnimation(0, 0, 0,
                                 height);
                         animation.setInterpolator(new AccelerateInterpolator(1.0f));
                         animation.setDuration(400);
 
-                        startAnimation(animation);
+                        if (mViewToAnimate.isOpen()){
+                            animation.setStartOffset(400);
+                        }
+
+                        mViewToAnimate.getMainActionView().startAnimation(animation);
                         animation.setAnimationListener(new Animation.AnimationListener() {
 
                             @Override
                             public void onAnimationStart(Animation animation) {
                                 sliding = true;
+                                mViewToAnimate.close(true);
                                 interrupt();
                             }
 
@@ -127,9 +104,13 @@ public class NewsTypeBar extends LinearLayout {
                             @Override
                             public void onAnimationEnd(Animation animation) {
                                 sliding = false;
-                                setVisibility(View.INVISIBLE);
+                                mViewToAnimate.close(false);
+                                mViewToAnimate.getMainActionView().setVisibility(View.INVISIBLE);
+                                appear();
                             }
                         });
+                    }else{
+                        appear();
                     }
                 }
             }
@@ -137,20 +118,20 @@ public class NewsTypeBar extends LinearLayout {
             @Override
             public void fadeIn() {
                 if (!sliding) {
-                    final int height = getMeasuredHeight();
-                    if (getVisibility() == View.INVISIBLE) {
+                    final int height = mViewToAnimate.getMainActionView().getMeasuredHeight();
+                    if (mViewToAnimate.getMainActionView().getVisibility() == View.INVISIBLE) {
 
                         Animation animation = new TranslateAnimation(0, 0,
                                 height, 0);
 
                         animation.setInterpolator(new AccelerateInterpolator(1.0f));
                         animation.setDuration(400);
-                        startAnimation(animation);
+                        mViewToAnimate.getMainActionView().startAnimation(animation);
                         animation.setAnimationListener(new Animation.AnimationListener() {
                             @Override
                             public void onAnimationStart(Animation animation) {
                                 sliding = true;
-                                setVisibility(View.VISIBLE);
+                                mViewToAnimate.getMainActionView().setVisibility(View.VISIBLE);
                             }
 
                             @Override public void onAnimationRepeat(Animation animation) {}
@@ -158,11 +139,8 @@ public class NewsTypeBar extends LinearLayout {
                             @Override
                             public void onAnimationEnd(Animation animation) {
                                 sliding = false;
-                                disappear();
                             }
                         });
-                    } else {
-                        disappear();
                     }
                 }
             }
@@ -192,96 +170,26 @@ public class NewsTypeBar extends LinearLayout {
         });
     }
 
-    private void initButtons() {
-        allEntryButton = findViewById(R.id.entry_type_all);
-        favEntryButton = findViewById(R.id.entry_type_fav);
-        recentEntryButton = findViewById(R.id.entry_type_recently);
-        unreadEntryButton = findViewById(R.id.entry_type_unread);
-
-        allEntryTextView = (TextView) findViewById(R.id.entry_type_text_all);
-        favEntryTextView = (TextView) findViewById(R.id.entry_type_text_fav);
-        recentEntryTextView = (TextView) findViewById(R.id.entry_type_text_recently);
-        unreadEntryTextView = (TextView) findViewById(R.id.entry_type_text_unread);
-
-        allEntryTextView.setTextColor(UIUtils.getColorTextStateList());
-        favEntryTextView.setTextColor(UIUtils.getColorTextStateList());
-        recentEntryTextView.setTextColor(UIUtils.getColorTextStateList());
-        unreadEntryTextView.setTextColor(UIUtils.getColorTextStateList());
-
-
-        switch (mEntryType) {
-            case ALL:
-                allEntryButton.setSelected(true);
-                allEntryTextView.setSelected(true);
-                break;
-            case FAV:
-                favEntryButton.setSelected(true);
-                favEntryTextView.setSelected(true);
-                break;
-            case RECENT:
-                recentEntryButton.setSelected(true);
-                recentEntryTextView.setSelected(true);
-                break;
-            case UNREAD:
-                unreadEntryButton.setSelected(true);
-                unreadEntryTextView.setSelected(true);
-                break;
-        }
-        allEntryButton.setOnClickListener(new EntryTypeClickListener(ALL));
-        favEntryButton.setOnClickListener(new EntryTypeClickListener(FAV));
-        recentEntryButton.setOnClickListener(new EntryTypeClickListener(RECENT));
-        unreadEntryButton.setOnClickListener(new EntryTypeClickListener(UNREAD));
-    }
-
-    private class EntryTypeClickListener implements View.OnClickListener {
-        private int type;
-
-        public EntryTypeClickListener(int type) {
-            this.type = type;
-        }
-
-        @Override
-        public void onClick(View v) {
-            allEntryButton.setSelected(ALL == type);
-            allEntryTextView.setSelected(ALL == type);
-
-            favEntryButton.setSelected(FAV == type);
-            favEntryTextView.setSelected(FAV == type);
-
-            recentEntryButton.setSelected(RECENT == type);
-            recentEntryTextView.setSelected(RECENT == type);
-
-            unreadEntryButton.setSelected(UNREAD == type);
-            unreadEntryTextView.setSelected(UNREAD == type);
-
-            mEntryType = type;
-
-            if (newsTypeClickedInterface != null){
-                newsTypeClickedInterface.newsTypeClicked(mEntryType);
-            }
-        }
-    }
-
     private abstract class ScrollClass implements AbsListView.OnScrollListener {
         Handler mHandler = new Handler();
         Runnable mRunnable = new Runnable() {
             @Override
             public void run() {
-                fadeOut();
+                fadeIn();
             }
         };
 
         abstract void fadeIn();
+        abstract void fadeOut();
 
-        public void disappear() {
+        public void appear() {
             mHandler.removeCallbacks(mRunnable);
-            mHandler.postDelayed(mRunnable, 5 * 1000);
+            mHandler.postDelayed(mRunnable, 200);
         }
 
         public void interrupt() {
             mHandler.removeCallbacks(mRunnable);
         }
 
-        abstract void fadeOut();
     }
 }

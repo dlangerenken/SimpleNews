@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+     android:layout_width="match_parent"
+    android:layout_height="match_parent" android:layout_margin="10dp">
+
+    <EditText
+        android:layout_margin="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textMultiLine"
+        android:ems="10"
+        android:id="@+id/editText"
+        android:layout_gravity="center_horizontal"
+        android:layout_below="@+id/textView"
+        android:hint="z.B. www.thisismyopml.com/opml123" />
+
+    <EditText
+        android:layout_margin="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="406dp"
+        android:id="@+id/editText2"
+        android:layout_below="@+id/editText"
+        android:layout_above="@+id/button"
+        android:hint="@string/opml_hint" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Importieren"
+        android:id="@+id/button"
+        android:layout_gravity="right"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Bitte geben Sie eine URL zu einem OPML-Link oder den gesamten Inhalt einer Datei an"
+        android:id="@+id/textView"
+        android:layout_alignParentBottom="false"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentTop="true" />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_alignBottom="@+id/editText"
+        android:layout_alignLeft="@+id/editText"
+        android:layout_alignStart="@+id/editText">
+
+    </LinearLayout>
+
+</RelativeLayout>

@@ -1,5 +1,6 @@
 package de.dala.simplenews.ui;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -55,7 +56,7 @@ import de.dala.simplenews.utilities.UIUtils;
 /**
  * Created by Daniel on 18.12.13.
  */
-public class ExpandableNewsFragment extends Fragment implements SwipeRefreshLayoutExtended.OnRefreshListener, SimpleCursorLoader.OnLoadCompleteListener, NewsTypeBar.INewsTypeClicked {
+public class ExpandableNewsFragment extends Fragment implements SwipeRefreshLayoutExtended.OnRefreshListener, SimpleCursorLoader.OnLoadCompleteListener, NewsOverViewFragment.INewsTypeButton {
     private static final String ARG_CATEGORY = "category";
     private static final String ARG_ENTRY_TYPE = "entryType";
     private MyExpandableGridItemAdapter myExpandableListItemAdapter;
@@ -66,15 +67,12 @@ public class ExpandableNewsFragment extends Fragment implements SwipeRefreshLayo
 
     private Category category;
     private CategoryUpdater updater;
-    private NewsTypeBar newsTypeBar;
     private Menu menu;
-    private MenuItem columnsMenu;
-    private INewsInteraction newsInteraction;
     private ShareActionProvider shareActionProvider;
+    private int newsTypeMode;
+    private NewsOverViewFragment parentFragment;
 
     private SimpleCursorLoader simpleCursorLoader;
-
-    private int newsTypeMode = NewsTypeBar.ALL;
 
     private TextView emptyText;
     private ImageView emptyImageView;
@@ -94,17 +92,25 @@ public class ExpandableNewsFragment extends Fragment implements SwipeRefreshLayo
         return f;
     }
 
-    public void setNewsInteraction(INewsInteraction newsInteraction) {
-        this.newsInteraction = newsInteraction;
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.category = getArguments().getParcelable(ARG_CATEGORY);
-        newsTypeMode = getArguments().getInt(ARG_ENTRY_TYPE);
+        this.newsTypeMode = getArguments().getInt(ARG_ENTRY_TYPE);
         noEntriesText = getResources().getString(R.string.no_entries);
         isLoadingText = getResources().getString(R.string.is_loading);
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        Fragment newsFragment = getParentFragment();
+        if (newsFragment != null && newsFragment instanceof NewsOverViewFragment){
+            this.parentFragment = (NewsOverViewFragment) newsFragment;
+        }else{
+            throw new ClassCastException("ParentFragment is not of type NewsOverViewFragment");
+        }
     }
 
     @Override
@@ -113,10 +119,6 @@ public class ExpandableNewsFragment extends Fragment implements SwipeRefreshLayo
         if (!visible) {
             if (mActionMode != null) {
                 mActionMode.finish();
-            }
-        } else {
-            if (newsTypeBar != null) {
-                newsTypeBar.fadeIn();
             }
         }
     }
@@ -141,19 +143,15 @@ public class ExpandableNewsFragment extends Fragment implements SwipeRefreshLayo
         emptyImageView = (ImageView) rootView.findViewById(R.id.emptyImageView);
         emptyImageView.setImageResource(R.drawable.logo_animation);
 
-        if (savedInstanceState != null) {
-            newsTypeMode = savedInstanceState.getInt("newsTypeMode");
-        }
         initCardsAdapter(null);
-        initNewsTypeBar(rootView);
+        initNewsTypeBar();
         loadEntries(false, true);
         return rootView;
     }
 
-    private void initNewsTypeBar(View rootView) {
-        newsTypeBar = (NewsTypeBar) rootView.findViewById(R.id.news_type_bar);
-        newsTypeBar.init(category.getPrimaryColor(), this, mGridView, newsTypeMode);
-        newsTypeBar.fadeIn();
+    private void initNewsTypeBar() {
+        NewsTypeButtonAnimation animation = new NewsTypeButtonAnimation();
+        animation.init(mGridView, parentFragment.getNewsTypeButton());
     }
 
     private void setEmptyText(boolean isLoading) {
@@ -187,26 +185,6 @@ public class ExpandableNewsFragment extends Fragment implements SwipeRefreshLayo
         }
     }
 
-    private boolean shouldUseMultipleColumns(){
-        boolean useMultiple = false;
-        switch (getResources().getConfiguration().orientation) {
-            case Configuration.ORIENTATION_LANDSCAPE:
-                useMultiple = PrefUtilities.getInstance().useMultipleColumnsLandscape();
-                break;
-            case Configuration.ORIENTATION_PORTRAIT:
-                useMultiple = PrefUtilities.getInstance().useMultipleColumnsPortrait();
-                break;
-        }
-        return useMultiple;
-    }
-
-    private void updateMenu(){
-        boolean useMultiple = shouldUseMultipleColumns();
-        if (columnsMenu != null){
-            columnsMenu.setTitle(useMultiple ? getString(R.string.single_columns) : getString(R.string.multiple_columns));
-        }
-    }
-
     @Override
     public void onRefresh() {
         if (updater != null && updater.isRunning()) {
@@ -222,10 +200,6 @@ public class ExpandableNewsFragment extends Fragment implements SwipeRefreshLayo
             case R.id.menu_refresh:
                 loadEntries(true, true);
                 return true;
-            case R.id.menu_columns:
-                updateMenu();
-                updateColumnCount();
-                break;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -251,13 +225,13 @@ public class ExpandableNewsFragment extends Fragment implements SwipeRefreshLayo
 
     private Cursor getCursorByNewsType(int type){
         switch (type) {
-            case NewsTypeBar.ALL:
+            case NewsOverViewFragment.ALL:
                 return DatabaseHandler.getInstance().getEntriesCursor(category.getId());
-            case NewsTypeBar.FAV:
+            case NewsOverViewFragment.FAV:
                 return DatabaseHandler.getInstance().getFavoriteEntriesCursor(category.getId());
-            case NewsTypeBar.RECENT:
+            case NewsOverViewFragment.RECENT:
                 return DatabaseHandler.getInstance().getRecentEntriesCursor(category.getId());
-            case NewsTypeBar.UNREAD:
+            case NewsOverViewFragment.UNREAD:
                 return DatabaseHandler.getInstance().getUnreadEntriesCursor(category.getId());
         }
         return null;
@@ -294,9 +268,7 @@ public class ExpandableNewsFragment extends Fragment implements SwipeRefreshLayo
             updater = new CategoryUpdater(new CategoryUpdateHandler(), category, true, getActivity());
         }
         if (updater.start()) {
-            if (newsInteraction != null && showNewsInteraction) {
-                newsInteraction.showLoadingNews();
-            }
+            parentFragment.showLoadingNews();
             setRefreshActionButtonState(true);
         }
     }
@@ -308,9 +280,7 @@ public class ExpandableNewsFragment extends Fragment implements SwipeRefreshLayo
         if (mActionMode != null) {
             mActionMode.finish();
         }
-        if (newsInteraction != null) {
-            newsInteraction.cancelLoadingNews();
-        }
+        parentFragment.cancelLoadingNews();
         setRefreshActionButtonState(false);
 
         if (success){
@@ -337,10 +307,7 @@ public class ExpandableNewsFragment extends Fragment implements SwipeRefreshLayo
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         this.menu = menu;
-        menu.clear();
         inflater.inflate(R.menu.expandable_news_menu, menu);
-        columnsMenu = menu.findItem(R.id.menu_columns);
-        updateMenu();
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -357,7 +324,6 @@ public class ExpandableNewsFragment extends Fragment implements SwipeRefreshLayo
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        outState.putInt("newsTypeMode", newsTypeMode);
         super.onSaveInstanceState(outState);
     }
 
@@ -413,17 +379,16 @@ public class ExpandableNewsFragment extends Fragment implements SwipeRefreshLayo
     }
 
     @Override
-    public void newsTypeClicked(int type) {
-        newsTypeMode = type;
-        loadEntries(false, false);
-        if (mActionMode != null) {
-            mActionMode.finish();
+    public void newsTypeModeChanged(int newsTypeMode) {
+        this.newsTypeMode = newsTypeMode;
+        if (simpleCursorLoader != null){
+            simpleCursorLoader.startLoading();
         }
     }
 
-    public interface INewsInteraction {
-        void showLoadingNews();
-        void cancelLoadingNews();
+    @Override
+    public void gridSettingsChanged() {
+        updateColumnCount();
     }
 
     private class CategoryUpdateHandler extends Handler {
@@ -620,6 +585,7 @@ public class ExpandableNewsFragment extends Fragment implements SwipeRefreshLayo
             mActionMode.finish();
         }
     }
+
 
     private class ActionModeCallBack implements ActionMode.Callback {
 

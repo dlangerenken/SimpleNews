@@ -97,6 +97,7 @@ public class CategoryFeedsFragment extends Fragment implements ContextualUndoAda
         this.category = getArguments().getParcelable(CATEGORY_KEY);
     }
 
+
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.feed_selection_menu, menu);

@@ -127,6 +127,7 @@ public class CategorySelectionFragment extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        menu.clear();
         inflater.inflate(R.menu.category_selection_menu, menu);
     }
 

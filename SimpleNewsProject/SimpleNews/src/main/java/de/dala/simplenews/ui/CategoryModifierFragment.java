@@ -2,9 +2,11 @@ package de.dala.simplenews.ui;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -24,6 +26,7 @@ public class CategoryModifierFragment extends Fragment implements CategorySelect
     private static final String FROM_RSS = "from_rss";
     private ArrayList<Category> categories;
     private boolean fromRSS = false;
+    Fragment fragment = null;
 
     public CategoryModifierFragment() {
     }
@@ -45,7 +48,6 @@ public class CategoryModifierFragment extends Fragment implements CategorySelect
         super.onCreate(savedInstanceState);
         categories = new ArrayList<Category>(DatabaseHandler.getInstance().getCategories(false, true, null));
         FragmentTransaction t = getChildFragmentManager().beginTransaction();
-        Fragment fragment = null;
         String rssPath = getArguments() != null ? getArguments().getString(FROM_RSS) : null;
         if (rssPath != null) {
             fromRSS = true;
@@ -56,14 +58,13 @@ public class CategoryModifierFragment extends Fragment implements CategorySelect
             }
         }
         t.replace(R.id.container, fragment, CATEGORY_SELECTION_TAG);
-        t.addToBackStack(null);
         t.commit();
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        setRetainInstance(true);
+        //setRetainInstance(true);
     }
 
     @Override

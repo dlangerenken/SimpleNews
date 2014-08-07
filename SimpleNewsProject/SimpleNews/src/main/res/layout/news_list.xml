@@ -46,11 +46,4 @@
             />
     </RelativeLayout>
 
-   <de.dala.simplenews.ui.NewsTypeBar
-       android:id="@+id/news_type_bar"
-       android:layout_width="match_parent"
-       android:layout_height="wrap_content"
-       android:layout_alignParentBottom="true"
-       android:layout_centerHorizontal="true"/>
-
 </RelativeLayout>

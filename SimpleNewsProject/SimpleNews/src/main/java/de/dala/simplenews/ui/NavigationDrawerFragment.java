@@ -207,7 +207,7 @@ public class NavigationDrawerFragment extends Fragment implements FragmentManage
             navDrawerItems.add(new NavDrawerItem(navMenuTitles[CHANGELOG], navMenuIcons.getResourceId(CHANGELOG, -1)));
             navDrawerItems.add(new NavDrawerItem(navMenuTitles[SETTINGS], navMenuIcons.getResourceId(SETTINGS, -1)));
             navDrawerItems.add(new NavDrawerItem(navMenuTitles[RATING], navMenuIcons.getResourceId(RATING, -1)));
-            //navDrawerItems.add(new NavDrawerItem(navMenuTitles[IMPORT], navMenuIcons.getResourceId(IMPORT, -1)));
+            navDrawerItems.add(new NavDrawerItem(navMenuTitles[IMPORT], navMenuIcons.getResourceId(IMPORT, -1)));
 
             navMenuIcons.recycle();
             // set up the drawer's list view with items and click listener
@@ -306,6 +306,12 @@ public class NavigationDrawerFragment extends Fragment implements FragmentManage
         mDrawerList.setDividerHeight(1);
         navDrawAdapter.setCategoryDrawable(mColorDrawable);
     }
+
+    public void lock(boolean shouldLock) {
+        mDrawerLayout.setDrawerLockMode(shouldLock ?  DrawerLayout.LOCK_MODE_LOCKED_CLOSED : DrawerLayout.LOCK_MODE_UNLOCKED);
+    }
+
+    
 
     /**
      * Callbacks interface that all activities using this fragment must implement.

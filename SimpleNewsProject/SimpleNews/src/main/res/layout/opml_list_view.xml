@@ -4,12 +4,6 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.astuetz.PagerSlidingTabStrip
-        android:id="@+id/tabs"
-        android:fitsSystemWindows="true"
-        android:layout_width="match_parent"
-        android:layout_height="48dip"
-        android:background="@drawable/background_tabs" />
     <ListView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
