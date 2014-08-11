@@ -6,18 +6,34 @@ package de.dala.simplenews.common;
  */
 
 public class NavDrawerItem {
+    public static final int MAIN_ITEM = 0;
+    public static final int SETTING_ITEM = 1;
+    public static final int BORDER = 2;
+    public static final int HEADER = 3;
+
     private String title;
     private int icon;
     private String count = "0";
+    private int type;
+    private int id;
     // boolean to set visiblity of the counter
     private boolean isCounterVisible = false;
 
     public NavDrawerItem() {
     }
 
-    public NavDrawerItem(String title, int icon) {
+    public NavDrawerItem(int id, String title, int icon) {
         this.title = title;
         this.icon = icon;
+        this.id = id;
+        type = MAIN_ITEM;
+    }
+
+    public NavDrawerItem(int id, String title, int icon, int type){
+        this.title = title;
+        this.icon = icon;
+        this.type = type;
+        this.id = id;
     }
 
     public NavDrawerItem(String title, int icon, boolean isCounterVisible, String count) {
@@ -28,7 +44,7 @@ public class NavDrawerItem {
     }
 
     public String getTitle() {
-        return this.title;
+        return title;
     }
 
     public void setTitle(String title) {
@@ -36,7 +52,11 @@ public class NavDrawerItem {
     }
 
     public int getIcon() {
-        return this.icon;
+        return icon;
+    }
+
+    public int getType(){
+        return type;
     }
 
     public void setIcon(int icon) {
@@ -44,7 +64,11 @@ public class NavDrawerItem {
     }
 
     public String getCount() {
-        return this.count;
+        return count;
+    }
+
+    public int getId() {
+        return id;
     }
 
     public void setCount(String count) {
@@ -52,7 +76,7 @@ public class NavDrawerItem {
     }
 
     public boolean getCounterVisibility() {
-        return this.isCounterVisible;
+        return isCounterVisible;
     }
 
     public void setCounterVisibility(boolean isCounterVisible) {

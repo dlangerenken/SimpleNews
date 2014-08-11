@@ -46,8 +46,10 @@ public class PersistableEntries implements IPersistableObject<Entry>{
             query = concatenateQueries(query, entryTableShortName + "." + ENTRY_ID + "=" + mEntryId);
         }
         if (mOnlyVisible != null){
-            query = concatenateQueries(query, ENTRY_VISIBLE + "=" + (mOnlyVisible ? "1" : "0"));
+            query = concatenateQueries(query, entryTableShortName + "." + ENTRY_VISIBLE + "=" + (mOnlyVisible ? "1" : "0"));
+            query = concatenateQueries(query, feedTableShortName + "." + FEED_VISIBLE + "=" + (mOnlyVisible ? "1" : "0"));
         }
+
         return query;
     }
 
@@ -89,7 +91,12 @@ public class PersistableEntries implements IPersistableObject<Entry>{
     }
 
     @Override
-    public void store(List<Entry> items) {
+    public long[] store(List<Entry> items) {
+        if (items == null){
+            return null;
+        }
+        long[] ids = new long[items.size()];
+        int current = 0;
         for (Entry entry : items) {
             List<Entry> similarEntries = getSimilarEntries(entry);
 
@@ -103,7 +110,7 @@ public class PersistableEntries implements IPersistableObject<Entry>{
                     break;
                 }
                 if (!shouldUpdate) {
-                    return;
+                    return null;
                 }
             }
             ContentValues values = new ContentValues();
@@ -128,8 +135,10 @@ public class PersistableEntries implements IPersistableObject<Entry>{
                  * Inserting Row
                  */
             long rowId = db.replace(TABLE_ENTRY, null, values);
+            ids[current++] = rowId;
             entry.setId(rowId);
         }
+        return ids;
     }
 
     @Override

@@ -4,35 +4,27 @@
      android:layout_width="match_parent"
     android:layout_height="match_parent" android:layout_margin="10dp">
 
-    <EditText
-        android:layout_margin="5dp"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="textMultiLine"
-        android:ems="10"
-        android:id="@+id/editText"
-        android:layout_gravity="center_horizontal"
-        android:layout_below="@+id/textView"
-        android:hint="z.B. www.thisismyopml.com/opml123" />
-
-    <EditText
-        android:layout_margin="5dp"
-        android:layout_width="match_parent"
-        android:layout_height="406dp"
-        android:id="@+id/editText2"
-        android:layout_below="@+id/editText"
-        android:layout_above="@+id/button"
-        android:hint="@string/opml_hint" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Importieren"
-        android:id="@+id/button"
-        android:layout_gravity="right"
+        android:id="@+id/bottom"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_centerHorizontal="true" >
+        <Button
+            android:layout_centerHorizontal="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Importieren"
+            android:id="@+id/button"/>
+        <ProgressBar
+            android:layout_centerHorizontal="true"
+            android:indeterminate="true"
+            android:visibility="invisible"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/import_progress"/>
+    </RelativeLayout>
+
 
     <TextView
         android:layout_width="wrap_content"
@@ -45,13 +37,23 @@
         android:layout_alignParentTop="true" />
 
     <LinearLayout
+        android:layout_margin="5dp"
         android:orientation="horizontal"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_alignBottom="@+id/editText"
-        android:layout_alignLeft="@+id/editText"
-        android:layout_alignStart="@+id/editText">
-
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/border"
+        android:id="@+id/opml_content_layout"
+        android:layout_below="@id/textView"
+        android:layout_above="@id/bottom">
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:inputType="textMultiLine"
+            android:id="@+id/opmlContentEditText"
+            android:hint="@string/opml_url"
+            android:gravity="start">
+            <requestFocus/>
+         </EditText>
     </LinearLayout>
 
 </RelativeLayout>

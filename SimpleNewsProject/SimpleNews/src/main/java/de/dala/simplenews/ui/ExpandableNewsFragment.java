@@ -92,7 +92,6 @@ public class ExpandableNewsFragment extends Fragment implements SwipeRefreshLayo
         return f;
     }
 
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -226,7 +225,7 @@ public class ExpandableNewsFragment extends Fragment implements SwipeRefreshLayo
     private Cursor getCursorByNewsType(int type){
         switch (type) {
             case NewsOverViewFragment.ALL:
-                return DatabaseHandler.getInstance().getEntriesCursor(category.getId());
+                return DatabaseHandler.getInstance().getEntriesCursor(category.getId(), true);
             case NewsOverViewFragment.FAV:
                 return DatabaseHandler.getInstance().getFavoriteEntriesCursor(category.getId());
             case NewsOverViewFragment.RECENT:
@@ -236,6 +235,7 @@ public class ExpandableNewsFragment extends Fragment implements SwipeRefreshLayo
         }
         return null;
     }
+
     private void onListItemCheck(int position, boolean value) {
         myExpandableListItemAdapter.selectView(position, value);
     }
@@ -268,7 +268,9 @@ public class ExpandableNewsFragment extends Fragment implements SwipeRefreshLayo
             updater = new CategoryUpdater(new CategoryUpdateHandler(), category, true, getActivity());
         }
         if (updater.start()) {
-            parentFragment.showLoadingNews();
+            if (showNewsInteraction) {
+                parentFragment.showLoadingNews();
+            }
             setRefreshActionButtonState(true);
         }
     }
@@ -311,7 +313,6 @@ public class ExpandableNewsFragment extends Fragment implements SwipeRefreshLayo
         super.onCreateOptionsMenu(menu, inflater);
     }
 
-
     private void loadEntries(boolean forceRefresh, boolean showNewsInteraction) {
         setEmptyText(true);
         long timeForRefresh = PrefUtilities.getInstance().getTimeForRefresh();
@@ -344,6 +345,17 @@ public class ExpandableNewsFragment extends Fragment implements SwipeRefreshLayo
         shareIntent.putExtra(Intent.EXTRA_TEXT,
                 finalMessage);
         return shareIntent;
+    }
+
+    private void deleteSelectedEntries(SparseArray<Entry> selectedEntries) {
+        for (int i = 0; i < selectedEntries.size(); i++){
+            int key = selectedEntries.keyAt(i);
+            Entry entry = selectedEntries.get(key);
+            entry.setVisible(false);
+            DatabaseHandler.getInstance().updateEntry(entry);
+            //  ImageView imageView = (ImageView) myExpandableListItemAdapter.getTitleView(key).findViewById(R.id.image);
+            //  setImageDrawable(imageView, entry);
+        }
     }
 
     private void saveSelectedEntries(SparseArray<Entry> selectedEntries) {
@@ -586,7 +598,6 @@ public class ExpandableNewsFragment extends Fragment implements SwipeRefreshLayo
         }
     }
 
-
     private class ActionModeCallBack implements ActionMode.Callback {
 
         @Override
@@ -641,11 +652,15 @@ public class ExpandableNewsFragment extends Fragment implements SwipeRefreshLayo
                 case R.id.menu_item_deselect_all:
                     myExpandableListItemAdapter.deselectAllIds();
                     break;
+                case R.id.menu_item_delete:
+                    deleteSelectedEntries(selectedEntries);
+                    break;
             }
 
             if (shouldFinish) {
                 mode.finish();
                 myExpandableListItemAdapter.removeSelection();
+                simpleCursorLoader.forceLoad();
                 return true;
             }
             return false;

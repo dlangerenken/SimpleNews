@@ -38,4 +38,10 @@ public class NetworkCommunication {
         addRequest(request);
     }
 
+    public static void loadOpmlFeeds(String serverURL, Response.Listener<String> successListener,
+                                     Response.ErrorListener errorListener) {
+        Request request = new StringRequest(serverURL,
+                successListener, errorListener);
+        addRequest(request);
+    }
 }

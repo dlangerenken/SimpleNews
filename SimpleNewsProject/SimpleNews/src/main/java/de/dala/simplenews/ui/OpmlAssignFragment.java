@@ -3,18 +3,26 @@ package de.dala.simplenews.ui;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.view.ActionMode;
+import android.support.v7.widget.PopupMenu;
 import android.util.SparseBooleanArray;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.SubMenu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.astuetz.PagerSlidingTabStrip;
 import com.nhaarman.listviewanimations.ArrayAdapter;
 import com.nhaarman.listviewanimations.itemmanipulation.swipedismiss.contextualundo.ContextualUndoAdapter;
 
@@ -30,7 +38,7 @@ import de.dala.simplenews.database.IDatabaseHandler;
 /**
  * Created by Daniel on 04.08.2014.
  */
-public class OpmlAssignFragment extends Fragment implements ContextualUndoAdapter.DeleteItemCallback{
+public class OpmlAssignFragment extends Fragment implements ContextualUndoAdapter.DeleteItemCallback, ViewPager.OnPageChangeListener{
 
     private IDatabaseHandler databaseHandler;
     private OpmlListAdapter adapter;
@@ -40,6 +48,7 @@ public class OpmlAssignFragment extends Fragment implements ContextualUndoAdapte
     private List<Category> categories;
     private List<Feed> feedsToImport;
     private ActionMode mActionMode;
+    private PagerSlidingTabStrip tabs;
 
     public OpmlAssignFragment() {
     }
@@ -69,6 +78,21 @@ public class OpmlAssignFragment extends Fragment implements ContextualUndoAdapte
         initAdapter();
         ((ActionBarActivity) getActivity()).getSupportActionBar().setTitle("Assigning Feeds");
         ((ActionBarActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        /*ViewPager pager = (ViewPager) rootView.findViewById(R.id.pager);
+        CategoryPagerAdapter adapter = new CategoryPagerAdapter(getChildFragmentManager());
+        pager.setAdapter(adapter);
+
+        tabs = (PagerSlidingTabStrip) rootView.findViewById(R.id.tabs);
+        tabs.setViewPager(pager);
+        tabs.setOnPageChangeListener(this);
+
+        final int pageMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4, getResources()
+                .getDisplayMetrics());
+        pager.setPageMargin(pageMargin);
+        
+        onPageSelected(0);
+        */
         return rootView;
     }
 
@@ -80,7 +104,49 @@ public class OpmlAssignFragment extends Fragment implements ContextualUndoAdapte
         feedListView.setAdapter(undoAdapter);
     }
 
+    @Override
+    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
+    }
+
+    @Override
+    public void onPageSelected(int position) {
+
+    }
+
+    @Override
+    public void onPageScrollStateChanged(int state) {
+
+    }
+
+    public class CategoryPagerAdapter extends FragmentPagerAdapter {
+
+        private FragmentManager mFragmentManager;
+
+        public CategoryPagerAdapter(FragmentManager fm) {
+            super(fm);
+            mFragmentManager = fm;
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return categories.get(position).getName();
+        }
+
+        @Override
+        public int getCount() {
+            return categories.size();
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            return null;
+        }
+
+        private String makeFragmentName(int viewId, int index) {
+            return "android:switcher:" + viewId + ":" + index;
+        }
+    }
 
     private class OpmlListAdapter extends ArrayAdapter<Feed> {
 
@@ -101,11 +167,6 @@ public class OpmlAssignFragment extends Fragment implements ContextualUndoAdapte
         }
 
         @Override
-        public long getItemId(int position) {
-            return getItem(position).getId();
-        }
-
-        @Override
         public View getView(final int position, View convertView, ViewGroup parent) {
             Feed feed = getItem(position);
 
@@ -113,7 +174,6 @@ public class OpmlAssignFragment extends Fragment implements ContextualUndoAdapte
                 LayoutInflater inflater = LayoutInflater.from(context);
                 convertView = inflater.inflate(R.layout.opml_list_item, parent, false);
                 ViewHolder viewHolder = new ViewHolder();
-                viewHolder.category = (ImageView) convertView.findViewById(R.id.category);
                 viewHolder.name = (TextView) convertView.findViewById(R.id.title);
                 viewHolder.link = (TextView) convertView.findViewById(R.id.url);
                 convertView.setTag(viewHolder);
@@ -223,6 +283,13 @@ public class OpmlAssignFragment extends Fragment implements ContextualUndoAdapte
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
             // inflate contextual menu
             mode.getMenuInflater().inflate(R.menu.contextual_opml_import_menu, menu);
+            MenuItem item = menu.findItem(R.id.menu_item_assign);
+            SubMenu subMenu = item.getSubMenu();
+            subMenu.clear();
+            for (int i = 0; i < categories.size(); i++){
+                Category cat = categories.get(i);
+                MenuItem subItem = subMenu.add(0, i, i, cat.getName());
+            }
             return true;
         }
 
@@ -247,9 +314,14 @@ public class OpmlAssignFragment extends Fragment implements ContextualUndoAdapte
                 case R.id.menu_item_remove:
                     removeSelectedFeeds(selectedEntries);
                     break;
-                case R.id.menu_item_assign:
-                    assignSelectedEntries(selectedEntries);
+                default:
+                    if (item.getItemId() < categories.size() && item.getItemId() >= 0){
+                        Category cat = categories.get(item.getItemId());
+                        assignSelectedEntries(selectedEntries, cat);
+                    }
+                    break;
             }
+
             mode.finish();
             return false;
         }
@@ -262,19 +334,15 @@ public class OpmlAssignFragment extends Fragment implements ContextualUndoAdapte
         }
     }
 
-    private void assignSelectedEntries(List<Feed> selectedEntries) {
-        /*PopupMenu popup = new PopupMenu(this, v);
-        MenuInflater inflater = popup.getMenuInflater();
-        inflater.inflate(R.menu.actions, popup.getMenu());
-        popup.show();
-
-        importFeeds(selectedEntries);
+    private void assignSelectedEntries(List<Feed> selectedEntries, Category category) {
         for(Feed feed : selectedEntries){
+            feed.setCategoryId(category.getId());
             adapter.remove(feed); //TODO animation
             feedsToImport.remove(feed);
         }
+        importFeeds(selectedEntries);
         adapter.notifyDataSetChanged();
-        */
+
     }
 
     private void removeSelectedFeeds(List<Feed> selectedFeeds) {
@@ -285,7 +353,7 @@ public class OpmlAssignFragment extends Fragment implements ContextualUndoAdapte
 
     private void importFeeds(List<Feed> feeds){
         for(Feed feed : feeds){
-            if (feed.getCategoryId() > 0){
+            if (feed.getCategoryId() != null && feed.getCategoryId() > 0){
                 databaseHandler.addFeed(feed.getCategoryId(), feed, true);
             }
         }

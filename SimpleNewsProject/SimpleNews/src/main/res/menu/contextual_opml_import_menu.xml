@@ -7,11 +7,12 @@
         android:icon="@android:drawable/ic_menu_delete"
         app:showAsAction="never"
         android:title="@string/feed_selection_remove"></item>
-    <item
-         android:id="@+id/menu_item_assign"
-         app:showAsAction="ifRoom"
-         android:title="Share"
-         android:icon="@android:drawable/ic_menu_set_as"
-         />
+    <group
+        android:id="@+id/menu_item_assign"
+        app:showAsAction="ifRoom"
+        android:title="Share"
+        android:menuCategory="container"
+        android:icon="@android:drawable/ic_menu_set_as">
+     </group>
 
 </menu>

@@ -28,7 +28,7 @@ public interface IPersistableObject<E> {
      *
      * @param items
      */
-    void store(List<E> items);
+    long[] store(List<E> items);
 
     /**
      * Delete supplied items in DB

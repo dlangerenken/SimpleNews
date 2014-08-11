@@ -1,5 +1,4 @@
-import android.database.Cursor;
-import android.test.AndroidTestCase;
+
 import android.test.InstrumentationTestCase;
 
 import junit.framework.Assert;

@@ -179,10 +179,7 @@ public class CategoryUpdater {
     }
 
     private void deleteDeprecatedEntries() {
-        Long deprecatedTime = PrefUtilities.getInstance().getDeprecatedTime();
-        if (deprecatedTime != null){
-            databaseHandler.deleteDeprecatedEntries(deprecatedTime);
-        }
+        databaseHandler.deleteDeprecatedEntries(PrefUtilities.getInstance().getDeprecatedTime());
     }
 
     private void getShortenedLinks(final List<Entry> entries) {

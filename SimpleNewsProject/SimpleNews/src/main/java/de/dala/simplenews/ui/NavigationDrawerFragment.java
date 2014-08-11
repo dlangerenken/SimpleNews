@@ -43,7 +43,6 @@ public class NavigationDrawerFragment extends Fragment implements FragmentManage
     public static final int SETTINGS = 3;
     public static final int RATING = 4;
     public static final int IMPORT = 5;
-    public static final int EXPORT = 6;
 
     /**
      * A pointer to the current callbacks instance (the Activity).
@@ -95,7 +94,15 @@ public class NavigationDrawerFragment extends Fragment implements FragmentManage
         mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                selectItem(position);
+                NavDrawerItem item = (NavDrawerItem) parent.getItemAtPosition(position);
+                switch (item.getType()){
+                    case NavDrawerItem.MAIN_ITEM:
+                        selectItem(item);
+                        break;
+                    case NavDrawerItem.SETTING_ITEM:
+                        selectItem(item);
+                        break;
+                }
             }
         });
         verticalLine = mDrawerView.findViewById(R.id.vertical_line);
@@ -202,12 +209,14 @@ public class NavigationDrawerFragment extends Fragment implements FragmentManage
             navMenuIcons = getResources()
                     .obtainTypedArray(R.array.nav_drawer_icons);
             navDrawerItems = new ArrayList<NavDrawerItem>();
-            navDrawerItems.add(new NavDrawerItem(navMenuTitles[HOME], navMenuIcons.getResourceId(HOME, -1)));
-            navDrawerItems.add(new NavDrawerItem(navMenuTitles[CATEGORIES], navMenuIcons.getResourceId(CATEGORIES, -1)));
-            navDrawerItems.add(new NavDrawerItem(navMenuTitles[CHANGELOG], navMenuIcons.getResourceId(CHANGELOG, -1)));
-            navDrawerItems.add(new NavDrawerItem(navMenuTitles[SETTINGS], navMenuIcons.getResourceId(SETTINGS, -1)));
-            navDrawerItems.add(new NavDrawerItem(navMenuTitles[RATING], navMenuIcons.getResourceId(RATING, -1)));
-            navDrawerItems.add(new NavDrawerItem(navMenuTitles[IMPORT], navMenuIcons.getResourceId(IMPORT, -1)));
+            navDrawerItems.add(new NavDrawerItem(HOME, navMenuTitles[HOME], navMenuIcons.getResourceId(HOME, -1)));
+            navDrawerItems.add(new NavDrawerItem(CATEGORIES, navMenuTitles[CATEGORIES], navMenuIcons.getResourceId(CATEGORIES, -1)));
+            navDrawerItems.add(new NavDrawerItem(RATING, navMenuTitles[RATING], navMenuIcons.getResourceId(RATING, -1)));
+
+            // navDrawerItems.add(new NavDrawerItem(-1, navMenuTitles[SETTINGS], -1, NavDrawerItem.HEADER));
+            navDrawerItems.add(new NavDrawerItem(CHANGELOG, navMenuTitles[CHANGELOG], navMenuIcons.getResourceId(CHANGELOG, -1), NavDrawerItem.SETTING_ITEM));
+            navDrawerItems.add(new NavDrawerItem(SETTINGS, navMenuTitles[SETTINGS], navMenuIcons.getResourceId(SETTINGS, -1), NavDrawerItem.SETTING_ITEM));
+            navDrawerItems.add(new NavDrawerItem(IMPORT, navMenuTitles[IMPORT], navMenuIcons.getResourceId(IMPORT, -1), NavDrawerItem.SETTING_ITEM));
 
             navMenuIcons.recycle();
             // set up the drawer's list view with items and click listener
@@ -216,14 +225,14 @@ public class NavigationDrawerFragment extends Fragment implements FragmentManage
         }
     }
 
-    private void selectItem(int position) {
+    private void selectItem(NavDrawerItem item) {
         //checkItem(position, true);
 
         if (mDrawerLayout != null) {
             mDrawerLayout.closeDrawer(mFragmentContainerView);
         }
         if (mCallbacks != null) {
-            mCallbacks.onNavigationDrawerItemSelected(position);
+            mCallbacks.onNavigationDrawerItemSelected(item.getId());
         }
     }
 

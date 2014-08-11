@@ -47,12 +47,10 @@ public class OpmlFragment extends Fragment implements OpmlImportFragment.OnFeeds
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        //setRetainInstance(true);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        //setHasOptionsMenu(true);
         return inflater.inflate(R.layout.opml_view, container, false);
     }
 

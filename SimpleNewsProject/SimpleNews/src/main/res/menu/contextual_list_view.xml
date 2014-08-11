@@ -25,6 +25,9 @@
     android:id="@+id/menu_item_deselect_all"
     android:title="@string/deselect_all_context_list"
     app:showAsAction="never" />
-
+    <item
+        android:id="@+id/menu_item_delete"
+        android:title="@string/menu_delete_entry"
+        app:showAsAction="never" />
 
 </menu>

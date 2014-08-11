@@ -77,7 +77,12 @@ public class PersistableCategories implements IPersistableObject<Category> {
     }
 
     @Override
-    public void store(List<Category> items) {
+    public long[] store(List<Category> items) {
+        if (items == null){
+            return null;
+        }
+        long[] ids = new long[items.size()];
+        int current = 0;
         for(Category category : items){
             ContentValues values = new ContentValues();
             values.put(CATEGORY_ID, category.getId());
@@ -87,7 +92,7 @@ public class PersistableCategories implements IPersistableObject<Category> {
             values.put(CATEGORY_VISIBLE, category.isVisible() ? 1 : 0);
 
             Long categoryId = db.replace(TABLE_CATEGORY, null, values);
-
+            ids[current++] = categoryId;
             category.setId(categoryId);
 
             values = new ContentValues();
@@ -99,6 +104,7 @@ public class PersistableCategories implements IPersistableObject<Category> {
                 mPersistableFeeds.store(category.getFeeds());
             }
         }
+        return ids;
     }
 
     @Override

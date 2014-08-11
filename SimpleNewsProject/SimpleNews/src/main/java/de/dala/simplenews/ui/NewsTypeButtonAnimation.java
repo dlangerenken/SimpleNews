@@ -184,7 +184,7 @@ public class NewsTypeButtonAnimation  {
 
         public void appear() {
             mHandler.removeCallbacks(mRunnable);
-            mHandler.postDelayed(mRunnable, 200);
+            mHandler.postDelayed(mRunnable, 800);
         }
 
         public void interrupt() {

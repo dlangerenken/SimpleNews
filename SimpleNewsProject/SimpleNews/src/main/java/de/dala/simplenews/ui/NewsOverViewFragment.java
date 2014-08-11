@@ -207,7 +207,7 @@ public class NewsOverViewFragment extends Fragment implements ViewPager.OnPageCh
             onPageSelected(0);
         }
 
-        initNewsTypeIcon();
+        initNewsTypeIcon(null); //rootView.findViewById(R.id.news_layer)); //null
         return rootView;
     }
 
@@ -248,10 +248,11 @@ public class NewsOverViewFragment extends Fragment implements ViewPager.OnPageCh
     private ImageView mainIcon;
     private FloatingActionButton button;
 
-    private void initNewsTypeIcon(){
+    private void initNewsTypeIcon(View rootLayer){
         mainIcon = new ImageView(getActivity());
         button = new FloatingActionButton.Builder(getActivity())
                 .setContentView(mainIcon)
+                .setAttachingView(rootLayer)
                 .build();
 
         int subButtonSize = getResources().getDimensionPixelSize(R.dimen.sub_action_button_size_medium);
@@ -279,6 +280,7 @@ public class NewsOverViewFragment extends Fragment implements ViewPager.OnPageCh
                 .addSubActionView(subactionButton3)
                 .setRadius(actionMenuRadius)
                 .attachTo(button)
+                .setAttachingView(rootLayer)
                 .build();
         updateNewsIcon();
     }

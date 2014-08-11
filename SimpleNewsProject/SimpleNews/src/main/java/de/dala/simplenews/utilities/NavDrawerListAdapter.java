@@ -52,31 +52,75 @@ public class NavDrawerListAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+        NavDrawerItem item = navDrawerItems.get(position);
+        switch (item.getType()){
+            case NavDrawerItem.MAIN_ITEM:
+                return getMainItemView(position, convertView, parent, item);
+            case NavDrawerItem.BORDER:
+                return getBorderView(position, convertView, parent, item);
+            case NavDrawerItem.SETTING_ITEM:
+                return getSettingItemView(position, convertView, parent, item);
+            case NavDrawerItem.HEADER:
+                return getHeaderView(position, convertView, parent, item);
+            default: return getMainItemView(position, convertView, parent, item);
+        }
+    }
+
+
+    private View getHeaderView(int position, View convertView, ViewGroup parent, NavDrawerItem item) {
         if (convertView == null) {
             LayoutInflater mInflater = LayoutInflater.from(context);
-            convertView = mInflater.inflate(R.layout.drawer_list_item, null);
+            convertView = mInflater.inflate(R.layout.drawer_list_header_item, null);
+        }
+
+        TextView txtTitle = (TextView) convertView.findViewById(R.id.title);
+        View leftBorder = convertView.findViewById(R.id.left_border);
+        //View rightBorder = convertView.findViewById(R.id.right_border);
+        UIUtils.setBackground(leftBorder, colorDrawable);
+        //UIUtils.setBackground(rightBorder, colorDrawable);
+        txtTitle.setText(item.getTitle());
+
+        convertView.setEnabled(false);
+        return convertView;
+    }
+
+    private View getBorderView(int position, View convertView, ViewGroup parent, NavDrawerItem item) {
+        if (convertView == null) {
+            LayoutInflater mInflater = LayoutInflater.from(context);
+            convertView = mInflater.inflate(R.layout.drawer_list_border_item, null);
+        }
+        View borderView = convertView.findViewById(R.id.view);
+        convertView.setEnabled(false);
+        UIUtils.setBackground(borderView, colorDrawable);
+        return convertView;
+    }
+
+    private View getMainItemView(int position, View convertView, ViewGroup parent, NavDrawerItem item) {
+        if (convertView == null) {
+            LayoutInflater mInflater = LayoutInflater.from(context);
+            convertView = mInflater.inflate(R.layout.drawer_list_main_item, null);
         }
 
         ImageView imgIcon = (ImageView) convertView.findViewById(R.id.icon);
         TextView txtTitle = (TextView) convertView.findViewById(R.id.title);
-        TextView txtCount = (TextView) convertView.findViewById(R.id.counter);
 
         StateListDrawable stateList = UIUtils.getStateListDrawableByColorDrawable(colorDrawable);
-        convertView.setBackgroundDrawable(stateList);
+
+        UIUtils.setBackground(convertView, stateList);
         txtTitle.setTextColor(colorStateList);
 
-        imgIcon.setImageResource(navDrawerItems.get(position).getIcon());
-        txtTitle.setText(navDrawerItems.get(position).getTitle());
+        imgIcon.setImageResource(item.getIcon());
+        txtTitle.setText(item.getTitle());
 
-        // displaying count
-        // check whether it set visible or not
-        if (navDrawerItems.get(position).getCounterVisibility()) {
-            txtCount.setText(navDrawerItems.get(position).getCount());
-        } else {
-            // hide the counter view
-            txtCount.setVisibility(View.GONE);
-        }
         return convertView;
+    }
+
+    private View getSettingItemView(int position, View convertView, ViewGroup parent, NavDrawerItem item) {
+        if (convertView == null) {
+            LayoutInflater mInflater = LayoutInflater.from(context);
+            convertView = mInflater.inflate(R.layout.drawer_list_setting_item, null);
+        }
+        return getMainItemView(position, convertView, parent, item);
     }
 
     public void setCategoryDrawable(Drawable colorDrawable) {

@@ -83,4 +83,8 @@
     <string name="remove_old_entries_summary">Veraltete Nachrichten löschen?</string>
     <string name="remove_old_entries__title">Aktualisierungs-Intervall</string>
 
+    <string name="opml_url">URL-Adresse oder Inhalt einer OPML-Datei angeben</string>
+    <string name="navdrawer_settings">Einstellungen</string>
+    <string name="menu_delete_entry">Löschen</string>
+    <string name="not_valid_url_nor_opml_file">Der eingegebene Text ist weder in einem validen OPML-Format, noch eine valide URL.</string>
 </resources>

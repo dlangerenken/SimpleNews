@@ -12,6 +12,7 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.Build;
+import android.os.Handler;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -33,6 +34,7 @@ import static com.nineoldandroids.view.ViewPropertyAnimator.animate;
 
 public class FloatingActionMenu {
 
+    private View mAttachingView;
     /** Reference to the view (usually a button) to trigger the menu to show */
     private View mainActionView;
     /** The angle (in degrees, modulus 360) which the circular menu starts from  */
@@ -62,7 +64,7 @@ public class FloatingActionMenu {
      * @param animationHandler
      * @param animated
      */
-    public FloatingActionMenu(View mainActionView,
+    public FloatingActionMenu(View attachingView, View mainActionView,
                               int startAngle,
                               int endAngle,
                               int radius,
@@ -71,6 +73,7 @@ public class FloatingActionMenu {
                               boolean animated,
                               MenuStateChangeListener stateChangeListener) {
         this.mainActionView = mainActionView;
+        this.mAttachingView = attachingView;
         this.startAngle = startAngle;
         this.endAngle = endAngle;
         this.radius = radius;
@@ -110,6 +113,24 @@ public class FloatingActionMenu {
         return mainActionView;
     }
 
+    Runnable currentOpenClosingRunnable;
+    Handler handler;
+    public void open(final boolean animated, int ms){
+        open(animated);
+        if (handler == null){
+            handler = new Handler();
+        }
+        if (currentOpenClosingRunnable != null){
+            handler.removeCallbacks(currentOpenClosingRunnable);
+        }
+        currentOpenClosingRunnable = new Runnable() {
+            @Override
+            public void run() {
+                close(animated);
+            }
+        };
+        handler.postDelayed(currentOpenClosingRunnable, ms);
+    }
     /**
      * Simply opens the menu by doing necessary calculations.
      * @param animated if true, this action is executed by the current {@link MenuAnimationHandler}
@@ -200,7 +221,7 @@ public class FloatingActionMenu {
             close(animated);
         }
         else {
-            open(animated);
+            open(animated, 5000);
         }
     }
 
@@ -311,7 +332,10 @@ public class FloatingActionMenu {
      * @return the main content view
      */
     public View getActivityContentView() {
-        return ((Activity)mainActionView.getContext()).getWindow().getDecorView().findViewById(android.R.id.content);
+        if (mAttachingView == null) {
+            return ((Activity) mainActionView.getContext()).getWindow().getDecorView().findViewById(android.R.id.content);
+        }
+        return mAttachingView;
     }
 
     /**
@@ -419,6 +443,7 @@ public class FloatingActionMenu {
         private MenuAnimationHandler animationHandler;
         private boolean animated;
         private MenuStateChangeListener stateChangeListener;
+        private View attachingView;
 
         public Builder(Activity activity) {
             subActionItems = new ArrayList<Item>();
@@ -487,6 +512,11 @@ public class FloatingActionMenu {
             return this;
         }
 
+        public Builder setAttachingView(View view){
+            attachingView = view;
+            return this;
+        }
+
         public Builder disableAnimations() {
             animated = false;
             return this;
@@ -509,7 +539,7 @@ public class FloatingActionMenu {
         }
 
         public FloatingActionMenu build() {
-            return new FloatingActionMenu(actionView,
+            return new FloatingActionMenu(attachingView, actionView,
                     startAngle,
                     endAngle,
                     radius,

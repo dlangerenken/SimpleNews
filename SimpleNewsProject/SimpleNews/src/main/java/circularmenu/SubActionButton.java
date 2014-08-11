@@ -6,12 +6,12 @@ package circularmenu;
 
 import android.app.Activity;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.FrameLayout;
 
 import de.dala.simplenews.R;
+import de.dala.simplenews.utilities.UIUtils;
 
 /**
  * A simple button implementation with a similar look an feel to{@link FloatingActionButton}.
@@ -47,7 +47,7 @@ public class SubActionButton extends FrameLayout {
         else {
             backgroundDrawable = backgroundDrawable.mutate().getConstantState().newDrawable();
         }
-        setBackgroundResource(backgroundDrawable);
+        UIUtils.setBackground(this, backgroundDrawable);
         if(contentView != null) {
             setContentView(contentView, contentParams);
         }
@@ -86,15 +86,6 @@ public class SubActionButton extends FrameLayout {
      */
     public View getContentView() {
         return contentView;
-    }
-
-    private void setBackgroundResource(Drawable drawable) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            setBackground(drawable);
-        }
-        else {
-            setBackgroundDrawable(drawable);
-        }
     }
 
     /**

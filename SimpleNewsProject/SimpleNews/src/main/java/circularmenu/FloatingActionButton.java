@@ -7,7 +7,6 @@ package circularmenu;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.View;
@@ -15,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import de.dala.simplenews.R;
+import de.dala.simplenews.utilities.UIUtils;
 
 /**
  * An alternative Floating Action Button implementation that can be independently placed in
@@ -35,6 +35,7 @@ public class FloatingActionButton extends FrameLayout {
     public static final int POSITION_TOP_LEFT = 8;
 
     private View contentView;
+    private View mAttachingView;
 
     /**
      * Constructor that takes parameters collected using {@link FloatingActionMenu.Builder}
@@ -46,10 +47,10 @@ public class FloatingActionButton extends FrameLayout {
      * @param contentView
      * @param contentParams
      */
-    public FloatingActionButton(Activity activity, LayoutParams layoutParams, int theme, Drawable backgroundDrawable, int position, View contentView, FrameLayout.LayoutParams contentParams) {
+    public FloatingActionButton(View attachingView, Activity activity, LayoutParams layoutParams, int theme, Drawable backgroundDrawable, int position, View contentView, FrameLayout.LayoutParams contentParams) {
         super(activity);
         setPosition(position, layoutParams);
-
+        mAttachingView = attachingView;
         // If no custom backgroundDrawable is specified, use the background drawable of the theme.
         if(backgroundDrawable == null) {
             if(theme == THEME_LIGHT)
@@ -57,7 +58,7 @@ public class FloatingActionButton extends FrameLayout {
             else
                 backgroundDrawable = activity.getResources().getDrawable(R.drawable.button_action_dark_selector);
         }
-        setBackgroundResource(backgroundDrawable);
+        UIUtils.setBackground(this, backgroundDrawable);
         if(contentView != null) {
             setContentView(contentView, contentParams);
         }
@@ -145,16 +146,10 @@ public class FloatingActionButton extends FrameLayout {
      * @return the main content view
      */
     public View getActivityContentView() {
-        return ((Activity)getContext()).getWindow().getDecorView().findViewById(android.R.id.content);
-    }
-
-    private void setBackgroundResource(Drawable drawable) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            setBackground(drawable);
+        if (mAttachingView == null){
+            return ((Activity)getContext()).getWindow().getDecorView().findViewById(android.R.id.content);
         }
-        else {
-            setBackgroundDrawable(drawable);
-        }
+        return mAttachingView;
     }
 
     /**
@@ -169,6 +164,7 @@ public class FloatingActionButton extends FrameLayout {
         private int position;
         private View contentView;
         private LayoutParams contentParams;
+        private View attachingView;
 
         public Builder(Activity activity) {
             this.activity = activity;
@@ -202,6 +198,11 @@ public class FloatingActionButton extends FrameLayout {
             return setBackgroundDrawable(activity.getResources().getDrawable(drawableId));
         }
 
+        public Builder setAttachingView(View attachingView){
+            this.attachingView = attachingView;
+            return this;
+        }
+
         public Builder setPosition(int position) {
             this.position = position;
             return this;
@@ -218,7 +219,7 @@ public class FloatingActionButton extends FrameLayout {
         }
 
         public FloatingActionButton build() {
-            return new FloatingActionButton(activity,
+            return new FloatingActionButton(attachingView, activity,
                     layoutParams,
                     theme,
                     backgroundDrawable,

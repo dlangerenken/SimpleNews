@@ -7,8 +7,7 @@
         <item>Änderungen</item>
         <item>Einstellungen</item>
         <item>Bewerte SimpleNews!</item>
-        <item>Feeds imporiteren</item>
-        <item>Feeds exportieren</item>
+        <item>Feeds importieren</item>
     </string-array>
 
     <string-array name="listOptions">

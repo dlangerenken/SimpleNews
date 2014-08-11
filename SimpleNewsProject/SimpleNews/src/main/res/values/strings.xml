@@ -97,11 +97,8 @@
     <string name="is_loading">Looking for feeds to show</string>
     <string name="remove_old_entries_summary">Delete deprecated news?</string>
     <string name="remove_old_entries__title">Refresh-Interval</string>
-    <string name="opml_hint">&lt;?xml version="1.0" encoding="UTF-8"?&gt; \n
-&lt;opml version="1.0"&gt; \n
- &lt;body&gt; \n
-     &lt;outline title="Quotes of the Day" description="Four humorous quotations" htmlUrl="http://www.quotationspage.com/qotd.html" xmlUrl="http://www.quotationspage.com/data/qotd.rss" type="rss" text="Quotes of the Day"/&gt; \n
-     &lt;/body&gt; \n
-&lt;/opml&gt;
-</string>
+    <string name="opml_url">Please enter the url or the content of a valid opml-file</string>
+    <string name="navdrawer_settings">Settings</string>
+    <string name="menu_delete_entry">Delete</string>
+    <string name="not_valid_url_nor_opml_file">Sorry, but the entered text neither is a valid url nor contains valid content of an opml-file.</string>
 </resources>

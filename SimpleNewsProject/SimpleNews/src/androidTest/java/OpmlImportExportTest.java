@@ -39,6 +39,5 @@ public class OpmlImportExportTest extends InstrumentationTestCase {
         raw = getInstrumentation().getContext().getResources().openRawResource(R.raw.testopml2);
         elements = OpmlReader.importFile(new InputStreamReader(raw));
         Assert.assertNotNull(elements);
-
     }
 }

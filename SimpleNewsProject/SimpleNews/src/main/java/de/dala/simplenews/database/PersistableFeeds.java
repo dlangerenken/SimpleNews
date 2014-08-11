@@ -79,7 +79,12 @@ public class PersistableFeeds implements IPersistableObject<Feed>{
     }
 
     @Override
-    public void store(List<Feed> items) {
+    public long[] store(List<Feed> items) {
+        if (items == null){
+            return null;
+        }
+        long[] ids = new long[items.size()];
+        int current = 0;
         for (Feed feed : items){
             if (feed.getCategoryId() == null){
                 feed.setCategoryId(mCategoryId);
@@ -97,6 +102,7 @@ public class PersistableFeeds implements IPersistableObject<Feed>{
 		     * Inserting Row
 		     */
             Long id = db.replace(TABLE_FEED, null, values);
+            ids[current++] = id;
             feed.setId(id);
 
             if (mExcludeEntries == null || !mExcludeEntries) {
@@ -104,6 +110,7 @@ public class PersistableFeeds implements IPersistableObject<Feed>{
                 mPersistableEntries.store(feed.getEntries());
             }
         }
+        return ids;
     }
 
     @Override

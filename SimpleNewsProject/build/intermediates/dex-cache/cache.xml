@@ -74,16 +74,16 @@
         revision="19.1.0"
         sha1="3499ceba05ca1f6037c6a2fad73df8f636224a28"/>
     <item
-        dex="D:\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\pre-dexed\debug\classes-132e214e1911b49340d0a325bfe9b0d68e0bbe44.jar"
-        jar="D:\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\exploded-aar\com.mcxiaoke.volley\library\1.0.6\classes.jar"
-        jumboMode="false"
-        revision="19.1.0"
-        sha1="a89762bbbd7f29b4b555f12961653b11d01c8c79"/>
-    <item
         dex="D:\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\pre-dexed\debug\crashlytics-1.1.11-1c44e6f2f28a365c9b62bbc4f925509d7aa0eb45.jar"
         jar="C:\Users\Daniel\.gradle\caches\modules-2\files-2.1\com.crashlytics.android\crashlytics\1.1.11\b8189e9eef2f07fae743e05d7fe7e69daebe98d1\crashlytics-1.1.11.jar"
         jumboMode="false"
         revision="19.1.0"
         sha1="b8189e9eef2f07fae743e05d7fe7e69daebe98d1"/>
+    <item
+        dex="D:\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\pre-dexed\debug\classes-132e214e1911b49340d0a325bfe9b0d68e0bbe44.jar"
+        jar="D:\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\exploded-aar\com.mcxiaoke.volley\library\1.0.6\classes.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="a89762bbbd7f29b4b555f12961653b11d01c8c79"/>
 
 </pre-dex-items>
