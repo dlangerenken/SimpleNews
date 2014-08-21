@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.widget.Toast;
 
 import de.dala.simplenews.R;
+import de.dala.simplenews.utilities.LightAlertDialog;
 import de.dala.simplenews.utilities.PrefUtilities;
 
 /**
@@ -45,7 +46,7 @@ public class RateMyApp {
     }
 
     public static void showRateDialog(final Context mContext) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        AlertDialog.Builder builder = LightAlertDialog.Builder.create(mContext);
         String message = String.format(mContext.getString(R.string.rate_my_app_desc), APP_TITLE);
         builder.setMessage(message)
                 .setTitle(String.format(mContext.getString(R.string.rate_my_app_title), APP_TITLE))

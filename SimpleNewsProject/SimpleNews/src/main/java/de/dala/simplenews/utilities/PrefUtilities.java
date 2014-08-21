@@ -132,7 +132,8 @@ public class PrefUtilities {
         }
         try {
             Long val = Long.parseLong(value);
-            return new Date().getTime() - val;
+            Long now = new Date().getTime();
+            return now - val;
         } catch (NumberFormatException e){
             return null;
         }

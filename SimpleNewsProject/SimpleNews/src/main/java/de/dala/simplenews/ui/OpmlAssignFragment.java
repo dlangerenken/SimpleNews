@@ -17,6 +17,8 @@ import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -43,12 +45,10 @@ public class OpmlAssignFragment extends Fragment implements ContextualUndoAdapte
     private IDatabaseHandler databaseHandler;
     private OpmlListAdapter adapter;
     private static final String FEED_LIST_KEY = "feeds";
-    private ContextualUndoAdapter undoAdapter;
     private ListView feedListView;
     private List<Category> categories;
     private List<Feed> feedsToImport;
     private ActionMode mActionMode;
-    private PagerSlidingTabStrip tabs;
 
     public OpmlAssignFragment() {
     }
@@ -79,29 +79,11 @@ public class OpmlAssignFragment extends Fragment implements ContextualUndoAdapte
         ((ActionBarActivity) getActivity()).getSupportActionBar().setTitle("Assigning Feeds");
         ((ActionBarActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        /*ViewPager pager = (ViewPager) rootView.findViewById(R.id.pager);
-        CategoryPagerAdapter adapter = new CategoryPagerAdapter(getChildFragmentManager());
-        pager.setAdapter(adapter);
-
-        tabs = (PagerSlidingTabStrip) rootView.findViewById(R.id.tabs);
-        tabs.setViewPager(pager);
-        tabs.setOnPageChangeListener(this);
-
-        final int pageMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4, getResources()
-                .getDisplayMetrics());
-        pager.setPageMargin(pageMargin);
-        
-        onPageSelected(0);
-        */
         return rootView;
     }
 
     private void initAdapter() {
         adapter = new OpmlListAdapter(getActivity(), feedsToImport);
-        //buggy because of handler
-        undoAdapter = new ContextualUndoAdapter(adapter, R.layout.undo_row, R.id.undo_row_undobutton, 3000, R.id.undo_row_texttv, this, new MyFormatCountDownCallback());
-        undoAdapter.setAbsListView(feedListView);
-        feedListView.setAdapter(undoAdapter);
     }
 
     @Override
@@ -119,34 +101,6 @@ public class OpmlAssignFragment extends Fragment implements ContextualUndoAdapte
 
     }
 
-    public class CategoryPagerAdapter extends FragmentPagerAdapter {
-
-        private FragmentManager mFragmentManager;
-
-        public CategoryPagerAdapter(FragmentManager fm) {
-            super(fm);
-            mFragmentManager = fm;
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            return categories.get(position).getName();
-        }
-
-        @Override
-        public int getCount() {
-            return categories.size();
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            return null;
-        }
-
-        private String makeFragmentName(int viewId, int index) {
-            return "android:switcher:" + viewId + ":" + index;
-        }
-    }
 
     private class OpmlListAdapter extends ArrayAdapter<Feed> {
 
@@ -176,27 +130,35 @@ public class OpmlAssignFragment extends Fragment implements ContextualUndoAdapte
                 ViewHolder viewHolder = new ViewHolder();
                 viewHolder.name = (TextView) convertView.findViewById(R.id.title);
                 viewHolder.link = (TextView) convertView.findViewById(R.id.url);
+                viewHolder.checkBox = (CheckBox) convertView.findViewById(R.id.checkbox);
                 convertView.setTag(viewHolder);
             }
-            ViewHolder holder = (ViewHolder) convertView.getTag();
+            final ViewHolder holder = (ViewHolder) convertView.getTag();
             holder.name.setText(feed.getTitle() == null ? context.getString(R.string.feed_title_not_found) : feed.getTitle());
             holder.link.setText(feed.getXmlUrl());
+
+            holder.checkBox.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View v) {
+                    onListItemClicked(position);
+                }
+            });
 
             convertView.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
+                    holder.checkBox.toggle();
                     onListItemCheck(position);
                     return false;
                 }
             });
-            convertView.setOnClickListener(new View.OnClickListener(){
+            convertView.setOnClickListener(new View.OnClickListener() {
 
                 @Override
                 public void onClick(View v) {
-                    onListItemCheck(position);
+                    onListItemClicked(position);
                 }
             });
-            convertView.setBackgroundResource(mSelectedItemIds.get(position) ? R.drawable.card_background_blue : R.drawable.card_background_white);
             int pad = getResources().getDimensionPixelSize(R.dimen.card_layout_padding);
             convertView.setPadding(pad, pad, pad, pad);
             return convertView;
@@ -229,24 +191,9 @@ public class OpmlAssignFragment extends Fragment implements ContextualUndoAdapte
         }
 
         class ViewHolder {
-            public ImageView category;
             public TextView name;
             public TextView link;
-        }
-    }
-
-    private class MyFormatCountDownCallback implements ContextualUndoAdapter.CountDownFormatter {
-
-        @Override
-        public String getCountDownString(long millisUntilFinished) {
-            if (getActivity() == null) {
-                return "";
-            }
-            int seconds = (int) Math.ceil((millisUntilFinished / 1000.0));
-            if (seconds > 0) {
-                return getResources().getQuantityString(R.plurals.countdown_seconds, seconds, seconds);
-            }
-            return getString(R.string.countdown_dismissing);
+            public CheckBox checkBox;
         }
     }
 
@@ -265,18 +212,22 @@ public class OpmlAssignFragment extends Fragment implements ContextualUndoAdapte
         adapter.toggleSelection(position);
         boolean hasCheckedItems = adapter.getSelectedCount() > 0;
 
+
         if (hasCheckedItems && mActionMode == null) {
             // there are some selected items, start the actionMode
             mActionMode = ((ActionBarActivity) getActivity()).startSupportActionMode(new ActionModeCallBack());
-        } else if (!hasCheckedItems && mActionMode != null) {
-            // there no selected items, finish the actionMode
-            mActionMode.finish();
         }
 
         if (mActionMode != null) {
             mActionMode.setTitle(String.valueOf(adapter.getSelectedCount()));
         }
     }
+
+    private void onListItemClicked(int position) {
+        Feed feed = adapter.getItem(position);
+        //TODO open dialog here :)
+    }
+
     private class ActionModeCallBack implements ActionMode.Callback {
 
         @Override

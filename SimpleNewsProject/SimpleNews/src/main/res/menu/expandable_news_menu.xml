@@ -4,7 +4,7 @@
     xmlns:compat="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/menu_refresh"
-        android:icon="@drawable/ic_menu_refresh_holo_dark"
+        android:icon="@drawable/ic_refresh"
         android:orderInCategory="0"
         android:title="@string/description_refresh"
         compat:showAsAction="always" />

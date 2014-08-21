@@ -32,6 +32,7 @@ import android.widget.ProgressBar;
 import java.io.Serializable;
 
 import de.dala.simplenews.R;
+import de.dala.simplenews.utilities.LightAlertDialog;
 
 
 /**
@@ -126,13 +127,13 @@ public class ColorPickerDialog extends DialogFragment implements OnColorSelected
         }
 
         if (mMessage != null) {
-            mAlertDialog = new AlertDialog.Builder(activity)
+            mAlertDialog = LightAlertDialog.Builder.create(activity)
                     .setTitle(mTitle)
                     .setMessage(mMessage)
                     .setView(view)
                     .create();
         } else {
-            mAlertDialog = new AlertDialog.Builder(activity)
+            mAlertDialog = LightAlertDialog.Builder.create(activity)
                     .setTitle(mTitle)
                     .setView(view)
                     .create();

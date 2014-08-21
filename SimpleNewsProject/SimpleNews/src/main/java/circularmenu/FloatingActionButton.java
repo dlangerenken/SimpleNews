@@ -22,8 +22,6 @@ import de.dala.simplenews.utilities.UIUtils;
  */
 public class FloatingActionButton extends FrameLayout {
 
-    public static final int THEME_LIGHT = 0;
-    public static final int THEME_DARK = 1;
 
     public static final int POSITION_TOP_CENTER = 1;
     public static final int POSITION_TOP_RIGHT = 2;
@@ -41,22 +39,18 @@ public class FloatingActionButton extends FrameLayout {
      * Constructor that takes parameters collected using {@link FloatingActionMenu.Builder}
      * @param activity a reference to the activity that will
      * @param layoutParams
-     * @param theme
      * @param backgroundDrawable
      * @param position
      * @param contentView
      * @param contentParams
      */
-    public FloatingActionButton(View attachingView, Activity activity, LayoutParams layoutParams, int theme, Drawable backgroundDrawable, int position, View contentView, FrameLayout.LayoutParams contentParams) {
+    public FloatingActionButton(View attachingView, Activity activity, LayoutParams layoutParams, Drawable backgroundDrawable, int position, View contentView, FrameLayout.LayoutParams contentParams) {
         super(activity);
         setPosition(position, layoutParams);
         mAttachingView = attachingView;
         // If no custom backgroundDrawable is specified, use the background drawable of the theme.
         if(backgroundDrawable == null) {
-            if(theme == THEME_LIGHT)
-                backgroundDrawable = activity.getResources().getDrawable(R.drawable.button_action_selector);
-            else
-                backgroundDrawable = activity.getResources().getDrawable(R.drawable.button_action_dark_selector);
+            backgroundDrawable = activity.getResources().getDrawable(R.drawable.button_action_selector);
         }
         UIUtils.setBackground(this, backgroundDrawable);
         if(contentView != null) {
@@ -175,17 +169,11 @@ public class FloatingActionButton extends FrameLayout {
             LayoutParams layoutParams = new LayoutParams(size, size, Gravity.BOTTOM | Gravity.RIGHT);
             layoutParams.setMargins(margin, margin, margin, margin);
             setLayoutParams(layoutParams);
-            setTheme(FloatingActionButton.THEME_LIGHT);
             setPosition(FloatingActionButton.POSITION_BOTTOM_RIGHT);
         }
 
         public Builder setLayoutParams(LayoutParams params) {
             this.layoutParams = params;
-            return this;
-        }
-
-        public Builder setTheme(int theme) {
-            this.theme = theme;
             return this;
         }
 
@@ -221,7 +209,6 @@ public class FloatingActionButton extends FrameLayout {
         public FloatingActionButton build() {
             return new FloatingActionButton(attachingView, activity,
                     layoutParams,
-                    theme,
                     backgroundDrawable,
                     position,
                     contentView,

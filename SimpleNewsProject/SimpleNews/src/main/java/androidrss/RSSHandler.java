@@ -189,16 +189,20 @@ public class RSSHandler extends org.xml.sax.helpers.DefaultHandler {
                 return;
             }
 
-            final int height = MediaAttributes.intValue(attributes, MEDIA_THUMBNAIL_HEIGHT, DEFAULT_DIMENSION);
-            final int width = MediaAttributes.intValue(attributes, MEDIA_THUMBNAIL_WIDTH, DEFAULT_DIMENSION);
-            final String url = MediaAttributes.stringValue(attributes, MEDIA_THUMBNAIL_URL);
+            try {
+                final int height = MediaAttributes.intValue(attributes, MEDIA_THUMBNAIL_HEIGHT, DEFAULT_DIMENSION);
+                final int width = MediaAttributes.intValue(attributes, MEDIA_THUMBNAIL_WIDTH, DEFAULT_DIMENSION);
+                final String url = MediaAttributes.stringValue(attributes, MEDIA_THUMBNAIL_URL);
 
-            if (url == null) {
-                // ignore invalid media:thumbnail elements which have no URL.
+                if (url == null) {
+                    // ignore invalid media:thumbnail elements which have no URL.
+                    return;
+                }
+                item.addThumbnail(new MediaThumbnail(android.net.Uri.parse(url), height, width));
+            }catch (NumberFormatException e){
                 return;
             }
 
-            item.addThumbnail(new MediaThumbnail(android.net.Uri.parse(url), height, width));
         }
 
     };

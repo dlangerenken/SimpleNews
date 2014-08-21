@@ -40,7 +40,7 @@ dependencies {
     compile 'com.nineoldandroids:library:2.4.0'
     compile 'com.astuetz:pagerslidingtabstrip:1.0.1'
     compile 'com.github.gabrielemariotti.changeloglib:library:1.5.1'
-    compile 'com.mcxiaoke.volley:library:1.0.+@aar'
+    compile 'com.mcxiaoke.volley:library:1.0.6@aar'
     compile ('de.keyboardsurfer.android.widget:crouton:1.8.4') {
         exclude module: 'support-v4'
     }

@@ -1,29 +1,48 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="@style/Theme.AppCompat.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
+    <style name="AppTheme" parent="@style/Theme.AppCompat.Light">
+        <item name="actionOverflowButtonStyle">@style/OverFlow10</item>
+        <item name="android:actionOverflowButtonStyle" tools:targetApi="11">@style/OverFlow</item>
+        <item name="android:actionModeStyle" tools:targetApi="14">@style/ContextualBar</item>
+        <item name="actionModeStyle">@style/ContextualBar14</item>
+        <item name="titleTextStyle">@style/TitleTextStyle13</item>
+        <item name="android:actionBarStyle" tools:targetApi="13">@style/ActionBarStyle</item>
+        <item name="actionBarStyle">@style/ActionBarStyle13</item>
+    </style>
+
+    <style name="ContextualBar14" parent="android:style/Widget.Holo.ActionMode">
+        <item name="actionMenuTextColor">#ffffff</item>
+    </style>
+
+    <style name="ContextualBar" parent="android:style/Widget.Holo.ActionMode" tools:targetApi="11">
+        <item name="android:actionMenuTextColor">#ffffff</item>
+    </style>
+
+    <style name="ActionBarStyle" tools:targetApi="13" parent="@android:style/Widget.Holo.Light.ActionBar">
+        <item name="android:titleTextStyle">@style/TitleTextStyle</item>
+    </style>
+
+    <style name="ActionBarStyle13" parent="@style/Widget.AppCompat.ActionBar">
+        <item name="titleTextStyle">@style/TitleTextStyle13</item>
+    </style>
+
+    <style name="TitleTextStyle" tools:targetApi="13" parent="@android:style/TextAppearance.Holo.Widget.ActionBar.Title">
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
+    <style name="TitleTextStyle13" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Title">
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
+    <!-- Styles -->
+    <style name="OverFlow" tools:targetApi="11" parent="@android:style/Widget.ActionButton.Overflow">
+        <item name="android:src">@drawable/ic_action_overflow</item>
+    </style>
+
+    <style name="OverFlow10" parent="@style/Widget.AppCompat.ActionButton.Overflow">
+        <item name="android:src">@drawable/ic_action_overflow</item>
     </style>
 
     <style name="ProgressBar.Horizontal" parent="@android:style/Widget.ProgressBar.Horizontal"/>
-
-    <style name="GNowProgressBar" parent="ProgressBar.Horizontal">
-        <item name="spb_stroke_separator_length">0dp</item>
-        <item name="spb_sections_count">2</item>
-        <item name="spb_speed">1.7</item>
-        <item name="spb_interpolator">spb_interpolator_acceleratedecelerate</item>
-        <item name="spb_mirror_mode">true</item>
-        <item name="spb_reversed">true</item>
-        <item name="spb_colors">@array/gplus_colors</item>
-    </style>
-
-    <style name="MyGNow" parent="ProgressBar.Horizontal">
-        <item name="spb_stroke_separator_length">0dp</item>
-        <item name="spb_sections_count">2</item>
-        <item name="spb_speed">1.7</item>
-        <item name="spb_interpolator">spb_interpolator_acceleratedecelerate</item>
-        <item name="spb_mirror_mode">true</item>
-        <item name="spb_reversed">true</item>
-        <item name="spb_colors">@array/my_colors</item>
-    </style>
 </resources>

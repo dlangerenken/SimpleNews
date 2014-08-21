@@ -50,6 +50,7 @@ import de.dala.simplenews.common.Feed;
 import de.dala.simplenews.database.DatabaseHandler;
 import de.dala.simplenews.network.NetworkCommunication;
 import de.dala.simplenews.parser.OpmlWriter;
+import de.dala.simplenews.utilities.LightAlertDialog;
 import de.dala.simplenews.utilities.UIUtils;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
@@ -63,7 +64,6 @@ public class CategoryFeedsFragment extends Fragment implements ContextualUndoAda
     private static final String CATEGORY_KEY = "category";
     private ListView feedListView;
     private FeedListAdapter adapter;
-    private ContextualUndoAdapter undoAdapter;
     private Category category;
     private ActionMode mActionMode;
     private ShareActionProvider shareActionProvider;
@@ -115,11 +115,7 @@ public class CategoryFeedsFragment extends Fragment implements ContextualUndoAda
 
     private void initAdapter() {
         adapter = new FeedListAdapter(getActivity(), category.getFeeds());
-        //buggy because of handler
-        undoAdapter = new ContextualUndoAdapter(adapter, R.layout.undo_row, R.id.undo_row_undobutton, 5000, R.id.undo_row_texttv, this, new MyFormatCountDownCallback());
-        //undoAdapter = new ContextualUndoAdapter(adapter, R.layout.undo_row, R.id.undo_row_undobutton);
-        undoAdapter.setAbsListView(feedListView);
-        feedListView.setAdapter(undoAdapter);
+        feedListView.setAdapter(adapter);
     }
 
     public void deleteItem(int position) {
@@ -139,7 +135,7 @@ public class CategoryFeedsFragment extends Fragment implements ContextualUndoAda
         final Button negative = (Button) inputLayout.findViewById(R.id.negative);
         final EditText input = (EditText) inputLayout.findViewById(R.id.input);
 
-        final AlertDialog dialog = new AlertDialog.Builder(getActivity()).setView(view).setTitle(R.string.new_feed_url_header).create();
+        final AlertDialog dialog = LightAlertDialog.Builder.create(getActivity()).setView(view).setTitle(R.string.new_feed_url_header).create();
 
         View.OnClickListener dialogClickListener = new View.OnClickListener() {
             @Override
@@ -264,7 +260,7 @@ public class CategoryFeedsFragment extends Fragment implements ContextualUndoAda
         final Button negative = (Button) inputLayout.findViewById(R.id.negative);
         final EditText input = (EditText) inputLayout.findViewById(R.id.input);
 
-        final AlertDialog dialog = new AlertDialog.Builder(getActivity()).setView(view).setTitle(R.string.rename_feed).create();
+        final AlertDialog dialog = LightAlertDialog.Builder.create(getActivity()).setView(view).setTitle(R.string.rename_feed).create();
 
         input.setText(feed.getXmlUrl());
         View.OnClickListener dialogClickListener = new View.OnClickListener() {

@@ -8,6 +8,8 @@
     <string name="changelog_title">Versionen</string>
     <string name="changelog_menu">Versionen</string>
     <string name="progress">Fortschritt</string>
+    <string name="navigation_drawer_open">Öffne die Navigation</string>
+    <string name="navigation_drawer_close">Schließe die Navigation</string>
     <string name="refresh">Aktualisieren</string>
     <string name="update_news">Aktualisiere Nachrichten…</string>
     <string name="add">Hinzufügen</string>
@@ -22,6 +24,15 @@
     <string name="change_category_name">Ändere den Namen der Kategorie</string>
     <string name="category_created">Kategorie erstellt</string>
     <string name="coming_soon">Demnächst…</string>
+
+    <string name="pref_config">Farbauswahl</string>
+    <string name="new_category">Neue Kategorie</string>
+    <string name="desc_list_item_icon">Item Icon</string>
+
+
+
+    <string name="menu_settings">Einstellungen</string>
+    <string name="title_activity_main">MainActivity</string>
 
     <string name="countdown_dismissing">Entfernen</string>
     <string name="itemdeleted">Eintrag gelöscht</string>
@@ -57,7 +68,6 @@
     <string name="restore_categories_message">Achtung! Alle gesicherten Daten werden gelöscht!</string>
     <string name="feed_title_not_found">Keinen Titel gefunden</string>
 
-    <string name="nav_no_entries">Keine Einträge gefunden</string>
     <string name="refresh_summary">Wie oft sollen Feeds aktualisieren</string>
     <string name="refresh_title">Aktualisierungs-Intervall</string>
     <string name="menu_recently">Gelesene</string>

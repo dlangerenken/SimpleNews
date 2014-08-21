@@ -43,7 +43,7 @@
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:layout_gravity="center"
-            android:background="@drawable/ic_action_edit" />
+            android:background="@drawable/ic_editing" />
 
         <View
             android:layout_width="2dp"
@@ -65,7 +65,7 @@
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:layout_gravity="center"
-            android:background="@drawable/ic_action_overflow" />
+            android:background="@drawable/ic_overflow" />
 
         <View
             android:layout_width="2dp"

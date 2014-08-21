@@ -5,7 +5,7 @@
 
     <item
         android:id="@+id/new_feed"
-        android:icon="@drawable/ic_action_new"
+        android:icon="@drawable/ic_new"
         android:orderInCategory="101"
         compat:showAsAction="always"
         android:title="@string/feed_selection_add" />

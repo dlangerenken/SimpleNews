@@ -454,17 +454,19 @@ public abstract class ExpandableListItemAdapter<T> extends ArrayAdapter<T> imple
     private static class ExpandCollapseHelper {
 
         public static void animateCollapsing(final View view) {
-            int origHeight = view.getHeight();
+            if (view != null) {
+                int origHeight = view.getHeight();
 
-            ValueAnimator animator = createHeightAnimator(view, origHeight, 0);
-            animator.addListener(new AnimatorListenerAdapter() {
+                ValueAnimator animator = createHeightAnimator(view, origHeight, 0);
+                animator.addListener(new AnimatorListenerAdapter() {
 
-                @Override
-                public void onAnimationEnd(final Animator animator) {
-                    view.setVisibility(View.GONE);
-                }
-            });
-            animator.start();
+                    @Override
+                    public void onAnimationEnd(final Animator animator) {
+                        view.setVisibility(View.GONE);
+                    }
+                });
+                animator.start();
+            }
         }
 
         public static void animateExpanding(final View view, final AbsListView listView) {
@@ -497,10 +499,12 @@ public abstract class ExpandableListItemAdapter<T> extends ArrayAdapter<T> imple
 
         private static View findDirectChild(final View view, final AbsListView listView) {
             View result = view;
-            View parent = (View) result.getParent();
-            while (parent != listView) {
-                result = parent;
-                parent = (View) result.getParent();
+            if (result != null) {
+                View parent = (View) result.getParent();
+                while (parent != listView) {
+                    result = parent;
+                    parent = (View) result.getParent();
+                }
             }
             return result;
         }
@@ -515,7 +519,9 @@ public abstract class ExpandableListItemAdapter<T> extends ArrayAdapter<T> imple
 
                     ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
                     layoutParams.height = value;
-                    view.setLayoutParams(layoutParams);
+                    if (view != null) {
+                        view.setLayoutParams(layoutParams);
+                    }
                 }
             });
             return animator;

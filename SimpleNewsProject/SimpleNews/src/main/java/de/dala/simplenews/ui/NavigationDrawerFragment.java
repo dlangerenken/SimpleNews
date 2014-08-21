@@ -38,11 +38,14 @@ import de.dala.simplenews.utilities.PrefUtilities;
  */
 public class NavigationDrawerFragment extends Fragment implements FragmentManager.OnBackStackChangedListener {
     public static final int HOME = 0;
-    public static final int CATEGORIES = 1;
-    public static final int CHANGELOG = 2;
-    public static final int SETTINGS = 3;
-    public static final int RATING = 4;
-    public static final int IMPORT = 5;
+    public static final int RECENT = 1;
+    public static final int FAVORITE = 2;
+    public static final int UNREAD = 3;
+    public static final int CATEGORIES = 4;
+    public static final int CHANGELOG = 5;
+    public static final int SETTINGS = 6;
+    public static final int RATING = 7;
+    public static final int IMPORT = 8;
 
     /**
      * A pointer to the current callbacks instance (the Activity).
@@ -210,6 +213,9 @@ public class NavigationDrawerFragment extends Fragment implements FragmentManage
                     .obtainTypedArray(R.array.nav_drawer_icons);
             navDrawerItems = new ArrayList<NavDrawerItem>();
             navDrawerItems.add(new NavDrawerItem(HOME, navMenuTitles[HOME], navMenuIcons.getResourceId(HOME, -1)));
+            navDrawerItems.add(new NavDrawerItem(RECENT, navMenuTitles[RECENT], navMenuIcons.getResourceId(RECENT, -1), NavDrawerItem.SETTING_ITEM));
+            navDrawerItems.add(new NavDrawerItem(FAVORITE, navMenuTitles[FAVORITE], navMenuIcons.getResourceId(FAVORITE, -1), NavDrawerItem.SETTING_ITEM));
+            navDrawerItems.add(new NavDrawerItem(UNREAD, navMenuTitles[UNREAD], navMenuIcons.getResourceId(UNREAD, -1), NavDrawerItem.SETTING_ITEM));
             navDrawerItems.add(new NavDrawerItem(CATEGORIES, navMenuTitles[CATEGORIES], navMenuIcons.getResourceId(CATEGORIES, -1)));
             navDrawerItems.add(new NavDrawerItem(RATING, navMenuTitles[RATING], navMenuIcons.getResourceId(RATING, -1)));
 

@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 
 import de.dala.simplenews.R;
@@ -24,11 +25,13 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        getSupportActionBar().setHomeButtonEnabled(true);
-        getSupportActionBar().setDisplayShowCustomEnabled(true);
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null){
+            actionBar.setHomeButtonEnabled(true);
+            actionBar.setDisplayShowCustomEnabled(true);
+            actionBar.setTitle(getString(R.string.simple_news_title));
+        }
         setupDrawer();
-
-        getSupportActionBar().setTitle(getString(R.string.simple_news_title));
         overridePendingTransition(R.anim.open_translate, R.anim.close_scale);
 
         RateMyApp.appLaunched(this);
@@ -87,6 +90,24 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
                 clearBackStack();
                 currentFragment = NewsOverViewFragment.getInstance(NewsOverViewFragment.ALL);
                 FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                transaction.replace(R.id.container, currentFragment).commit();
+                break;
+            case NavigationDrawerFragment.FAVORITE:
+                clearBackStack();
+                currentFragment = NewsOverViewFragment.getInstance(NewsOverViewFragment.FAV);
+                transaction = getSupportFragmentManager().beginTransaction();
+                transaction.replace(R.id.container, currentFragment).commit();
+                break;
+            case NavigationDrawerFragment.RECENT:
+                clearBackStack();
+                currentFragment = NewsOverViewFragment.getInstance(NewsOverViewFragment.RECENT);
+                transaction = getSupportFragmentManager().beginTransaction();
+                transaction.replace(R.id.container, currentFragment).commit();
+                break;
+            case NavigationDrawerFragment.UNREAD:
+                clearBackStack();
+                currentFragment = NewsOverViewFragment.getInstance(NewsOverViewFragment.UNREAD);
+                transaction = getSupportFragmentManager().beginTransaction();
                 transaction.replace(R.id.container, currentFragment).commit();
                 break;
             case NavigationDrawerFragment.CATEGORIES:

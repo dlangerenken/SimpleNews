@@ -3,6 +3,9 @@
     <!-- Nav Drawer Menu Items -->
     <string-array name="nav_drawer_items">
         <item>Home</item>
+        <item>Recent</item>
+        <item>Favorite</item>
+        <item>Unread</item>
         <item>Categories</item>
         <item>Changelog</item>
         <item>Settings</item>
@@ -11,12 +14,15 @@
     </string-array>
 
     <!-- Nav Drawer List Item Icons -->
-    <array name="nav_drawer_icons">
-        <item>@drawable/ic_nav_home</item>
+    <array name="nav_drawer_icons" translatable="false">
+        <item>@drawable/ic_home</item>
+        <item>@drawable/ic_recent</item>
+        <item>@drawable/ic_favorite</item>
+        <item>@drawable/ic_unread</item>
         <item>@drawable/ic_nav_categories</item>
         <item>@android:drawable/ic_menu_agenda</item>
         <item>@android:drawable/ic_menu_preferences</item>
-        <item>@drawable/ic_nav_fav</item>
+        <item>@drawable/ic_rating</item>
         <item>@android:drawable/ic_menu_upload</item>
         <item>@android:drawable/ic_menu_save</item>
     </array>
@@ -31,7 +37,7 @@
         <item>Every day</item>
     </string-array>
 
-    <string-array name="listValues">
+    <string-array name="listValues" translatable="false">
         <item>300000</item>
         <item>900000</item>
         <item>1800000</item>
@@ -50,7 +56,7 @@
         <item>Never</item>
     </string-array>
 
-    <string-array name="oldEntryValues">
+    <string-array name="oldEntryValues" translatable="false">
         <item>86400000</item>
         <item>259200000</item>
         <item>604800000</item>

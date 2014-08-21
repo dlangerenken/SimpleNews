@@ -127,10 +127,12 @@ public class CategoryUpdater {
         for (FetchingResult fetchingResult : results) {
             try {
                 RSSFeed rssFeed = parser.parse(new ByteArrayInputStream(fetchingResult.stringResult.getBytes("UTF-8")));
+
                 if (fetchingResult.feed.getTitle() == null) {
                     fetchingResult.feed.setTitle(rssFeed.getTitle());
                     databaseHandler.updateFeed(fetchingResult.feed);
                 }
+
                 String title = rssFeed.getTitle();
                 for (RSSItem item : rssFeed.getItems()) {
                     Entry entry = getEntryFromRSSItem(item, fetchingResult.feed.getId(), title);
@@ -255,11 +257,14 @@ public class CategoryUpdater {
             MediaEnclosure enclose = item.getEnclosure();
             String mediaUri = null;
             if (enclose != null) {
-                if (enclose.getMimeType().equals(IMAGE_JPEG) || enclose.getMimeType().equals(IMAGE_PNG)) {
-                    mediaUri = enclose.getUrl().toString();
+                if (enclose.getMimeType() != null && (enclose.getMimeType().equals(IMAGE_JPEG) || enclose.getMimeType().equals(IMAGE_PNG))) {
+                    mediaUri = enclose.getUrl() != null ? enclose.getUrl().toString() : null;
                 }
             }
-            String url = item.getLink().toString();
+            Object url = item.getLink();
+            if (url == null){
+                return null;
+            }
             Date pubDate = item.getPubDate();
             Long time = null;
             if (pubDate != null) {
@@ -269,8 +274,11 @@ public class CategoryUpdater {
             if (desc != null) {
                 desc = desc.replaceAll("<.*?>", "").replace("()", "").replace("&nbsp;", "");
             }
+            if (item.getTitle() == null){
+                return null;
+            }
 
-            return new Entry(null, feedId, category.getId(), item.getTitle() != null ? item.getTitle().trim() : item.getTitle(), desc != null ? desc.trim() : desc, time, source, url, mediaUri, null, null, false);
+            return new Entry(null, feedId, category.getId(), item.getTitle().trim(), desc != null ? desc.trim() : null, time, source, url.toString(), mediaUri, null, null, false);
         }
         return null;
     }

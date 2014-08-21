@@ -9,8 +9,7 @@
         android:id="@+id/tabs"
         android:fitsSystemWindows="true"
         android:layout_width="match_parent"
-        android:layout_height="48dip"
-        android:background="@drawable/background_tabs" />
+        android:layout_height="48dip" />
 
     <RelativeLayout
         android:id="@+id/bottom_view"
@@ -24,10 +23,5 @@
         android:layout_height="match_parent"
         android:layout_above="@+id/bottom_view"
         android:layout_below="@+id/tabs" />
-    <!--<RelativeLayout
-        android:layout_alignParentRight="true"
-        android:layout_alignParentBottom="true"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" android:id="@+id/news_layer"/> -->
 
 </RelativeLayout>

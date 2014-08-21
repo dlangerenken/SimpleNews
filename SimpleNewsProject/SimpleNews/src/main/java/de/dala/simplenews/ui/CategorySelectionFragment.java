@@ -41,6 +41,7 @@ import de.dala.simplenews.database.DatabaseHandler;
 import de.dala.simplenews.database.IDatabaseHandler;
 import de.dala.simplenews.parser.OpmlWriter;
 import de.dala.simplenews.utilities.ColorManager;
+import de.dala.simplenews.utilities.LightAlertDialog;
 import de.dala.simplenews.utilities.MyDynamicListView;
 import de.dala.simplenews.utilities.PrefUtilities;
 import de.dala.simplenews.utilities.UIUtils;
@@ -131,7 +132,7 @@ public class CategorySelectionFragment extends Fragment {
                 createCategoryClicked();
                 return true;
             case R.id.restore_categories:
-                new AlertDialog.Builder(getActivity()).setTitle(getActivity().getString(R.string.restore_categories_title)).setMessage(getActivity().getString(R.string.restore_categories_message))
+                LightAlertDialog.Builder.create(getActivity()).setTitle(getActivity().getString(R.string.restore_categories_title)).setMessage(getActivity().getString(R.string.restore_categories_message))
                         .setPositiveButton(getActivity().getString(R.string.restore_categories_yes), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
@@ -193,7 +194,7 @@ public class CategorySelectionFragment extends Fragment {
             }
         };
 
-        new AlertDialog.Builder(getActivity()).
+        LightAlertDialog.Builder.create(getActivity()).
                 setPositiveButton(getActivity().getString(R.string.submit), dialogClickListener).setNegativeButton(getActivity().getString(R.string.cancel), dialogClickListener).setTitle(getActivity().getString(R.string.create_category_1_2))
                 .setMessage(getActivity().getString(R.string.name_of_category)).setView(input).show();
     }
@@ -219,7 +220,7 @@ public class CategorySelectionFragment extends Fragment {
             }
         };
 
-        new AlertDialog.Builder(getActivity()).
+        LightAlertDialog.Builder.create(getActivity()).
                 setPositiveButton(R.string.rename, dialogClickListener).setNegativeButton(R.string.cancel, dialogClickListener).setTitle(R.string.category)
                 .setMessage(R.string.change_category_name).setView(input).show();
     }

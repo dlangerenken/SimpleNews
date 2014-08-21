@@ -6,8 +6,6 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.text.method.KeyListener;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,7 +20,6 @@ import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.net.URL;
 import java.util.List;
 
 import de.dala.simplenews.R;
@@ -97,7 +94,7 @@ public class  OpmlImportFragment extends Fragment {
             public void onClick(View v) {
                 if (opmlContentEditText.getText() != null && opmlContentEditText.getText().toString() != ""){
                     //content added
-                    importSring(opmlContentEditText.getText().toString());
+                    importString(opmlContentEditText.getText().toString());
                 }
             }
         });
@@ -108,7 +105,7 @@ public class  OpmlImportFragment extends Fragment {
         return rootView;
     }
 
-    private void importSring(String enteredText) {
+    private void importString(String enteredText) {
         enableProgressView(true);
         try {
             List<Feed> feeds = OpmlReader.importFile(new StringReader(enteredText));

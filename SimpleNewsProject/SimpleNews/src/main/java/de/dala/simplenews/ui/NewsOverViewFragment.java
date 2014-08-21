@@ -103,6 +103,7 @@ public class NewsOverViewFragment extends Fragment implements ViewPager.OnPageCh
         inflater.inflate(R.menu.news_overview_menu, menu);
         columnsMenu = menu.findItem(R.id.menu_columns);
         updateMenu();
+
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -153,14 +154,15 @@ public class NewsOverViewFragment extends Fragment implements ViewPager.OnPageCh
 
     private List<INewsTypeButton> getActiveINewsTypeFragments(){
         List<INewsTypeButton> fragments = new ArrayList<INewsTypeButton>();
-        for (Iterator<String> iterator = newsTypeTags.iterator();
-             iterator.hasNext(); )
-        {
-            Fragment fragment = getChildFragmentManager().findFragmentByTag(iterator.next());
-            if (fragment != null && fragment instanceof INewsTypeButton){
-                fragments.add((INewsTypeButton)fragment);
-            }else{
-                iterator.remove();
+        if (newsTypeTags != null) {
+            for (Iterator<String> iterator = newsTypeTags.iterator();
+                 iterator.hasNext(); ) {
+                Fragment fragment = getChildFragmentManager().findFragmentByTag(iterator.next());
+                if (fragment != null && fragment instanceof INewsTypeButton) {
+                    fragments.add((INewsTypeButton) fragment);
+                } else {
+                    iterator.remove();
+                }
             }
         }
         return fragments;
@@ -179,6 +181,7 @@ public class NewsOverViewFragment extends Fragment implements ViewPager.OnPageCh
 
 
         if (savedInstanceState != null){
+            //probably orientation change
             Serializable newsTypeTagsSerializable = savedInstanceState.getSerializable("newsTypeTags");
             if (newsTypeTagsSerializable != null && newsTypeTagsSerializable instanceof ArrayList<?>){
                 newsTypeTags = (ArrayList<String>) newsTypeTagsSerializable;
@@ -186,7 +189,11 @@ public class NewsOverViewFragment extends Fragment implements ViewPager.OnPageCh
             entryType = savedInstanceState.getInt("entryType", ALL);
             newsTypeModeChanged();
         }else{
-            newsTypeTags = new ArrayList<String>();
+            if (newsTypeTags != null){
+                //returning from backstack, data is fine, do nothing
+            }else{
+                newsTypeTags = new ArrayList<String>();
+            }
         }
 
         if (categories != null && !categories.isEmpty()) {
@@ -291,37 +298,37 @@ public class NewsOverViewFragment extends Fragment implements ViewPager.OnPageCh
                 subactionButton1.setTag(UNREAD);
                 subactionButton2.setTag(FAV);
                 subactionButton3.setTag(RECENT);
-                ((ImageView)subactionButton1.getContentView()).setImageDrawable(getResources().getDrawable(R.drawable.ic_nav_new));
-                ((ImageView)subactionButton2.getContentView()).setImageDrawable(getResources().getDrawable(R.drawable.ic_nav_favorite));
-                ((ImageView)subactionButton3.getContentView()).setImageDrawable(getResources().getDrawable(R.drawable.ic_nav_seen));
-                mainIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_nav_home));
+                ((ImageView)subactionButton1.getContentView()).setImageDrawable(getResources().getDrawable(R.drawable.ic_unread));
+                ((ImageView)subactionButton2.getContentView()).setImageDrawable(getResources().getDrawable(R.drawable.ic_favorite));
+                ((ImageView)subactionButton3.getContentView()).setImageDrawable(getResources().getDrawable(R.drawable.ic_recent));
+                mainIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_home));
                 break;
             case UNREAD:
                 subactionButton1.setTag(ALL);
                 subactionButton2.setTag(FAV);
                 subactionButton3.setTag(RECENT);
-                ((ImageView)subactionButton1.getContentView()).setImageDrawable(getResources().getDrawable(R.drawable.ic_nav_home));
-                ((ImageView)subactionButton2.getContentView()).setImageDrawable(getResources().getDrawable(R.drawable.ic_nav_favorite));
-                ((ImageView)subactionButton3.getContentView()).setImageDrawable(getResources().getDrawable(R.drawable.ic_nav_seen));
-                mainIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_nav_new));
+                ((ImageView)subactionButton1.getContentView()).setImageDrawable(getResources().getDrawable(R.drawable.ic_home));
+                ((ImageView)subactionButton2.getContentView()).setImageDrawable(getResources().getDrawable(R.drawable.ic_favorite));
+                ((ImageView)subactionButton3.getContentView()).setImageDrawable(getResources().getDrawable(R.drawable.ic_recent));
+                mainIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_unread));
                 break;
             case FAV:
                 subactionButton1.setTag(UNREAD);
                 subactionButton2.setTag(ALL);
                 subactionButton3.setTag(RECENT);
-                ((ImageView)subactionButton1.getContentView()).setImageDrawable(getResources().getDrawable(R.drawable.ic_nav_new));
-                ((ImageView)subactionButton2.getContentView()).setImageDrawable(getResources().getDrawable(R.drawable.ic_nav_home));
-                ((ImageView)subactionButton3.getContentView()).setImageDrawable(getResources().getDrawable(R.drawable.ic_nav_seen));
-                mainIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_nav_favorite));
+                ((ImageView)subactionButton1.getContentView()).setImageDrawable(getResources().getDrawable(R.drawable.ic_unread));
+                ((ImageView)subactionButton2.getContentView()).setImageDrawable(getResources().getDrawable(R.drawable.ic_home));
+                ((ImageView)subactionButton3.getContentView()).setImageDrawable(getResources().getDrawable(R.drawable.ic_recent));
+                mainIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_favorite));
                 break;
             case RECENT:
                 subactionButton1.setTag(UNREAD);
                 subactionButton2.setTag(FAV);
                 subactionButton3.setTag(ALL);
-                ((ImageView)subactionButton1.getContentView()).setImageDrawable(getResources().getDrawable(R.drawable.ic_nav_new));
-                ((ImageView)subactionButton2.getContentView()).setImageDrawable(getResources().getDrawable(R.drawable.ic_nav_favorite));
-                ((ImageView)subactionButton3.getContentView()).setImageDrawable(getResources().getDrawable(R.drawable.ic_nav_home));
-                mainIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_nav_seen));
+                ((ImageView)subactionButton1.getContentView()).setImageDrawable(getResources().getDrawable(R.drawable.ic_unread));
+                ((ImageView)subactionButton2.getContentView()).setImageDrawable(getResources().getDrawable(R.drawable.ic_favorite));
+                ((ImageView)subactionButton3.getContentView()).setImageDrawable(getResources().getDrawable(R.drawable.ic_home));
+                mainIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_recent));
                 break;
         }
     }
@@ -355,10 +362,6 @@ public class NewsOverViewFragment extends Fragment implements ViewPager.OnPageCh
     public void onPageScrollStateChanged(int i) {
     }
 
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-    }
 
     public void updateNews() {
         if (crouton != null) {

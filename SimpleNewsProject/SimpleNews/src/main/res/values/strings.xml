@@ -2,16 +2,11 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
     <string name="app_name">SimpleNews</string>
-    <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
-    <string name="drawer_open">Open navigation drawer</string>
-    <string name="drawer_close">Close navigation drawer</string>
     <string name="about_ok">OK</string>
     <string name="changelog_title">Changelog</string>
     <string name="changelog_menu">Changelog</string>
     <string name="progress">Progress</string>
-    <string name="quick_contact">Quick Contact</string>
-    <string name="item1">Item1</string>
     <string name="refresh">Refresh</string>
     <string name="update_news">Updating news…</string>
     <string name="coming_soon">Coming soon…</string>
@@ -63,10 +58,6 @@
     <string name="restore_categories_title">Do you want to restore the default settings?</string>
     <string name="restore_categories_message">Careful! All saved data will be removed!</string>
     <string name="feed_title_not_found">No title found</string>
-    <string name="nav_favorites">Favorites</string>
-    <string name="nav_no_entries">No entries found</string>
-    <string name="nav_recently_opened">Recently Opened</string>
-
     <!-- Content Description -->
     <string name="desc_list_item_icon">Item Icon</string>
 

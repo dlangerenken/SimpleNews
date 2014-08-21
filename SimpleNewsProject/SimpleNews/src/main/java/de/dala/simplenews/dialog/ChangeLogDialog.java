@@ -10,6 +10,7 @@ import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 
 import de.dala.simplenews.R;
+import de.dala.simplenews.utilities.LightAlertDialog;
 import it.gmariotti.changelibs.library.view.ChangeLogListView;
 
 /**
@@ -27,7 +28,7 @@ public class ChangeLogDialog extends DialogFragment {
                 Context.LAYOUT_INFLATER_SERVICE);
         ChangeLogListView chgList = (ChangeLogListView) layoutInflater.inflate(R.layout.changelog_fragment_dialog, null);
 
-        return new AlertDialog.Builder(getActivity())
+        return LightAlertDialog.Builder.create(getActivity())
                 .setTitle(R.string.changelog_title)
                 .setView(chgList)
                 .setPositiveButton(R.string.about_ok,

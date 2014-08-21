@@ -316,7 +316,7 @@ public class ExpandableNewsFragment extends Fragment implements SwipeRefreshLayo
     private void loadEntries(boolean forceRefresh, boolean showNewsInteraction) {
         setEmptyText(true);
         long timeForRefresh = PrefUtilities.getInstance().getTimeForRefresh();
-        if (forceRefresh || category.getLastUpdateTime() < new Date().getTime() - timeForRefresh) {
+        if (forceRefresh || (category != null && category.getLastUpdateTime() != null && category.getLastUpdateTime() < new Date().getTime() - timeForRefresh)) {
             refreshFeeds(showNewsInteraction);
         }else{
             simpleCursorLoader.startLoading();
@@ -364,8 +364,6 @@ public class ExpandableNewsFragment extends Fragment implements SwipeRefreshLayo
             Entry entry = selectedEntries.get(key);
             entry.setFavoriteDate((entry.getFavoriteDate() == null || entry.getFavoriteDate() == 0) ? new Date().getTime() : null);
             DatabaseHandler.getInstance().updateEntry(entry);
-            //  ImageView imageView = (ImageView) myExpandableListItemAdapter.getTitleView(key).findViewById(R.id.image);
-            //  setImageDrawable(imageView, entry);
         }
     }
 
@@ -375,8 +373,6 @@ public class ExpandableNewsFragment extends Fragment implements SwipeRefreshLayo
             Entry entry = selectedEntries.get(key);
             entry.setVisitedDate((entry.getVisitedDate() == null || entry.getVisitedDate() == 0) ? new Date().getTime() : null);
             DatabaseHandler.getInstance().updateEntry(entry);
-            //  ImageView imageView = (ImageView) myExpandableListItemAdapter.getTitleView(key).findViewById(R.id.image);
-            //  setImageDrawable(imageView, entry);
         }
     }
 
@@ -574,9 +570,9 @@ public class ExpandableNewsFragment extends Fragment implements SwipeRefreshLayo
     private void setImageDrawable(ImageView entryType, Entry entry) {
         Drawable drawable = null;
         if (entry.getFavoriteDate() != null && entry.getFavoriteDate() > 0) {
-            drawable = getResources().getDrawable(R.drawable.ic_nav_favorite);
+            drawable = getResources().getDrawable(R.drawable.ic_favorite);
         } else if (entry.getVisitedDate() != null && entry.getVisitedDate() > 0) {
-            drawable = getResources().getDrawable(R.drawable.ic_nav_recently_used);
+            drawable = getResources().getDrawable(R.drawable.ic_recent);
         }
         entryType.setImageDrawable(drawable);
     }
@@ -636,14 +632,16 @@ public class ExpandableNewsFragment extends Fragment implements SwipeRefreshLayo
                 }
             }
 
-            boolean shouldFinish = true;
+            boolean shouldFinish = false;
             // close action mode
             switch (item.getItemId()) {
                 case R.id.menu_item_save:
                     saveSelectedEntries(selectedEntries);
+                    shouldFinish = true;
                     break;
                 case R.id.menu_item_read:
                     markEntriesAsRead(selectedEntries);
+                    shouldFinish = true;
                     break;
                 case R.id.menu_item_select_all:
                     myExpandableListItemAdapter.selectAllIds();
@@ -651,9 +649,11 @@ public class ExpandableNewsFragment extends Fragment implements SwipeRefreshLayo
                     break;
                 case R.id.menu_item_deselect_all:
                     myExpandableListItemAdapter.deselectAllIds();
+                    shouldFinish = true;
                     break;
                 case R.id.menu_item_delete:
                     deleteSelectedEntries(selectedEntries);
+                    shouldFinish = true;
                     break;
             }
 

@@ -178,12 +178,12 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
         String upgradeQueryEntry = "ALTER TABLE " + TABLE_ENTRY + " ADD COLUMN " + ENTRY_IS_EXPANDED + " INTEGER";
         String upgradeQueryFeed = "ALTER TABLE " + TABLE_FEED + " ADD COLUMN " + FEED_HTML_URL + " TEXT";
 
-        if (oldVersion < 35 && newVersion >= 35) {
+        if (oldVersion < newVersion && newVersion >= 35) {
             db.execSQL(upgradeQueryVisited);
             db.execSQL(upgradeQueryFavorite);
         }
 
-        if (oldVersion < 42 && newVersion >= 42) {
+        if (oldVersion < newVersion && newVersion >= 42) {
             db.execSQL(upgradeQueryEntry);
             db.execSQL(upgradeQueryFeed);
         }
