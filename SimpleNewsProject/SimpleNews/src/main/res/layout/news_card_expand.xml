@@ -7,8 +7,7 @@
     <View
         android:id="@+id/colorBorder"
         android:layout_width="10dp"
-        android:layout_height="match_parent"
-        android:layout_alignParentLeft="true" />
+        android:layout_height="match_parent" />
 
     <TextView
         android:id="@+id/expand_card_main_inner_simple_title"
@@ -16,6 +15,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="2dp"
         android:layout_marginLeft="10dp"
+        android:layout_marginStart="10dp"
         android:singleLine="false" />
 
 

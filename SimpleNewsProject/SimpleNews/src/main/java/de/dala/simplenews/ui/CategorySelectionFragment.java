@@ -1,6 +1,5 @@
 package de.dala.simplenews.ui;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -40,6 +39,7 @@ import de.dala.simplenews.common.Feed;
 import de.dala.simplenews.database.DatabaseHandler;
 import de.dala.simplenews.database.IDatabaseHandler;
 import de.dala.simplenews.parser.OpmlWriter;
+import de.dala.simplenews.utilities.BaseNavigation;
 import de.dala.simplenews.utilities.ColorManager;
 import de.dala.simplenews.utilities.LightAlertDialog;
 import de.dala.simplenews.utilities.MyDynamicListView;
@@ -51,7 +51,7 @@ import de.keyboardsurfer.android.widget.crouton.Style;
 /**
  * Created by Daniel on 29.12.13.
  */
-public class CategorySelectionFragment extends Fragment {
+public class CategorySelectionFragment extends Fragment implements BaseNavigation {
 
     private static final String CATEGORIES_KEY = "categories";
     private static final String FROM_RSS_KEY = "rss";
@@ -269,6 +269,16 @@ public class CategorySelectionFragment extends Fragment {
             categories.remove(category);
         }
         adapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public String getTitle() {
+        return "CategorySelectionFragment";
+    }
+
+    @Override
+    public int getNavigationDrawerId() {
+        return NavigationDrawerFragment.CATEGORIES;
     }
 
     public interface OnCategoryClicked {

@@ -167,25 +167,28 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
 
     @Override
     public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP DATABASE " + DATABASE_NAME);
-        onCreate(db);
+        if (newVersion < oldVersion) {
+            db.execSQL("DROP DATABASE " + DATABASE_NAME);
+            onCreate(db);
+        }
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        String upgradeQueryVisited = "ALTER TABLE " + TABLE_ENTRY + " ADD COLUMN " + ENTRY_VISITED_DATE + " LONG";
-        String upgradeQueryFavorite = "ALTER TABLE " + TABLE_ENTRY + " ADD COLUMN " + ENTRY_FAVORITE_DATE + " LONG";
-        String upgradeQueryEntry = "ALTER TABLE " + TABLE_ENTRY + " ADD COLUMN " + ENTRY_IS_EXPANDED + " INTEGER";
-        String upgradeQueryFeed = "ALTER TABLE " + TABLE_FEED + " ADD COLUMN " + FEED_HTML_URL + " TEXT";
-
-        if (oldVersion < newVersion && newVersion >= 35) {
-            db.execSQL(upgradeQueryVisited);
-            db.execSQL(upgradeQueryFavorite);
-        }
-
-        if (oldVersion < newVersion && newVersion >= 42) {
-            db.execSQL(upgradeQueryEntry);
-            db.execSQL(upgradeQueryFeed);
+        if (oldVersion < newVersion){
+            //update might be necessary
+            if (oldVersion < 35 && newVersion >= 35){
+                String upgradeQueryVisited = "ALTER TABLE " + TABLE_ENTRY + " ADD COLUMN " + ENTRY_VISITED_DATE + " LONG;";
+                String upgradeQueryFavorite = "ALTER TABLE " + TABLE_ENTRY + " ADD COLUMN " + ENTRY_FAVORITE_DATE + " LONG;";
+                db.execSQL(upgradeQueryVisited);
+                db.execSQL(upgradeQueryFavorite);
+            }
+            if (oldVersion < 42 && newVersion >= 42){
+                String upgradeQueryEntry = "ALTER TABLE " + TABLE_ENTRY + " ADD COLUMN " + ENTRY_IS_EXPANDED + " INTEGER;";
+                String upgradeQueryFeed = "ALTER TABLE " + TABLE_FEED + " ADD COLUMN " + FEED_HTML_URL + " TEXT;";
+                db.execSQL(upgradeQueryEntry);
+                db.execSQL(upgradeQueryFeed);
+            }
         }
     }
 

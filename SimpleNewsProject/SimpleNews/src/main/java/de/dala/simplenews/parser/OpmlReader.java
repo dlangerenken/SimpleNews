@@ -55,6 +55,7 @@ public abstract class OpmlReader {
                         element.setDescription(xpp.getAttributeValue(null, OpmlSymbols.TEXT));
                         element.setXmlUrl(xpp.getAttributeValue(null, OpmlSymbols.XMLURL));
                         element.setHtmlUrl(xpp.getAttributeValue(null, OpmlSymbols.HTMLURL));
+                        element.setUrl(xpp.getAttributeValue(null, OpmlSymbols.URL));
                         element.setType(xpp.getAttributeValue(null, OpmlSymbols.TYPE));
                         elementList.add(element);
                     }
@@ -76,7 +77,16 @@ public abstract class OpmlReader {
     }
 
     private static boolean IsValidFeed(OpmlElement element) {
-        return element != null && element.getXmlUrl() != null &&  element.getXmlUrl() != "";
+        if (element == null){
+            return false;
+        }
+        if (element.getXmlUrl() == null || "".equals(element.getXmlUrl())){
+            if (element.getUrl() != null && !"".equals(element.getUrl())){
+                element.setXmlUrl(element.getUrl());
+                return true;
+            }
+        }
+        return true;
     }
 
     public static Feed convertOpmlToFeed(OpmlElement element) {

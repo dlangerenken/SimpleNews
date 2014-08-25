@@ -50,6 +50,7 @@ import de.dala.simplenews.common.Feed;
 import de.dala.simplenews.database.DatabaseHandler;
 import de.dala.simplenews.network.NetworkCommunication;
 import de.dala.simplenews.parser.OpmlWriter;
+import de.dala.simplenews.utilities.BaseNavigation;
 import de.dala.simplenews.utilities.LightAlertDialog;
 import de.dala.simplenews.utilities.UIUtils;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
@@ -58,7 +59,7 @@ import de.keyboardsurfer.android.widget.crouton.Style;
 /**
  * Created by Daniel on 29.12.13.
  */
-public class CategoryFeedsFragment extends Fragment implements ContextualUndoAdapter.DeleteItemCallback {
+public class CategoryFeedsFragment extends Fragment implements ContextualUndoAdapter.DeleteItemCallback, BaseNavigation {
 
 
     private static final String CATEGORY_KEY = "category";
@@ -377,6 +378,16 @@ public class CategoryFeedsFragment extends Fragment implements ContextualUndoAda
             DatabaseHandler.getInstance().removeFeeds(null, feed.getId(), false);
             category.getFeeds().remove(feed);
         }
+    }
+
+    @Override
+    public String getTitle() {
+        return "CategoryFeedsFragment";
+    }
+
+    @Override
+    public int getNavigationDrawerId() {
+        return NavigationDrawerFragment.CATEGORIES;
     }
 
     private class MyFormatCountDownCallback implements ContextualUndoAdapter.CountDownFormatter {

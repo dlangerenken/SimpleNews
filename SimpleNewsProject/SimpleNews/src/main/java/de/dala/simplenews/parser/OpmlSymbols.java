@@ -11,6 +11,7 @@ public final class OpmlSymbols {
     public static final String TEXT = "text";
     public static final String XMLURL = "xmlUrl";
     public static final String HTMLURL = "htmlUrl";
+    public static final String URL = "url";
     public static final String TYPE = "type";
     public static final String VERSION = "version";
     public static final String HEAD = "head";

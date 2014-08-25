@@ -36,6 +36,7 @@ import circularmenu.SubActionButton;
 import de.dala.simplenews.R;
 import de.dala.simplenews.common.Category;
 import de.dala.simplenews.database.DatabaseHandler;
+import de.dala.simplenews.utilities.BaseNavigation;
 import de.dala.simplenews.utilities.PrefUtilities;
 import de.keyboardsurfer.android.widget.crouton.Configuration;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
@@ -43,7 +44,7 @@ import de.keyboardsurfer.android.widget.crouton.Crouton;
 /**
  * Created by Daniel on 20.02.14.
  */
-public class NewsOverViewFragment extends Fragment implements ViewPager.OnPageChangeListener {
+public class NewsOverViewFragment extends Fragment implements ViewPager.OnPageChangeListener, BaseNavigation {
 
     private PagerSlidingTabStrip tabs;
 
@@ -66,6 +67,37 @@ public class NewsOverViewFragment extends Fragment implements ViewPager.OnPageCh
 
     public FloatingActionMenu getNewsTypeButton() {
         return newsTypeButton;
+    }
+    ViewPager pager;
+
+    @Override
+    public String getTitle() {
+        switch (entryType){
+            case ALL:
+                return "Home";
+            case FAV:
+                return "Favorite";
+            case RECENT:
+                return "Recent";
+            case UNREAD:
+                return "Unread";
+        };
+        return "News";
+    }
+
+    @Override
+    public int getNavigationDrawerId() {
+        switch (entryType){
+            case ALL:
+                return NavigationDrawerFragment.HOME;
+            case FAV:
+                return NavigationDrawerFragment.FAVORITE;
+            case RECENT:
+                return NavigationDrawerFragment.RECENT;
+            case UNREAD:
+                return NavigationDrawerFragment.UNREAD;
+        };
+        return NavigationDrawerFragment.HOME;
     }
 
     public interface INewsTypeButton{
@@ -197,7 +229,7 @@ public class NewsOverViewFragment extends Fragment implements ViewPager.OnPageCh
         }
 
         if (categories != null && !categories.isEmpty()) {
-            ViewPager pager = (ViewPager) rootView.findViewById(R.id.pager);
+            pager = (ViewPager) rootView.findViewById(R.id.pager);
             MyPagerAdapter adapter = new MyPagerAdapter(getChildFragmentManager());
             pager.setAdapter(adapter);
 
@@ -211,7 +243,9 @@ public class NewsOverViewFragment extends Fragment implements ViewPager.OnPageCh
             bottomView = (RelativeLayout) rootView.findViewById(R.id.bottom_view);
             createProgressView();
 
-            onPageSelected(0);
+            int page = PrefUtilities.getInstance().getCategoryIndex();
+            pager.setCurrentItem(page);
+            onPageSelected(page);
         }
 
         initNewsTypeIcon(null); //rootView.findViewById(R.id.news_layer)); //null
@@ -331,6 +365,7 @@ public class NewsOverViewFragment extends Fragment implements ViewPager.OnPageCh
                 mainIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_recent));
                 break;
         }
+        mainActivity.updateNavigation();
     }
 
     @Override
@@ -338,12 +373,16 @@ public class NewsOverViewFragment extends Fragment implements ViewPager.OnPageCh
         super.onDestroyView();
         newsTypeButton.close(false);
         button.detach();
+        if (pager != null) {
+            PrefUtilities.getInstance().setCategoryIndex(pager.getCurrentItem());
+        }
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         outState.putSerializable("newsTypeTags", newsTypeTags);
         outState.putInt("entryType", entryType);
+
         super.onSaveInstanceState(outState);
     }
 

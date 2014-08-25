@@ -10,6 +10,7 @@ public class NavDrawerItem {
     public static final int SETTING_ITEM = 1;
     public static final int BORDER = 2;
     public static final int HEADER = 3;
+    public static final int SETTING_ITEM_BETA = 4;
 
     private String title;
     private int icon;

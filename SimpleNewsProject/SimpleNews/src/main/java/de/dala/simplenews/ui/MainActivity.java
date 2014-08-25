@@ -9,8 +9,11 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 
+import java.util.List;
+
 import de.dala.simplenews.R;
 import de.dala.simplenews.dialog.ChangeLogDialog;
+import de.dala.simplenews.utilities.BaseNavigation;
 
 public class MainActivity extends ActionBarActivity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
 
@@ -48,6 +51,7 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
                 transaction.replace(R.id.container, currentFragment).commit();
             }
         }
+        updateNavigation();
     }
 
     @Override
@@ -58,6 +62,7 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
             //This method is called when the up button is pressed. Just the pop back stack.
             getSupportFragmentManager().popBackStack();
         }
+        updateNavigation();
         return true;
     }
 
@@ -136,6 +141,7 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
                 transaction.replace(R.id.container, currentFragment).addToBackStack(null).commit();
                 break;
         }
+        updateNavigation();
     }
 
 
@@ -145,10 +151,30 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
             FragmentManager.BackStackEntry first = manager.getBackStackEntryAt(0);
             manager.popBackStack(first.getId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
         }
+        updateNavigation();
     }
 
     protected void changeDrawerColor(int newColor) {
         mNavigationDrawerFragment.changeColor(newColor);
     }
 
+
+    public void updateNavigation() {
+        currentFragment = getVisibleFragment();
+        if (currentFragment != null && currentFragment instanceof BaseNavigation){
+            BaseNavigation navigation = (BaseNavigation) currentFragment;
+            mNavigationDrawerFragment.checkItem(navigation.getNavigationDrawerId());
+        }
+    }
+
+    public Fragment getVisibleFragment(){
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        List<Fragment> fragments = fragmentManager.getFragments();
+        for(Fragment fragment : fragments){
+            if(fragment != null && fragment.isVisible()) {
+                return fragment;
+            }
+        }
+        return null;
+    }
 }

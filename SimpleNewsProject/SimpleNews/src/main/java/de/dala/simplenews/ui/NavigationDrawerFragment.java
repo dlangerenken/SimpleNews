@@ -105,6 +105,9 @@ public class NavigationDrawerFragment extends Fragment implements FragmentManage
                     case NavDrawerItem.SETTING_ITEM:
                         selectItem(item);
                         break;
+                    case NavDrawerItem.SETTING_ITEM_BETA:
+                        selectItem(item);
+                        break;
                 }
             }
         });
@@ -219,10 +222,9 @@ public class NavigationDrawerFragment extends Fragment implements FragmentManage
             navDrawerItems.add(new NavDrawerItem(CATEGORIES, navMenuTitles[CATEGORIES], navMenuIcons.getResourceId(CATEGORIES, -1)));
             navDrawerItems.add(new NavDrawerItem(RATING, navMenuTitles[RATING], navMenuIcons.getResourceId(RATING, -1)));
 
-            // navDrawerItems.add(new NavDrawerItem(-1, navMenuTitles[SETTINGS], -1, NavDrawerItem.HEADER));
+            navDrawerItems.add(new NavDrawerItem(SETTINGS, navMenuTitles[SETTINGS], navMenuIcons.getResourceId(SETTINGS, -1)));
             navDrawerItems.add(new NavDrawerItem(CHANGELOG, navMenuTitles[CHANGELOG], navMenuIcons.getResourceId(CHANGELOG, -1), NavDrawerItem.SETTING_ITEM));
-            navDrawerItems.add(new NavDrawerItem(SETTINGS, navMenuTitles[SETTINGS], navMenuIcons.getResourceId(SETTINGS, -1), NavDrawerItem.SETTING_ITEM));
-            navDrawerItems.add(new NavDrawerItem(IMPORT, navMenuTitles[IMPORT], navMenuIcons.getResourceId(IMPORT, -1), NavDrawerItem.SETTING_ITEM));
+            navDrawerItems.add(new NavDrawerItem(IMPORT, navMenuTitles[IMPORT], navMenuIcons.getResourceId(IMPORT, -1), NavDrawerItem.SETTING_ITEM_BETA));
 
             navMenuIcons.recycle();
             // set up the drawer's list view with items and click listener
@@ -242,9 +244,12 @@ public class NavigationDrawerFragment extends Fragment implements FragmentManage
         }
     }
 
-    public void checkItem(int position, boolean checkPosition) {
+    public void checkItem(int position) {
         if (mDrawerList != null) {
-            mDrawerList.setItemChecked(position, checkPosition);
+            for (int i = 0; i < navDrawerItems.size(); i++){
+                NavDrawerItem item = navDrawerItems.get(i);
+                mDrawerList.setItemChecked(i, item.getId() ==  position);
+            }
         }
     }
 
@@ -343,7 +348,9 @@ public class NavigationDrawerFragment extends Fragment implements FragmentManage
     @Override
     public void onBackStackChanged() {
         setActionBarArrowDependingOnFragmentsBackStack();
+        ((MainActivity)getActivity()).updateNavigation();
     }
+
     private void setActionBarArrowDependingOnFragmentsBackStack() {
         int backStackEntryCount = getActivity().getSupportFragmentManager().getBackStackEntryCount();
         mDrawerToggle.setDrawerIndicatorEnabled(backStackEntryCount == 0);

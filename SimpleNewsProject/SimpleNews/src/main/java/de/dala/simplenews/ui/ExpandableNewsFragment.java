@@ -47,6 +47,7 @@ import de.dala.simplenews.common.Entry;
 import de.dala.simplenews.database.DatabaseHandler;
 import de.dala.simplenews.database.PersistableEntries;
 import de.dala.simplenews.database.SimpleCursorLoader;
+import de.dala.simplenews.utilities.BaseNavigation;
 import de.dala.simplenews.utilities.CategoryUpdater;
 import de.dala.simplenews.utilities.ExpandableGridItemCursorAdapter;
 import de.dala.simplenews.utilities.PrefUtilities;
@@ -56,7 +57,7 @@ import de.dala.simplenews.utilities.UIUtils;
 /**
  * Created by Daniel on 18.12.13.
  */
-public class ExpandableNewsFragment extends Fragment implements SwipeRefreshLayoutExtended.OnRefreshListener, SimpleCursorLoader.OnLoadCompleteListener, NewsOverViewFragment.INewsTypeButton {
+public class ExpandableNewsFragment extends Fragment implements SwipeRefreshLayoutExtended.OnRefreshListener, SimpleCursorLoader.OnLoadCompleteListener, NewsOverViewFragment.INewsTypeButton, BaseNavigation {
     private static final String ARG_CATEGORY = "category";
     private static final String ARG_ENTRY_TYPE = "entryType";
     private MyExpandableGridItemAdapter myExpandableListItemAdapter;
@@ -202,6 +203,8 @@ public class ExpandableNewsFragment extends Fragment implements SwipeRefreshLayo
         }
         return super.onOptionsItemSelected(item);
     }
+
+
 
     private void initCardsAdapter(Cursor cursor) {
         myExpandableListItemAdapter = new MyExpandableGridItemAdapter(getActivity(), cursor);
@@ -397,6 +400,36 @@ public class ExpandableNewsFragment extends Fragment implements SwipeRefreshLayo
     @Override
     public void gridSettingsChanged() {
         updateColumnCount();
+    }
+
+    @Override
+    public String getTitle() {
+        switch (newsTypeMode){
+            case NewsOverViewFragment.ALL:
+                return "Home";
+            case NewsOverViewFragment.FAV:
+                return "Favorite";
+            case NewsOverViewFragment.RECENT:
+                return "Recent";
+            case NewsOverViewFragment.UNREAD:
+                return "Unread";
+        };
+        return "News";
+    }
+
+    @Override
+    public int getNavigationDrawerId() {
+        switch (newsTypeMode){
+            case NewsOverViewFragment.ALL:
+                return NavigationDrawerFragment.HOME;
+            case NewsOverViewFragment.FAV:
+                return NavigationDrawerFragment.FAVORITE;
+            case NewsOverViewFragment.RECENT:
+                return NavigationDrawerFragment.RECENT;
+            case NewsOverViewFragment.UNREAD:
+                return NavigationDrawerFragment.UNREAD;
+        };
+        return NavigationDrawerFragment.HOME;
     }
 
     private class CategoryUpdateHandler extends Handler {
@@ -596,8 +629,13 @@ public class ExpandableNewsFragment extends Fragment implements SwipeRefreshLayo
 
     private class ActionModeCallBack implements ActionMode.Callback {
 
+        public void changeOverflowIcon() {
+            getActivity().getTheme().applyStyle(R.style.ChangeOverflowToDark, true);
+        }
+
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            changeOverflowIcon();
             // inflate contextual menu
             mode.getMenuInflater().inflate(R.menu.contextual_list_view, menu);
             MenuItem item = menu.findItem(R.id.menu_item_share);

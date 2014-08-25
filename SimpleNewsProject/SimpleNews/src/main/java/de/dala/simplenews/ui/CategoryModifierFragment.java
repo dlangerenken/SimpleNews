@@ -16,11 +16,12 @@ import de.dala.simplenews.R;
 import de.dala.simplenews.common.Category;
 import de.dala.simplenews.common.Feed;
 import de.dala.simplenews.database.DatabaseHandler;
+import de.dala.simplenews.utilities.BaseNavigation;
 
 /**
  * Created by Daniel on 29.12.13.
  */
-public class CategoryModifierFragment extends Fragment implements CategorySelectionFragment.OnCategoryClicked {
+public class CategoryModifierFragment extends Fragment implements CategorySelectionFragment.OnCategoryClicked, BaseNavigation {
     private static final String CATEGORY_FEEDS_TAG = "feed";
     private static final String CATEGORY_SELECTION_TAG = "selection";
     private static final String FROM_RSS = "from_rss";
@@ -96,5 +97,15 @@ public class CategoryModifierFragment extends Fragment implements CategorySelect
     public void onRestore() {
         DatabaseHandler.getInstance().removeAllCategories();
         DatabaseHandler.getInstance().loadXmlIntoDatabase(R.raw.categories);
+    }
+
+    @Override
+    public String getTitle() {
+        return "CategoryModifierFragment";
+    }
+
+    @Override
+    public int getNavigationDrawerId() {
+        return NavigationDrawerFragment.CATEGORIES;
     }
 }

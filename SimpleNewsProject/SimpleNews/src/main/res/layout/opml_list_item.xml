@@ -2,8 +2,7 @@
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="60dp">
-
+    android:layout_height="wrap_content">
     <LinearLayout
         android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
@@ -23,7 +22,6 @@
         </LinearLayout>
     <CheckBox
         android:id="@+id/checkbox"
-        android:layout_margin="5dp"
         android:layout_centerVertical="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"

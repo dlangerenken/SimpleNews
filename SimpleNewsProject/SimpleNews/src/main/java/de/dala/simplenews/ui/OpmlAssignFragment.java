@@ -2,29 +2,21 @@ package de.dala.simplenews.ui;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.view.ActionMode;
-import android.support.v7.widget.PopupMenu;
 import android.util.SparseBooleanArray;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.SubMenu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.astuetz.PagerSlidingTabStrip;
 import com.nhaarman.listviewanimations.ArrayAdapter;
 import com.nhaarman.listviewanimations.itemmanipulation.swipedismiss.contextualundo.ContextualUndoAdapter;
 
@@ -32,21 +24,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.dala.simplenews.R;
-import de.dala.simplenews.common.Category;
 import de.dala.simplenews.common.Feed;
-import de.dala.simplenews.database.DatabaseHandler;
-import de.dala.simplenews.database.IDatabaseHandler;
+import de.dala.simplenews.utilities.BaseNavigation;
 
 /**
  * Created by Daniel on 04.08.2014.
  */
-public class OpmlAssignFragment extends Fragment implements ContextualUndoAdapter.DeleteItemCallback, ViewPager.OnPageChangeListener{
+public class OpmlAssignFragment extends Fragment implements ContextualUndoAdapter.DeleteItemCallback, ViewPager.OnPageChangeListener, BaseNavigation{
 
-    private IDatabaseHandler databaseHandler;
     private OpmlListAdapter adapter;
     private static final String FEED_LIST_KEY = "feeds";
     private ListView feedListView;
-    private List<Category> categories;
     private List<Feed> feedsToImport;
     private ActionMode mActionMode;
 
@@ -71,12 +59,8 @@ public class OpmlAssignFragment extends Fragment implements ContextualUndoAdapte
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.opml_list_view, container, false);
         feedListView = (ListView) rootView.findViewById(R.id.listView);
-        feedListView.setDivider(null);
-
-        databaseHandler = DatabaseHandler.getInstance();
-        categories = databaseHandler.getCategories(null, null, null);
         initAdapter();
-        ((ActionBarActivity) getActivity()).getSupportActionBar().setTitle("Assigning Feeds");
+        ((ActionBarActivity) getActivity()).getSupportActionBar().setTitle(getActivity().getString(R.string.assigning_feeds_title));
         ((ActionBarActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         return rootView;
@@ -84,6 +68,7 @@ public class OpmlAssignFragment extends Fragment implements ContextualUndoAdapte
 
     private void initAdapter() {
         adapter = new OpmlListAdapter(getActivity(), feedsToImport);
+        feedListView.setAdapter(adapter);
     }
 
     @Override
@@ -101,17 +86,25 @@ public class OpmlAssignFragment extends Fragment implements ContextualUndoAdapte
 
     }
 
+    @Override
+    public String getTitle() {
+        return "OpmlAssignFragment";
+    }
+
+    @Override
+    public int getNavigationDrawerId() {
+        return NavigationDrawerFragment.IMPORT;
+    }
+
 
     private class OpmlListAdapter extends ArrayAdapter<Feed> {
 
         private Context context;
-        private IDatabaseHandler database;
         private SparseBooleanArray mSelectedItemIds;
 
         public OpmlListAdapter(Context context, List<Feed> feeds) {
             super(feeds);
             this.context = context;
-            this.database = DatabaseHandler.getInstance();
             mSelectedItemIds = new SparseBooleanArray();
         }
 
@@ -140,7 +133,7 @@ public class OpmlAssignFragment extends Fragment implements ContextualUndoAdapte
             holder.checkBox.setOnClickListener(new View.OnClickListener(){
                 @Override
                 public void onClick(View v) {
-                    onListItemClicked(position);
+                    onListItemCheck(position);
                 }
             });
 
@@ -148,7 +141,7 @@ public class OpmlAssignFragment extends Fragment implements ContextualUndoAdapte
                 @Override
                 public boolean onLongClick(View v) {
                     holder.checkBox.toggle();
-                    onListItemCheck(position);
+                    onListItemClicked(position);
                     return false;
                 }
             });
@@ -156,7 +149,8 @@ public class OpmlAssignFragment extends Fragment implements ContextualUndoAdapte
 
                 @Override
                 public void onClick(View v) {
-                    onListItemClicked(position);
+                    holder.checkBox.toggle();
+                    onListItemCheck(position);
                 }
             });
             int pad = getResources().getDimensionPixelSize(R.dimen.card_layout_padding);
@@ -212,10 +206,13 @@ public class OpmlAssignFragment extends Fragment implements ContextualUndoAdapte
         adapter.toggleSelection(position);
         boolean hasCheckedItems = adapter.getSelectedCount() > 0;
 
-
         if (hasCheckedItems && mActionMode == null) {
             // there are some selected items, start the actionMode
             mActionMode = ((ActionBarActivity) getActivity()).startSupportActionMode(new ActionModeCallBack());
+        }
+
+        if (!hasCheckedItems && mActionMode != null){
+            mActionMode.finish();
         }
 
         if (mActionMode != null) {
@@ -225,22 +222,30 @@ public class OpmlAssignFragment extends Fragment implements ContextualUndoAdapte
 
     private void onListItemClicked(int position) {
         Feed feed = adapter.getItem(position);
-        //TODO open dialog here :)
+        final ArrayList<Feed> selectedEntries = new ArrayList<Feed>();
+        selectedEntries.add(feed);
+        DialogFragment assignFeedsDialog = AssignDialogFragment.newInstance(selectedEntries);
+        assignFeedsDialog.show(getFragmentManager(), "AssignFeedsDialog");
+        /*assignFeedsDialog.onDismiss(new DialogInterface() {
+            @Override
+            public void cancel() {
+                // nothing
+            }
+
+            @Override
+            public void dismiss() {
+                removeSelectedFeeds(selectedEntries);
+            }
+        });*/
     }
 
     private class ActionModeCallBack implements ActionMode.Callback {
 
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            changeOverflowIcon();
             // inflate contextual menu
             mode.getMenuInflater().inflate(R.menu.contextual_opml_import_menu, menu);
-            MenuItem item = menu.findItem(R.id.menu_item_assign);
-            SubMenu subMenu = item.getSubMenu();
-            subMenu.clear();
-            for (int i = 0; i < categories.size(); i++){
-                Category cat = categories.get(i);
-                MenuItem subItem = subMenu.add(0, i, i, cat.getName());
-            }
             return true;
         }
 
@@ -249,11 +254,14 @@ public class OpmlAssignFragment extends Fragment implements ContextualUndoAdapte
             return false;
         }
 
+        public void changeOverflowIcon() {
+            getActivity().getTheme().applyStyle(R.style.ChangeOverflowToDark, true);
+        }
         @Override
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
             // retrieve selected items and print them out
             SparseBooleanArray selected = adapter.getSelectedIds();
-            List<Feed> selectedEntries = new ArrayList<Feed>();
+            final ArrayList<Feed> selectedEntries = new ArrayList<Feed>();
             for (int i = 0; i < selected.size(); i++) {
                 if (selected.valueAt(i)) {
                     Feed selectedItem = adapter.getItem(selected.keyAt(i));
@@ -265,11 +273,20 @@ public class OpmlAssignFragment extends Fragment implements ContextualUndoAdapte
                 case R.id.menu_item_remove:
                     removeSelectedFeeds(selectedEntries);
                     break;
-                default:
-                    if (item.getItemId() < categories.size() && item.getItemId() >= 0){
-                        Category cat = categories.get(item.getItemId());
-                        assignSelectedEntries(selectedEntries, cat);
-                    }
+                case R.id.menu_item_assign:
+                    DialogFragment assignFeedsDialog = AssignDialogFragment.newInstance(selectedEntries);
+                    assignFeedsDialog.show(getFragmentManager(), "AssignFeedsDialog");
+        /*assignFeedsDialog.onDismiss(new DialogInterface() {
+            @Override
+            public void cancel() {
+                // nothing
+            }
+
+            @Override
+            public void dismiss() {
+                removeSelectedFeeds(selectedEntries);
+            }
+        });*/
                     break;
             }
 
@@ -285,28 +302,12 @@ public class OpmlAssignFragment extends Fragment implements ContextualUndoAdapte
         }
     }
 
-    private void assignSelectedEntries(List<Feed> selectedEntries, Category category) {
-        for(Feed feed : selectedEntries){
-            feed.setCategoryId(category.getId());
-            adapter.remove(feed); //TODO animation
-            feedsToImport.remove(feed);
-        }
-        importFeeds(selectedEntries);
-        adapter.notifyDataSetChanged();
-
-    }
 
     private void removeSelectedFeeds(List<Feed> selectedFeeds) {
         for (Feed feed : selectedFeeds) {
             removeFeed(feed);
         }
+        adapter.removeSelection();
     }
 
-    private void importFeeds(List<Feed> feeds){
-        for(Feed feed : feeds){
-            if (feed.getCategoryId() != null && feed.getCategoryId() > 0){
-                databaseHandler.addFeed(feed.getCategoryId(), feed, true);
-            }
-        }
-    }
 }

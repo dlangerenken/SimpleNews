@@ -92,4 +92,8 @@
     <string name="navdrawer_settings">Settings</string>
     <string name="menu_delete_entry">Delete</string>
     <string name="not_valid_url_nor_opml_file">Sorry, but the entered text neither is a valid url nor contains valid content of an opml-file.</string>
+    <string name="beta" translatable="false">BETA</string>
+    <string name="choose_category_for_feeds">Choose a category</string><string name="beta_version_disclaimer">This is a beta version. Do not rate the app based on this functionality.
+        Please report bugs or suggestions instead! Select feeds to assign them to categories</string>
+    <string name="assigning_feeds_title">Assigning Feeds</string>
 </resources>

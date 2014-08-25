@@ -45,7 +45,11 @@ public final class MediaAttributes {
             return defaultValue;
         }
 
-        return Integer.parseInt(value);
+        try {
+            return Integer.parseInt(value);
+        }catch (NumberFormatException e){
+            return defaultValue;
+        }
     }
 
     /**

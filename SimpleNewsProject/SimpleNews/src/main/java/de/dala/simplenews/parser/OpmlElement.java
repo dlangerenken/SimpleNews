@@ -9,6 +9,7 @@ public class OpmlElement {
     private String title;
     private String xmlUrl;
     private String htmlUrl;
+    private String url;
     private String type;
 
     public OpmlElement() {
@@ -55,4 +56,11 @@ public class OpmlElement {
         this.type = type;
     }
 
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public String getUrl() {
+        return url;
+    }
 }

@@ -97,4 +97,5 @@
     <string name="navdrawer_settings">Einstellungen</string>
     <string name="menu_delete_entry">Löschen</string>
     <string name="not_valid_url_nor_opml_file">Der eingegebene Text ist weder in einem validen OPML-Format, noch eine valide URL.</string>
+    <string name="choose_category_for_feeds">Wähle eine Kategorie</string>
 </resources>

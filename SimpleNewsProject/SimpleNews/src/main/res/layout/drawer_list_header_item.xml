@@ -3,20 +3,17 @@
     android:layout_width="match_parent"
     android:layout_height="60dp">
 
-    <View android:id="@+id/left_border" android:layout_centerVertical="true" android:layout_width="match_parent" android:layout_height="12dp" android:layout_toLeftOf="@+id/title"/>
-    <TextView
+     <TextView
         android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_toRightOf="@id/icon"
-        android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
-        android:gravity="center"
+        android:gravity="start"
         android:minHeight="40dip"
-        android:paddingRight="6dp"
-        android:paddingLeft="6dp"
+        android:paddingLeft="4dp"
+        android:paddingRight="4dp"
+        android:paddingStart="4dp"
+        android:paddingEnd="4dp"
         android:textAppearance="@android:style/TextAppearance.Medium" />
-
-    <!--<View android:id="@+id/right_border" android:layout_centerVertical="true" android:layout_width="match_parent" android:layout_height="6dp" android:layout_toRightOf="@+id/title"/>-->
 
 </RelativeLayout>

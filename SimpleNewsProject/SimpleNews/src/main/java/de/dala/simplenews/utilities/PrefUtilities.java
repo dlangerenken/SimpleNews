@@ -24,6 +24,7 @@ public class PrefUtilities {
     public static final String SHORTEN_LINKS = "shorten_links";
     public static final String MULTIPLE_COLUMNS_PORTRAIT = "multiple_columns_portrait";
     public static final String MULTIPLE_COLUMNS_LANDSCAPE = "multiple_columns_landscape";
+    public static final String CATEGORY_INDEX = "category_index";
     /**
      * Remember the position of the selected item.
      */
@@ -155,6 +156,12 @@ public class PrefUtilities {
         else {
             editor.commit();
         }
+    }
 
+    public int getCategoryIndex() {
+        return preferences.getInt(CATEGORY_INDEX, 0);
+    }
+    public void setCategoryIndex(int id) {
+        save(preferences.edit().putInt(CATEGORY_INDEX, id));
     }
 }

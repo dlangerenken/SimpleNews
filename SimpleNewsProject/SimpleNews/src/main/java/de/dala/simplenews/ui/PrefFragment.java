@@ -12,11 +12,12 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import de.dala.simplenews.R;
+import de.dala.simplenews.utilities.BaseNavigation;
 
 /**
  * Created by Daniel on 22.02.14.
  */
-public class PrefFragment extends PreferenceFragment {
+public class PrefFragment extends PreferenceFragment implements BaseNavigation {
 
     public static Fragment getInstance() {
         Fragment fragment = new PrefFragment();
@@ -34,6 +35,16 @@ public class PrefFragment extends PreferenceFragment {
         View view = super.onCreateView(inflater, container, savedInstanceState);
         view.setBackgroundColor(getResources().getColor(R.color.background_window));
         return view;
+    }
+
+    @Override
+    public String getTitle() {
+        return null;
+    }
+
+    @Override
+    public int getNavigationDrawerId() {
+        return 0;
     }
 }
 

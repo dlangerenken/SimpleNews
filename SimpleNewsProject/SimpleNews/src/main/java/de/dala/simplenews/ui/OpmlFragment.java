@@ -2,26 +2,21 @@ package de.dala.simplenews.ui;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import de.dala.simplenews.R;
-import de.dala.simplenews.common.Category;
 import de.dala.simplenews.common.Feed;
-import de.dala.simplenews.database.DatabaseHandler;
+import de.dala.simplenews.utilities.BaseNavigation;
 
 /**
  * Created by Daniel on 29.12.13.
  */
-public class OpmlFragment extends Fragment implements OpmlImportFragment.OnFeedsLoaded {
+public class OpmlFragment extends Fragment implements OpmlImportFragment.OnFeedsLoaded, BaseNavigation {
     private static final String OPML_IMPORT_TAG = "import";
     private static final String OPML_ASSIGN_TAG = "assign";
 
@@ -64,4 +59,13 @@ public class OpmlFragment extends Fragment implements OpmlImportFragment.OnFeeds
         getActivity().supportInvalidateOptionsMenu();
     }
 
+    @Override
+    public String getTitle() {
+        return "OpmlFragment";
+    }
+
+    @Override
+    public int getNavigationDrawerId() {
+        return NavigationDrawerFragment.IMPORT;
+    }
 }

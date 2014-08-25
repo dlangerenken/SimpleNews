@@ -4,9 +4,16 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <TextView
+        android:layout_width="match_parent"
+        android:textAppearance="@android:style/TextAppearance.Small"
+        android:layout_height="wrap_content" android:text="@string/beta_version_disclaimer"
+        android:layout_margin="5dp"/>
     <ListView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:dividerHeight="1dp"
+        android:divider="@android:color/darker_gray"
         android:id="@+id/listView"
         android:layout_gravity="center_horizontal" />
 </LinearLayout>

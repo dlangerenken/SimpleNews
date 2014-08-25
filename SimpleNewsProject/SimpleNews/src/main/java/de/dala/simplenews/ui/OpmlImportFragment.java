@@ -18,7 +18,9 @@ import com.android.volley.VolleyError;
 
 import org.xmlpull.v1.XmlPullParserException;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringReader;
 import java.util.List;
 
@@ -26,13 +28,14 @@ import de.dala.simplenews.R;
 import de.dala.simplenews.common.Feed;
 import de.dala.simplenews.network.NetworkCommunication;
 import de.dala.simplenews.parser.OpmlReader;
+import de.dala.simplenews.utilities.BaseNavigation;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
 
 /**
  * Created by Daniel on 01.08.2014.
  */
-public class  OpmlImportFragment extends Fragment {
+public class  OpmlImportFragment extends Fragment implements BaseNavigation {
 
     private OnFeedsLoaded parent;
     private Button importButton;
@@ -63,12 +66,34 @@ public class  OpmlImportFragment extends Fragment {
         fragment.setArguments(b);
         return fragment;
     }
+    private String readTxt()
+    {
+        InputStream raw = getResources().openRawResource(R.raw.opml_sample);
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        try
+        {
+            int i = raw.read();
+            while (i != -1)
+            {
+                byteArrayOutputStream.write(i);
+                i = raw.read();
+            }
+            raw.close();
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+        return byteArrayOutputStream.toString();
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.opml_import_view, container, false);
 
         final EditText opmlContentEditText = (EditText) rootView.findViewById(R.id.opmlContentEditText);
+        opmlContentEditText.setText(readTxt());
+
         importButton = (Button) rootView.findViewById(R.id.button);
         importProgres = (ProgressBar) rootView.findViewById(R.id.import_progress);
 
@@ -148,6 +173,16 @@ public class  OpmlImportFragment extends Fragment {
     private void enableProgressView(boolean b) {
         importButton.setVisibility(b ? View.INVISIBLE : View.VISIBLE);
         importProgres.setVisibility(b ? View.VISIBLE : View.INVISIBLE);
+    }
+
+    @Override
+    public String getTitle() {
+        return "OpmlImportFragment";
+    }
+
+    @Override
+    public int getNavigationDrawerId() {
+        return NavigationDrawerFragment.IMPORT;
     }
 
     public interface OnFeedsLoaded {

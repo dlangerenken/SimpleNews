@@ -60,6 +60,8 @@ public class NavDrawerListAdapter extends BaseAdapter {
                 return getBorderView(position, convertView, parent, item);
             case NavDrawerItem.SETTING_ITEM:
                 return getSettingItemView(position, convertView, parent, item);
+            case NavDrawerItem.SETTING_ITEM_BETA:
+                return getSettingItemBetaView(position, convertView, parent, item);
             case NavDrawerItem.HEADER:
                 return getHeaderView(position, convertView, parent, item);
             default: return getMainItemView(position, convertView, parent, item);
@@ -74,9 +76,9 @@ public class NavDrawerListAdapter extends BaseAdapter {
         }
 
         TextView txtTitle = (TextView) convertView.findViewById(R.id.title);
-        View leftBorder = convertView.findViewById(R.id.left_border);
+        //View leftBorder = convertView.findViewById(R.id.left_border);
         //View rightBorder = convertView.findViewById(R.id.right_border);
-        UIUtils.setBackground(leftBorder, colorDrawable);
+        //UIUtils.setBackground(leftBorder, colorDrawable);
         //UIUtils.setBackground(rightBorder, colorDrawable);
         txtTitle.setText(item.getTitle());
 
@@ -119,6 +121,14 @@ public class NavDrawerListAdapter extends BaseAdapter {
         if (convertView == null) {
             LayoutInflater mInflater = LayoutInflater.from(context);
             convertView = mInflater.inflate(R.layout.drawer_list_setting_item, null);
+        }
+        return getMainItemView(position, convertView, parent, item);
+    }
+
+    private View getSettingItemBetaView(int position, View convertView, ViewGroup parent, NavDrawerItem item) {
+        if (convertView == null) {
+            LayoutInflater mInflater = LayoutInflater.from(context);
+            convertView = mInflater.inflate(R.layout.drawer_list_setting_item_beta, null);
         }
         return getMainItemView(position, convertView, parent, item);
     }
