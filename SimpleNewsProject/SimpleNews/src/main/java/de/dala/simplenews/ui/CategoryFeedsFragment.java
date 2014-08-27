@@ -3,6 +3,7 @@ package de.dala.simplenews.ui;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
@@ -147,44 +148,7 @@ public class CategoryFeedsFragment extends Fragment implements ContextualUndoAda
             public void onClick(View v) {
                 switch (v.getId()) {
                     case R.id.positive:
-                        String feedUrl = input.getText() != null ? input.getText().toString() : "";
-
-                        if (!feedUrl.startsWith("http://")) {
-                            feedUrl = "http://" + feedUrl;
-                        }
-
-                        if (UIUtils.isValideUrl(feedUrl)) {
-                            crossfade(progress, inputLayout);
-                            try {
-                                SyndFeedInput input = new SyndFeedInput();
-                                SyndFeed syndFeed = input.build(new XmlReader(new URL(feedUrl)));
-                                if (syndFeed.getEntries() == null || syndFeed.getEntries().isEmpty()) {
-                                    invalidFeedUrl(true);
-                                } else {
-                                    Feed feed = new Feed();
-                                    feed.setCategoryId(category.getId());
-                                    feed.setTitle(syndFeed.getTitle());
-                                    feed.setDescription(syndFeed.getDescription());
-                                    feed.setXmlUrl(feedUrl);
-                                    long id = DatabaseHandler.getInstance().addFeed(category.getId(), feed, true);
-                                    feed.setId(id);
-                                    adapter.add(feed);
-                                    adapter.notifyDataSetChanged();
-                                    dialog.dismiss();
-                                }
-                            } catch (FeedException e) {
-                                e.printStackTrace();
-                                invalidFeedUrl(true);
-                            } catch (MalformedURLException e) {
-                                e.printStackTrace();
-                                invalidFeedUrl(true);
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                                invalidFeedUrl(true);
-                            }
-                        } else {
-                            invalidFeedUrl(false);
-                        }
+                        new UpdatingTask(progress, inputLayout, view, dialog).execute(input.getText().toString());
                         break;
                     case R.id.negative:
                         dialog.dismiss();
@@ -244,7 +208,6 @@ public class CategoryFeedsFragment extends Fragment implements ContextualUndoAda
                 secondView.setVisibility(View.GONE);
             }
         });
-
     }
 
     private void editClicked(final Feed feed) {
@@ -264,69 +227,12 @@ public class CategoryFeedsFragment extends Fragment implements ContextualUndoAda
             public void onClick(View view) {
                 switch (view.getId()) {
                     case R.id.positive:
-
-                        String feedUrl = input.getText().toString();
-                        if (!feedUrl.startsWith("http://")) {
-                            feedUrl = "http://" + feedUrl;
-                        }
-                        final String formattedFeedUrl = feedUrl;
-
-                        if (UIUtils.isValideUrl(feedUrl)) {
-                            crossfade(progress, inputLayout);
-                            try {
-                                SyndFeedInput input = new SyndFeedInput();
-                                SyndFeed syndFeed = input.build(new XmlReader(new URL(feedUrl)));
-                                if (syndFeed.getEntries() == null || syndFeed.getEntries().isEmpty()) {
-                                    invalidFeedUrl(true);
-                                } else {
-                                    Feed feed = new Feed();
-                                    feed.setCategoryId(category.getId());
-                                    feed.setTitle(syndFeed.getTitle());
-                                    feed.setDescription(syndFeed.getDescription());
-                                    feed.setXmlUrl(feedUrl);
-                                    long id = DatabaseHandler.getInstance().addFeed(category.getId(), feed, true);
-                                    feed.setId(id);
-                                    adapter.add(feed);
-                                    adapter.notifyDataSetChanged();
-                                    dialog.dismiss();
-                                }
-                            } catch (FeedException e) {
-                                e.printStackTrace();
-                                invalidFeedUrl(true);
-                            } catch (MalformedURLException e) {
-                                e.printStackTrace();
-                                invalidFeedUrl(true);
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                                invalidFeedUrl(true);
-                            }
-                        } else {
-                            invalidFeedUrl(false);
-                        }
+                        new UpdatingTask(progress, inputLayout, view, dialog).execute(input.getText().toString());
                         break;
                     case R.id.negative:
                         dialog.dismiss();
                         break;
                 }
-            }
-
-            private void invalidFeedUrl(final boolean hideProgressBar) {
-                Animation shake = AnimationUtils.loadAnimation(getActivity(),
-                        R.anim.shake);
-                view.startAnimation(shake);
-                shake.setAnimationListener(new Animation.AnimationListener() {
-                    @Override public void onAnimationStart(Animation animation) {}
-
-                    @Override
-                    public void onAnimationEnd(Animation animation) {
-                        if (hideProgressBar) {
-                            crossfade(inputLayout, progress);
-                            Crouton.makeText(getActivity(), getActivity().getString(R.string.not_valid_format), Style.ALERT, inputLayout).show();
-                        }
-                    }
-
-                    @Override public void onAnimationRepeat(Animation animation) {}
-                });
             }
         };
 
@@ -335,6 +241,88 @@ public class CategoryFeedsFragment extends Fragment implements ContextualUndoAda
         dialog.show();
     }
 
+
+    private class UpdatingTask extends AsyncTask<String, String, String> {
+        private View view;
+        private ViewGroup inputLayout;
+        private View progress;
+        private AlertDialog dialog;
+
+        public UpdatingTask(View view, ViewGroup inputLayout, View progress, AlertDialog dialog){
+            this.view = view;
+            this.inputLayout = inputLayout;
+            this.progress = progress;
+            this.dialog = dialog;
+        }
+
+        @Override
+        protected void onPostExecute(String o) {
+            super.onPostExecute(o);
+            dialog.dismiss();
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            String feedUrl = "";
+            if (!params[0].startsWith("http://")) {
+                feedUrl = "http://" + feedUrl;
+            }
+
+            if (UIUtils.isValideUrl(feedUrl)) {
+                crossfade(progress, inputLayout);
+                try {
+                    SyndFeedInput input = new SyndFeedInput();
+                    SyndFeed syndFeed = input.build(new XmlReader(new URL(params[0].toString())));
+                    if (syndFeed.getEntries() == null || syndFeed.getEntries().isEmpty()) {
+                        invalidFeedUrl(true);
+                    } else {
+                        Feed feed = new Feed();
+                        feed.setCategoryId(category.getId());
+                        feed.setTitle(syndFeed.getTitle());
+                        feed.setDescription(syndFeed.getDescription());
+                        feed.setXmlUrl(feedUrl);
+                        long id = DatabaseHandler.getInstance().addFeed(category.getId(), feed, true);
+                        feed.setId(id);
+                        adapter.add(feed);
+                        adapter.notifyDataSetChanged();
+                        dialog.dismiss();
+                    }
+                } catch (FeedException e) {
+                    e.printStackTrace();
+                    invalidFeedUrl(true);
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                    invalidFeedUrl(true);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    invalidFeedUrl(true);
+                }
+            } else {
+                invalidFeedUrl(false);
+            }
+            return null;
+        }
+
+
+        private void invalidFeedUrl(final boolean hideProgressBar) {
+            Animation shake = AnimationUtils.loadAnimation(getActivity(),
+                    R.anim.shake);
+            view.startAnimation(shake);
+            shake.setAnimationListener(new Animation.AnimationListener() {
+                @Override public void onAnimationStart(Animation animation) {}
+
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    if (hideProgressBar) {
+                        crossfade(inputLayout, progress);
+                        Crouton.makeText(getActivity(), getActivity().getString(R.string.not_valid_format), Style.ALERT, inputLayout).show();
+                    }
+                }
+
+                @Override public void onAnimationRepeat(Animation animation) {}
+            });
+        }
+    }
     private void onListItemCheck(int position) {
         adapter.toggleSelection(position);
         boolean hasCheckedItems = adapter.getSelectedCount() > 0;
