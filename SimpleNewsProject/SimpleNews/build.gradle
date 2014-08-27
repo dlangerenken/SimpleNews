@@ -14,25 +14,36 @@ apply plugin: 'com.android.application'
 apply plugin: 'crashlytics'
 
 repositories {
-    maven {
-        url "https://oss.sonatype.org/content/repositories/snapshots"
-    }
+    maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
     mavenCentral()
     maven { url 'http://download.crashlytics.com/maven' }
-
-    maven { url "https://raw.github.com/kolavar/android-support-v4-preferencefragment/master/maven-repository/" }
+    maven {
+        url 'https://raw.github.com/kolavar/android-support-v4-preferencefragment/master/maven-repository/'
+    }
 }
 
 android {
     compileSdkVersion 19
     buildToolsVersion '19.1.0'
-
     defaultConfig {
         minSdkVersion 10
         targetSdkVersion 19
     }
     lintOptions {
         abortOnError false
+    }
+    buildTypes {
+        release {
+            runProguard true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt')
+        }
+        debug {
+        }
+    }
+    productFlavors {
+        defaultFlavor {
+            proguardFile 'proguard-rules.txt'
+        }
     }
 }
 
@@ -41,10 +52,10 @@ dependencies {
     compile 'com.astuetz:pagerslidingtabstrip:1.0.1'
     compile 'com.github.gabrielemariotti.changeloglib:library:1.5.1'
     compile 'com.mcxiaoke.volley:library:1.0.6@aar'
-    compile ('de.keyboardsurfer.android.widget:crouton:1.8.4') {
+    compile('de.keyboardsurfer.android.widget:crouton:1.8.4') {
         exclude module: 'support-v4'
     }
-    compile ('com.android.support:support-v4-preferencefragment:1.0.0@aar'){
+    compile('com.android.support:support-v4-preferencefragment:1.0.0@aar') {
         exclude module: 'support-v4'
     }
     compile 'com.ocpsoft:ocpsoft-pretty-time:1.0.7'

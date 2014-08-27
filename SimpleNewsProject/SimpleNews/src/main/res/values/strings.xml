@@ -93,7 +93,14 @@
     <string name="menu_delete_entry">Delete</string>
     <string name="not_valid_url_nor_opml_file">Sorry, but the entered text neither is a valid url nor contains valid content of an opml-file.</string>
     <string name="beta" translatable="false">BETA</string>
-    <string name="choose_category_for_feeds">Choose a category</string><string name="beta_version_disclaimer">This is a beta version. Do not rate the app based on this functionality.
+    <string name="choose_category_for_feeds">Choose a category</string>
+    <string name="beta_version_disclaimer">This is a beta version. Do not rate the app based on this functionality.
         Please report bugs or suggestions instead! Select feeds to assign them to categories</string>
     <string name="assigning_feeds_title">Assigning Feeds</string>
+    <string name="import_button">Import</string>
+    <string name="enter_url_or_content_import">Please enter an url to an opml-file or the content of an opml-file</string>
+    <string name="home_title">Home</string>
+    <string name="favorite_title">Favorite</string>
+    <string name="recent_title">Recent</string>
+    <string name="unread_title">Unread</string>
 </resources>

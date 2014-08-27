@@ -24,6 +24,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.astuetz.PagerSlidingTabStrip;
+import com.nineoldandroids.animation.ObjectAnimator;
+import com.nineoldandroids.animation.ValueAnimator;
+import com.nineoldandroids.view.ViewHelper;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -40,6 +43,8 @@ import de.dala.simplenews.utilities.BaseNavigation;
 import de.dala.simplenews.utilities.PrefUtilities;
 import de.keyboardsurfer.android.widget.crouton.Configuration;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
+
+import static com.nineoldandroids.view.ViewPropertyAnimator.animate;
 
 /**
  * Created by Daniel on 20.02.14.
@@ -74,15 +79,15 @@ public class NewsOverViewFragment extends Fragment implements ViewPager.OnPageCh
     public String getTitle() {
         switch (entryType){
             case ALL:
-                return "Home";
+                return mainActivity.getString(R.string.home_title);
             case FAV:
-                return "Favorite";
+                return mainActivity.getString(R.string.favorite_title);
             case RECENT:
-                return "Recent";
+                return mainActivity.getString(R.string.recent_title);
             case UNREAD:
-                return "Unread";
+                return mainActivity.getString(R.string.unread_title);
         };
-        return "News";
+        return mainActivity.getString(R.string.home_title);
     }
 
     @Override
@@ -211,7 +216,6 @@ public class NewsOverViewFragment extends Fragment implements ViewPager.OnPageCh
         mainActivity.getSupportActionBar().setHomeButtonEnabled(true);
         categories = DatabaseHandler.getInstance().getCategories(null, null, true);
 
-
         if (savedInstanceState != null){
             //probably orientation change
             Serializable newsTypeTagsSerializable = savedInstanceState.getSerializable("newsTypeTags");
@@ -248,7 +252,7 @@ public class NewsOverViewFragment extends Fragment implements ViewPager.OnPageCh
             onPageSelected(page);
         }
 
-        initNewsTypeIcon(null); //rootView.findViewById(R.id.news_layer)); //null
+        initNewsTypeIcon();
         return rootView;
     }
 
@@ -259,15 +263,11 @@ public class NewsOverViewFragment extends Fragment implements ViewPager.OnPageCh
         Drawable colorDrawable = new ColorDrawable(category.getPrimaryColor());
         Drawable darkColorDrawable = new ColorDrawable(category.getSecondaryColor());
 
-        Drawable bottomDrawable = getResources().getDrawable(R.drawable.actionbar_bottom);
-
-        LayerDrawable ld = new LayerDrawable(new Drawable[]{colorDrawable, bottomDrawable});
-
         if (oldBackground == null) {
-            ((ActionBarActivity) getActivity()).getSupportActionBar().setBackgroundDrawable(ld);
+            ((ActionBarActivity) getActivity()).getSupportActionBar().setBackgroundDrawable(colorDrawable);
         } else {
             //getSupportActionBar().setBackgroundDrawable(ld); //BUG otherwise
-            TransitionDrawable td = new TransitionDrawable(new Drawable[]{oldBackground, ld});
+            TransitionDrawable td = new TransitionDrawable(new Drawable[]{oldBackground, colorDrawable});
             ((ActionBarActivity) getActivity()).getSupportActionBar().setBackgroundDrawable(td);
             td.startTransition(400);
         }
@@ -275,7 +275,7 @@ public class NewsOverViewFragment extends Fragment implements ViewPager.OnPageCh
         mainActivity.changeDrawerColor(category.getPrimaryColor());
 
         progressView.setBackgroundColor(category.getPrimaryColor());
-        oldBackground = ld;
+        oldBackground = colorDrawable;
         currentColor = category.getPrimaryColor();
 
         // http://stackoverflow.com/questions/11002691/actionbar-setbackgrounddrawable-nulling-background-from-thread-handler
@@ -289,18 +289,15 @@ public class NewsOverViewFragment extends Fragment implements ViewPager.OnPageCh
     private ImageView mainIcon;
     private FloatingActionButton button;
 
-    private void initNewsTypeIcon(View rootLayer){
+    private void initNewsTypeIcon(){
         mainIcon = new ImageView(getActivity());
         button = new FloatingActionButton.Builder(getActivity())
                 .setContentView(mainIcon)
-                .setAttachingView(rootLayer)
                 .build();
 
         int subButtonSize = getResources().getDimensionPixelSize(R.dimen.sub_action_button_size_medium);
         int actionMenuRadius = getResources().getDimensionPixelSize(R.dimen.action_menu_radius);
-        FrameLayout.LayoutParams subButtonParams = new FrameLayout.LayoutParams(subButtonSize, subButtonSize);
-
-        SubActionButton.Builder rLSubBuilder = new SubActionButton.Builder(getActivity()).setLayoutParams(subButtonParams);
+        SubActionButton.Builder rLSubBuilder = new SubActionButton.Builder(getActivity()).setLayoutParams(new FrameLayout.LayoutParams(subButtonSize, subButtonSize));
         ImageView icon1 = new ImageView(getActivity());
         ImageView icon2 = new ImageView(getActivity());
         ImageView icon3 = new ImageView(getActivity());
@@ -308,7 +305,6 @@ public class NewsOverViewFragment extends Fragment implements ViewPager.OnPageCh
         subactionButton1 = rLSubBuilder.setContentView(icon1).build();
         subactionButton2 = rLSubBuilder.setContentView(icon2).build();
         subactionButton3 = rLSubBuilder.setContentView(icon3).build();
-
         subactionButton1.setOnClickListener(new OnSubActionButtonClickListener());
         subactionButton2.setOnClickListener(new OnSubActionButtonClickListener());
         subactionButton3.setOnClickListener(new OnSubActionButtonClickListener());
@@ -321,8 +317,17 @@ public class NewsOverViewFragment extends Fragment implements ViewPager.OnPageCh
                 .addSubActionView(subactionButton3)
                 .setRadius(actionMenuRadius)
                 .attachTo(button)
-                .setAttachingView(rootLayer)
                 .build();
+        ViewHelper.setScaleX(button, 0);
+        ViewHelper.setScaleY(button, 0);
+        ViewHelper.setAlpha(subactionButton1, 0);
+        ViewHelper.setAlpha(subactionButton2, 0);
+        ViewHelper.setAlpha(subactionButton3, 0);
+
+        animate(button).setStartDelay(1200).scaleX(1).scaleY(1).setDuration(500);
+        animate(subactionButton1).setStartDelay(1200).alpha(1).setDuration(0);
+        animate(subactionButton2).setStartDelay(1200).alpha(1).setDuration(0);
+        animate(subactionButton3).setStartDelay(1200).alpha(1).setDuration(0);
         updateNewsIcon();
     }
 

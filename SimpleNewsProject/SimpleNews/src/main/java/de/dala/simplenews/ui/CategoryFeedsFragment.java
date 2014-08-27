@@ -201,24 +201,22 @@ public class CategoryFeedsFragment extends Fragment implements ContextualUndoAda
                 if (context != null) {
                     Animation shake = AnimationUtils.loadAnimation(context,
                             R.anim.shake);
-                    view.startAnimation(shake);
-                    shake.setAnimationListener(new Animation.AnimationListener() {
-                        @Override
-                        public void onAnimationStart(Animation animation) {
-                        }
+                    if (shake != null) {
+                        view.startAnimation(shake);
+                        shake.setAnimationListener(new Animation.AnimationListener() {
+                            @Override public void onAnimationStart(Animation animation){}
 
-                        @Override
-                        public void onAnimationEnd(Animation animation) {
-                            if (hideProgressBar) {
-                                crossfade(inputLayout, progress);
-                                Crouton.makeText(getActivity(), getActivity().getString(R.string.not_valid_format), Style.ALERT, inputLayout).show();
+                            @Override
+                            public void onAnimationEnd(Animation animation) {
+                                if (hideProgressBar) {
+                                    crossfade(inputLayout, progress);
+                                    Crouton.makeText(getActivity(), getActivity().getString(R.string.not_valid_format), Style.ALERT, inputLayout).show();
+                                }
                             }
-                        }
 
-                        @Override
-                        public void onAnimationRepeat(Animation animation) {
-                        }
-                    });
+                            @Override public void onAnimationRepeat(Animation animation){}
+                        });
+                    }
                 }
             }
         };
@@ -325,9 +323,7 @@ public class CategoryFeedsFragment extends Fragment implements ContextualUndoAda
                         R.anim.shake);
                 view.startAnimation(shake);
                 shake.setAnimationListener(new Animation.AnimationListener() {
-                    @Override
-                    public void onAnimationStart(Animation animation) {
-                    }
+                    @Override public void onAnimationStart(Animation animation) {}
 
                     @Override
                     public void onAnimationEnd(Animation animation) {
@@ -337,9 +333,7 @@ public class CategoryFeedsFragment extends Fragment implements ContextualUndoAda
                         }
                     }
 
-                    @Override
-                    public void onAnimationRepeat(Animation animation) {
-                    }
+                    @Override public void onAnimationRepeat(Animation animation) {}
                 });
             }
         };
@@ -388,21 +382,6 @@ public class CategoryFeedsFragment extends Fragment implements ContextualUndoAda
     @Override
     public int getNavigationDrawerId() {
         return NavigationDrawerFragment.CATEGORIES;
-    }
-
-    private class MyFormatCountDownCallback implements ContextualUndoAdapter.CountDownFormatter {
-
-        @Override
-        public String getCountDownString(long millisUntilFinished) {
-            if (getActivity() == null) {
-                return "";
-            }
-            int seconds = (int) Math.ceil((millisUntilFinished / 1000.0));
-            if (seconds > 0) {
-                return getResources().getQuantityString(R.plurals.countdown_seconds, seconds, seconds);
-            }
-            return getString(R.string.countdown_dismissing);
-        }
     }
 
     private Intent createShareIntent() {

@@ -19,31 +19,25 @@ import de.dala.simplenews.utilities.UIUtils;
 public class SubActionButton extends FrameLayout {
 
     public static final int THEME_LIGHT = 0;
-    public static final int THEME_DARK = 1;
     public static final int THEME_LIGHTER = 2;
-    public static final int THEME_DARKER = 3;
 
-    public SubActionButton(Activity activity, FrameLayout.LayoutParams layoutParams, int theme, Drawable backgroundDrawable, View contentView, FrameLayout.LayoutParams contentParams) {
+    public SubActionButton(Activity activity, FrameLayout.LayoutParams layoutParams, int theme, View contentView) {
         super(activity);
         setLayoutParams(layoutParams);
         // If no custom backgroundDrawable is specified, use the background drawable of the theme.
-        if(backgroundDrawable == null) {
-            if(theme == THEME_LIGHT) {
+        Drawable backgroundDrawable;
+        if(theme == THEME_LIGHT) {
                 backgroundDrawable = activity.getResources().getDrawable(R.drawable.button_sub_action_selector);
             }
             else if(theme == THEME_LIGHTER) {
                 backgroundDrawable = activity.getResources().getDrawable(R.drawable.button_action_selector);
             }
             else {
-                throw new RuntimeException("Unknown SubActionButton theme: " + theme);
-            }
-        }
-        else {
-            backgroundDrawable = backgroundDrawable.mutate().getConstantState().newDrawable();
+            throw new RuntimeException("Unknown SubActionButton theme: " + theme);
         }
         UIUtils.setBackground(this, backgroundDrawable);
         if(contentView != null) {
-            setContentView(contentView, contentParams);
+            setContentView(contentView);
         }
         setClickable(true);
     }
@@ -53,27 +47,15 @@ public class SubActionButton extends FrameLayout {
     /**
      * Sets a content view with custom LayoutParams that will be displayed inside this SubActionButton.
      * @param contentView
-     * @param params
      */
-    public void setContentView(View contentView, FrameLayout.LayoutParams params) {
-        if(params == null) {
-            params = new FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, Gravity.CENTER);
-            final int margin = getResources().getDimensionPixelSize(R.dimen.sub_action_button_content_margin);
-            params.setMargins(margin, margin, margin, margin);
-        }
+    public void setContentView(View contentView) {
+        LayoutParams params = new FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, Gravity.CENTER);
+        final int margin = getResources().getDimensionPixelSize(R.dimen.sub_action_button_content_margin);
+        params.setMargins(margin, margin, margin, margin);
         this.contentView = contentView;
         contentView.setClickable(false);
         this.addView(contentView, params);
     }
-
-    /**
-     * Sets a content view with default LayoutParams
-     * @param contentView
-     */
-    public void setContentView(View contentView) {
-        setContentView(contentView, null);
-    }
-
 
     /**
      * Sets a content view with default LayoutParams
@@ -90,9 +72,7 @@ public class SubActionButton extends FrameLayout {
         private Activity activity;
         private FrameLayout.LayoutParams layoutParams;
         private int theme;
-        private Drawable backgroundDrawable;
         private View contentView;
-        private FrameLayout.LayoutParams contentParams;
 
         public Builder(Activity activity) {
             this.activity = activity;
@@ -114,19 +94,8 @@ public class SubActionButton extends FrameLayout {
             return this;
         }
 
-        public Builder setBackgroundDrawable(Drawable backgroundDrawable) {
-            this.backgroundDrawable = backgroundDrawable;
-            return this;
-        }
-
         public Builder setContentView(View contentView) {
             this.contentView = contentView;
-            return this;
-        }
-
-        public Builder setContentView(View contentView, FrameLayout.LayoutParams contentParams) {
-            this.contentView = contentView;
-            this.contentParams = contentParams;
             return this;
         }
 
@@ -134,9 +103,7 @@ public class SubActionButton extends FrameLayout {
             return new SubActionButton(activity,
                     layoutParams,
                     theme,
-                    backgroundDrawable,
-                    contentView,
-                    contentParams);
+                    contentView);
         }
     }
 }

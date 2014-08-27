@@ -5,7 +5,6 @@ package circularmenu;
  */
 
 import android.app.Activity;
-import android.content.Context;
 import android.graphics.Path;
 import android.graphics.PathMeasure;
 import android.graphics.Point;
@@ -15,7 +14,6 @@ import android.os.Build;
 import android.os.Handler;
 import android.view.Display;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -33,8 +31,6 @@ import static com.nineoldandroids.view.ViewPropertyAnimator.animate;
  */
 
 public class FloatingActionMenu {
-
-    private View mAttachingView;
     /** Reference to the view (usually a button) to trigger the menu to show */
     private View mainActionView;
     /** The angle (in degrees, modulus 360) which the circular menu starts from  */
@@ -47,8 +43,6 @@ public class FloatingActionMenu {
     private ArrayList<Item> subActionItems;
     /** Reference to the preferred {@link MenuAnimationHandler} object */
     private MenuAnimationHandler animationHandler;
-    /** Reference to a listener that listens open/close actions */
-    private MenuStateChangeListener stateChangeListener;
     /** whether the openings and closings should be animated or not */
     private boolean animated;
     /** whether the menu is currently open or not */
@@ -64,16 +58,14 @@ public class FloatingActionMenu {
      * @param animationHandler
      * @param animated
      */
-    public FloatingActionMenu(View attachingView, View mainActionView,
+    public FloatingActionMenu(View mainActionView,
                               int startAngle,
                               int endAngle,
                               int radius,
                               ArrayList<Item> subActionItems,
                               MenuAnimationHandler animationHandler,
-                              boolean animated,
-                              MenuStateChangeListener stateChangeListener) {
+                              boolean animated) {
         this.mainActionView = mainActionView;
-        this.mAttachingView = attachingView;
         this.startAngle = startAngle;
         this.endAngle = endAngle;
         this.radius = radius;
@@ -82,8 +74,6 @@ public class FloatingActionMenu {
         this.animated = animated;
         // The menu is initially closed.
         this.open = false;
-
-        this.stateChangeListener = stateChangeListener;
 
         // Listen click events on the main action view
         // In the future, touch and drag events could be listened to offer an alternative behaviour
@@ -179,10 +169,6 @@ public class FloatingActionMenu {
         }
         // do not forget to specify that the menu is open.
         open = true;
-
-        if(stateChangeListener != null) {
-            stateChangeListener.onMenuOpened(this);
-        }
     }
 
     /**
@@ -206,10 +192,6 @@ public class FloatingActionMenu {
         }
         // do not forget to specify that the menu is now closed.
         open = false;
-
-        if(stateChangeListener != null) {
-            stateChangeListener.onMenuClosed(this);
-        }
     }
 
     /**
@@ -230,26 +212,6 @@ public class FloatingActionMenu {
      */
     public boolean isOpen() {
         return open;
-    }
-
-    /**
-     * Recalculates the positions of each sub action item on demand.
-     */
-    public void updateItemPositions() {
-        // Only update if the menu is currently open
-        if(!isOpen()) {
-            return;
-        }
-        // recalculate x,y coordinates of Items
-        calculateItemPositions();
-
-        // Simply update layout params for each item
-        for (int i = 0; i < subActionItems.size(); i++) {
-            // This is currently done by giving them large margins
-            final FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(subActionItems.get(i).width, subActionItems.get(i).height, Gravity.TOP | Gravity.LEFT);
-            params.setMargins(subActionItems.get(i).x, subActionItems.get(i).y, 0, 0);
-            subActionItems.get(i).view.setLayoutParams(params);
-        }
     }
 
     /**
@@ -314,13 +276,6 @@ public class FloatingActionMenu {
     }
 
     /**
-     * @return the specified raduis of the menu
-     */
-    public int getRadius() {
-        return radius;
-    }
-
-    /**
      * @return a reference to the sub action items list
      */
     public ArrayList<Item> getSubActionItems() {
@@ -332,10 +287,7 @@ public class FloatingActionMenu {
      * @return the main content view
      */
     public View getActivityContentView() {
-        if (mAttachingView == null) {
-            return ((Activity) mainActionView.getContext()).getWindow().getDecorView().findViewById(android.R.id.content);
-        }
-        return mAttachingView;
+        return ((Activity) mainActionView.getContext()).getWindow().getDecorView().findViewById(android.R.id.content);
     }
 
     /**
@@ -352,10 +304,6 @@ public class FloatingActionMenu {
             display.getSize(size);
         }
         return size;
-    }
-
-    public void setStateChangeListener(MenuStateChangeListener listener) {
-        this.stateChangeListener = listener;
     }
 
     /**
@@ -423,14 +371,6 @@ public class FloatingActionMenu {
     }
 
     /**
-     * A listener to listen open/closed state changes of the Menu
-     */
-    public static interface MenuStateChangeListener {
-        public void onMenuOpened(FloatingActionMenu menu);
-        public void onMenuClosed(FloatingActionMenu menu);
-    }
-
-    /**
      * A builder for {@link FloatingActionMenu} in conventional Java Builder format
      */
     public static class Builder {
@@ -442,8 +382,6 @@ public class FloatingActionMenu {
         private ArrayList<Item> subActionItems;
         private MenuAnimationHandler animationHandler;
         private boolean animated;
-        private MenuStateChangeListener stateChangeListener;
-        private View attachingView;
 
         public Builder(Activity activity) {
             subActionItems = new ArrayList<Item>();
@@ -453,16 +391,6 @@ public class FloatingActionMenu {
             endAngle = 270;
             animationHandler = new DefaultAnimationHandler();
             animated = true;
-        }
-
-        public Builder setStartAngle(int startAngle) {
-            this.startAngle = startAngle;
-            return this;
-        }
-
-        public Builder setEndAngle(int endAngle) {
-            this.endAngle = endAngle;
-            return this;
         }
 
         public Builder setRadius(int radius) {
@@ -485,49 +413,6 @@ public class FloatingActionMenu {
         }
 
         /**
-         * Inflates a new view from the specified resource id and adds it as a sub action view.
-         * @param resId the resource id reference for the view
-         * @param context a valid context
-         * @return
-         */
-        public Builder addSubActionView(int resId, Context context) {
-            LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            View view = inflater.inflate(resId, null, false);
-            view.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-            return this.addSubActionView(view, view.getMeasuredWidth(), view.getMeasuredHeight());
-        }
-
-        /**
-         * Sets the current animation handler to the specified MenuAnimationHandler child
-         * @param animationHandler a MenuAnimationHandler child
-         * @return
-         */
-        public Builder setAnimationHandler(MenuAnimationHandler animationHandler) {
-            this.animationHandler = animationHandler;
-            return this;
-        }
-
-        public Builder enableAnimations() {
-            animated = true;
-            return this;
-        }
-
-        public Builder setAttachingView(View view){
-            attachingView = view;
-            return this;
-        }
-
-        public Builder disableAnimations() {
-            animated = false;
-            return this;
-        }
-
-        public Builder setStateChangeListener(MenuStateChangeListener listener) {
-            stateChangeListener = listener;
-            return this;
-        }
-
-        /**
          * Attaches the whole menu around a main action view, usually a button.
          * All the calculations are made according to this action view.
          * @param actionView
@@ -539,14 +424,13 @@ public class FloatingActionMenu {
         }
 
         public FloatingActionMenu build() {
-            return new FloatingActionMenu(attachingView, actionView,
+            return new FloatingActionMenu(actionView,
                     startAngle,
                     endAngle,
                     radius,
                     subActionItems,
                     animationHandler,
-                    animated,
-                    stateChangeListener);
+                    animated);
         }
     }
 }

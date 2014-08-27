@@ -5,9 +5,7 @@ package circularmenu;
  */
 
 import android.app.Activity;
-import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,26 +30,18 @@ public class FloatingActionButton extends FrameLayout {
     public static final int POSITION_LEFT_CENTER = 7;
     public static final int POSITION_TOP_LEFT = 8;
 
-    private View contentView;
-    private View mAttachingView;
-
     /**
      * Constructor that takes parameters collected using {@link FloatingActionMenu.Builder}
      * @param activity a reference to the activity that will
      * @param layoutParams
-     * @param backgroundDrawable
      * @param position
      * @param contentView
      * @param contentParams
      */
-    public FloatingActionButton(View attachingView, Activity activity, LayoutParams layoutParams, Drawable backgroundDrawable, int position, View contentView, FrameLayout.LayoutParams contentParams) {
+    public FloatingActionButton(Activity activity, LayoutParams layoutParams, int position, View contentView, FrameLayout.LayoutParams contentParams) {
         super(activity);
         setPosition(position, layoutParams);
-        mAttachingView = attachingView;
-        // If no custom backgroundDrawable is specified, use the background drawable of the theme.
-        if(backgroundDrawable == null) {
-            backgroundDrawable = activity.getResources().getDrawable(R.drawable.button_action_selector);
-        }
+        Drawable backgroundDrawable = activity.getResources().getDrawable(R.drawable.button_action_selector);
         UIUtils.setBackground(this, backgroundDrawable);
         if(contentView != null) {
             setContentView(contentView, contentParams);
@@ -104,7 +94,6 @@ public class FloatingActionButton extends FrameLayout {
      * @param contentView
      */
     public void setContentView(View contentView, FrameLayout.LayoutParams contentParams) {
-        this.contentView = contentView;
         FrameLayout.LayoutParams params;
         if(contentParams == null ){
             params =new FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, Gravity.CENTER);
@@ -140,10 +129,7 @@ public class FloatingActionButton extends FrameLayout {
      * @return the main content view
      */
     public View getActivityContentView() {
-        if (mAttachingView == null){
-            return ((Activity)getContext()).getWindow().getDecorView().findViewById(android.R.id.content);
-        }
-        return mAttachingView;
+        return ((Activity)getContext()).getWindow().getDecorView().findViewById(android.R.id.content);
     }
 
     /**
@@ -153,12 +139,9 @@ public class FloatingActionButton extends FrameLayout {
 
         private Activity activity;
         private LayoutParams layoutParams;
-        private int theme;
-        private Drawable backgroundDrawable;
         private int position;
         private View contentView;
         private LayoutParams contentParams;
-        private View attachingView;
 
         public Builder(Activity activity) {
             this.activity = activity;
@@ -174,20 +157,6 @@ public class FloatingActionButton extends FrameLayout {
 
         public Builder setLayoutParams(LayoutParams params) {
             this.layoutParams = params;
-            return this;
-        }
-
-        public Builder setBackgroundDrawable(Drawable backgroundDrawable) {
-            this.backgroundDrawable = backgroundDrawable;
-            return this;
-        }
-
-        public Builder setBackgroundDrawable(int drawableId) {
-            return setBackgroundDrawable(activity.getResources().getDrawable(drawableId));
-        }
-
-        public Builder setAttachingView(View attachingView){
-            this.attachingView = attachingView;
             return this;
         }
 
@@ -207,9 +176,8 @@ public class FloatingActionButton extends FrameLayout {
         }
 
         public FloatingActionButton build() {
-            return new FloatingActionButton(attachingView, activity,
+            return new FloatingActionButton(activity,
                     layoutParams,
-                    backgroundDrawable,
                     position,
                     contentView,
                     contentParams);
@@ -221,25 +189,8 @@ public class FloatingActionButton extends FrameLayout {
      * while setting Layout parameters to the contentView
      */
     public static class LayoutParams extends FrameLayout.LayoutParams {
-
-        public LayoutParams(Context c, AttributeSet attrs) {
-            super(c, attrs);
-        }
-
-        public LayoutParams(int width, int height) {
-            super(width, height);
-        }
-
         public LayoutParams(int width, int height, int gravity) {
             super(width, height, gravity);
-        }
-
-        public LayoutParams(ViewGroup.LayoutParams source) {
-            super(source);
-        }
-
-        public LayoutParams(MarginLayoutParams source) {
-            super(source);
         }
     }
 }

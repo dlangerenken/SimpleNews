@@ -28,9 +28,6 @@
     <string name="pref_config">Farbauswahl</string>
     <string name="new_category">Neue Kategorie</string>
     <string name="desc_list_item_icon">Item Icon</string>
-
-
-
     <string name="menu_settings">Einstellungen</string>
     <string name="title_activity_main">MainActivity</string>
 
@@ -98,4 +95,12 @@
     <string name="menu_delete_entry">Löschen</string>
     <string name="not_valid_url_nor_opml_file">Der eingegebene Text ist weder in einem validen OPML-Format, noch eine valide URL.</string>
     <string name="choose_category_for_feeds">Wähle eine Kategorie</string>
+    <string name="assigning_feeds_title">Feeds zuweisen</string>
+    <string name="beta_version_disclaimer">Das ist eine Test-Version! Bitte bewerte die Anwendung nicht aufgrund dieser Funktionalität. Wähle die Feeds, die zu einer Kategorie hinzugefügt werden sollen.</string>
+    <string name="import_button">Importieren</string>
+    <string name="enter_url_or_content_import">Bitte geben Sie eine URL zu einem OPML-Link oder den gesamten Inhalt einer Datei an</string>
+    <string name="home_title">Nachrichten</string>
+    <string name="favorite_title">Favoriten</string>
+    <string name="recent_title">Gesehene</string>
+    <string name="unread_title">Ungelesene</string>
 </resources>

@@ -92,7 +92,7 @@ public class  OpmlImportFragment extends Fragment implements BaseNavigation {
         View rootView = inflater.inflate(R.layout.opml_import_view, container, false);
 
         final EditText opmlContentEditText = (EditText) rootView.findViewById(R.id.opmlContentEditText);
-        opmlContentEditText.setText(readTxt());
+        // opmlContentEditText.setText(readTxt());
 
         importButton = (Button) rootView.findViewById(R.id.button);
         importProgres = (ProgressBar) rootView.findViewById(R.id.import_progress);
