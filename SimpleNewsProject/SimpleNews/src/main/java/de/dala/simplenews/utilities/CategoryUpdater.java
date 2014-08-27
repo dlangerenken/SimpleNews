@@ -13,13 +13,17 @@ import com.rometools.rome.feed.synd.SyndEntry;
 import com.rometools.rome.feed.synd.SyndFeed;
 import com.rometools.rome.io.FeedException;
 import com.rometools.rome.io.SyndFeedInput;
+import com.rometools.rome.io.XmlReader;
 import com.rosaloves.bitlyj.BitlyMethod;
 import com.rosaloves.bitlyj.data.Pair;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Date;
@@ -47,7 +51,6 @@ public class CategoryUpdater {
     public static final int RESULT = 4;
     private Handler handler;
     private Category category;
-    private List<FetchingResult> results;
     private int currentWorkingThreads = 0;
     private IDatabaseHandler databaseHandler;
     private boolean updateDatabase;
@@ -68,27 +71,8 @@ public class CategoryUpdater {
         }
 
         isRunning = true;
-        String msg = context != null ? context.getString(R.string.update_news) : "";
-        sendMessage(msg, STATUS_CHANGED);
-        results = new ArrayList<FetchingResult>();
-        currentWorkingThreads = category.getFeeds().size();
-        if (currentWorkingThreads == 0) {
-            sendMessage("No Feeds found", ERROR);
-        }
-        for (final Feed feed : category.getFeeds()) {
-            NetworkCommunication.loadRSSFeed(feed.getXmlUrl(), new Response.Listener<String>() {
-                        @Override
-                        public void onResponse(String feedStringResult) {
-                            resultFetched(new FetchingResult(feed, feedStringResult));
-                        }
-                    }, new Response.ErrorListener() {
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-                            resultFetched(null);
-                        }
-                    }
-            );
-        }
+
+        new UpdatingTask().execute();
         return true;
     }
 
@@ -96,59 +80,6 @@ public class CategoryUpdater {
         databaseHandler.removeEntries(category.getId(), null, null);
     }
 
-
-    private void resultFetched(FetchingResult result) {
-        currentWorkingThreads--;
-        if (result != null) {
-            results.add(result);
-        }
-
-        if (currentWorkingThreads <= 0) {
-            // every thread has catched the information
-            new AsyncTask<Void, Void, Void>() {
-
-                @Override
-                protected Void doInBackground(Void... params) {
-                    if (updateDatabase) {
-                        dropCategory();
-                    }
-                    parseInformation();
-                    return null;
-                }
-            }.execute();
-        }
-    }
-
-    private void parseInformation() {
-        SyndFeedInput input = new SyndFeedInput();
-        List<Entry> entries = new ArrayList<Entry>();
-        for (FetchingResult fetchingResult : results) {
-            try {
-                SyndFeed feed = input.build(new InputStreamReader(new ByteArrayInputStream(fetchingResult.stringResult.getBytes("UTF-8"))));
-                String title = feed.getTitle();
-                if (fetchingResult.feed.getTitle() == null) {
-                    fetchingResult.feed.setTitle(title);
-                    databaseHandler.updateFeed(fetchingResult.feed);
-                }
-                for (SyndEntry item : feed.getEntries()) {
-                    Entry entry = getEntryFromRSSItem(item, fetchingResult, title);
-                    if (entry != null) {
-                        entries.add(entry);
-                    }
-                }
-            } catch (FeedException e) {
-                e.printStackTrace();
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
-        }
-
-        if (updateDatabase) {
-            addToDatabase(entries);
-        }
-
-        getNewItems(entries);
-    }
 
     private void addToDatabase(List<Entry> entries) {
         Long deprecatedTime = PrefUtilities.getInstance().getDeprecatedTime();
@@ -248,7 +179,7 @@ public class CategoryUpdater {
         return sb.toString();
     }
 
-    private Entry getEntryFromRSSItem(SyndEntry item, FetchingResult result, String source) {
+    private Entry getEntryFromRSSItem(SyndEntry item, Long feedId, String source) {
         if (item != null) {
             if (item.getTitle() == null){
                 return null;
@@ -268,12 +199,11 @@ public class CategoryUpdater {
             SyndContent desc = item.getDescription();
             String description = null;
             if (desc != null && desc.getValue() != null){
-                description = desc.getValue().trim();
-                description = description.replaceAll("<.*?>", "").replace("()", "").replace("&nbsp;", "");
-                description = UIUtils.fixEncoding(description);
+                description = desc.getValue();
+                description = description.replaceAll("<.*?>", "").replace("()", "").replace("&nbsp;", "").trim();
             }
 
-            return new Entry(null, result.feed.getId(), category.getId(), item.getTitle().trim(), description, time, source, url.toString(), null, null, null, false);
+            return new Entry(null, feedId, category.getId(), item.getTitle().trim(), description, time, source, url.toString(), null, null, null, false);
         }
         return null;
     }
@@ -289,13 +219,49 @@ public class CategoryUpdater {
         return isRunning;
     }
 
-    private class FetchingResult {
-        public Feed feed;
-        public String stringResult;
 
-        public FetchingResult(Feed feed, String result) {
-            this.feed = feed;
-            this.stringResult = result;
+    private class UpdatingTask extends AsyncTask {
+        @Override
+        protected Object doInBackground(Object[] params) {
+            String msg = context != null ? context.getString(R.string.update_news) : "";
+            sendMessage(msg, STATUS_CHANGED);
+            currentWorkingThreads = category.getFeeds().size();
+            if (currentWorkingThreads == 0) {
+                sendMessage("No Feeds found", ERROR);
+            }
+
+            SyndFeedInput input = new SyndFeedInput();
+            List<Entry> entries = new ArrayList<Entry>();
+            for (final Feed feed : category.getFeeds()) {
+                try {
+                    SyndFeed syndFeed = input.build(new XmlReader(new URL(feed.getXmlUrl())));
+                    String title = syndFeed.getTitle();
+                    if (feed.getTitle() == null) {
+                        feed.setTitle(title);
+                        databaseHandler.updateFeed(feed);
+                    }
+                    for (SyndEntry item : syndFeed.getEntries()) {
+                        Entry entry = getEntryFromRSSItem(item, feed.getId(), title);
+                        if (entry != null) {
+                            entries.add(entry);
+                        }
+                    }
+                } catch (FeedException e) {
+                    e.printStackTrace();
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            if (updateDatabase) {
+                dropCategory();
+                addToDatabase(entries);
+            }
+
+            getNewItems(entries);
+            return null;
         }
     }
 }

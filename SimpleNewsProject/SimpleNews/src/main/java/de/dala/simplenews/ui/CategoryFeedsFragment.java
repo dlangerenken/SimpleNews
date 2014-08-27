@@ -35,6 +35,7 @@ import com.nineoldandroids.view.ViewPropertyAnimator;
 import com.rometools.rome.feed.synd.SyndFeed;
 import com.rometools.rome.io.FeedException;
 import com.rometools.rome.io.SyndFeedInput;
+import com.rometools.rome.io.XmlReader;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -42,6 +43,8 @@ import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -149,42 +152,36 @@ public class CategoryFeedsFragment extends Fragment implements ContextualUndoAda
                         if (!feedUrl.startsWith("http://")) {
                             feedUrl = "http://" + feedUrl;
                         }
-                        final String formattedFeedUrl = feedUrl;
 
                         if (UIUtils.isValideUrl(feedUrl)) {
                             crossfade(progress, inputLayout);
-
-                            NetworkCommunication.loadRSSFeed(feedUrl, new Response.Listener<String>() {
-                                @Override
-                                public void onResponse(String result) {
-                                    try {
-                                        SyndFeedInput input = new SyndFeedInput();
-                                        SyndFeed syndFeed = input.build(new InputStreamReader(new ByteArrayInputStream(result.getBytes())));
-                                        if (syndFeed.getEntries() == null || syndFeed.getEntries().isEmpty()) {
-                                            invalidFeedUrl(true);
-                                        } else {
-                                            Feed feed = new Feed();
-                                            feed.setCategoryId(category.getId());
-                                            feed.setTitle(syndFeed.getTitle());
-                                            feed.setDescription(syndFeed.getDescription());
-                                            feed.setXmlUrl(formattedFeedUrl);
-                                            long id = DatabaseHandler.getInstance().addFeed(category.getId(), feed, true);
-                                            feed.setId(id);
-                                            adapter.add(feed);
-                                            adapter.notifyDataSetChanged();
-                                            dialog.dismiss();
-                                        }
-                                    } catch (FeedException e) {
-                                        e.printStackTrace();
-                                        invalidFeedUrl(true);
-                                    }
-                                }
-                            }, new Response.ErrorListener() {
-                                @Override
-                                public void onErrorResponse(VolleyError volleyError) {
+                            try {
+                                SyndFeedInput input = new SyndFeedInput();
+                                SyndFeed syndFeed = input.build(new XmlReader(new URL(feedUrl)));
+                                if (syndFeed.getEntries() == null || syndFeed.getEntries().isEmpty()) {
                                     invalidFeedUrl(true);
+                                } else {
+                                    Feed feed = new Feed();
+                                    feed.setCategoryId(category.getId());
+                                    feed.setTitle(syndFeed.getTitle());
+                                    feed.setDescription(syndFeed.getDescription());
+                                    feed.setXmlUrl(feedUrl);
+                                    long id = DatabaseHandler.getInstance().addFeed(category.getId(), feed, true);
+                                    feed.setId(id);
+                                    adapter.add(feed);
+                                    adapter.notifyDataSetChanged();
+                                    dialog.dismiss();
                                 }
-                            });
+                            } catch (FeedException e) {
+                                e.printStackTrace();
+                                invalidFeedUrl(true);
+                            } catch (MalformedURLException e) {
+                                e.printStackTrace();
+                                invalidFeedUrl(true);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                                invalidFeedUrl(true);
+                            }
                         } else {
                             invalidFeedUrl(false);
                         }
@@ -276,35 +273,33 @@ public class CategoryFeedsFragment extends Fragment implements ContextualUndoAda
 
                         if (UIUtils.isValideUrl(feedUrl)) {
                             crossfade(progress, inputLayout);
-
-                            NetworkCommunication.loadRSSFeed(formattedFeedUrl, new Response.Listener<String>() {
-                                @Override
-                                public void onResponse(String result) {
-                                    try {
-                                        SyndFeedInput input = new SyndFeedInput();
-                                        SyndFeed syndFeed = input.build(new InputStreamReader(new ByteArrayInputStream(result.getBytes())));
-                                        if (syndFeed.getEntries() == null || syndFeed.getEntries().isEmpty()) {
-                                            invalidFeedUrl(true);
-                                        } else {
-                                            feed.setXmlUrl(formattedFeedUrl);
-                                            if (syndFeed.getTitle() != null) {
-                                                feed.setTitle(syndFeed.getTitle());
-                                            }
-                                            adapter.notifyDataSetChanged();
-                                            DatabaseHandler.getInstance().updateFeed(feed);
-                                            dialog.dismiss();
-                                        }
-                                    } catch (FeedException e) {
-                                        e.printStackTrace();
-                                        invalidFeedUrl(true);
-                                    }
-                                }
-                            }, new Response.ErrorListener() {
-                                @Override
-                                public void onErrorResponse(VolleyError volleyError) {
+                            try {
+                                SyndFeedInput input = new SyndFeedInput();
+                                SyndFeed syndFeed = input.build(new XmlReader(new URL(feedUrl)));
+                                if (syndFeed.getEntries() == null || syndFeed.getEntries().isEmpty()) {
                                     invalidFeedUrl(true);
+                                } else {
+                                    Feed feed = new Feed();
+                                    feed.setCategoryId(category.getId());
+                                    feed.setTitle(syndFeed.getTitle());
+                                    feed.setDescription(syndFeed.getDescription());
+                                    feed.setXmlUrl(feedUrl);
+                                    long id = DatabaseHandler.getInstance().addFeed(category.getId(), feed, true);
+                                    feed.setId(id);
+                                    adapter.add(feed);
+                                    adapter.notifyDataSetChanged();
+                                    dialog.dismiss();
                                 }
-                            });
+                            } catch (FeedException e) {
+                                e.printStackTrace();
+                                invalidFeedUrl(true);
+                            } catch (MalformedURLException e) {
+                                e.printStackTrace();
+                                invalidFeedUrl(true);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                                invalidFeedUrl(true);
+                            }
                         } else {
                             invalidFeedUrl(false);
                         }

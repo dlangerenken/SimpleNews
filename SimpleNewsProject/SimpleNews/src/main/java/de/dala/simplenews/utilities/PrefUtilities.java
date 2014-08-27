@@ -94,7 +94,7 @@ public class PrefUtilities {
     }
 
     public boolean shouldShortenLinks() {
-        return preferences.getBoolean(SHORTEN_LINKS, true);
+        return preferences.getBoolean(SHORTEN_LINKS, false);
     }
 
     public void increaseLaunchCountForRating() {
