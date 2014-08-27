@@ -8,6 +8,12 @@
         revision="19.1.0"
         sha1="7912610ed96381c25c36d986eba422731b9641b6"/>
     <item
+        dex="D:\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\pre-dexed\defaultFlavor\debug\jdom2-2.0.5-795b1d649c652a8d70073efe02ca65e26c1170c7.jar"
+        jar="C:\Users\Daniel\.gradle\caches\modules-2\files-2.1\org.jdom\jdom2\2.0.5\2001db51c131e555bafdb77fc52af6a9408c505e\jdom2-2.0.5.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="2001db51c131e555bafdb77fc52af6a9408c505e"/>
+    <item
         dex="D:\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\pre-dexed\defaultFlavor\debug\library-2.6.0-43a87f0889ad6195c6bacf70b07a1de92b883bf2.jar"
         jar="C:\Users\Daniel\.gradle\caches\modules-2\files-2.1\com.nhaarman.listviewanimations\library\2.6.0\59351ccb0a1631d30358f6a92749a072f2df7602\library-2.6.0.jar"
         jumboMode="false"

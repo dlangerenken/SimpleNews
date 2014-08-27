@@ -32,18 +32,19 @@ import com.nhaarman.listviewanimations.itemmanipulation.swipedismiss.contextualu
 import com.nineoldandroids.animation.Animator;
 import com.nineoldandroids.animation.AnimatorListenerAdapter;
 import com.nineoldandroids.view.ViewPropertyAnimator;
+import com.rometools.rome.feed.synd.SyndFeed;
+import com.rometools.rome.io.FeedException;
+import com.rometools.rome.io.SyndFeedInput;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
-import androidrss.RSSConfig;
-import androidrss.RSSFault;
-import androidrss.RSSFeed;
-import androidrss.RSSParser;
 import de.dala.simplenews.R;
 import de.dala.simplenews.common.Category;
 import de.dala.simplenews.common.Feed;
@@ -157,14 +158,15 @@ public class CategoryFeedsFragment extends Fragment implements ContextualUndoAda
                                 @Override
                                 public void onResponse(String result) {
                                     try {
-                                        RSSFeed rssFeed = new RSSParser(new RSSConfig()).parse(new ByteArrayInputStream(result.getBytes("UTF-8")));
-                                        if (rssFeed.getItems() == null || rssFeed.getItems().isEmpty()) {
+                                        SyndFeedInput input = new SyndFeedInput();
+                                        SyndFeed syndFeed = input.build(new InputStreamReader(new ByteArrayInputStream(result.getBytes())));
+                                        if (syndFeed.getEntries() == null || syndFeed.getEntries().isEmpty()) {
                                             invalidFeedUrl(true);
                                         } else {
                                             Feed feed = new Feed();
                                             feed.setCategoryId(category.getId());
-                                            feed.setTitle(rssFeed.getTitle());
-                                            feed.setDescription(rssFeed.getDescription());
+                                            feed.setTitle(syndFeed.getTitle());
+                                            feed.setDescription(syndFeed.getDescription());
                                             feed.setXmlUrl(formattedFeedUrl);
                                             long id = DatabaseHandler.getInstance().addFeed(category.getId(), feed, true);
                                             feed.setId(id);
@@ -172,10 +174,7 @@ public class CategoryFeedsFragment extends Fragment implements ContextualUndoAda
                                             adapter.notifyDataSetChanged();
                                             dialog.dismiss();
                                         }
-                                    } catch (RSSFault ex) {
-                                        ex.printStackTrace();
-                                        invalidFeedUrl(true);
-                                    } catch (UnsupportedEncodingException e) {
+                                    } catch (FeedException e) {
                                         e.printStackTrace();
                                         invalidFeedUrl(true);
                                     }
@@ -282,22 +281,20 @@ public class CategoryFeedsFragment extends Fragment implements ContextualUndoAda
                                 @Override
                                 public void onResponse(String result) {
                                     try {
-                                        RSSFeed rssFeed = new RSSParser(new RSSConfig()).parse(new ByteArrayInputStream(result.getBytes("UTF-8")));
-                                        if (rssFeed.getItems() == null || rssFeed.getItems().isEmpty()) {
+                                        SyndFeedInput input = new SyndFeedInput();
+                                        SyndFeed syndFeed = input.build(new InputStreamReader(new ByteArrayInputStream(result.getBytes())));
+                                        if (syndFeed.getEntries() == null || syndFeed.getEntries().isEmpty()) {
                                             invalidFeedUrl(true);
                                         } else {
                                             feed.setXmlUrl(formattedFeedUrl);
-                                            if (rssFeed.getTitle() != null) {
-                                                feed.setTitle(rssFeed.getTitle());
+                                            if (syndFeed.getTitle() != null) {
+                                                feed.setTitle(syndFeed.getTitle());
                                             }
                                             adapter.notifyDataSetChanged();
                                             DatabaseHandler.getInstance().updateFeed(feed);
                                             dialog.dismiss();
                                         }
-                                    } catch (RSSFault ex) {
-                                        ex.printStackTrace();
-                                        invalidFeedUrl(true);
-                                    } catch (UnsupportedEncodingException e) {
+                                    } catch (FeedException e) {
                                         e.printStackTrace();
                                         invalidFeedUrl(true);
                                     }

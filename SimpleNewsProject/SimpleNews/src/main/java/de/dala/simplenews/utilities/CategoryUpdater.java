@@ -8,22 +8,23 @@ import android.util.Log;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.rometools.rome.feed.synd.SyndContent;
+import com.rometools.rome.feed.synd.SyndEntry;
+import com.rometools.rome.feed.synd.SyndFeed;
+import com.rometools.rome.io.FeedException;
+import com.rometools.rome.io.SyndFeedInput;
 import com.rosaloves.bitlyj.BitlyMethod;
 import com.rosaloves.bitlyj.data.Pair;
 
 import java.io.ByteArrayInputStream;
+import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import androidrss.MediaEnclosure;
-import androidrss.RSSConfig;
-import androidrss.RSSFault;
-import androidrss.RSSFeed;
-import androidrss.RSSItem;
-import androidrss.RSSParser;
 import de.dala.simplenews.R;
 import de.dala.simplenews.common.Category;
 import de.dala.simplenews.common.Entry;
@@ -44,9 +45,6 @@ public class CategoryUpdater {
     public static final int CANCEL = -2;
     public static final int STATUS_CHANGED = 3;
     public static final int RESULT = 4;
-    public static final String IMAGE_JPEG = "image/jpeg";
-    public static final String IMAGE_PNG = "image/png";
-    private static final String TAG = "CategoryUpdater";
     private Handler handler;
     private Category category;
     private List<FetchingResult> results;
@@ -122,28 +120,26 @@ public class CategoryUpdater {
     }
 
     private void parseInformation() {
-        RSSParser parser = new RSSParser(new RSSConfig());
+        SyndFeedInput input = new SyndFeedInput();
         List<Entry> entries = new ArrayList<Entry>();
         for (FetchingResult fetchingResult : results) {
             try {
-                RSSFeed rssFeed = parser.parse(new ByteArrayInputStream(fetchingResult.stringResult.getBytes("UTF-8")));
-
+                SyndFeed feed = input.build(new InputStreamReader(new ByteArrayInputStream(fetchingResult.stringResult.getBytes("UTF-8"))));
+                String title = feed.getTitle();
                 if (fetchingResult.feed.getTitle() == null) {
-                    fetchingResult.feed.setTitle(rssFeed.getTitle());
+                    fetchingResult.feed.setTitle(title);
                     databaseHandler.updateFeed(fetchingResult.feed);
                 }
-
-                String title = rssFeed.getTitle();
-                for (RSSItem item : rssFeed.getItems()) {
-                    Entry entry = getEntryFromRSSItem(item, fetchingResult.feed.getId(), title);
+                for (SyndEntry item : feed.getEntries()) {
+                    Entry entry = getEntryFromRSSItem(item, fetchingResult, title);
                     if (entry != null) {
                         entries.add(entry);
                     }
                 }
-            } catch (UnsupportedEncodingException ex) {
-                Log.e(TAG, "UnsupportedEncoding", ex);
-            } catch (RSSFault e) {
-                Log.e(TAG, "RSSFault", e);
+            } catch (FeedException e) {
+                e.printStackTrace();
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
             }
         }
 
@@ -252,33 +248,32 @@ public class CategoryUpdater {
         return sb.toString();
     }
 
-    private Entry getEntryFromRSSItem(RSSItem item, Long feedId, String source) {
+    private Entry getEntryFromRSSItem(SyndEntry item, FetchingResult result, String source) {
         if (item != null) {
-            MediaEnclosure enclose = item.getEnclosure();
-            String mediaUri = null;
-            if (enclose != null) {
-                if (enclose.getMimeType() != null && (enclose.getMimeType().equals(IMAGE_JPEG) || enclose.getMimeType().equals(IMAGE_PNG))) {
-                    mediaUri = enclose.getUrl() != null ? enclose.getUrl().toString() : null;
-                }
-            }
-            Object url = item.getLink();
-            if (url == null){
-                return null;
-            }
-            Date pubDate = item.getPubDate();
-            Long time = null;
-            if (pubDate != null) {
-                time = pubDate.getTime();
-            }
-            String desc = item.getDescription();
-            if (desc != null) {
-                desc = desc.replaceAll("<.*?>", "").replace("()", "").replace("&nbsp;", "");
-            }
             if (item.getTitle() == null){
                 return null;
             }
 
-            return new Entry(null, feedId, category.getId(), item.getTitle().trim(), desc != null ? desc.trim() : null, time, source, url.toString(), mediaUri, null, null, false);
+            Object url = item.getLink();
+            if (url == null){
+                return null;
+            }
+
+            Date pubDate = item.getPublishedDate();
+            Long time = null;
+            if (pubDate != null) {
+                time = pubDate.getTime();
+            }
+
+            SyndContent desc = item.getDescription();
+            String description = null;
+            if (desc != null && desc.getValue() != null){
+                description = desc.getValue().trim();
+                description = description.replaceAll("<.*?>", "").replace("()", "").replace("&nbsp;", "");
+                description = UIUtils.fixEncoding(description);
+            }
+
+            return new Entry(null, result.feed.getId(), category.getId(), item.getTitle().trim(), description, time, source, url.toString(), null, null, null, false);
         }
         return null;
     }

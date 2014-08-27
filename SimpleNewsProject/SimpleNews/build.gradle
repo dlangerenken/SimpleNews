@@ -45,6 +45,9 @@ android {
             proguardFile 'proguard-rules.txt'
         }
     }
+    packagingOptions {
+        exclude 'META-INF/LICENSE.txt'
+    }
 }
 
 dependencies {
@@ -58,6 +61,8 @@ dependencies {
     compile('com.android.support:support-v4-preferencefragment:1.0.0@aar') {
         exclude module: 'support-v4'
     }
+
+    compile 'org.jdom:jdom2:2.0.5'
     compile 'com.ocpsoft:ocpsoft-pretty-time:1.0.7'
     compile 'com.github.castorflex.smoothprogressbar:library:0.5.2'
     compile 'com.android.support:support-v4:19.1.0'

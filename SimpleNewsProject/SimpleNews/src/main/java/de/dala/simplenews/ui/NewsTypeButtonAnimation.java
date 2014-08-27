@@ -33,21 +33,6 @@ public class NewsTypeButtonAnimation  {
     public void init(final AbsListView view, FloatingActionMenu viewToAnimate) {
         mViewToAnimate = viewToAnimate;
         initScrollClass(view);
-        initClick();
-    }
-
-    private void initClick() {
-        mViewToAnimate.setStateChangeListener(new FloatingActionMenu.MenuStateChangeListener() {
-            @Override
-            public void onMenuOpened(FloatingActionMenu menu) {
-
-            }
-
-            @Override
-            public void onMenuClosed(FloatingActionMenu menu) {
-
-            }
-        });
     }
 
     private void initScrollClass(final AbsListView view) {

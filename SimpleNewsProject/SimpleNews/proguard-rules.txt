@@ -1,3 +1,9 @@
 -dontwarn com.ocpsoft.pretty.**
+-dontwarn org.jdom2.**
+-dontwarn org.apache.**
+-dontwarn org.slf4j.**
+-dontwarn com.rometools.**
 -dontskipnonpubliclibraryclasses
 -dontskipnonpubliclibraryclassmembers
+-renamesourcefileattribute SourceFile
+-keepattributes SourceFile,LineNumberTable
