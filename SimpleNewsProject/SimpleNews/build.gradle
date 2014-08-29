@@ -61,8 +61,6 @@ dependencies {
     compile('com.android.support:support-v4-preferencefragment:1.0.0@aar') {
         exclude module: 'support-v4'
     }
-
-    compile 'org.jdom:jdom2:2.0.5'
     compile 'com.ocpsoft:ocpsoft-pretty-time:1.0.7'
     compile 'com.github.castorflex.smoothprogressbar:library:0.5.2'
     compile 'com.android.support:support-v4:19.1.0'
@@ -71,4 +69,5 @@ dependencies {
     compile 'com.nhaarman.listviewanimations:library:2.6.0'
     compile 'com.crashlytics.android:crashlytics:1.+'
     compile 'com.etsy.android.grid:library:1.0.5'
+    compile project(':feeds')
 }

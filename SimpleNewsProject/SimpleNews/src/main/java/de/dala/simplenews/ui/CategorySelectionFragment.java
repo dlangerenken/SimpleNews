@@ -24,11 +24,19 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.nhaarman.listviewanimations.ArrayAdapter;
+import com.rometools.opml.feed.opml.Opml;
+import com.rometools.opml.io.impl.OPML20Generator;
+import com.rometools.rome.io.FeedException;
+import com.rometools.rome.io.WireFeedOutput;
+
+import org.jdom2.output.XMLOutputter;
 
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import colorpicker.ColorPickerDialog;
 import colorpicker.ColorUtils;
@@ -38,11 +46,11 @@ import de.dala.simplenews.common.Category;
 import de.dala.simplenews.common.Feed;
 import de.dala.simplenews.database.DatabaseHandler;
 import de.dala.simplenews.database.IDatabaseHandler;
-import de.dala.simplenews.parser.OpmlWriter;
 import de.dala.simplenews.utilities.BaseNavigation;
 import de.dala.simplenews.utilities.ColorManager;
 import de.dala.simplenews.utilities.LightAlertDialog;
 import de.dala.simplenews.utilities.MyDynamicListView;
+import de.dala.simplenews.utilities.OpmlConverter;
 import de.dala.simplenews.utilities.PrefUtilities;
 import de.dala.simplenews.utilities.UIUtils;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
@@ -454,21 +462,22 @@ public class CategorySelectionFragment extends Fragment implements BaseNavigatio
     private Intent createShareIntent() {
         // retrieve selected items and print them out
         SparseBooleanArray selected = adapter.getSelectedIds();
+        List<Category> categories = new ArrayList<Category>();
         ArrayList<Feed> feeds = new ArrayList<Feed>();
         for (int i = 0; i < selected.size(); i++) {
             if (selected.valueAt(i)) {
                 Category selectedItem = adapter.getItem(i);
-                feeds.addAll(selectedItem.getFeeds());
+                categories.add(selectedItem);
             }
         }
 
-        StringWriter writer = new StringWriter();
+        Opml opml = OpmlConverter.convertCategoriesToOpml(categories);
+        String finalMessage = "";
         try {
-            OpmlWriter.writeDocument(feeds, writer);
-        } catch (IOException e) {
+            finalMessage = new XMLOutputter().outputString(new OPML20Generator().generate(opml));
+        } catch (FeedException e) {
             e.printStackTrace();
         }
-        String finalMessage = writer.toString();
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.setType("text/xml");
         shareIntent.putExtra(Intent.EXTRA_TEXT,

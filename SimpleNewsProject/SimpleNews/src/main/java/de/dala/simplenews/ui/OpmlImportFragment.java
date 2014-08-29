@@ -1,6 +1,7 @@
 package de.dala.simplenews.ui;
 
 import android.app.Activity;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
@@ -13,22 +14,25 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
+import com.rometools.opml.feed.opml.Opml;
+import com.rometools.rome.io.FeedException;
+import com.rometools.rome.io.WireFeedInput;
+import com.rometools.rome.io.XmlReader;
 
-import org.xmlpull.v1.XmlPullParserException;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringReader;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 import de.dala.simplenews.R;
 import de.dala.simplenews.common.Feed;
-import de.dala.simplenews.network.NetworkCommunication;
-import de.dala.simplenews.parser.OpmlReader;
 import de.dala.simplenews.utilities.BaseNavigation;
+import de.dala.simplenews.utilities.OpmlConverter;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
 
@@ -119,7 +123,7 @@ public class  OpmlImportFragment extends Fragment implements BaseNavigation {
             public void onClick(View v) {
                 if (opmlContentEditText.getText() != null && opmlContentEditText.getText().toString() != ""){
                     //content added
-                    importString(opmlContentEditText.getText().toString());
+                    new ImportAsyncTask().execute(opmlContentEditText.getText().toString());
                 }
             }
         });
@@ -130,45 +134,76 @@ public class  OpmlImportFragment extends Fragment implements BaseNavigation {
         return rootView;
     }
 
-    private void importString(String enteredText) {
-        enableProgressView(true);
-        try {
-            List<Feed> feeds = OpmlReader.importFile(new StringReader(enteredText));
-            if (parent != null && feeds.size() > 0) {
-                parent.assignFeeds(feeds);
-                enableProgressView(false);
-                return;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (XmlPullParserException e) {
-            e.printStackTrace();
+    private class ImportAsyncTask extends AsyncTask<String, String, String> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            enableProgressView(true);
         }
-        NetworkCommunication.loadOpmlFeeds(enteredText, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String responseString) {
+
+        @Override
+        protected String doInBackground(String[] params) {
+            if (params == null ||params.length == 0 ||params[0] == null || params[0] == ""){
+                return null;
+            }
+            String enteredText = params[0];
+            boolean loaded;
+
+            List<Feed> feeds = new ArrayList<Feed>();
+            WireFeedInput input = new WireFeedInput();
+            try {
+                Opml feed = (Opml)input.build(new XmlReader(new ByteArrayInputStream(enteredText.getBytes())));
+                feeds = OpmlConverter.convertOpmlListToFeedList(feed);
+                loaded = feeds == null || feeds.size() == 0;
+            } catch (FeedException e) {
+                e.printStackTrace();
+                loaded = false;
+            } catch (IOException e) {
+                e.printStackTrace();
+                loaded = false;
+            } catch (ClassCastException e){
+                e.printStackTrace();
+                loaded = false;
+            }
+
+            if (!loaded) {
+                // try to load by url
                 try {
-                    List<Feed> feeds = OpmlReader.importFile(new StringReader(responseString));
-                    if (parent != null && feeds.size() > 0) {
-                        parent.assignFeeds(feeds);
-                    }else{
-                        Crouton.makeText(getActivity(), getActivity().getString(R.string.not_valid_url_nor_opml_file), Style.ALERT).show();
-                    }
+                    Opml feed = (Opml) input.build(new XmlReader(new URL(enteredText)));
+                    feeds = OpmlConverter.convertOpmlListToFeedList(feed);
+                    loaded = feeds == null || feeds.size() == 0;
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                    loaded = false;
+                } catch (FeedException e) {
+                    e.printStackTrace();
+                    loaded = false;
                 } catch (IOException e) {
                     e.printStackTrace();
-                } catch (XmlPullParserException e) {
-                    e.printStackTrace();
+                    loaded = false;
                 }
-                enableProgressView(false);
             }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError volleyError) {
+
+            if (loaded) {
+                if (parent != null) {
+                    parent.assignFeeds(feeds);
+                    return "success";
+                }
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            if (s == null){
                 Crouton.makeText(getActivity(), getActivity().getString(R.string.not_valid_url_nor_opml_file), Style.ALERT).show();
-                enableProgressView(false);
             }
-        });
+            enableProgressView(false);
+        }
     }
+
 
     private void enableProgressView(boolean b) {
         importButton.setVisibility(b ? View.INVISIBLE : View.VISIBLE);

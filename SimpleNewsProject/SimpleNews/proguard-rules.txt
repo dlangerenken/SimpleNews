@@ -7,3 +7,7 @@
 -dontskipnonpubliclibraryclassmembers
 -renamesourcefileattribute SourceFile
 -keepattributes SourceFile,LineNumberTable
+-dontskipnonpubliclibraryclasses
+-dontskipnonpubliclibraryclassmembers
+-renamesourcefileattribute SourceFile
+-keepattributes SourceFile,LineNumberTable

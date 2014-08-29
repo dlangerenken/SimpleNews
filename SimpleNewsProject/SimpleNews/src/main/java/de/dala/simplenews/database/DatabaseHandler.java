@@ -53,6 +53,7 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
     public static final String FEED_URL = "url";
     public static final String FEED_HTML_URL = "html_url";
     public static final String FEED_VISIBLE = "visible";
+    public static final String FEED_TYPE = "type";
 
     public static final String ENTRY_ID = "_id";
     public static final String ENTRY_CATEGORY_ID = "category_id";
@@ -143,7 +144,8 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
                 + FEED_DESCRIPTION + " TEXT,"
                 + FEED_URL + " TEXT,"
                 + FEED_VISIBLE + " INTEGER,"
-                + FEED_HTML_URL + " TEXT"+ ");";
+                + FEED_HTML_URL + " TEXT,"
+                + FEED_TYPE + " TEXT" + ");";
         String createEntryTable = "CREATE TABLE "
                 + TABLE_ENTRY + "("
                 + ENTRY_ID + " INTEGER PRIMARY KEY, "
@@ -186,8 +188,10 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
             if (oldVersion < 42 && newVersion >= 42){
                 String upgradeQueryEntry = "ALTER TABLE " + TABLE_ENTRY + " ADD COLUMN " + ENTRY_IS_EXPANDED + " INTEGER;";
                 String upgradeQueryFeed = "ALTER TABLE " + TABLE_FEED + " ADD COLUMN " + FEED_HTML_URL + " TEXT;";
+                String upgradeQueryFeed2 = "ALTER TABLE " + TABLE_FEED + " ADD COLUMN " + FEED_TYPE + " TEXT;";
                 db.execSQL(upgradeQueryEntry);
                 db.execSQL(upgradeQueryFeed);
+                db.execSQL(upgradeQueryFeed2);
             }
         }
     }

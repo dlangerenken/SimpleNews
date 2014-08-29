@@ -8,10 +8,6 @@ import java.util.List;
  * Created by Daniel on 19.12.13.
  */
 public class Feed implements Serializable {
-    public static final int FEEDFILETYPE_FEED = 0;
-    public static final String TYPE_RSS2 = "rss";
-    public static final String TYPE_RSS091 = "rss";
-    public static final String TYPE_ATOM1 = "atom";
     private Long id;
     private String xmlUrl;
     private String htmlUrl;
@@ -36,6 +32,10 @@ public class Feed implements Serializable {
 
     public String getType() {
         return type;
+    }
+
+    public void setType(String type){
+        this.type = type;
     }
 
     public String getTitle() {

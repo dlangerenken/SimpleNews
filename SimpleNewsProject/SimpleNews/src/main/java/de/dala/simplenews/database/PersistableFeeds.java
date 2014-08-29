@@ -58,6 +58,7 @@ public class PersistableFeeds implements IPersistableObject<Feed>{
         feed.setXmlUrl(cursor.getString(4));
         feed.setVisible(cursor.getInt(5) == 1);
         feed.setHtmlUrl(cursor.getString(6));
+        feed.setType(cursor.getString(7));
 
         if (mExcludeEntries != null && !mExcludeEntries) {
             PersistableEntries mPersistableEntries = getPersistableEntries(feed.getCategoryId(), feed.getId());
@@ -97,6 +98,7 @@ public class PersistableFeeds implements IPersistableObject<Feed>{
             values.put(FEED_URL, feed.getXmlUrl());
             values.put(FEED_VISIBLE, feed.isVisible() ? 1 : 0);
             values.put(FEED_HTML_URL, feed.getHtmlUrl());
+            values.put(FEED_TYPE, feed.getType());
 
             /*
 		     * Inserting Row

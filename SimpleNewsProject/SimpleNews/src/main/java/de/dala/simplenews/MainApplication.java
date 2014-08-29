@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Context;
 
 import com.crashlytics.android.Crashlytics;
+import com.rometools.rome.feed.RomeResourceInit;
 
 import java.io.InputStream;
 
@@ -17,7 +18,6 @@ import de.dala.simplenews.utilities.PrefUtilities;
  * Created by Daniel on 19.12.13.
  */
 public class MainApplication extends Application {
-    static Context context;
 
     @Override
     public void onCreate() {
@@ -28,10 +28,6 @@ public class MainApplication extends Application {
         DatabaseHandler.init(this, DatabaseHandler.DATABASE_NAME);
         PrefUtilities.init(this);
         ColorManager.init(this);
-        context = this;
-    }
-
-    public static InputStream openRawResource(int resourceName){
-        return context.getResources().openRawResource(resourceName);
+        RomeResourceInit.init(this);
     }
 }

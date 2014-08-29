@@ -14,6 +14,7 @@ import java.io.InputStream;
 import de.dala.simplenews.common.Category;
 import de.dala.simplenews.common.Feed;
 import de.dala.simplenews.common.News;
+import de.dala.simplenews.utilities.ColorManager;
 
 /**
  * Created by Daniel on 23.12.13.
@@ -163,7 +164,17 @@ public class XmlParser {
         String color = parser.getAttributeValue(null, ATTRIBUTE_COLOR);
         String visible = parser.getAttributeValue(null, ATTRIBUTE_VISIBLE);
         Category category = new Category();
-        category.setColorId(Color.parseColor(color));
+        try {
+            category.setColorId(Color.parseColor(color));
+        }catch (IllegalArgumentException e) {
+            // Unknown color, try to parse it as integer
+            try {
+                category.setColorId(ColorManager.getInstance().getColorById(Integer.parseInt(color)));
+            } catch (NumberFormatException ne) {
+                // not a number, set default value
+                category.setColorId(0);
+            }
+        }
         category.setName(categoryName);
         if (visible != null) {
             category.setVisible(!"false".equals(visible));

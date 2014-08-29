@@ -26,24 +26,25 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.nhaarman.listviewanimations.ArrayAdapter;
 import com.nhaarman.listviewanimations.itemmanipulation.swipedismiss.contextualundo.ContextualUndoAdapter;
 import com.nineoldandroids.animation.Animator;
 import com.nineoldandroids.animation.AnimatorListenerAdapter;
 import com.nineoldandroids.view.ViewPropertyAnimator;
+import com.rometools.opml.feed.opml.Opml;
+import com.rometools.opml.io.impl.OPML20Generator;
 import com.rometools.rome.feed.synd.SyndFeed;
 import com.rometools.rome.io.FeedException;
 import com.rometools.rome.io.SyndFeedInput;
+import com.rometools.rome.io.WireFeedOutput;
 import com.rometools.rome.io.XmlReader;
 
-import java.io.ByteArrayInputStream;
+
+import org.jdom2.Document;
+import org.jdom2.output.XMLOutputter;
+
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.StringReader;
 import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -53,10 +54,9 @@ import de.dala.simplenews.R;
 import de.dala.simplenews.common.Category;
 import de.dala.simplenews.common.Feed;
 import de.dala.simplenews.database.DatabaseHandler;
-import de.dala.simplenews.network.NetworkCommunication;
-import de.dala.simplenews.parser.OpmlWriter;
 import de.dala.simplenews.utilities.BaseNavigation;
 import de.dala.simplenews.utilities.LightAlertDialog;
+import de.dala.simplenews.utilities.OpmlConverter;
 import de.dala.simplenews.utilities.UIUtils;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
@@ -241,7 +241,6 @@ public class CategoryFeedsFragment extends Fragment implements ContextualUndoAda
         dialog.show();
     }
 
-
     private class UpdatingTask extends AsyncTask<String, String, String> {
         private View view;
         private ViewGroup inputLayout;
@@ -258,13 +257,17 @@ public class CategoryFeedsFragment extends Fragment implements ContextualUndoAda
         @Override
         protected void onPostExecute(String o) {
             super.onPostExecute(o);
-            dialog.dismiss();
+            if (o == null) {
+                dialog.dismiss();
+            }else{
+                invalidFeedUrl(Boolean.parseBoolean(o));
+            }
         }
 
         @Override
         protected String doInBackground(String... params) {
-            String feedUrl = "";
-            if (!params[0].startsWith("http://")) {
+            String feedUrl = params[0];
+            if (feedUrl.startsWith("http://")) {
                 feedUrl = "http://" + feedUrl;
             }
 
@@ -272,33 +275,34 @@ public class CategoryFeedsFragment extends Fragment implements ContextualUndoAda
                 crossfade(progress, inputLayout);
                 try {
                     SyndFeedInput input = new SyndFeedInput();
-                    SyndFeed syndFeed = input.build(new XmlReader(new URL(params[0].toString())));
+                    SyndFeed syndFeed = input.build(new XmlReader(new URL(feedUrl)));
                     if (syndFeed.getEntries() == null || syndFeed.getEntries().isEmpty()) {
-                        invalidFeedUrl(true);
+                        return Boolean.TRUE.toString();
                     } else {
                         Feed feed = new Feed();
                         feed.setCategoryId(category.getId());
                         feed.setTitle(syndFeed.getTitle());
                         feed.setDescription(syndFeed.getDescription());
                         feed.setXmlUrl(feedUrl);
+                        feed.setType(syndFeed.getFeedType());
+                        //TODO maybe store more information - later
                         long id = DatabaseHandler.getInstance().addFeed(category.getId(), feed, true);
                         feed.setId(id);
                         adapter.add(feed);
                         adapter.notifyDataSetChanged();
-                        dialog.dismiss();
                     }
                 } catch (FeedException e) {
                     e.printStackTrace();
-                    invalidFeedUrl(true);
+                    return Boolean.TRUE.toString();
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
-                    invalidFeedUrl(true);
+                    return Boolean.TRUE.toString();
                 } catch (IOException e) {
                     e.printStackTrace();
-                    invalidFeedUrl(true);
+                    return Boolean.TRUE.toString();
                 }
             } else {
-                invalidFeedUrl(false);
+                return Boolean.FALSE.toString();
             }
             return null;
         }
@@ -376,13 +380,13 @@ public class CategoryFeedsFragment extends Fragment implements ContextualUndoAda
             }
         }
 
-        StringWriter writer = new StringWriter();
+        Opml opml = OpmlConverter.convertFeedsToOpml("SimpleNews - OPML", feeds);
+        String finalMessage = null;
         try {
-            OpmlWriter.writeDocument(feeds, writer);
-        } catch (IOException e) {
+            finalMessage = new XMLOutputter().outputString(new OPML20Generator().generate(opml));
+        } catch (FeedException e) {
             e.printStackTrace();
         }
-        String finalMessage = writer.toString();
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.setType("text/xml");
         shareIntent.putExtra(Intent.EXTRA_TEXT,

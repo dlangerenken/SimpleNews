@@ -12,8 +12,6 @@ import java.util.List;
 
 import de.dala.simplenews.test.R;
 import de.dala.simplenews.common.Feed;
-import de.dala.simplenews.parser.OpmlReader;
-import de.dala.simplenews.parser.OpmlWriter;
 
 /**
  * Created by Daniel on 05.03.14.
