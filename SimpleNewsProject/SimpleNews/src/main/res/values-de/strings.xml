@@ -96,7 +96,8 @@
     <string name="not_valid_url_nor_opml_file">Der eingegebene Text ist weder in einem validen OPML-Format, noch eine valide URL.</string>
     <string name="choose_category_for_feeds">Wähle eine Kategorie</string>
     <string name="assigning_feeds_title">Feeds zuweisen</string>
-    <string name="beta_version_disclaimer">Das ist eine Test-Version! Bitte bewerte die Anwendung nicht aufgrund dieser Funktionalität. Wähle die Feeds, die zu einer Kategorie hinzugefügt werden sollen.</string>
+    <string name="beta_version_disclaimer">Das ist eine Test-Version! Bitte bewerte die Anwendung nicht aufgrund dieser Funktionalität, sondern sende stattdessen Vorschläge oder Fehler</string>
+    <string name="feed_selection_assign">Selektiere die Feeds, die zu einer Kategorie hinzugefügt werden sollen.</string>
     <string name="import_button">Importieren</string>
     <string name="enter_url_or_content_import">Bitte geben Sie eine URL zu einem OPML-Link oder den gesamten Inhalt einer Datei an</string>
     <string name="home_title">Nachrichten</string>

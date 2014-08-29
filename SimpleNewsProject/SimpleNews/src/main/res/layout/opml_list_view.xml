@@ -7,7 +7,7 @@
     <TextView
         android:layout_width="match_parent"
         android:textAppearance="@android:style/TextAppearance.Small"
-        android:layout_height="wrap_content" android:text="@string/beta_version_disclaimer"
+        android:layout_height="wrap_content" android:text="@string/feed_selection_assign"
         android:layout_margin="5dp"/>
     <ListView
         android:layout_width="match_parent"

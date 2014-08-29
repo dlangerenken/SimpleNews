@@ -1,15 +1,28 @@
 package de.dala.simplenews.ui;
 
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Rect;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 
+import com.nineoldandroids.view.ViewHelper;
+
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 
 import de.dala.simplenews.R;
@@ -17,11 +30,12 @@ import de.dala.simplenews.common.Category;
 import de.dala.simplenews.common.Feed;
 import de.dala.simplenews.database.DatabaseHandler;
 import de.dala.simplenews.utilities.BaseNavigation;
+import de.dala.simplenews.utilities.UIUtils;
 
 /**
  * Created by Daniel on 29.12.13.
  */
-public class CategoryModifierFragment extends Fragment implements CategorySelectionFragment.OnCategoryClicked, BaseNavigation {
+public class CategoryModifierFragment extends BaseFragment implements CategorySelectionFragment.OnCategoryClicked, BaseNavigation {
     private static final String CATEGORY_FEEDS_TAG = "feed";
     private static final String CATEGORY_SELECTION_TAG = "selection";
     private static final String FROM_RSS = "from_rss";
@@ -63,12 +77,6 @@ public class CategoryModifierFragment extends Fragment implements CategorySelect
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        //setRetainInstance(true);
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         setHasOptionsMenu(true);
         return inflater.inflate(R.layout.category_modifier, container, false);
@@ -78,8 +86,8 @@ public class CategoryModifierFragment extends Fragment implements CategorySelect
     public void onMoreClicked(Category category) {
         FragmentTransaction t = getChildFragmentManager().beginTransaction();
         t.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_left, R.anim.slide_in_right, R.anim.slide_out_right);
-        t.replace(R.id.container, CategoryFeedsFragment.newInstance(category), CATEGORY_FEEDS_TAG);
         t.addToBackStack(null);
+        t.replace(R.id.container, CategoryFeedsFragment.newInstance(category), CATEGORY_FEEDS_TAG);
         t.commit();
         getActivity().supportInvalidateOptionsMenu();
     }

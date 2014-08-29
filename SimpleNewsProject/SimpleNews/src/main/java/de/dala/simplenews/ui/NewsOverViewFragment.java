@@ -46,7 +46,7 @@ import static com.nineoldandroids.view.ViewPropertyAnimator.animate;
 /**
  * Created by Daniel on 20.02.14.
  */
-public class NewsOverViewFragment extends Fragment implements ViewPager.OnPageChangeListener, BaseNavigation {
+public class NewsOverViewFragment extends BaseFragment implements ViewPager.OnPageChangeListener, BaseNavigation {
 
     private PagerSlidingTabStrip tabs;
 

@@ -56,11 +56,12 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
 
     @Override
     public boolean onSupportNavigateUp() {
+        currentFragment = getVisibleFragment();
         if (currentFragment != null && currentFragment.getChildFragmentManager().getBackStackEntryCount() > 0){
-            currentFragment.getChildFragmentManager().popBackStack();
+            currentFragment.getChildFragmentManager().popBackStackImmediate();
         }else{
             //This method is called when the up button is pressed. Just the pop back stack.
-            getSupportFragmentManager().popBackStack();
+            getSupportFragmentManager().popBackStackImmediate();
         }
         updateNavigation();
         return true;

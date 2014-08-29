@@ -30,7 +30,7 @@ import de.dala.simplenews.utilities.BaseNavigation;
 /**
  * Created by Daniel on 04.08.2014.
  */
-public class OpmlAssignFragment extends Fragment implements ContextualUndoAdapter.DeleteItemCallback, ViewPager.OnPageChangeListener, BaseNavigation{
+public class OpmlAssignFragment extends BaseFragment implements ContextualUndoAdapter.DeleteItemCallback, ViewPager.OnPageChangeListener, BaseNavigation{
 
     private OpmlListAdapter adapter;
     private static final String FEED_LIST_KEY = "feeds";

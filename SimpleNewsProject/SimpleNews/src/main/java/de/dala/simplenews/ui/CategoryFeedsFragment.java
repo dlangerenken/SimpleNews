@@ -61,7 +61,7 @@ import de.keyboardsurfer.android.widget.crouton.Style;
 /**
  * Created by Daniel on 29.12.13.
  */
-public class CategoryFeedsFragment extends Fragment implements ContextualUndoAdapter.DeleteItemCallback, BaseNavigation {
+public class CategoryFeedsFragment extends BaseFragment implements ContextualUndoAdapter.DeleteItemCallback, BaseNavigation {
 
 
     private static final String CATEGORY_KEY = "category";

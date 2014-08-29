@@ -39,7 +39,7 @@ import de.keyboardsurfer.android.widget.crouton.Style;
 /**
  * Created by Daniel on 01.08.2014.
  */
-public class  OpmlImportFragment extends Fragment implements BaseNavigation {
+public class  OpmlImportFragment extends BaseFragment implements BaseNavigation {
 
     private OnFeedsLoaded parent;
     private Button importButton;
@@ -173,9 +173,12 @@ public class  OpmlImportFragment extends Fragment implements BaseNavigation {
             if (!loaded) {
                 // try to load by url
                 try {
+                    if (!enteredText.startsWith("http://")){
+                        enteredText = "http://" + enteredText;
+                    }
                     Opml feed = (Opml) input.build(new XmlReader(new URL(enteredText)));
                     feeds = OpmlConverter.convertOpmlListToFeedList(feed);
-                    loaded = feeds == null || feeds.size() == 0;
+                    loaded = feeds != null && feeds.size() > 0;
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
                     loaded = false;

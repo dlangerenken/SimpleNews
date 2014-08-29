@@ -57,7 +57,7 @@ import de.dala.simplenews.utilities.UIUtils;
 /**
  * Created by Daniel on 18.12.13.
  */
-public class ExpandableNewsFragment extends Fragment implements SwipeRefreshLayoutExtended.OnRefreshListener, SimpleCursorLoader.OnLoadCompleteListener, NewsOverViewFragment.INewsTypeButton, BaseNavigation {
+public class ExpandableNewsFragment extends BaseFragment implements SwipeRefreshLayoutExtended.OnRefreshListener, SimpleCursorLoader.OnLoadCompleteListener, NewsOverViewFragment.INewsTypeButton, BaseNavigation {
     private static final String ARG_CATEGORY = "category";
     private static final String ARG_ENTRY_TYPE = "entryType";
     private MyExpandableGridItemAdapter myExpandableListItemAdapter;

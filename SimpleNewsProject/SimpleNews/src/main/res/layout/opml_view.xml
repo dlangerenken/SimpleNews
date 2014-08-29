@@ -8,6 +8,17 @@
     <FrameLayout
         android:id="@+id/container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:layout_above="@+id/textView" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="@string/beta_version_disclaimer"
+        android:id="@+id/textView"
+        android:textColor="@color/holo_red_dark"
+        android:layout_alignParentBottom="true"
+        android:padding="5dp" />
 
 </RelativeLayout>

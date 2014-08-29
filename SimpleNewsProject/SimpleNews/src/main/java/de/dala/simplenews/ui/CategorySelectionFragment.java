@@ -54,7 +54,7 @@ import de.keyboardsurfer.android.widget.crouton.Style;
 /**
  * Created by Daniel on 29.12.13.
  */
-public class CategorySelectionFragment extends Fragment implements BaseNavigation {
+public class CategorySelectionFragment extends BaseFragment implements BaseNavigation {
 
     private static final String CATEGORIES_KEY = "categories";
     private static final String FROM_RSS_KEY = "rss";
