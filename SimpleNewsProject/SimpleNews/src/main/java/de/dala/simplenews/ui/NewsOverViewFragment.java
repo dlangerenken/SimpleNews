@@ -460,6 +460,9 @@ public class NewsOverViewFragment extends BaseFragment implements ViewPager.OnPa
         public Fragment getItem(int position) {
             // Check if this Fragment already exists.
             String name = makeFragmentName(R.id.pager, position);
+            if (newsTypeTags == null){
+                newsTypeTags = new ArrayList<String>();
+            }
             if (!newsTypeTags.contains(name)){
                 newsTypeTags.add(name);
             }

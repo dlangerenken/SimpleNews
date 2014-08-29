@@ -30,7 +30,7 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
      * Database Name and Version
      */
     private static final int DATABASE_VERSION = 44;
-    public static final String DATABASE_NAME = "news_database.db";
+    public static final String DATABASE_NAME = "news_database";
 
     /**
      * Table names
@@ -165,14 +165,6 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
         db.execSQL(createCategoryTable);
         db.execSQL(createFeedTable);
         db.execSQL(createEntryTable);
-    }
-
-    @Override
-    public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        if (newVersion < oldVersion) {
-            db.execSQL("DROP DATABASE " + DATABASE_NAME);
-            onCreate(db);
-        }
     }
 
     @Override

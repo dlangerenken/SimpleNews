@@ -104,4 +104,5 @@
     <string name="favorite_title">Favoriten</string>
     <string name="recent_title">Gesehene</string>
     <string name="unread_title">Ungelesene</string>
+    <string name="no_feeds_found">Keine Feeds gefunden</string>
 </resources>

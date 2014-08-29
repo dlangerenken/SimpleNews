@@ -8,3 +8,4 @@
 -optimizations !class/unboxing/enum
 -renamesourcefileattribute SourceFile
 -keepattributes SourceFile,LineNumberTable
+-keep class org.ocpsoft.prettytime.i18n.**

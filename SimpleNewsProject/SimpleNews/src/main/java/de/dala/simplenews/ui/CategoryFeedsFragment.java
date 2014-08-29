@@ -145,35 +145,11 @@ public class CategoryFeedsFragment extends BaseFragment implements ContextualUnd
             public void onClick(View v) {
                 switch (v.getId()) {
                     case R.id.positive:
-                        new UpdatingTask(progress, inputLayout, view, dialog).execute(input.getText().toString());
+                        new UpdatingTask(view, inputLayout, progress, dialog, null).execute(input.getText().toString());
                         break;
                     case R.id.negative:
                         dialog.dismiss();
                         break;
-                }
-            }
-
-            private void invalidFeedUrl(final boolean hideProgressBar) {
-                Context context = getActivity();
-                if (context != null) {
-                    Animation shake = AnimationUtils.loadAnimation(context,
-                            R.anim.shake);
-                    if (shake != null) {
-                        view.startAnimation(shake);
-                        shake.setAnimationListener(new Animation.AnimationListener() {
-                            @Override public void onAnimationStart(Animation animation){}
-
-                            @Override
-                            public void onAnimationEnd(Animation animation) {
-                                if (hideProgressBar) {
-                                    crossfade(inputLayout, progress);
-                                    Crouton.makeText(getActivity(), getActivity().getString(R.string.not_valid_format), Style.ALERT, inputLayout).show();
-                                }
-                            }
-
-                            @Override public void onAnimationRepeat(Animation animation){}
-                        });
-                    }
                 }
             }
         };
@@ -221,10 +197,10 @@ public class CategoryFeedsFragment extends BaseFragment implements ContextualUnd
         View.OnClickListener dialogClickListener = new View.OnClickListener() {
 
             @Override
-            public void onClick(View view) {
-                switch (view.getId()) {
+            public void onClick(View clickedView) {
+                switch (clickedView.getId()) {
                     case R.id.positive:
-                        new UpdatingTask(progress, inputLayout, view, dialog).execute(input.getText().toString());
+                        new UpdatingTask(view, inputLayout, progress, dialog, feed.getId()).execute(input.getText().toString());
                         break;
                     case R.id.negative:
                         dialog.dismiss();
@@ -238,45 +214,58 @@ public class CategoryFeedsFragment extends BaseFragment implements ContextualUnd
         dialog.show();
     }
 
-    private class UpdatingTask extends AsyncTask<String, String, String> {
+    private class UpdatingTask extends AsyncTask<String, String, Feed> {
         private View view;
         private ViewGroup inputLayout;
         private View progress;
         private AlertDialog dialog;
+        private Long isEditingId;
 
-        public UpdatingTask(View view, ViewGroup inputLayout, View progress, AlertDialog dialog){
+        public UpdatingTask(View view, ViewGroup inputLayout, View progress, AlertDialog dialog, Long isEditingId){
             this.view = view;
             this.inputLayout = inputLayout;
             this.progress = progress;
             this.dialog = dialog;
+            this.isEditingId = isEditingId;
         }
 
         @Override
-        protected void onPostExecute(String o) {
-            super.onPostExecute(o);
-            if (o == null) {
+        protected void onPreExecute() {
+            super.onPreExecute();
+            crossfade(progress, inputLayout);
+        }
+
+        @Override
+        protected void onPostExecute(Feed feed) {
+            super.onPostExecute(feed);
+            if (feed != null) {
+                adapter.notifyDataSetChanged();
                 dialog.dismiss();
+                if (isEditingId == null) {
+                    adapter.add(feed);
+                    category.getFeeds().add(feed);
+                }
             }else{
-                invalidFeedUrl(Boolean.parseBoolean(o));
+                invalidFeedUrl(true);
             }
         }
 
         @Override
-        protected String doInBackground(String... params) {
+        protected Feed doInBackground(String... params) {
             String feedUrl = params[0];
-            if (feedUrl.startsWith("http://")) {
+            if (!feedUrl.startsWith("http://")) {
                 feedUrl = "http://" + feedUrl;
             }
 
             if (UIUtils.isValideUrl(feedUrl)) {
-                crossfade(progress, inputLayout);
                 try {
                     SyndFeedInput input = new SyndFeedInput();
                     SyndFeed syndFeed = input.build(new XmlReader(new URL(feedUrl)));
                     if (syndFeed.getEntries() == null || syndFeed.getEntries().isEmpty()) {
-                        return Boolean.TRUE.toString();
+                        return null;
                     } else {
                         Feed feed = new Feed();
+                        feed.setId(isEditingId);
                         feed.setCategoryId(category.getId());
                         feed.setTitle(syndFeed.getTitle());
                         feed.setDescription(syndFeed.getDescription());
@@ -285,21 +274,16 @@ public class CategoryFeedsFragment extends BaseFragment implements ContextualUnd
                         //TODO maybe store more information - later
                         long id = DatabaseHandler.getInstance().addFeed(category.getId(), feed, true);
                         feed.setId(id);
-                        adapter.add(feed);
-                        adapter.notifyDataSetChanged();
+
+                        return feed;
                     }
                 } catch (FeedException e) {
                     e.printStackTrace();
-                    return Boolean.TRUE.toString();
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
-                    return Boolean.TRUE.toString();
                 } catch (IOException e) {
                     e.printStackTrace();
-                    return Boolean.TRUE.toString();
                 }
-            } else {
-                return Boolean.FALSE.toString();
             }
             return null;
         }
@@ -308,7 +292,6 @@ public class CategoryFeedsFragment extends BaseFragment implements ContextualUnd
         private void invalidFeedUrl(final boolean hideProgressBar) {
             Animation shake = AnimationUtils.loadAnimation(getActivity(),
                     R.anim.shake);
-            view.startAnimation(shake);
             shake.setAnimationListener(new Animation.AnimationListener() {
                 @Override public void onAnimationStart(Animation animation) {}
 
@@ -322,6 +305,7 @@ public class CategoryFeedsFragment extends BaseFragment implements ContextualUnd
 
                 @Override public void onAnimationRepeat(Animation animation) {}
             });
+            view.startAnimation(shake);
         }
     }
     private void onListItemCheck(int position) {

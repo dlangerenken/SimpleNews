@@ -69,7 +69,6 @@ public class CategoryUpdater {
         if (isRunning) {
             return false;
         }
-
         isRunning = true;
 
         new UpdatingTask().execute();
@@ -220,14 +219,14 @@ public class CategoryUpdater {
     }
 
 
-    private class UpdatingTask extends AsyncTask {
+    private class UpdatingTask extends AsyncTask<Void, Void, Void> {
         @Override
-        protected Object doInBackground(Object[] params) {
+        protected Void doInBackground(Void[] params) {
             String msg = context != null ? context.getString(R.string.update_news) : "";
             sendMessage(msg, STATUS_CHANGED);
             currentWorkingThreads = category.getFeeds().size();
             if (currentWorkingThreads == 0) {
-                sendMessage("No Feeds found", ERROR);
+                sendMessage(context.getString(R.string.no_feeds_found), ERROR);
             }
 
             SyndFeedInput input = new SyndFeedInput();
