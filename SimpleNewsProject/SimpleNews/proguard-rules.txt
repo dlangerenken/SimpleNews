@@ -1,13 +1,10 @@
 -dontwarn com.ocpsoft.pretty.**
 -dontwarn org.jdom2.**
 -dontwarn org.apache.**
--dontwarn org.slf4j.**
 -dontwarn com.rometools.**
--dontskipnonpubliclibraryclasses
--dontskipnonpubliclibraryclassmembers
--renamesourcefileattribute SourceFile
--keepattributes SourceFile,LineNumberTable
--dontskipnonpubliclibraryclasses
--dontskipnonpubliclibraryclassmembers
+-dontwarn com.google.vending.licensing.**
+-dontwarn com.android.vending.licensing.**
+-dontnote android.support.**
+-optimizations !class/unboxing/enum
 -renamesourcefileattribute SourceFile
 -keepattributes SourceFile,LineNumberTable

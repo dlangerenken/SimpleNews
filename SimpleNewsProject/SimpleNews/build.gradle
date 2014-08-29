@@ -41,7 +41,7 @@ android {
         }
     }
     productFlavors {
-        defaultFlavor {
+        releaseVersion {
             proguardFile 'proguard-rules.txt'
         }
     }
@@ -51,6 +51,7 @@ android {
 }
 
 dependencies {
+    compile project(':feeds')
     compile 'com.nineoldandroids:library:2.4.0'
     compile 'com.astuetz:pagerslidingtabstrip:1.0.1'
     compile 'com.github.gabrielemariotti.changeloglib:library:1.5.1'
@@ -69,5 +70,4 @@ dependencies {
     compile 'com.nhaarman.listviewanimations:library:2.6.0'
     compile 'com.crashlytics.android:crashlytics:1.+'
     compile 'com.etsy.android.grid:library:1.0.5'
-    compile project(':feeds')
 }
