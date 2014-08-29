@@ -6,7 +6,7 @@
  * To change this template, choose Tools | Template Manager
  * and open the template in the editor.
  */
-package com.rometools.opml.feed.synd.impl;
+package com.rometools.rome.feed.synd.impl;
 
 import com.rometools.rome.feed.WireFeed;
 import com.rometools.rome.feed.synd.SyndFeed;
@@ -17,9 +17,14 @@ import com.rometools.rome.feed.synd.SyndFeed;
  * @author cooper
  */
 public class ConverterForOPML20 extends ConverterForOPML10 {
+    private final String type;
     /** Creates a new instance of ConverterForOPML20 */
     public ConverterForOPML20() {
-        super();
+        this("opml_2.0");
+    }
+
+    protected ConverterForOPML20(final String type) {
+        this.type = type;
     }
 
     /**
@@ -32,7 +37,7 @@ public class ConverterForOPML20 extends ConverterForOPML10 {
      */
     @Override
     public String getType() {
-        return "opml_2.0";
+        return type;
     }
 
     /**

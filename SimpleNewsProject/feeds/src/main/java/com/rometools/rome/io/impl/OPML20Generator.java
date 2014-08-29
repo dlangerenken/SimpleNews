@@ -6,18 +6,17 @@
  * To change this template, choose Tools | Template Manager
  * and open the template in the editor.
  */
-package com.rometools.opml.io.impl;
+package com.rometools.rome.io.impl;
 
 import java.util.Locale;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
 
-import com.rometools.opml.feed.opml.Opml;
-import com.rometools.opml.feed.opml.Outline;
+import com.rometools.rome.feed.opml.Opml;
+import com.rometools.rome.feed.opml.Outline;
 import com.rometools.rome.feed.WireFeed;
 import com.rometools.rome.io.FeedException;
-import com.rometools.rome.io.impl.DateParser;
 
 /**
  *
@@ -26,6 +25,10 @@ import com.rometools.rome.io.impl.DateParser;
 public class OPML20Generator extends OPML10Generator {
     /** Creates a new instance of OPML20Generator */
     public OPML20Generator() {
+        this("opml_2.0");
+    }
+    protected OPML20Generator(final String type){
+        super(type);
     }
 
     /**

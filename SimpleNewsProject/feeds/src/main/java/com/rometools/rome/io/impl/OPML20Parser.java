@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.rometools.opml.io.impl;
+package com.rometools.rome.io.impl;
 
 import java.util.List;
 import java.util.Locale;
@@ -23,17 +23,16 @@ import java.util.Locale;
 import org.jdom2.Document;
 import org.jdom2.Element;
 
-import com.rometools.opml.feed.opml.Attribute;
-import com.rometools.opml.feed.opml.Opml;
-import com.rometools.opml.feed.opml.Outline;
+import com.rometools.rome.feed.opml.Attribute;
+import com.rometools.rome.feed.opml.Opml;
+import com.rometools.rome.feed.opml.Outline;
 import com.rometools.rome.feed.WireFeed;
 import com.rometools.rome.io.FeedException;
-import com.rometools.rome.io.impl.DateParser;
 
 /**
- *
- * @author cooper
- */
+  *
+  * @author cooper
+  */
 public class OPML20Parser extends OPML10Parser {
     /** Creates a new instance of Opml20Parser */
     public OPML20Parser() {
@@ -52,13 +51,25 @@ public class OPML20Parser extends OPML10Parser {
     @Override
     public boolean isMyType(final Document document) {
         final Element e = document.getRootElement();
-
-        if (e.getName().equals("opml")
-                && (e.getChild("head") != null && e.getChild("head").getChild("docs") != null || e.getAttributeValue("version") != null
-                        && e.getAttributeValue("version").equals("2.0") || e.getChild("head") != null && e.getChild("head").getChild("ownerId") != null)) {
+        String name = e.getName();
+        if (!"opml".equals(name)){
+            return false;
+        }
+        String version = e.getAttributeValue("version");
+        if ("2.0".equals(version)){
             return true;
         }
-
+        Element head = e.getChild("head");
+        if (head != null){
+            Element docs = head.getChild("docs");
+            if (docs != null){
+                return true;
+            }
+            Element ownerId = head.getChild("ownerId");
+            if (ownerId != null){
+                return true;
+            }
+        }
         return false;
     }
 
@@ -94,27 +105,27 @@ public class OPML20Parser extends OPML10Parser {
     }
 
     @Override
-    protected Outline parseOutline(final Element e, final boolean validate, final Locale locale) throws FeedException {
-        Outline retValue;
+         protected Outline parseOutline(final Element e, final boolean validate, final Locale locale) throws FeedException {
+             Outline retValue;
 
-        retValue = super.parseOutline(e, validate, locale);
+             retValue = super.parseOutline(e, validate, locale);
 
-        if (e.getAttributeValue("created") != null) {
-            retValue.setCreated(DateParser.parseRFC822(e.getAttributeValue("created"), locale));
-        }
+             if (e.getAttributeValue("created") != null) {
+                 retValue.setCreated(DateParser.parseRFC822(e.getAttributeValue("created"), locale));
+             }
 
-        final List<Attribute> atts = retValue.getAttributes();
+             final List<Attribute> atts = retValue.getAttributes();
 
-        for (int i = 0; i < atts.size(); i++) {
-            final Attribute a = atts.get(i);
+             for (int i = 0; i < atts.size(); i++) {
+                 final Attribute a = atts.get(i);
 
-            if (a.getName().equals("created")) {
-                retValue.getAttributes().remove(a);
+                 if (a.getName().equals("created")) {
+                     retValue.getAttributes().remove(a);
 
-                break;
-            }
-        }
+                     break;
+                 }
+             }
 
-        return retValue;
-    }
+             return retValue;
+         }
 }

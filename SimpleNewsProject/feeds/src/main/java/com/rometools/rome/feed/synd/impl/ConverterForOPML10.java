@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.rometools.opml.feed.synd.impl;
+package com.rometools.rome.feed.synd.impl;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -23,9 +23,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Stack;
 
-import com.rometools.opml.feed.opml.Attribute;
-import com.rometools.opml.feed.opml.Opml;
-import com.rometools.opml.feed.opml.Outline;
+import com.rometools.rome.feed.opml.Attribute;
+import com.rometools.rome.feed.opml.Opml;
+import com.rometools.rome.feed.opml.Outline;
 import com.rometools.rome.feed.WireFeed;
 import com.rometools.rome.feed.synd.Converter;
 import com.rometools.rome.feed.synd.SyndCategory;

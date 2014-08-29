@@ -1,8 +1,8 @@
 package de.dala.simplenews.utilities;
 
 
-import com.rometools.opml.feed.opml.Opml;
-import com.rometools.opml.feed.opml.Outline;
+import com.rometools.rome.feed.opml.Opml;
+import com.rometools.rome.feed.opml.Outline;
 
 import java.net.MalformedURLException;
 import java.net.URL;

@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.rometools.opml.io.impl;
+package com.rometools.rome.io.impl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,14 +25,12 @@ import java.util.StringTokenizer;
 import org.jdom2.Document;
 import org.jdom2.Element;
 
-import com.rometools.opml.feed.opml.Attribute;
-import com.rometools.opml.feed.opml.Opml;
-import com.rometools.opml.feed.opml.Outline;
+import com.rometools.rome.feed.opml.Attribute;
+import com.rometools.rome.feed.opml.Opml;
+import com.rometools.rome.feed.opml.Outline;
 import com.rometools.rome.feed.WireFeed;
 import com.rometools.rome.io.FeedException;
 import com.rometools.rome.io.WireFeedParser;
-import com.rometools.rome.io.impl.BaseWireFeedParser;
-import com.rometools.rome.io.impl.DateParser;
 
 /**
  *
@@ -72,94 +70,94 @@ public class OPML10Parser extends BaseWireFeedParser implements WireFeedParser {
     }
 
     /**
-     * Parses an XML document (JDOM Document) into a feed bean.
-     * <p>
-     *
-     * @param document XML document (JDOM) to parse.
-     * @param validate indicates if the feed should be strictly validated (NOT YET IMPLEMENTED).
-     * @return the resulting feed bean.
-     * @throws IllegalArgumentException thrown if the parser cannot handle the given feed type.
-     * @throws FeedException thrown if a feed bean cannot be created out of the XML document (JDOM).
-     */
-    @Override
-    public WireFeed parse(final Document document, final boolean validate, final Locale locale) throws IllegalArgumentException, FeedException {
-        final Opml opml = new Opml();
-        opml.setFeedType("opml_1.0");
+               * Parses an XML document (JDOM Document) into a feed bean.
+               * <p>
+               *
+               * @param document XML document (JDOM) to parse.
+               * @param validate indicates if the feed should be strictly validated (NOT YET IMPLEMENTED).
+               * @return the resulting feed bean.
+               * @throws IllegalArgumentException thrown if the parser cannot handle the given feed type.
+               * @throws FeedException thrown if a feed bean cannot be created out of the XML document (JDOM).
+               */
+         @Override
+         public WireFeed parse(final Document document, final boolean validate, final Locale locale) throws IllegalArgumentException, FeedException {
+             final Opml opml = new Opml();
+             opml.setFeedType("opml_1.0");
 
-        final Element root = document.getRootElement();
-        final Element head = root.getChild("head");
+             final Element root = document.getRootElement();
+             final Element head = root.getChild("head");
 
-        if (head != null) {
-            opml.setTitle(head.getChildText("title"));
+             if (head != null) {
+                 opml.setTitle(head.getChildText("title"));
 
-            if (head.getChildText("dateCreated") != null) {
-                opml.setCreated(DateParser.parseRFC822(head.getChildText("dateCreated"), Locale.US));
-            }
+                 if (head.getChildText("dateCreated") != null) {
+                     opml.setCreated(DateParser.parseRFC822(head.getChildText("dateCreated"), Locale.US));
+                 }
 
-            if (head.getChildText("dateModified") != null) {
-                opml.setModified(DateParser.parseRFC822(head.getChildText("dateModified"), Locale.US));
-            }
+                 if (head.getChildText("dateModified") != null) {
+                     opml.setModified(DateParser.parseRFC822(head.getChildText("dateModified"), Locale.US));
+                 }
 
-            opml.setOwnerName(head.getChildTextTrim("ownerName"));
-            opml.setOwnerEmail(head.getChildTextTrim("ownerEmail"));
-            opml.setVerticalScrollState(readInteger(head.getChildText("vertScrollState")));
-        }
+                 opml.setOwnerName(head.getChildTextTrim("ownerName"));
+                 opml.setOwnerEmail(head.getChildTextTrim("ownerEmail"));
+                 opml.setVerticalScrollState(readInteger(head.getChildText("vertScrollState")));
+             }
 
-        try {
-            opml.setWindowBottom(readInteger(head.getChildText("windowBottom")));
-        } catch (final NumberFormatException nfe) {
+             try {
+                 opml.setWindowBottom(readInteger(head.getChildText("windowBottom")));
+             } catch (final NumberFormatException nfe) {
 
-            if (validate) {
-                throw new FeedException("Unable to parse windowBottom", nfe);
-            }
-        }
+                 if (validate) {
+                     throw new FeedException("Unable to parse windowBottom", nfe);
+                 }
+             }
 
-        try {
-            opml.setWindowLeft(readInteger(head.getChildText("windowLeft")));
-        } catch (final NumberFormatException nfe) {
-        }
+             try {
+                 opml.setWindowLeft(readInteger(head.getChildText("windowLeft")));
+             } catch (final NumberFormatException nfe) {
+             }
 
-        try {
-            opml.setWindowRight(readInteger(head.getChildText("windowRight")));
-        } catch (final NumberFormatException nfe) {
+             try {
+                 opml.setWindowRight(readInteger(head.getChildText("windowRight")));
+             } catch (final NumberFormatException nfe) {
 
-            if (validate) {
-                throw new FeedException("Unable to parse windowRight", nfe);
-            }
-        }
+                 if (validate) {
+                     throw new FeedException("Unable to parse windowRight", nfe);
+                 }
+             }
 
-        try {
-            opml.setWindowLeft(readInteger(head.getChildText("windowLeft")));
-        } catch (final NumberFormatException nfe) {
+             try {
+                 opml.setWindowLeft(readInteger(head.getChildText("windowLeft")));
+             } catch (final NumberFormatException nfe) {
 
-            if (validate) {
-                throw new FeedException("Unable to parse windowLeft", nfe);
-            }
-        }
+                 if (validate) {
+                     throw new FeedException("Unable to parse windowLeft", nfe);
+                 }
+             }
 
-        try {
-            opml.setWindowTop(readInteger(head.getChildText("windowTop")));
-        } catch (final NumberFormatException nfe) {
+             try {
+                 opml.setWindowTop(readInteger(head.getChildText("windowTop")));
+             } catch (final NumberFormatException nfe) {
 
-            if (validate) {
-                throw new FeedException("Unable to parse windowTop", nfe);
-            }
-        }
+                 if (validate) {
+                     throw new FeedException("Unable to parse windowTop", nfe);
+                 }
+             }
 
-        try {
-            opml.setExpansionState(readIntArray(head.getChildText("expansionState")));
-        } catch (final NumberFormatException nfe) {
+             try {
+                 opml.setExpansionState(readIntArray(head.getChildText("expansionState")));
+             } catch (final NumberFormatException nfe) {
 
-            if (validate) {
-                throw new FeedException("Unable to parse expansionState", nfe);
-            }
-        }
+                 if (validate) {
+                     throw new FeedException("Unable to parse expansionState", nfe);
+                 }
+             }
 
-        opml.setOutlines(parseOutlines(root.getChild("body").getChildren("outline"), validate, locale));
-        opml.setModules(parseFeedModules(root, locale));
+             opml.setOutlines(parseOutlines(root.getChild("body").getChildren("outline"), validate, locale));
+             opml.setModules(parseFeedModules(root, locale));
 
-        return opml;
-    }
+             return opml;
+         }
 
     protected Outline parseOutline(final Element e, final boolean validate, final Locale locale) throws FeedException {
         if (!e.getName().equals("outline")) {

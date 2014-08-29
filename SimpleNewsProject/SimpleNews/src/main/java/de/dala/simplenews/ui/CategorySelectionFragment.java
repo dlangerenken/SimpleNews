@@ -24,19 +24,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.nhaarman.listviewanimations.ArrayAdapter;
-import com.rometools.opml.feed.opml.Opml;
-import com.rometools.opml.io.impl.OPML20Generator;
+import com.rometools.rome.feed.opml.Opml;
+import com.rometools.rome.io.impl.OPML20Generator;
 import com.rometools.rome.io.FeedException;
-import com.rometools.rome.io.WireFeedOutput;
 
 import org.jdom2.output.XMLOutputter;
 
-import java.io.IOException;
-import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import colorpicker.ColorPickerDialog;
 import colorpicker.ColorUtils;

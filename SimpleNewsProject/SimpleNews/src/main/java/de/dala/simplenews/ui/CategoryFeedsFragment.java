@@ -31,20 +31,17 @@ import com.nhaarman.listviewanimations.itemmanipulation.swipedismiss.contextualu
 import com.nineoldandroids.animation.Animator;
 import com.nineoldandroids.animation.AnimatorListenerAdapter;
 import com.nineoldandroids.view.ViewPropertyAnimator;
-import com.rometools.opml.feed.opml.Opml;
-import com.rometools.opml.io.impl.OPML20Generator;
+import com.rometools.rome.feed.opml.Opml;
+import com.rometools.rome.io.impl.OPML20Generator;
 import com.rometools.rome.feed.synd.SyndFeed;
 import com.rometools.rome.io.FeedException;
 import com.rometools.rome.io.SyndFeedInput;
-import com.rometools.rome.io.WireFeedOutput;
 import com.rometools.rome.io.XmlReader;
 
 
-import org.jdom2.Document;
 import org.jdom2.output.XMLOutputter;
 
 import java.io.IOException;
-import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;

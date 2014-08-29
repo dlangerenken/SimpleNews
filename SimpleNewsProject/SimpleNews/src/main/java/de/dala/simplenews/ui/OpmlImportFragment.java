@@ -14,7 +14,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 
-import com.rometools.opml.feed.opml.Opml;
+import com.rometools.rome.feed.opml.Opml;
 import com.rometools.rome.io.FeedException;
 import com.rometools.rome.io.WireFeedInput;
 import com.rometools.rome.io.XmlReader;
@@ -155,7 +155,7 @@ public class  OpmlImportFragment extends Fragment implements BaseNavigation {
             try {
                 Opml feed = (Opml)input.build(new XmlReader(new ByteArrayInputStream(enteredText.getBytes())));
                 feeds = OpmlConverter.convertOpmlListToFeedList(feed);
-                loaded = feeds == null || feeds.size() == 0;
+                loaded = feeds != null && feeds.size() > 0;
             } catch (FeedException e) {
                 e.printStackTrace();
                 loaded = false;
@@ -163,6 +163,9 @@ public class  OpmlImportFragment extends Fragment implements BaseNavigation {
                 e.printStackTrace();
                 loaded = false;
             } catch (ClassCastException e){
+                e.printStackTrace();
+                loaded = false;
+            } catch (IllegalArgumentException e){
                 e.printStackTrace();
                 loaded = false;
             }

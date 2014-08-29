@@ -70,12 +70,15 @@ public class FeedParsers extends PluginManager<WireFeedParser> {
      */
     public WireFeedParser getParserFor(final Document document) {
         final List<WireFeedParser> parsers = getPlugins();
+        WireFeedParser foundParser = null;
         for (final WireFeedParser parser : parsers) {
-            if (parser.isMyType(document)) {
-                return parser;
+            boolean found = parser.isMyType(document);
+            if (found){
+                foundParser = parser;
+                break;
             }
         }
-        return null;
+        return foundParser;
     }
 
     @Override
