@@ -2,12 +2,11 @@ package de.dala.simplenews.ui;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.view.ActionMode;
-import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -21,7 +20,9 @@ import com.nhaarman.listviewanimations.ArrayAdapter;
 import com.nhaarman.listviewanimations.itemmanipulation.swipedismiss.contextualundo.ContextualUndoAdapter;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import de.dala.simplenews.R;
 import de.dala.simplenews.common.Feed;
@@ -97,15 +98,17 @@ public class OpmlAssignFragment extends BaseFragment implements ContextualUndoAd
     }
 
 
+
+
     private class OpmlListAdapter extends ArrayAdapter<Feed> {
 
         private Context context;
-        private SparseBooleanArray mSelectedItemIds;
+        private Map<Feed, Boolean> mSelectedItemIds;
 
         public OpmlListAdapter(Context context, List<Feed> feeds) {
             super(feeds);
             this.context = context;
-            mSelectedItemIds = new SparseBooleanArray();
+            mSelectedItemIds = new HashMap<Feed, Boolean>();
         }
 
         @Override
@@ -115,7 +118,7 @@ public class OpmlAssignFragment extends BaseFragment implements ContextualUndoAd
 
         @Override
         public View getView(final int position, View convertView, ViewGroup parent) {
-            Feed feed = getItem(position);
+            final Feed feed = getItem(position);
 
             if (convertView == null) {
                 LayoutInflater inflater = LayoutInflater.from(context);
@@ -129,11 +132,11 @@ public class OpmlAssignFragment extends BaseFragment implements ContextualUndoAd
             final ViewHolder holder = (ViewHolder) convertView.getTag();
             holder.name.setText(feed.getTitle() == null ? context.getString(R.string.feed_title_not_found) : feed.getTitle());
             holder.link.setText(feed.getXmlUrl());
-
+            holder.checkBox.setChecked(Boolean.TRUE.equals(mSelectedItemIds.get(feed)));
             holder.checkBox.setOnClickListener(new View.OnClickListener(){
                 @Override
                 public void onClick(View v) {
-                    onListItemCheck(position);
+                    onListItemCheck(feed);
                 }
             });
 
@@ -150,7 +153,7 @@ public class OpmlAssignFragment extends BaseFragment implements ContextualUndoAd
                 @Override
                 public void onClick(View v) {
                     holder.checkBox.toggle();
-                    onListItemCheck(position);
+                    onListItemCheck(feed);
                 }
             });
             int pad = getResources().getDimensionPixelSize(R.dimen.card_layout_padding);
@@ -158,15 +161,15 @@ public class OpmlAssignFragment extends BaseFragment implements ContextualUndoAd
             return convertView;
         }
 
-        public void toggleSelection(int position) {
-            selectView(position, !mSelectedItemIds.get(position));
+        public void toggleSelection(Feed feed) {
+            selectView(feed, !Boolean.TRUE.equals(mSelectedItemIds.get(feed)));
         }
 
-        public void selectView(int position, boolean value) {
-            if (value) {
-                mSelectedItemIds.put(position, value);
+        public void selectView(Feed feed, Boolean value) {
+            if (Boolean.TRUE.equals(value)) {
+                mSelectedItemIds.put(feed, true);
             } else {
-                mSelectedItemIds.delete(position);
+                mSelectedItemIds.remove(feed);
             }
             notifyDataSetChanged();
         }
@@ -175,12 +178,12 @@ public class OpmlAssignFragment extends BaseFragment implements ContextualUndoAd
             return mSelectedItemIds.size();// mSelectedCount;
         }
 
-        public SparseBooleanArray getSelectedIds() {
+        public Map<Feed, Boolean> getSelectedIds() {
             return mSelectedItemIds;
         }
 
         public void removeSelection() {
-            mSelectedItemIds = new SparseBooleanArray();
+            mSelectedItemIds = new HashMap<Feed, Boolean>();
             notifyDataSetChanged();
         }
 
@@ -202,8 +205,8 @@ public class OpmlAssignFragment extends BaseFragment implements ContextualUndoAd
         adapter.notifyDataSetChanged();
     }
 
-    private void onListItemCheck(int position) {
-        adapter.toggleSelection(position);
+    private void onListItemCheck(Feed feedUrl) {
+        adapter.toggleSelection(feedUrl);
         boolean hasCheckedItems = adapter.getSelectedCount() > 0;
 
         if (hasCheckedItems && mActionMode == null) {
@@ -224,19 +227,22 @@ public class OpmlAssignFragment extends BaseFragment implements ContextualUndoAd
         Feed feed = adapter.getItem(position);
         final ArrayList<Feed> selectedEntries = new ArrayList<Feed>();
         selectedEntries.add(feed);
-        DialogFragment assignFeedsDialog = AssignDialogFragment.newInstance(selectedEntries);
-        assignFeedsDialog.show(getFragmentManager(), "AssignFeedsDialog");
-        /*assignFeedsDialog.onDismiss(new DialogInterface() {
+        AssignDialogFragment assignFeedsDialog = AssignDialogFragment.newInstance(selectedEntries);
+        assignFeedsDialog.setDialogHandler(new AssignDialogFragment.IDialogHandler(){
+
             @Override
-            public void cancel() {
-                // nothing
+            public void assigned() {
+                removeSelectedFeeds(selectedEntries);
+                adapter.removeSelection();
             }
 
             @Override
-            public void dismiss() {
-                removeSelectedFeeds(selectedEntries);
+            public void canceled() {
+                adapter.removeSelection();
             }
-        });*/
+        });
+
+        assignFeedsDialog.show(getFragmentManager(), "AssignFeedsDialog");
     }
 
     private class ActionModeCallBack implements ActionMode.Callback {
@@ -257,15 +263,15 @@ public class OpmlAssignFragment extends BaseFragment implements ContextualUndoAd
         public void changeOverflowIcon() {
             getActivity().getTheme().applyStyle(R.style.ChangeOverflowToDark, true);
         }
+
         @Override
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
             // retrieve selected items and print them out
-            SparseBooleanArray selected = adapter.getSelectedIds();
+            Map<Feed, Boolean> selected = adapter.getSelectedIds();
             final ArrayList<Feed> selectedEntries = new ArrayList<Feed>();
-            for (int i = 0; i < selected.size(); i++) {
-                if (selected.valueAt(i)) {
-                    Feed selectedItem = adapter.getItem(selected.keyAt(i));
-                    selectedEntries.add(selectedItem);
+            for (Map.Entry<Feed, Boolean> entry : selected.entrySet()){
+                if (Boolean.TRUE.equals(entry.getValue())) {
+                    selectedEntries.add(entry.getKey());
                 }
             }
             // close action mode
@@ -274,19 +280,21 @@ public class OpmlAssignFragment extends BaseFragment implements ContextualUndoAd
                     removeSelectedFeeds(selectedEntries);
                     break;
                 case R.id.menu_item_assign:
-                    DialogFragment assignFeedsDialog = AssignDialogFragment.newInstance(selectedEntries);
-                    assignFeedsDialog.show(getFragmentManager(), "AssignFeedsDialog");
-        /*assignFeedsDialog.onDismiss(new DialogInterface() {
-            @Override
-            public void cancel() {
-                // nothing
-            }
+                    AssignDialogFragment assignFeedsDialog = AssignDialogFragment.newInstance(selectedEntries);
+                    assignFeedsDialog.setDialogHandler(new AssignDialogFragment.IDialogHandler(){
 
-            @Override
-            public void dismiss() {
-                removeSelectedFeeds(selectedEntries);
-            }
-        });*/
+                        @Override
+                        public void assigned() {
+                            removeSelectedFeeds(selectedEntries);
+                            adapter.removeSelection();
+                        }
+
+                        @Override
+                        public void canceled() {
+                            adapter.removeSelection();
+                        }
+                    });
+                    assignFeedsDialog.show(getFragmentManager(), "AssignFeedsDialog");
                     break;
             }
 
@@ -302,12 +310,16 @@ public class OpmlAssignFragment extends BaseFragment implements ContextualUndoAd
         }
     }
 
-
     private void removeSelectedFeeds(List<Feed> selectedFeeds) {
         for (Feed feed : selectedFeeds) {
             removeFeed(feed);
         }
         adapter.removeSelection();
+        if (feedsToImport.size() == 0){
+            FragmentManager fm = getActivity().getSupportFragmentManager();
+            fm.popBackStack();
+        }
+
     }
 
 }

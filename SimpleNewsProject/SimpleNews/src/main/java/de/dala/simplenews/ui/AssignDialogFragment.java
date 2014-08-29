@@ -31,6 +31,18 @@ public class AssignDialogFragment extends DialogFragment implements BaseNavigati
 
     private ArrayList<Feed> feeds;
     private CategoryAdapter adapter;
+    public interface IDialogHandler {
+        void assigned();
+        void canceled();
+    }
+    private IDialogHandler dialogHandler;
+
+    public void setDialogHandler(IDialogHandler handler){
+        dialogHandler = handler;
+    }
+
+    public AssignDialogFragment(){
+    }
 
     public static AssignDialogFragment newInstance(ArrayList<Feed> feeds){
         AssignDialogFragment fragment = new AssignDialogFragment();
@@ -43,8 +55,8 @@ public class AssignDialogFragment extends DialogFragment implements BaseNavigati
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
     }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -137,9 +149,9 @@ public class AssignDialogFragment extends DialogFragment implements BaseNavigati
                     database.addFeed(feed.getCategoryId(), feed, true);
                 }
             }
-            adapter.clear();
-            feeds.clear();
-            adapter.notifyDataSetChanged();
+            if (dialogHandler != null){
+                dialogHandler.assigned();
+            }
             dismiss();
         }
     }

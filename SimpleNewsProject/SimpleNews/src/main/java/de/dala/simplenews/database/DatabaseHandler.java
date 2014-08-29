@@ -29,7 +29,7 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
     /**
      * Database Name and Version
      */
-    private static final int DATABASE_VERSION = 43;
+    private static final int DATABASE_VERSION = 44;
     public static final String DATABASE_NAME = "news_database.db";
 
     /**
@@ -185,13 +185,17 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
                 db.execSQL(upgradeQueryVisited);
                 db.execSQL(upgradeQueryFavorite);
             }
+
             if (oldVersion < 42 && newVersion >= 42){
                 String upgradeQueryEntry = "ALTER TABLE " + TABLE_ENTRY + " ADD COLUMN " + ENTRY_IS_EXPANDED + " INTEGER;";
                 String upgradeQueryFeed = "ALTER TABLE " + TABLE_FEED + " ADD COLUMN " + FEED_HTML_URL + " TEXT;";
-                String upgradeQueryFeed2 = "ALTER TABLE " + TABLE_FEED + " ADD COLUMN " + FEED_TYPE + " TEXT;";
                 db.execSQL(upgradeQueryEntry);
                 db.execSQL(upgradeQueryFeed);
-                db.execSQL(upgradeQueryFeed2);
+            }
+
+            if (oldVersion < 43 && newVersion >= 43){
+                String upgradeQueryFeed = "ALTER TABLE " + TABLE_FEED + " ADD COLUMN " + FEED_TYPE + " TEXT;";
+                db.execSQL(upgradeQueryFeed);
             }
         }
     }
