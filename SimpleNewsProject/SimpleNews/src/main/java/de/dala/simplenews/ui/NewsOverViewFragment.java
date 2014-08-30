@@ -150,14 +150,23 @@ public class NewsOverViewFragment extends BaseFragment implements ViewPager.OnPa
 
     private boolean shouldUseMultipleColumns(){
         boolean useMultiple = false;
-        switch (getResources().getConfiguration().orientation) {
-            case android.content.res.Configuration.ORIENTATION_LANDSCAPE:
-                useMultiple = PrefUtilities.getInstance().useMultipleColumnsLandscape();
-                break;
-            case android.content.res.Configuration.ORIENTATION_PORTRAIT:
-                useMultiple = PrefUtilities.getInstance().useMultipleColumnsPortrait();
-                break;
+
+        if (isAdded() && getActivity() != null && getActivity().getResources() != null){
+            android.content.res.Configuration config = getActivity().getResources().getConfiguration();
+            if (config != null){
+                switch (config.orientation) {
+                    case android.content.res.Configuration.ORIENTATION_LANDSCAPE:
+                        useMultiple = PrefUtilities.getInstance().useMultipleColumnsLandscape();
+                        break;
+                    case android.content.res.Configuration.ORIENTATION_PORTRAIT:
+                        useMultiple = PrefUtilities.getInstance().useMultipleColumnsPortrait();
+                        break;
+                }
+            }
+        }else{
+            useMultiple = PrefUtilities.getInstance().useMultipleColumnsPortrait();
         }
+
         return useMultiple;
     }
 
@@ -165,14 +174,21 @@ public class NewsOverViewFragment extends BaseFragment implements ViewPager.OnPa
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_columns:
-                switch (getResources().getConfiguration().orientation) {
-                    case android.content.res.Configuration.ORIENTATION_LANDSCAPE:
-                        PrefUtilities.getInstance().setMultipleColumnsLandscape(!PrefUtilities.getInstance().useMultipleColumnsLandscape());
-                        break;
-                    case android.content.res.Configuration.ORIENTATION_PORTRAIT:
-                        PrefUtilities.getInstance().setMultipleColumnsPortrait(!PrefUtilities.getInstance().useMultipleColumnsPortrait());
-                        break;
+
+                if (isAdded() && getActivity() != null && getActivity().getResources() != null) {
+                    android.content.res.Configuration config = getActivity().getResources().getConfiguration();
+                    if (config != null){
+                        switch (config.orientation) {
+                            case android.content.res.Configuration.ORIENTATION_LANDSCAPE:
+                                PrefUtilities.getInstance().setMultipleColumnsLandscape(!PrefUtilities.getInstance().useMultipleColumnsLandscape());
+                                break;
+                            case android.content.res.Configuration.ORIENTATION_PORTRAIT:
+                                PrefUtilities.getInstance().setMultipleColumnsPortrait(!PrefUtilities.getInstance().useMultipleColumnsPortrait());
+                                break;
+                        }
+                    }
                 }
+
                 updateMenu();
                 updateColumnCount();
                 break;

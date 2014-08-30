@@ -625,6 +625,17 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
         if (mActionMode != null) {
             mActionMode.finish();
         }
+        if (updater != null) {
+            updater.cancel();
+        }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (updater != null) {
+            updater.cancel();
+        }
     }
 
     private class ActionModeCallBack implements ActionMode.Callback {

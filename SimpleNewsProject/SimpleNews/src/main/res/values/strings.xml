@@ -95,7 +95,7 @@
     <string name="beta" translatable="false">BETA</string>
     <string name="choose_category_for_feeds">Choose a category</string>
     <string name="beta_version_disclaimer">This is a beta version. Do not rate the app based on this functionality.
-        Please report bugs or suggestions instead! Select feeds to assign them to categories</string>
+        Please report bugs or suggestions instead!</string>
     <string name="feed_selection_assign">Select feeds to assign them to categories</string>
     <string name="assigning_feeds_title">Assigning Feeds</string>
     <string name="import_button">Import</string>

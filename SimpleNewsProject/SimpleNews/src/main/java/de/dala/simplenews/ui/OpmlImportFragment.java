@@ -44,6 +44,7 @@ public class  OpmlImportFragment extends BaseFragment implements BaseNavigation 
     private OnFeedsLoaded parent;
     private Button importButton;
     private ProgressBar importProgres;
+    private ImportAsyncTask task;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -51,6 +52,22 @@ public class  OpmlImportFragment extends BaseFragment implements BaseNavigation 
     }
 
     public OpmlImportFragment() {
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (task != null){
+            task.cancel(true);
+        }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (task != null){
+            task.cancel(true);
+        }
     }
 
     @Override
@@ -123,7 +140,8 @@ public class  OpmlImportFragment extends BaseFragment implements BaseNavigation 
             public void onClick(View v) {
                 if (opmlContentEditText.getText() != null && opmlContentEditText.getText().toString() != ""){
                     //content added
-                    new ImportAsyncTask().execute(opmlContentEditText.getText().toString());
+                    task = new ImportAsyncTask();
+                    task.execute(opmlContentEditText.getText().toString());
                 }
             }
         });

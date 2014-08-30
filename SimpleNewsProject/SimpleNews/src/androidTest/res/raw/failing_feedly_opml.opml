@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opml version="1.0">
+    <head>
+        <title>....feedly cloud...</title>
+    </head>
+    <body>
+        <outline text="VPS" title="VPS">
+            <outline type="rss" text="DigitalOcean Community Articles" title="DigitalOcean Community Articles" xmlUrl="https://www.digitalocean.com/community/articles/feed.atom" htmlUrl="https://www.digitalocean.com/community/tutorials"/>
+            <outline type="rss" text="Low End Box" title="Low End Box" xmlUrl="http://www.lowendbox.com/feed/" htmlUrl="http://lowendbox.com"/>
+            <outline type="rss" text="DigitalOcean Blog" title="DigitalOcean Blog" xmlUrl="https://www.digitalocean.com/blog/feed.atom" htmlUrl="https://www.digitalocean.com/company/blog"/>
+        </outline>
+        <outline text="linux" title="linux">
+            <outline type="rss" text="Manjaro Linux" title="Manjaro Linux" xmlUrl="http://manjaro.org/feed/" htmlUrl="http://manjaro.org"/>
+            <outline type="rss" text="HowtoForge" title="HowtoForge" xmlUrl="http://www.howtoforge.com/node/feed" htmlUrl="http://www.howtoforge.com"/>
+            <outline type="rss" text="Noobs on Ubuntu, Mint and Debian, HD Wallpapers, Tutorials" title="Noobs on Ubuntu, Mint and Debian, HD Wallpapers, Tutorials" xmlUrl="http://www.noobslab.com/feeds/posts/default" htmlUrl="http://www.noobslab.com/"/>
+            <outline type="rss" text="LinuxG.net" title="LinuxG.net" xmlUrl="http://linuxg.net/feed/" htmlUrl="http://linuxg.net"/>
+            <outline type="rss" text="Web Upd8 - Ubuntu / Linux blog" title="Web Upd8 - Ubuntu / Linux blog" xmlUrl="http://www.webupd8.org/feeds/posts/default" htmlUrl="http://www.webupd8.org/"/>
+            <outline type="rss" text="Linuxtoday.com" title="Linuxtoday.com" xmlUrl="http://linuxtoday.com/backend/biglt.rss" htmlUrl="http://www.linuxtoday.com/"/>
+            <outline type="rss" text="DistroWatch.com: News" title="DistroWatch.com: News" xmlUrl="http://distrowatch.com/news/dw.xml" htmlUrl="http://distrowatch.com/"/>
+            <outline type="rss" text="Linux Journal - The Original Magazine of the Linux Community" title="Linux Journal - The Original Magazine of the Linux Community" xmlUrl="http://www.linuxjournal.com/node/feed" htmlUrl="http://www.linuxjournal.com/"/>
+            <outline type="rss" text="OMG! Ubuntu!" title="OMG! Ubuntu!" xmlUrl="http://feeds.feedburner.com/d0od" htmlUrl="http://www.omgubuntu.co.uk"/>
+        </outline>
+        <outline text="BG" title="BG">
+            <outline type="rss" text="Днес" title="Днес" xmlUrl="http://dnes.dir.bg/rss20.xml" htmlUrl="http://dnes.dir.bg"/>
+            <outline type="rss" text="Novini.bg" title="Novini.bg" xmlUrl="http://www.novini.bg/uploads/rss/rss_news_category_0.xml" htmlUrl="http://www.novini.bg/"/>
+            <outline type="rss" text="Капитал Статии" title="Капитал Статии" xmlUrl="http://www.capital.bg/rss.php?all=1" htmlUrl="http://www.capital.bg/rss.php?all=1"/>
+        </outline>
+        <outline text="tech" title="tech">
+            <outline type="rss" text="Engadget" title="Engadget" xmlUrl="http://www.engadget.com/rss.xml" htmlUrl="http://www.engadget.com"/>
+            <outline type="rss" text="Mashable" title="Mashable" xmlUrl="http://feeds.mashable.com/Mashable" htmlUrl="http://mashable.com/stories/?utm_campaign=Mash-Prod-RSS-Feedburner-All-Partial&amp;utm_cid=Mash-Prod-RSS-Feedburner-All-Partial&amp;utm_medium=feed&amp;utm_source=rss"/>
+            <outline type="rss" text="TechCrunch" title="TechCrunch" xmlUrl="http://feeds.feedburner.com/Techcrunch" htmlUrl="http://techcrunch.com"/>
+            <outline type="rss" text="Lifehacker" title="Lifehacker" xmlUrl="http://feeds.gawker.com/lifehacker/vip" htmlUrl="http://lifehacker.com"/>
+        </outline>
+        <outline text="Sublime " title="Sublime ">
+            <outline type="rss" text="Sublime Blog" title="Sublime Blog" xmlUrl="http://www.sublimetext.com/blog/feed" htmlUrl="http://www.sublimetext.com/blog"/>
+            <outline type="rss" text="Newest Sublime Text Packages" title="Newest Sublime Text Packages" xmlUrl="http://wbond.net/sublime_packages/community/rss" htmlUrl="https://sublime.wbond.net"/>
+        </outline>
+        <outline text="Photography" title="Photography">
+            <outline type="rss" text="In Focus" title="In Focus" xmlUrl="http://feeds.feedburner.com/theatlantic/infocus" htmlUrl="http://www.theatlantic.com/infocus/"/>
+        </outline>
+        <outline text="SEO" title="SEO">
+            <outline type="rss" text="The KISSmetrics Marketing Blog" title="The KISSmetrics Marketing Blog" xmlUrl="http://feeds.feedburner.com/KISSmetrics" htmlUrl="http://blog.kissmetrics.com"/>
+            <outline type="rss" text="SEO Chat" title="SEO Chat" xmlUrl="http://www.seochat.com/rss.xml" htmlUrl="http://www.seochat.com"/>
+            <outline type="rss" text="Search Engine Roundtable" title="Search Engine Roundtable" xmlUrl="http://www.seroundtable.com/index.rdf" htmlUrl="http://www.seroundtable.com/"/>
+            <outline type="rss" text="Moz Blog" title="Moz Blog" xmlUrl="http://feeds.feedburner.com/seomoz" htmlUrl="http://moz.com/blog"/>
+            <outline type="rss" text="Matt Cutts: Gadgets, Google, and SEO" title="Matt Cutts: Gadgets, Google, and SEO" xmlUrl="http://www.mattcutts.com/blog/feed/" htmlUrl="http://www.mattcutts.com/blog"/>
+            <outline type="rss" text="Search Engine Journal" title="Search Engine Journal" xmlUrl="http://feeds.feedburner.com/SearchEngineJournal" htmlUrl="http://www.searchenginejournal.com"/>
+            <outline type="rss" text="Search Engine Land: News &amp; Info About SEO, PPC, SEM, Search Engines &amp; Search Marketing" title="Search Engine Land: News &amp; Info About SEO, PPC, SEM, Search Engines &amp; Search Marketing" xmlUrl="http://feeds.searchengineland.com/searchengineland" htmlUrl="http://searchengineland.com"/>
+            <outline type="rss" text="SEO Book" title="SEO Book" xmlUrl="http://www.seobook.com/rss.xml" htmlUrl="http://www.seobook.com"/>
+            <outline type="rss" text="Social Media Examiner" title="Social Media Examiner" xmlUrl="http://www.socialmediaexaminer.com/feed/" htmlUrl="http://www.socialmediaexaminer.com"/>
+        </outline>
+        <outline text="design" title="design">
+            <outline type="rss" text="Freebiesbug" title="Freebiesbug" xmlUrl="http://feeds.feedburner.com/freebiesbug" htmlUrl="http://freebiesbug.com"/>
+            <outline type="rss" text="PSDGraphics" title="PSDGraphics" xmlUrl="http://www.psdgraphics.com/feed/" htmlUrl="http://www.psdgraphics.com"/>
+            <outline type="rss" text="PixelsDaily" title="PixelsDaily" xmlUrl="http://feeds.feedburner.com/PixelsDaily" htmlUrl="http://pixelsdaily.com"/>
+            <outline type="rss" text="A List Apart" title="A List Apart" xmlUrl="http://www.alistapart.com/rss.xml" htmlUrl="http://alistapart.com"/>
+            <outline type="rss" text="HTML5 Doctor" title="HTML5 Doctor" xmlUrl="http://feeds2.feedburner.com/html5doctor" htmlUrl="http://html5doctor.com"/>
+            <outline type="rss" text="hongkiat.com" title="hongkiat.com" xmlUrl="http://www.hongkiat.com/blog/feed/" htmlUrl="http://www.hongkiat.com/blog"/>
+            <outline type="rss" text="Speckyboy Design Magazine" title="Speckyboy Design Magazine" xmlUrl="http://feeds.feedburner.com/speckboy-design-magazine" htmlUrl="http://speckyboy.com"/>
+            <outline type="rss" text="1stwebdesigner" title="1stwebdesigner" xmlUrl="http://www.1stwebdesigner.com/feed/" htmlUrl="http://www.1stwebdesigner.com"/>
+            <outline type="rss" text="Onextrapixel" title="Onextrapixel" xmlUrl="http://www.onextrapixel.com/feed/" htmlUrl="http://www.onextrapixel.com"/>
+            <outline type="rss" text="CMS Critic" title="CMS Critic" xmlUrl="http://www.cmscritic.com/feed/" htmlUrl="http://www.cmscritic.com/feed/"/>
+            <outline type="rss" text="ZURB" title="ZURB" xmlUrl="http://feeds.feedburner.com/zurb/blog" htmlUrl="http://zurb.com/blog/posts"/>
+            <outline type="rss" text="WebAppers" title="WebAppers" xmlUrl="http://feeds.feedburner.com/Webappers" htmlUrl="http://www.webappers.com"/>
+            <outline type="rss" text="HTML5 Boilerplate" title="HTML5 Boilerplate" xmlUrl="http://html5boilerplate.tumblr.com/rss" htmlUrl="http://h5bp.net/"/>
+            <outline type="rss" text="Script Tutorials»Web Development Tutorials | HTML5 and CSS3 | Script Tutorials" title="Script Tutorials»Web Development Tutorials | HTML5 and CSS3 | Script Tutorials" xmlUrl="http://www.script-tutorials.com/feed/" htmlUrl="http://www.script-tutorials.com"/>
+            <outline type="rss" text="Tuts+ Web Development" title="Tuts+ Web Development" xmlUrl="http://feeds.feedburner.com/nettuts" htmlUrl="http://code.tutsplus.com"/>
+            <outline type="rss" text="noupe" title="noupe" xmlUrl="http://feeds.feedburner.com/Noupe" htmlUrl="http://www.noupe.com"/>
+            <outline type="rss" text="Bootstrap Blog" title="Bootstrap Blog" xmlUrl="http://blog.getbootstrap.com/feed.xml" htmlUrl="http://blog.getbootstrap.com/"/>
+        </outline>
+        <outline text="Marketing" title="Marketing">
+            <outline type="rss" text="VentureBeat" title="VentureBeat" xmlUrl="http://feeds.feedburner.com/venturebeat" htmlUrl="http://venturebeat.com"/>
+            <outline type="rss" text="Digital Trends" title="Digital Trends" xmlUrl="http://www.digitaltrends.com/feed/?key=f00edf6a58d2a8740e624dda919cab37" htmlUrl="http://www.digitaltrends.com"/>
+        </outline>
+        <outline text="WP" title="WP">
+            <outline type="rss" text="Tuts+ WordPress" title="Tuts+ WordPress" xmlUrl="http://feeds.feedburner.com/Wptuts" htmlUrl="http://code.tutsplus.com"/>
+            <outline type="rss" text="The Ghost Blog" title="The Ghost Blog" xmlUrl="http://blog.ghost.org/rss/" htmlUrl="http://blog.ghost.org/"/>
+            <outline type="rss" text="ProBlogger" title="ProBlogger" xmlUrl="http://feeds.feedburner.com/ProbloggerHelpingBloggersEarnMoney" htmlUrl="http://www.problogger.net"/>
+            <outline type="rss" text="WPBeginner" title="WPBeginner" xmlUrl="http://feeds.feedburner.com/wpbeginner" htmlUrl="http://www.wpbeginner.com"/>
+            <outline type="rss" text="WordPress News" title="WordPress News" xmlUrl="http://wordpress.org/development/feed/" htmlUrl="http://wordpress.org/news"/>
+            <outline type="rss" text="WPMU DEV's Blog - Everything WordPress" title="WPMU DEV's Blog - Everything WordPress" xmlUrl="http://feeds.feedburner.com/Wpmu-Wordpress-Mu-PluginsThemesAndNews" htmlUrl="http://premium.wpmudev.org/blog"/>
+            <outline type="rss" text="Copyblogger" title="Copyblogger" xmlUrl="http://feeds.copyblogger.com/copyblogger" htmlUrl="http://www.copyblogger.com"/>
+            <outline type="rss" text="WordPress Tavern" title="WordPress Tavern" xmlUrl="http://feeds2.feedburner.com/WordpressTavern" htmlUrl="http://wptavern.com"/>
+            <outline type="rss" text="Yoast" title="Yoast" xmlUrl="http://feeds.feedburner.com/joostdevalk" htmlUrl="https://yoast.com"/>
+        </outline>
+        <outline text="android" title="android">
+            <outline type="rss" text="Android Community" title="Android Community" xmlUrl="http://androidcommunity.com/feed/" htmlUrl="http://androidcommunity.com"/>
+            <outline type="rss" text="Android Central" title="Android Central" xmlUrl="http://www.androidcentral.com/feed" htmlUrl="http://www.androidcentral.com/"/>
+        </outline>
+        <outline text="Design2" title="Design2">
+            <outline type="rss" text="365psd" title="365psd" xmlUrl="http://feeds.feedburner.com/365psd" htmlUrl="http://365psd.com"/>
+            <outline type="rss" text="Codrops" title="Codrops" xmlUrl="http://feeds2.feedburner.com/tympanus" htmlUrl="http://tympanus.net/codrops"/>
+            <outline type="rss" text="Six Revisions" title="Six Revisions" xmlUrl="http://feeds.feedburner.com/SixRevisions" htmlUrl="http://sixrevisions.com"/>
+            <outline type="rss" text="Blog.SpoonGraphics" title="Blog.SpoonGraphics" xmlUrl="http://feeds2.feedburner.com/SpoonGraphics" htmlUrl="http://blog.spoongraphics.co.uk"/>
+            <outline type="rss" text="Free PSD Files" title="Free PSD Files" xmlUrl="http://freepsdfiles.net/feed/" htmlUrl="http://freepsdfiles.net"/>
+            <outline type="rss" text="cssplay.co.uk" title="cssplay.co.uk" xmlUrl="http://www.cssplay.co.uk/feed.xml" htmlUrl="http://www.cssplay.co.uk/"/>
+            <outline type="rss" text="Tuts+ Photoshop" title="Tuts+ Photoshop" xmlUrl="http://psd.tutsplus.com/feed/" htmlUrl="http://design.tutsplus.com"/>
+            <outline type="rss" text="SitePoint" title="SitePoint" xmlUrl="http://feeds.feedburner.com/SitepointFeed" htmlUrl="http://www.sitepoint.com"/>
+            <outline type="rss" text="CSS-Tricks" title="CSS-Tricks" xmlUrl="http://feeds.feedburner.com/CssTricks" htmlUrl="http://css-tricks.com"/>
+            <outline type="rss" text="Webdesigner Depot" title="Webdesigner Depot" xmlUrl="http://feeds2.feedburner.com/webdesignerdepot" htmlUrl="http://www.webdesignerdepot.com"/>
+        </outline>
+    </body>
+</opml>
+

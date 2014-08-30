@@ -17,10 +17,7 @@ import com.rometools.rome.io.XmlReader;
 import com.rosaloves.bitlyj.BitlyMethod;
 import com.rosaloves.bitlyj.data.Pair;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -51,11 +48,11 @@ public class CategoryUpdater {
     public static final int RESULT = 4;
     private Handler handler;
     private Category category;
-    private int currentWorkingThreads = 0;
     private IDatabaseHandler databaseHandler;
     private boolean updateDatabase;
     private boolean isRunning = false;
     private Context context;
+    private UpdatingTask task;
 
     public CategoryUpdater(Handler handler, Category category, boolean updateDatabase, Context context) {
         this.handler = handler;
@@ -71,7 +68,8 @@ public class CategoryUpdater {
         }
         isRunning = true;
 
-        new UpdatingTask().execute();
+        task = new UpdatingTask();
+        task.execute();
         return true;
     }
 
@@ -218,14 +216,23 @@ public class CategoryUpdater {
         return isRunning;
     }
 
+    public void cancel() {
+        if (task != null){
+            sendMessage(null, CANCEL);
+            task.cancel(true);
+        }
+    }
 
     private class UpdatingTask extends AsyncTask<Void, Void, Void> {
         @Override
         protected Void doInBackground(Void[] params) {
+            if (category  == null || category.getFeeds() == null){
+                sendMessage(null, CANCEL);
+                return null;
+            }
             String msg = context != null ? context.getString(R.string.update_news) : "";
             sendMessage(msg, STATUS_CHANGED);
-            currentWorkingThreads = category.getFeeds().size();
-            if (currentWorkingThreads == 0) {
+            if (category.getFeeds().size() == 0) {
                 sendMessage(context.getString(R.string.no_feeds_found), ERROR);
             }
 

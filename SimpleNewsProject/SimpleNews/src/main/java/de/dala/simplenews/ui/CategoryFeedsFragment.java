@@ -70,6 +70,7 @@ public class CategoryFeedsFragment extends BaseFragment implements ContextualUnd
     private Category category;
     private ActionMode mActionMode;
     private ShareActionProvider shareActionProvider;
+    private UpdatingTask task;
 
     public CategoryFeedsFragment() {
     }
@@ -145,7 +146,8 @@ public class CategoryFeedsFragment extends BaseFragment implements ContextualUnd
             public void onClick(View v) {
                 switch (v.getId()) {
                     case R.id.positive:
-                        new UpdatingTask(view, inputLayout, progress, dialog, null).execute(input.getText().toString());
+                        task = new UpdatingTask(view, inputLayout, progress, dialog, null);
+                        task.execute(input.getText().toString());
                         break;
                     case R.id.negative:
                         dialog.dismiss();
@@ -561,6 +563,19 @@ public class CategoryFeedsFragment extends BaseFragment implements ContextualUnd
         if (mActionMode != null) {
             mActionMode.finish();
         }
+        if (task != null){
+            task.cancel(true);
+        }
     }
 
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (mActionMode != null) {
+            mActionMode.finish();
+        }
+        if (task != null){
+            task.cancel(true);
+        }
+    }
 }
