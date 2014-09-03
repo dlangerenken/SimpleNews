@@ -105,4 +105,5 @@
     <string name="recent_title">Gesehene</string>
     <string name="unread_title">Ungelesene</string>
     <string name="no_feeds_found">Keine Feeds gefunden</string>
+    <string name="no_browser_found">Hoppla, es wurde kein Browser gefunden. Bitte installiere zuerst einen Browser und versuche es dann erneut!</string>
 </resources>

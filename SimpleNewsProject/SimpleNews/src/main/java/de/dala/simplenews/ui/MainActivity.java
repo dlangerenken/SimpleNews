@@ -15,7 +15,7 @@ import de.dala.simplenews.R;
 import de.dala.simplenews.dialog.ChangeLogDialog;
 import de.dala.simplenews.utilities.BaseNavigation;
 
-public class MainActivity extends ActionBarActivity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
+public class MainActivity extends ActionBarActivity implements NavigationDrawerFragment.NavigationDrawerCallbacks, FragmentManager.OnBackStackChangedListener {
 
     private static String TAG = "MainActivity";
     /**
@@ -51,19 +51,21 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
                 transaction.replace(R.id.container, currentFragment).commit();
             }
         }
+        getSupportFragmentManager().addOnBackStackChangedListener(this);
         updateNavigation();
     }
 
     @Override
     public boolean onSupportNavigateUp() {
         currentFragment = getVisibleFragment();
+
         if (currentFragment != null && currentFragment.getChildFragmentManager().getBackStackEntryCount() > 0){
             currentFragment.getChildFragmentManager().popBackStackImmediate();
         }else{
             //This method is called when the up button is pressed. Just the pop back stack.
             getSupportFragmentManager().popBackStackImmediate();
         }
-        updateNavigation();
+
         return true;
     }
 
@@ -142,7 +144,6 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
                 transaction.replace(R.id.container, currentFragment).addToBackStack(null).commit();
                 break;
         }
-        updateNavigation();
     }
 
 
@@ -177,5 +178,14 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
             }
         }
         return null;
+    }
+
+    @Override
+    public void onBackStackChanged() {
+        updateNavigation();
+        Fragment visibleFragment = getVisibleFragment();
+        if (visibleFragment instanceof NewsOverViewFragment){
+            ((NewsOverViewFragment)visibleFragment).onBackStackChanged();
+        }
     }
 }

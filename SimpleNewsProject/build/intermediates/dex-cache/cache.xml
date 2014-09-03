@@ -12,7 +12,7 @@
         jar="D:\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\exploded-aar\SimpleNewsProject\feeds\unspecified\classes.jar"
         jumboMode="false"
         revision="19.1.0"
-        sha1="c956f23c06c406cd89397f2b430cf535d721c073"/>
+        sha1="4fb0eb4b1edde685d9dfb4df74640fec6cb7133d"/>
     <item
         dex="D:\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\pre-dexed\releaseVersion\debug\classes-fd8fcff610f2aaeab888eec9a1399a0b2496c67d.jar"
         jar="D:\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\exploded-aar\com.astuetz\pagerslidingtabstrip\1.0.1\classes.jar"

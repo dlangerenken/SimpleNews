@@ -90,15 +90,19 @@ public class PersistableCategories implements IPersistableObject<Category> {
             values.put(CATEGORY_NAME, category.getName());
             values.put(CATEGORY_LAST_UPDATE, category.getLastUpdateTime());
             values.put(CATEGORY_VISIBLE, category.isVisible() ? 1 : 0);
+            if (category.getOrder() != null) {
+                values.put(CATEGORY_ORDER, category.getOrder());
+            }
 
             Long categoryId = db.replace(TABLE_CATEGORY, null, values);
             ids[current++] = categoryId;
             category.setId(categoryId);
 
-            values = new ContentValues();
-            values.put(CATEGORY_ORDER, categoryId);
-            int updates = db.update(TABLE_CATEGORY, values, CATEGORY_ID + " = " + categoryId, null);
-
+            if (category.getOrder() == null || category.getOrder() == -1) {
+                values = new ContentValues();
+                values.put(CATEGORY_ORDER, categoryId);
+                db.update(TABLE_CATEGORY, values, CATEGORY_ID + " = " + categoryId, null);
+            }
             if (mExcludeFeeds == null || !mExcludeFeeds) {
                 PersistableFeeds mPersistableFeeds = getPersistableFeeds(categoryId);
                 mPersistableFeeds.store(category.getFeeds());

@@ -27,6 +27,7 @@ import com.nineoldandroids.view.ViewHelper;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -102,9 +103,10 @@ public class NewsOverViewFragment extends BaseFragment implements ViewPager.OnPa
         return NavigationDrawerFragment.HOME;
     }
 
-    public interface INewsTypeButton{
-        void newsTypeModeChanged(int newsTypeMode);
-        void gridSettingsChanged();
+    public void onBackStackChanged() {
+        categories = DatabaseHandler.getInstance().getCategories(null, null, true);
+        Collections.sort(categories);
+        orderChanged();
     }
 
     private ArrayList<String> newsTypeTags;
@@ -197,19 +199,19 @@ public class NewsOverViewFragment extends BaseFragment implements ViewPager.OnPa
     }
 
     private void updateColumnCount() {
-        for (INewsTypeButton newsTypeButton: getActiveINewsTypeFragments()){
+        for (ExpandableNewsFragment newsTypeButton: getActiveINewsTypeFragments()){
             newsTypeButton.gridSettingsChanged();
         }
     }
 
-    private List<INewsTypeButton> getActiveINewsTypeFragments(){
-        List<INewsTypeButton> fragments = new ArrayList<INewsTypeButton>();
+    private List<ExpandableNewsFragment> getActiveINewsTypeFragments(){
+        List<ExpandableNewsFragment> fragments = new ArrayList<ExpandableNewsFragment>();
         if (newsTypeTags != null) {
             for (Iterator<String> iterator = newsTypeTags.iterator();
                  iterator.hasNext(); ) {
                 Fragment fragment = getChildFragmentManager().findFragmentByTag(iterator.next());
-                if (fragment != null && fragment instanceof INewsTypeButton) {
-                    fragments.add((INewsTypeButton) fragment);
+                if (fragment != null && fragment instanceof ExpandableNewsFragment) {
+                    fragments.add((ExpandableNewsFragment) fragment);
                 } else {
                     iterator.remove();
                 }
@@ -222,13 +224,18 @@ public class NewsOverViewFragment extends BaseFragment implements ViewPager.OnPa
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         setHasOptionsMenu(true);
         View rootView = inflater.inflate(R.layout.news_overview, container, false);
+        pager = (ViewPager) rootView.findViewById(R.id.pager);
+        tabs = (PagerSlidingTabStrip) rootView.findViewById(R.id.tabs);
+        bottomView = (RelativeLayout) rootView.findViewById(R.id.bottom_view);
+        createProgressView();
+
         if (!PrefUtilities.getInstance().xmlIsAlreadyLoaded()) {
             DatabaseHandler.getInstance().loadXmlIntoDatabase(R.raw.categories);
         }
         mainActivity.getSupportActionBar().setTitle(getString(R.string.simple_news_title));
         mainActivity.getSupportActionBar().setHomeButtonEnabled(true);
         categories = DatabaseHandler.getInstance().getCategories(null, null, true);
-
+        Collections.sort(categories);
         if (savedInstanceState != null){
             //probably orientation change
             Serializable newsTypeTagsSerializable = savedInstanceState.getSerializable("newsTypeTags");
@@ -237,8 +244,10 @@ public class NewsOverViewFragment extends BaseFragment implements ViewPager.OnPa
             }
             entryType = savedInstanceState.getInt("entryType", ALL);
             newsTypeModeChanged();
+            orderChanged();
         }else{
             if (newsTypeTags != null){
+
                 //returning from backstack, data is fine, do nothing
             }else{
                 newsTypeTags = new ArrayList<String>();
@@ -246,27 +255,25 @@ public class NewsOverViewFragment extends BaseFragment implements ViewPager.OnPa
         }
 
         if (categories != null && !categories.isEmpty()) {
-            pager = (ViewPager) rootView.findViewById(R.id.pager);
-            MyPagerAdapter adapter = new MyPagerAdapter(getChildFragmentManager());
-            pager.setAdapter(adapter);
-
-            tabs = (PagerSlidingTabStrip) rootView.findViewById(R.id.tabs);
-            tabs.setViewPager(pager);
-            tabs.setOnPageChangeListener(this);
-
-            final int pageMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4, getResources()
-                    .getDisplayMetrics());
-            pager.setPageMargin(pageMargin);
-            bottomView = (RelativeLayout) rootView.findViewById(R.id.bottom_view);
-            createProgressView();
-
-            int page = PrefUtilities.getInstance().getCategoryIndex();
-            pager.setCurrentItem(page);
-            onPageSelected(page);
+            initAdapterAndPager();
         }
 
         initNewsTypeIcon();
         return rootView;
+    }
+
+    private void initAdapterAndPager() {
+        MyPagerAdapter adapter = new MyPagerAdapter(getChildFragmentManager());
+        pager.setAdapter(adapter);
+        tabs.setViewPager(pager);
+        tabs.setOnPageChangeListener(this);
+
+        final int pageMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4, getResources()
+                .getDisplayMetrics());
+        pager.setPageMargin(pageMargin);
+        int page = PrefUtilities.getInstance().getCategoryIndex();
+        pager.setCurrentItem(page);
+        onPageSelected(page);
     }
 
     private void changeColor(Category category) {
@@ -484,9 +491,9 @@ public class NewsOverViewFragment extends BaseFragment implements ViewPager.OnPa
             }
 
             Fragment fragment = mFragmentManager.findFragmentByTag(name);
+            Category category = categories.get(position);
             if(fragment == null){
-                Category category = categories.get(position);
-                fragment = ExpandableNewsFragment.newInstance(category, entryType);
+                fragment = ExpandableNewsFragment.newInstance(category, entryType, position);
             }
             return fragment;
         }
@@ -508,8 +515,14 @@ public class NewsOverViewFragment extends BaseFragment implements ViewPager.OnPa
     }
 
     private void newsTypeModeChanged() {
-        for (INewsTypeButton newsTypeButton: getActiveINewsTypeFragments()){
+        for (ExpandableNewsFragment newsTypeButton: getActiveINewsTypeFragments()){
             newsTypeButton.newsTypeModeChanged(entryType);
+        }
+    }
+
+    private void orderChanged() {
+        for (ExpandableNewsFragment newsTypeButton: getActiveINewsTypeFragments()){
+            newsTypeButton.updateCategory(categories.get(newsTypeButton.getPosition()));
         }
     }
 

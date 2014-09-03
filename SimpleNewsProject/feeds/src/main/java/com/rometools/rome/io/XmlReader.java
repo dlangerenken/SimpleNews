@@ -237,30 +237,46 @@ public class XmlReader extends Reader {
     public XmlReader(final URLConnection conn) throws IOException {
         defaultEncoding = staticDefaultEncoding;
         final boolean lenient = true;
-        if (conn instanceof HttpURLConnection) {
-            final Package pckg = ((Object) this).getClass().getPackage();
-            if (pckg.getImplementationTitle() != null && pckg.getImplementationVersion() != null) {
-                conn.setRequestProperty("User-Agent", pckg.getImplementationTitle() + "/" + pckg.getImplementationVersion());
+        try {
+            if (conn instanceof HttpURLConnection) {
+                final Package pckg = ((Object) this).getClass().getPackage();
+                if (pckg.getImplementationTitle() != null && pckg.getImplementationVersion() != null) {
+                    conn.setRequestProperty("User-Agent", pckg.getImplementationTitle() + "/" + pckg.getImplementationVersion());
+                } else {
+                    conn.setRequestProperty("User-Agent", "ROME");
+                }
+                try {
+                    doHttpStream(conn.getInputStream(), conn.getContentType(), lenient);
+                } catch (final XmlReaderException ex) {
+                    doLenientDetection(conn.getContentType(), ex);
+                }
+            } else if (conn.getContentType() != null) {
+                try {
+                    doHttpStream(conn.getInputStream(), conn.getContentType(), lenient);
+                } catch (final XmlReaderException ex) {
+                    doLenientDetection(conn.getContentType(), ex);
+                }
             } else {
-                conn.setRequestProperty("User-Agent", "ROME");
+                try {
+                    doRawStream(conn.getInputStream(), lenient);
+                } catch (final XmlReaderException ex) {
+                    doLenientDetection(null, ex);
+                }
             }
-            try {
-                doHttpStream(conn.getInputStream(), conn.getContentType(), lenient);
-            } catch (final XmlReaderException ex) {
-                doLenientDetection(conn.getContentType(), ex);
-            }
-        } else if (conn.getContentType() != null) {
-            try {
-                doHttpStream(conn.getInputStream(), conn.getContentType(), lenient);
-            } catch (final XmlReaderException ex) {
-                doLenientDetection(conn.getContentType(), ex);
-            }
-        } else {
-            try {
-                doRawStream(conn.getInputStream(), lenient);
-            } catch (final XmlReaderException ex) {
-                doLenientDetection(null, ex);
-            }
+        } catch (NullPointerException npe) {
+            // bug in android http://stackoverflow.com/questions/15557355/android-httpurlconnection-getinputstream-throws-nullpointerexception
+            throw new IOException(npe.toString());
+        } catch (NumberFormatException nfe) {
+            // bug in android http://stackoverflow.com/questions/15557355/android-httpurlconnection-getinputstream-throws-nullpointerexception
+            throw new IOException(nfe.toString());
+        } catch (IndexOutOfBoundsException ioobe) {
+            // Another Android problem? https://groups.google.com/forum/?fromgroups#!topic/google-admob-ads-sdk/U-WfmYa9or0
+            throw new IOException(ioobe.toString());
+        } catch (SecurityException se) {
+            throw new IOException(se.toString());
+        } catch (IllegalArgumentException iae) {
+            // Also seen this in the wild, not sure what to make of it. Probably a bad URL
+            throw new IOException(iae.toString());
         }
     }
 

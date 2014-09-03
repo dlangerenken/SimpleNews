@@ -31,6 +31,7 @@ import com.rometools.rome.io.FeedException;
 import org.jdom2.output.XMLOutputter;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import colorpicker.ColorPickerDialog;
@@ -156,6 +157,7 @@ public class CategorySelectionFragment extends BaseFragment implements BaseNavig
     }
 
     private void initAdapter() {
+        Collections.sort(categories);
         adapter = new CategoryListAdapter(getActivity(), categories);
         categoryListView.setAdapter(adapter);
     }
@@ -256,7 +258,7 @@ public class CategorySelectionFragment extends BaseFragment implements BaseNavig
                 newCategory.setName(categoryName);
                 newCategory.setColorId(ColorManager.getInstance().getIdByColor(color));
 
-                 DatabaseHandler.getInstance().addCategory(newCategory, true, true);
+                DatabaseHandler.getInstance().addCategory(newCategory, true, true);
                 adapter.add(newCategory);
                 adapter.notifyDataSetChanged();
                 Crouton.makeText(getActivity(), R.string.category_created, Style.CONFIRM, topView).show();
@@ -362,8 +364,8 @@ public class CategorySelectionFragment extends BaseFragment implements BaseNavig
             set(positionOne, getItem(positionTwo));
             set(positionTwo, temp);
             Category one = getItem(positionOne);
-            one.setOrder(positionOne);
             Category two = getItem(positionTwo);
+            one.setOrder(positionOne);
             two.setOrder(positionTwo);
             database.updateCategory(one);
             database.updateCategory(two);

@@ -296,14 +296,22 @@ public class FloatingActionMenu {
      */
     private Point getScreenSize() {
         Display display = ((Activity)mainActionView.getContext()).getWindowManager().getDefaultDisplay();
-        Point size = new Point();
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.GINGERBREAD){
-            size.x = display.getWidth();
-            size.y = display.getHeight();
-        }else{
-            display.getSize(size);
+        final Point point = new Point();
+        if (display != null) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {   //API LEVEL 13
+                try {
+                    display.getSize(point);
+                } catch (java.lang.NoSuchMethodError ignore) { // Older device
+                    point.x = display.getWidth();
+                    point.y = display.getHeight();
+                }
+            } else {
+                point.x = display.getWidth();
+                point.y = display.getHeight();
+            }
         }
-        return size;
+
+        return point;
     }
 
     /**

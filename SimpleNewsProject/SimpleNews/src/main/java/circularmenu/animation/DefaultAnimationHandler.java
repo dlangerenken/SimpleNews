@@ -4,13 +4,17 @@
 package circularmenu.animation;
 
 import android.graphics.Point;
+import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
 
 import com.nineoldandroids.animation.Animator;
+import com.nineoldandroids.animation.AnimatorSet;
 import com.nineoldandroids.animation.ObjectAnimator;
-import com.nineoldandroids.animation.PropertyValuesHolder;
 import com.nineoldandroids.view.ViewHelper;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 import circularmenu.FloatingActionMenu;
 
@@ -46,30 +50,32 @@ public class DefaultAnimationHandler extends MenuAnimationHandler {
 
         Animator lastAnimation = null;
         for (int i = 0; i < menu.getSubActionItems().size(); i++) {
+            View mView = menu.getSubActionItems().get(i).view;
+            if (mView != null) {
 
-            ViewHelper.setScaleX(menu.getSubActionItems().get(i).view, 0);
-            ViewHelper.setScaleY(menu.getSubActionItems().get(i).view, 0);
-            ViewHelper.setAlpha(menu.getSubActionItems().get(i).view, 0);
+                ViewHelper.setScaleX(mView, 0);
+                ViewHelper.setScaleY(mView, 0);
+                ViewHelper.setAlpha(mView, 0);
 
-            PropertyValuesHolder pvhX = PropertyValuesHolder.ofFloat("translationX", menu.getSubActionItems().get(i).x - center.x + menu.getSubActionItems().get(i).width / 2);
-            PropertyValuesHolder pvhY = PropertyValuesHolder.ofFloat("translationY", menu.getSubActionItems().get(i).y - center.y + menu.getSubActionItems().get(i).height / 2);
-            PropertyValuesHolder pvhR = PropertyValuesHolder.ofFloat("rotation", 720);
-            PropertyValuesHolder pvhsX = PropertyValuesHolder.ofFloat("scaleX", 1);
-            PropertyValuesHolder pvhsY = PropertyValuesHolder.ofFloat("scaleY", 1);
-            PropertyValuesHolder pvhA = PropertyValuesHolder.ofFloat("alpha", 1);
+                AnimatorSet animationSet = new AnimatorSet();
+                animationSet.playTogether(
+                        ObjectAnimator.ofFloat(menu.getSubActionItems().get(i).view, "translationX", menu.getSubActionItems().get(i).x - center.x + menu.getSubActionItems().get(i).width / 2),
+                        ObjectAnimator.ofFloat(menu.getSubActionItems().get(i).view, "translationY", menu.getSubActionItems().get(i).y - center.y + menu.getSubActionItems().get(i).height / 2),
+                        ObjectAnimator.ofFloat(menu.getSubActionItems().get(i).view, "rotation", 720),
+                        ObjectAnimator.ofFloat(menu.getSubActionItems().get(i).view, "scaleX", 1),
+                        ObjectAnimator.ofFloat(menu.getSubActionItems().get(i).view, "scaleY", 1),
+                        ObjectAnimator.ofFloat(menu.getSubActionItems().get(i).view, "alpha", 1)
+                );
+                animationSet.setDuration(DURATION);
+                animationSet.setInterpolator(new OvershootInterpolator(0.9f));
+                animationSet.addListener(new SubActionItemAnimationListener(menu.getSubActionItems().get(i), ActionType.OPENING));
+                animationSet.setStartDelay((menu.getSubActionItems().size() - i) * LAG_BETWEEN_ITEMS);
+                animationSet.start();
 
-            final ObjectAnimator animation = ObjectAnimator.ofPropertyValuesHolder(menu.getSubActionItems().get(i).view, pvhX, pvhY, pvhR, pvhsX, pvhsY, pvhA);
-            animation.setDuration(DURATION);
-            animation.setInterpolator(new OvershootInterpolator(0.9f));
-            animation.addListener(new SubActionItemAnimationListener(menu.getSubActionItems().get(i), ActionType.OPENING));
-
-            if (i == 0) {
-                lastAnimation = animation;
+                if (i == 0) {
+                    lastAnimation = animationSet;
+                }
             }
-
-            // Put a slight lag between each of the menu items to make it asymmetric
-            animation.setStartDelay((menu.getSubActionItems().size() - i) * LAG_BETWEEN_ITEMS);
-            animation.start();
         }
         if (lastAnimation != null) {
             lastAnimation.addListener(new LastAnimationListener());
@@ -83,26 +89,28 @@ public class DefaultAnimationHandler extends MenuAnimationHandler {
 
         setAnimating(true);
 
-        Animator lastAnimation = null;
+        AnimatorSet lastAnimation = null;
         for (int i = 0; i < menu.getSubActionItems().size(); i++) {
-            PropertyValuesHolder pvhX = PropertyValuesHolder.ofFloat("translationX", -(menu.getSubActionItems().get(i).x - center.x + menu.getSubActionItems().get(i).width / 2));
-            PropertyValuesHolder pvhY = PropertyValuesHolder.ofFloat("translationY", -(menu.getSubActionItems().get(i).y - center.y + menu.getSubActionItems().get(i).height / 2));
-            PropertyValuesHolder pvhR = PropertyValuesHolder.ofFloat("rotation", -720);
-            PropertyValuesHolder pvhsX = PropertyValuesHolder.ofFloat("scaleX", 0);
-            PropertyValuesHolder pvhsY = PropertyValuesHolder.ofFloat("scaleY", 0);
-            PropertyValuesHolder pvhA = PropertyValuesHolder.ofFloat("alpha", 0);
+            if (menu.getSubActionItems().get(i).view != null) {
+                AnimatorSet animationSet = new AnimatorSet();
+                animationSet.playTogether(
+                        ObjectAnimator.ofFloat(menu.getSubActionItems().get(i).view, "translationX", -(menu.getSubActionItems().get(i).x - center.x + menu.getSubActionItems().get(i).width / 2)),
+                        ObjectAnimator.ofFloat(menu.getSubActionItems().get(i).view, "translationY", -(menu.getSubActionItems().get(i).y - center.y + menu.getSubActionItems().get(i).height / 2)),
+                        ObjectAnimator.ofFloat(menu.getSubActionItems().get(i).view, "rotation", -720),
+                        ObjectAnimator.ofFloat(menu.getSubActionItems().get(i).view, "scaleX", 0),
+                        ObjectAnimator.ofFloat(menu.getSubActionItems().get(i).view, "scaleY", 0),
+                        ObjectAnimator.ofFloat(menu.getSubActionItems().get(i).view, "alpha", 0)
+                );
+                animationSet.setDuration(DURATION);
+                animationSet.setInterpolator(new AccelerateDecelerateInterpolator());
+                animationSet.addListener(new SubActionItemAnimationListener(menu.getSubActionItems().get(i), ActionType.CLOSING));
+                animationSet.setStartDelay((menu.getSubActionItems().size() - i) * LAG_BETWEEN_ITEMS);
+                animationSet.start();
 
-            final ObjectAnimator animation = ObjectAnimator.ofPropertyValuesHolder(menu.getSubActionItems().get(i).view, pvhX, pvhY, pvhR, pvhsX, pvhsY, pvhA);
-            animation.setDuration(DURATION);
-            animation.setInterpolator(new AccelerateDecelerateInterpolator());
-            animation.addListener(new SubActionItemAnimationListener(menu.getSubActionItems().get(i), ActionType.CLOSING));
-
-            if (i == 0) {
-                lastAnimation = animation;
+                if (i == 0) {
+                    lastAnimation = animationSet;
+                }
             }
-
-            animation.setStartDelay((menu.getSubActionItems().size() - i) * LAG_BETWEEN_ITEMS);
-            animation.start();
         }
         if (lastAnimation != null) {
             lastAnimation.addListener(new LastAnimationListener());

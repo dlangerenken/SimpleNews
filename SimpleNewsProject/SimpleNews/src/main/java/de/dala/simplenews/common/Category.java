@@ -12,7 +12,7 @@ import de.dala.simplenews.utilities.ColorManager;
 /**
  * Created by Daniel on 19.12.13.
  */
-public class Category implements Serializable, Parcelable {
+public class Category implements Serializable, Parcelable, Comparable<Category> {
     public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
         public Category createFromParcel(Parcel in) {
             return new Category(in);
@@ -25,7 +25,7 @@ public class Category implements Serializable, Parcelable {
     private String name;
     private Long id;
     private int colorId;
-    private int order;
+    private Integer order;
     private transient List<Feed> feeds;
     private boolean isVisible = true;
     private Long lastUpdateTime;
@@ -99,7 +99,7 @@ public class Category implements Serializable, Parcelable {
         this.isVisible = visible;
     }
 
-    public int getOrder() {
+    public Integer getOrder() {
         return order;
     }
 
@@ -117,7 +117,18 @@ public class Category implements Serializable, Parcelable {
         dest.writeString(name);
         dest.writeLong(id);
         dest.writeInt(colorId);
-        dest.writeInt(order);
+        dest.writeInt(order == null ? -1 : order);
         dest.writeInt(isVisible ? 1 : 0);
+    }
+
+    @Override
+    public int compareTo(Category another) {
+        if (another == null || another.order == null){
+            return 1;
+        }
+        if (order == null){
+            return -1;
+        }
+        return order.compareTo(another.order);
     }
 }

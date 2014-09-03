@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 
+import com.rometools.rome.feed.WireFeed;
 import com.rometools.rome.feed.opml.Opml;
 import com.rometools.rome.io.FeedException;
 import com.rometools.rome.io.WireFeedInput;
@@ -162,7 +163,7 @@ public class  OpmlImportFragment extends BaseFragment implements BaseNavigation 
 
         @Override
         protected String doInBackground(String[] params) {
-            if (params == null ||params.length == 0 ||params[0] == null || params[0] == ""){
+            if (params == null ||params.length == 0 ||params[0] == null || params[0].equals("")){
                 return null;
             }
             String enteredText = params[0];
@@ -171,8 +172,10 @@ public class  OpmlImportFragment extends BaseFragment implements BaseNavigation 
             List<Feed> feeds = new ArrayList<Feed>();
             WireFeedInput input = new WireFeedInput();
             try {
-                Opml feed = (Opml)input.build(new XmlReader(new ByteArrayInputStream(enteredText.getBytes())));
-                feeds = OpmlConverter.convertOpmlListToFeedList(feed);
+                WireFeed feed = input.build(new XmlReader(new ByteArrayInputStream(enteredText.getBytes())));
+                if (feed != null && feed instanceof Opml) {
+                    feeds = OpmlConverter.convertOpmlListToFeedList((Opml)feed);
+                }
                 loaded = feeds != null && feeds.size() > 0;
             } catch (FeedException e) {
                 e.printStackTrace();
@@ -194,8 +197,10 @@ public class  OpmlImportFragment extends BaseFragment implements BaseNavigation 
                     if (!enteredText.startsWith("http://")){
                         enteredText = "http://" + enteredText;
                     }
-                    Opml feed = (Opml) input.build(new XmlReader(new URL(enteredText)));
-                    feeds = OpmlConverter.convertOpmlListToFeedList(feed);
+                    WireFeed feed = input.build(new XmlReader(new URL(enteredText)));
+                    if (feed != null && feed instanceof Opml) {
+                        feeds = OpmlConverter.convertOpmlListToFeedList((Opml)feed);
+                    }
                     loaded = feeds != null && feeds.size() > 0;
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
@@ -204,6 +209,9 @@ public class  OpmlImportFragment extends BaseFragment implements BaseNavigation 
                     e.printStackTrace();
                     loaded = false;
                 } catch (IOException e) {
+                    e.printStackTrace();
+                    loaded = false;
+                } catch (IllegalArgumentException e){
                     e.printStackTrace();
                     loaded = false;
                 }

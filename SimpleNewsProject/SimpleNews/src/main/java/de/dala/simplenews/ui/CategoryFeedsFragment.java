@@ -285,6 +285,8 @@ public class CategoryFeedsFragment extends BaseFragment implements ContextualUnd
                     e.printStackTrace();
                 } catch (IOException e) {
                     e.printStackTrace();
+                } catch (IllegalArgumentException e){
+                    e.printStackTrace();
                 }
             }
             return null;

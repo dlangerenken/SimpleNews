@@ -105,4 +105,5 @@
     <string name="recent_title">Recent</string>
     <string name="unread_title">Unread</string>
     <string name="no_feeds_found">No Feeds found</string>
+    <string name="no_browser_found">Sorry, no browser found. Please install a browser and try again!</string>
 </resources>

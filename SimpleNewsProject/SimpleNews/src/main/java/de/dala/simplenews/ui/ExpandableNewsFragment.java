@@ -1,6 +1,7 @@
 package de.dala.simplenews.ui;
 
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -57,9 +58,10 @@ import de.dala.simplenews.utilities.UIUtils;
 /**
  * Created by Daniel on 18.12.13.
  */
-public class ExpandableNewsFragment extends BaseFragment implements SwipeRefreshLayoutExtended.OnRefreshListener, SimpleCursorLoader.OnLoadCompleteListener, NewsOverViewFragment.INewsTypeButton, BaseNavigation {
+public class ExpandableNewsFragment extends BaseFragment implements SwipeRefreshLayoutExtended.OnRefreshListener, SimpleCursorLoader.OnLoadCompleteListener, BaseNavigation {
     private static final String ARG_CATEGORY = "category";
     private static final String ARG_ENTRY_TYPE = "entryType";
+    private static final String ARG_POSITION = "position";
     private MyExpandableGridItemAdapter myExpandableListItemAdapter;
     private ActionMode mActionMode;
     private StaggeredGridView mGridView;
@@ -79,18 +81,28 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
     private ImageView emptyImageView;
     private String noEntriesText;
     private String isLoadingText;
+    private int position;
 
     public ExpandableNewsFragment() {
         //shouldn't be called
     }
 
-    public static ExpandableNewsFragment newInstance(Category category, int entryType) {
+    public static ExpandableNewsFragment newInstance(Category category, int entryType, int position) {
         ExpandableNewsFragment f = new ExpandableNewsFragment();
         Bundle b = new Bundle();
         b.putParcelable(ARG_CATEGORY, category);
         b.putInt(ARG_ENTRY_TYPE, entryType);
+        b.putInt(ARG_POSITION, position);
         f.setArguments(b);
         return f;
+    }
+
+    public Category getCategory(){
+        return category;
+    }
+
+    public int getPosition(){
+        return position;
     }
 
     @Override
@@ -98,6 +110,7 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
         super.onCreate(savedInstanceState);
         this.category = getArguments().getParcelable(ARG_CATEGORY);
         this.newsTypeMode = getArguments().getInt(ARG_ENTRY_TYPE);
+        this.position = getArguments().getInt(ARG_POSITION);
         noEntriesText = getResources().getString(R.string.no_entries);
         isLoadingText = getResources().getString(R.string.is_loading);
     }
@@ -124,14 +137,6 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        mSwipeRefreshLayout = (SwipeRefreshLayoutExtended) view.findViewById(R.id.ptr_layout);
-        mSwipeRefreshLayout.setOnRefreshListener(this);
-        mSwipeRefreshLayout.setColorSchemeFromColors(category.getPrimaryColor(), getResources().getColor(R.color.background_window), category.getPrimaryColor(), getResources().getColor(R.color.background_window));
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         setHasOptionsMenu(true);
 
@@ -142,11 +147,20 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
         emptyText = (TextView) rootView.findViewById(R.id.emptyMessage);
         emptyImageView = (ImageView) rootView.findViewById(R.id.emptyImageView);
         emptyImageView.setImageResource(R.drawable.logo_animation);
+        mSwipeRefreshLayout = (SwipeRefreshLayoutExtended) rootView.findViewById(R.id.ptr_layout);
 
+        init();
+        return rootView;
+    }
+
+    private void init(){
+        if (mSwipeRefreshLayout != null) {
+            mSwipeRefreshLayout.setOnRefreshListener(this);
+            mSwipeRefreshLayout.setColorSchemeFromColors(category.getPrimaryColor(), getResources().getColor(R.color.background_window), category.getPrimaryColor(), getResources().getColor(R.color.background_window));
+        }
         initCardsAdapter(null);
         initNewsTypeBar();
         loadEntries(false, true);
-        return rootView;
     }
 
     private void initNewsTypeBar() {
@@ -155,16 +169,18 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
     }
 
     private void setEmptyText(boolean isLoading) {
-        String textToShow = noEntriesText;
-        if (isLoading){
-            textToShow = isLoadingText;
-        }
-        emptyText.setText(textToShow);
-        AnimationDrawable animDrawable = (AnimationDrawable)emptyImageView.getDrawable();
-        animDrawable.setOneShot(!isLoading);
-        animDrawable.stop();
-        if (isLoading) {
-            animDrawable.start();
+        if (!isDetached()) {
+            String textToShow = noEntriesText;
+            if (isLoading) {
+                textToShow = isLoadingText;
+            }
+            emptyText.setText(textToShow);
+            AnimationDrawable animDrawable = (AnimationDrawable) emptyImageView.getDrawable();
+            animDrawable.setOneShot(!isLoading);
+            animDrawable.stop();
+            if (isLoading) {
+                animDrawable.start();
+            }
         }
     }
 
@@ -279,19 +295,23 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
     }
 
     private void updateFinished(boolean success) {
-        if (mSwipeRefreshLayout != null) {
-            mSwipeRefreshLayout.setRefreshing(false);
-        }
-        if (mActionMode != null) {
-            mActionMode.finish();
-        }
-        parentFragment.cancelLoadingNews();
-        setRefreshActionButtonState(false);
+        if (!isDetached()) {
+            if (mSwipeRefreshLayout != null) {
+                mSwipeRefreshLayout.setRefreshing(false);
+            }
+            if (mActionMode != null) {
+                mActionMode.finish();
+            }
+            if (!parentFragment.isDetached()) {
+                parentFragment.cancelLoadingNews();
+            }
+            setRefreshActionButtonState(false);
 
-        if (success){
-            simpleCursorLoader.startLoading();
+            if (success || myExpandableListItemAdapter != null && myExpandableListItemAdapter.getCount() == 0) {
+                simpleCursorLoader.startLoading();
+            }
+            setEmptyText(false);
         }
-        setEmptyText(false);
     }
 
     private void setRefreshActionButtonState(boolean refreshing) {
@@ -312,16 +332,24 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         this.menu = menu;
+        if (menu.findItem(R.id.menu_refresh) != null){
+            return;
+        }
         inflater.inflate(R.menu.expandable_news_menu, menu);
         super.onCreateOptionsMenu(menu, inflater);
     }
 
     private void loadEntries(boolean forceRefresh, boolean showNewsInteraction) {
+        boolean loaded = false;
         setEmptyText(true);
         long timeForRefresh = PrefUtilities.getInstance().getTimeForRefresh();
         if (forceRefresh || (category != null && category.getLastUpdateTime() != null && category.getLastUpdateTime() < new Date().getTime() - timeForRefresh)) {
             refreshFeeds(showNewsInteraction);
-        }else{
+        }else {
+            simpleCursorLoader.startLoading();
+            loaded = true;
+        }
+        if (myExpandableListItemAdapter != null && myExpandableListItemAdapter.getCount() == 0 && !loaded){
             simpleCursorLoader.startLoading();
         }
     }
@@ -356,8 +384,6 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
             Entry entry = selectedEntries.get(key);
             entry.setVisible(false);
             DatabaseHandler.getInstance().updateEntry(entry);
-            //  ImageView imageView = (ImageView) myExpandableListItemAdapter.getTitleView(key).findViewById(R.id.image);
-            //  setImageDrawable(imageView, entry);
         }
     }
 
@@ -381,15 +407,16 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
 
     @Override
     public void onLoadComplete(Loader loader, Object data) {
-        if (data instanceof  Cursor){
-            Cursor cursor = (Cursor) data;
-            swingBottomInAnimationAdapter.reset();
-            myExpandableListItemAdapter.changeCursor(cursor);
+        if (!isDetached()) {
+            if (data instanceof Cursor) {
+                Cursor cursor = (Cursor) data;
+                swingBottomInAnimationAdapter.reset();
+                myExpandableListItemAdapter.changeCursor(cursor);
+            }
+            setEmptyText(false);
         }
-        setEmptyText(false);
     }
 
-    @Override
     public void newsTypeModeChanged(int newsTypeMode) {
         this.newsTypeMode = newsTypeMode;
         if (simpleCursorLoader != null){
@@ -397,7 +424,6 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
         }
     }
 
-    @Override
     public void gridSettingsChanged() {
         updateColumnCount();
     }
@@ -432,6 +458,13 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
         return NavigationDrawerFragment.HOME;
     }
 
+    public void updateCategory(Category category) {
+        this.category = category;
+        if (getView() != null) {
+            init();
+        }
+    }
+
     private class CategoryUpdateHandler extends Handler {
         @Override
         public void handleMessage(Message msg) {
@@ -443,7 +476,10 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
                     break;
                 case CategoryUpdater.ERROR:
                     updateFinished(false);
-                    Toast.makeText(getActivity(), (String) msg.obj, Toast.LENGTH_SHORT).show();
+                    Context context = getActivity();
+                    if (context != null && msg.obj != null){
+                        Toast.makeText(context, (String) msg.obj, Toast.LENGTH_SHORT).show();
+                    }
                     break;
                 case CategoryUpdater.CANCEL:
                     updateFinished(false);
@@ -535,7 +571,12 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
                     DatabaseHandler.getInstance().updateEntry(entry);
                     myExpandableListItemAdapter.notifyDataSetChanged();
                     Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(entry.getLink())); //TODO link or shortenedlink
-                    startActivity(browserIntent);
+                    try{
+                        startActivity(browserIntent);
+                    } catch (ActivityNotFoundException e){
+                        Toast.makeText(mContext, mContext.getString(R.string.no_browser_found), Toast.LENGTH_LONG).show();
+
+                    }
                 }
             });
             return layout;
