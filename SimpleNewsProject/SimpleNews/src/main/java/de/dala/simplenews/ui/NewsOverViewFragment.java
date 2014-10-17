@@ -1,6 +1,7 @@
 package de.dala.simplenews.ui;
 
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
@@ -52,8 +53,6 @@ public class NewsOverViewFragment extends BaseFragment implements ViewPager.OnPa
     private PagerSlidingTabStrip tabs;
 
     private View progressView;
-    private Drawable oldBackground = null;
-    private int currentColor = 0xFF666666;
     private List<Category> categories;
     private RelativeLayout bottomView;
     private Crouton crouton;
@@ -75,17 +74,20 @@ public class NewsOverViewFragment extends BaseFragment implements ViewPager.OnPa
 
     @Override
     public String getTitle() {
-        switch (entryType){
-            case ALL:
-                return mainActivity.getString(R.string.home_title);
-            case FAV:
-                return mainActivity.getString(R.string.favorite_title);
-            case RECENT:
-                return mainActivity.getString(R.string.recent_title);
-            case UNREAD:
-                return mainActivity.getString(R.string.unread_title);
-        };
-        return mainActivity.getString(R.string.home_title);
+        Context mContext = getActivity();
+        if (mContext != null){
+            switch (entryType) {
+                case ALL:
+                    return mContext.getString(R.string.home_title);
+                case FAV:
+                    return mContext.getString(R.string.favorite_title);
+                case RECENT:
+                    return mContext.getString(R.string.recent_title);
+                case UNREAD:
+                    return mContext.getString(R.string.unread_title);
+            }
+        }
+        return "News"; // should not be called
     }
 
     @Override
@@ -232,7 +234,7 @@ public class NewsOverViewFragment extends BaseFragment implements ViewPager.OnPa
         if (!PrefUtilities.getInstance().xmlIsAlreadyLoaded()) {
             DatabaseHandler.getInstance().loadXmlIntoDatabase(R.raw.categories);
         }
-        mainActivity.getSupportActionBar().setTitle(getString(R.string.simple_news_title));
+
         mainActivity.getSupportActionBar().setHomeButtonEnabled(true);
         categories = DatabaseHandler.getInstance().getCategories(null, null, true);
         Collections.sort(categories);
@@ -277,26 +279,9 @@ public class NewsOverViewFragment extends BaseFragment implements ViewPager.OnPa
     }
 
     private void changeColor(Category category) {
-
         tabs.setIndicatorColor(category.getSecondaryColor());
-
-        Drawable colorDrawable = new ColorDrawable(category.getPrimaryColor());
-        Drawable darkColorDrawable = new ColorDrawable(category.getSecondaryColor());
-
-        if (oldBackground == null) {
-            ((ActionBarActivity) getActivity()).getSupportActionBar().setBackgroundDrawable(colorDrawable);
-        } else {
-            //getSupportActionBar().setBackgroundDrawable(ld); //BUG otherwise
-            TransitionDrawable td = new TransitionDrawable(new Drawable[]{oldBackground, colorDrawable});
-            ((ActionBarActivity) getActivity()).getSupportActionBar().setBackgroundDrawable(td);
-            td.startTransition(400);
-        }
-
-        mainActivity.changeDrawerColor(category.getPrimaryColor());
-
+        mainActivity.changeColor(category.getPrimaryColor());
         progressView.setBackgroundColor(category.getPrimaryColor());
-        oldBackground = colorDrawable;
-        currentColor = category.getPrimaryColor();
 
         // http://stackoverflow.com/questions/11002691/actionbar-setbackgrounddrawable-nulling-background-from-thread-handler
         ((ActionBarActivity) getActivity()).getSupportActionBar().setDisplayShowTitleEnabled(false);
@@ -390,7 +375,7 @@ public class NewsOverViewFragment extends BaseFragment implements ViewPager.OnPa
                 mainIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_recent));
                 break;
         }
-        mainActivity.updateNavigation();
+        mainActivity.updateNavigation(getNavigationDrawerId(), getTitle());
     }
 
     @Override
@@ -454,7 +439,6 @@ public class NewsOverViewFragment extends BaseFragment implements ViewPager.OnPa
 
     private View createProgressView() {
         progressView = mainActivity.getLayoutInflater().inflate(R.layout.progress_layout, null);
-        progressView.setBackgroundColor(currentColor);
         TextView progressText = (TextView) progressView.findViewById(R.id.progress_text);
         progressText.setText(getString(R.string.update_news));
         return progressView;
@@ -522,7 +506,10 @@ public class NewsOverViewFragment extends BaseFragment implements ViewPager.OnPa
 
     private void orderChanged() {
         for (ExpandableNewsFragment newsTypeButton: getActiveINewsTypeFragments()){
-            newsTypeButton.updateCategory(categories.get(newsTypeButton.getPosition()));
+            int newsTypeButtonPosition = newsTypeButton.getPosition();
+            if (categories.size() > newsTypeButtonPosition){
+                newsTypeButton.updateCategory(categories.get(newsTypeButtonPosition));
+            }
         }
     }
 

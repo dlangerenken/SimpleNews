@@ -10,12 +10,11 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
 import com.nhaarman.listviewanimations.ArrayAdapter;
-import com.nhaarman.listviewanimations.ListViewSetter;
-import com.nhaarman.listviewanimations.itemmanipulation.ExpandCollapseListener;
 import com.nhaarman.listviewanimations.util.AdapterViewUtil;
 import com.nineoldandroids.animation.Animator;
 import com.nineoldandroids.animation.AnimatorListenerAdapter;
 import com.nineoldandroids.animation.ValueAnimator;
+import com.nhaarman.listviewanimations.itemmanipulation.expandablelistitem.ExpandableListItemAdapter.*;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -26,7 +25,7 @@ import java.util.Set;
  * An {@link ArrayAdapter} which allows items to be expanded using an animation.
  */
 @SuppressWarnings("UnusedDeclaration")
-public abstract class ExpandableListItemAdapter<T> extends ArrayAdapter<T> implements ListViewSetter {
+public abstract class ExpandableListItemAdapter<T> extends ArrayAdapter<T>  {
 
     private static final int DEFAULTTITLEPARENTRESID = 10000;
     private static final int DEFAULTCONTENTPARENTRESID = 10001;
@@ -88,7 +87,6 @@ public abstract class ExpandableListItemAdapter<T> extends ArrayAdapter<T> imple
         mExpandedIds = new ArrayList<Long>();
     }
 
-    @Override
     public void setAbsListView(final AbsListView listView) {
         mAbsListView = listView;
     }
@@ -121,7 +119,7 @@ public abstract class ExpandableListItemAdapter<T> extends ArrayAdapter<T> imple
     }
 
     /**
-     * Set the {@link com.nhaarman.listviewanimations.itemmanipulation.ExpandCollapseListener} that should be notified of expand / collapse events.
+     * Set the {@link com.nhaarman.listviewanimations.itemmanipulation.expandablelistitem.ExpandableListItemAdapter.ExpandCollapseListener} that should be notified of expand / collapse events.
      */
     public void setExpandCollapseListener(final ExpandCollapseListener expandCollapseListener) {
         mExpandCollapseListener = expandCollapseListener;

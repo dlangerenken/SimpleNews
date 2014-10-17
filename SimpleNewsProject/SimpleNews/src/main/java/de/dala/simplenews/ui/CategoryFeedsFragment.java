@@ -27,7 +27,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.nhaarman.listviewanimations.ArrayAdapter;
-import com.nhaarman.listviewanimations.itemmanipulation.swipedismiss.contextualundo.ContextualUndoAdapter;
 import com.nineoldandroids.animation.Animator;
 import com.nineoldandroids.animation.AnimatorListenerAdapter;
 import com.nineoldandroids.view.ViewPropertyAnimator;
@@ -61,7 +60,7 @@ import de.keyboardsurfer.android.widget.crouton.Style;
 /**
  * Created by Daniel on 29.12.13.
  */
-public class CategoryFeedsFragment extends BaseFragment implements ContextualUndoAdapter.DeleteItemCallback, BaseNavigation {
+public class CategoryFeedsFragment extends BaseFragment implements BaseNavigation {
 
 
     private static final String CATEGORY_KEY = "category";
@@ -89,7 +88,6 @@ public class CategoryFeedsFragment extends BaseFragment implements ContextualUnd
         feedListView = (ListView) rootView.findViewById(R.id.listView);
         feedListView.setDivider(null);
         initAdapter();
-        ((ActionBarActivity) getActivity()).getSupportActionBar().setTitle(String.format("%s - Feeds", category.getName()));
         ((ActionBarActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         return rootView;
     }
@@ -120,15 +118,6 @@ public class CategoryFeedsFragment extends BaseFragment implements ContextualUnd
     private void initAdapter() {
         adapter = new FeedListAdapter(getActivity(), category.getFeeds());
         feedListView.setAdapter(adapter);
-    }
-
-    public void deleteItem(int position) {
-        Feed feed = adapter.getItem(position);
-        adapter.remove(position);
-        adapter.notifyDataSetChanged();
-
-        DatabaseHandler.getInstance().removeFeeds(null, feed.getId(), false);
-        category.getFeeds().remove(feed);
     }
 
     private void createFeedClicked() {
@@ -241,12 +230,11 @@ public class CategoryFeedsFragment extends BaseFragment implements ContextualUnd
         protected void onPostExecute(Feed feed) {
             super.onPostExecute(feed);
             if (feed != null) {
-                adapter.notifyDataSetChanged();
-                dialog.dismiss();
                 if (isEditingId == null) {
-                    adapter.add(feed);
                     category.getFeeds().add(feed);
                 }
+                adapter.notifyDataSetChanged();
+                dialog.dismiss();
             }else{
                 invalidFeedUrl(true);
             }
@@ -294,22 +282,31 @@ public class CategoryFeedsFragment extends BaseFragment implements ContextualUnd
 
 
         private void invalidFeedUrl(final boolean hideProgressBar) {
-            Animation shake = AnimationUtils.loadAnimation(getActivity(),
-                    R.anim.shake);
-            shake.setAnimationListener(new Animation.AnimationListener() {
-                @Override public void onAnimationStart(Animation animation) {}
+            Context context = getActivity();
+            if (context != null) {
+                Animation shake = AnimationUtils.loadAnimation(context,
+                        R.anim.shake);
+                if (shake != null) {
+                    shake.setAnimationListener(new Animation.AnimationListener() {
+                        @Override
+                        public void onAnimationStart(Animation animation) {
+                        }
 
-                @Override
-                public void onAnimationEnd(Animation animation) {
-                    if (hideProgressBar) {
-                        crossfade(inputLayout, progress);
-                        Crouton.makeText(getActivity(), getActivity().getString(R.string.not_valid_format), Style.ALERT, inputLayout).show();
-                    }
+                        @Override
+                        public void onAnimationEnd(Animation animation) {
+                            if (hideProgressBar) {
+                                crossfade(inputLayout, progress);
+                                Crouton.makeText(getActivity(), getActivity().getString(R.string.not_valid_format), Style.ALERT, inputLayout).show();
+                            }
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animation animation) {
+                        }
+                    });
+                    view.startAnimation(shake);
                 }
-
-                @Override public void onAnimationRepeat(Animation animation) {}
-            });
-            view.startAnimation(shake);
+            }
         }
     }
     private void onListItemCheck(int position) {
@@ -345,7 +342,11 @@ public class CategoryFeedsFragment extends BaseFragment implements ContextualUnd
 
     @Override
     public String getTitle() {
-        return "CategoryFeedsFragment";
+        Context context = getActivity();
+        if (context != null) {
+            return String.format(context.getString(R.string.category_feeds_fragment_title), category.getName());
+        }
+        return "SimpleNews"; //default
     }
 
     @Override

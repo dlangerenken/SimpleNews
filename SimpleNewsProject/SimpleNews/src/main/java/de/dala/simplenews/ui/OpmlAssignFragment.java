@@ -17,8 +17,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.nhaarman.listviewanimations.ArrayAdapter;
-import com.nhaarman.listviewanimations.itemmanipulation.swipedismiss.contextualundo.ContextualUndoAdapter;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -31,7 +29,7 @@ import de.dala.simplenews.utilities.BaseNavigation;
 /**
  * Created by Daniel on 04.08.2014.
  */
-public class OpmlAssignFragment extends BaseFragment implements ContextualUndoAdapter.DeleteItemCallback, ViewPager.OnPageChangeListener, BaseNavigation{
+public class OpmlAssignFragment extends BaseFragment implements ViewPager.OnPageChangeListener, BaseNavigation{
 
     private OpmlListAdapter adapter;
     private static final String FEED_LIST_KEY = "feeds";
@@ -61,7 +59,6 @@ public class OpmlAssignFragment extends BaseFragment implements ContextualUndoAd
         View rootView = inflater.inflate(R.layout.opml_list_view, container, false);
         feedListView = (ListView) rootView.findViewById(R.id.listView);
         initAdapter();
-        ((ActionBarActivity) getActivity()).getSupportActionBar().setTitle(getActivity().getString(R.string.assigning_feeds_title));
         ((ActionBarActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         return rootView;
@@ -89,16 +86,17 @@ public class OpmlAssignFragment extends BaseFragment implements ContextualUndoAd
 
     @Override
     public String getTitle() {
-        return "OpmlAssignFragment";
+        Context mContext = getActivity();
+        if (mContext != null) {
+            return mContext.getString(R.string.opml_assign_fragment_title);
+        }
+        return "SimpleNews"; //should not be called
     }
 
     @Override
     public int getNavigationDrawerId() {
         return NavigationDrawerFragment.IMPORT;
     }
-
-
-
 
     private class OpmlListAdapter extends ArrayAdapter<Feed> {
 
@@ -192,11 +190,6 @@ public class OpmlAssignFragment extends BaseFragment implements ContextualUndoAd
             public TextView link;
             public CheckBox checkBox;
         }
-    }
-
-    public void deleteItem(int position) {
-        Feed feed = adapter.getItem(position);
-        removeFeed(feed);
     }
 
     private void removeFeed(Feed feed){

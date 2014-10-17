@@ -35,8 +35,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.etsy.android.grid.StaggeredGridView;
-import com.nhaarman.listviewanimations.swinginadapters.AnimationAdapter;
-import com.nhaarman.listviewanimations.swinginadapters.prepared.SwingBottomInAnimationAdapter;
+import com.nhaarman.listviewanimations.appearance.AnimationAdapter;
+import com.nhaarman.listviewanimations.appearance.ViewAnimator;
+import com.nhaarman.listviewanimations.appearance.simple.SwingBottomInAnimationAdapter;
+import com.nhaarman.listviewanimations.itemmanipulation.animateaddition.AnimateAdditionAdapter;
 import com.ocpsoft.pretty.time.PrettyTime;
 
 import java.util.ArrayList;
@@ -62,6 +64,8 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
     private static final String ARG_CATEGORY = "category";
     private static final String ARG_ENTRY_TYPE = "entryType";
     private static final String ARG_POSITION = "position";
+    private static final int INITIAL_DELAY_MILLIS = 300;
+
     private MyExpandableGridItemAdapter myExpandableListItemAdapter;
     private ActionMode mActionMode;
     private StaggeredGridView mGridView;
@@ -220,14 +224,14 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
         return super.onOptionsItemSelected(item);
     }
 
-
-
     private void initCardsAdapter(Cursor cursor) {
         myExpandableListItemAdapter = new MyExpandableGridItemAdapter(getActivity(), cursor);
         swingBottomInAnimationAdapter = new SwingBottomInAnimationAdapter(myExpandableListItemAdapter);
         swingBottomInAnimationAdapter.setAbsListView(mGridView);
-        swingBottomInAnimationAdapter.setInitialDelayMillis(300);
-
+        ViewAnimator animator = swingBottomInAnimationAdapter.getViewAnimator();
+        if (animator != null){
+            animator.setInitialDelayMillis(INITIAL_DELAY_MILLIS);
+        }
         if (mGridView != null) {
             mGridView.setAdapter(swingBottomInAnimationAdapter);
         }
@@ -407,7 +411,7 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
 
     @Override
     public void onLoadComplete(Loader loader, Object data) {
-        if (!isDetached()) {
+        if (isAdded()) {
             if (data instanceof Cursor) {
                 Cursor cursor = (Cursor) data;
                 swingBottomInAnimationAdapter.reset();
@@ -430,17 +434,20 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
 
     @Override
     public String getTitle() {
-        switch (newsTypeMode){
-            case NewsOverViewFragment.ALL:
-                return "Home";
-            case NewsOverViewFragment.FAV:
-                return "Favorite";
-            case NewsOverViewFragment.RECENT:
-                return "Recent";
-            case NewsOverViewFragment.UNREAD:
-                return "Unread";
-        };
-        return "News";
+        Context mContext = getActivity();
+        if (mContext != null) {
+            switch (newsTypeMode) {
+                case NewsOverViewFragment.ALL:
+                    return getActivity().getString(R.string.home_title);
+                case NewsOverViewFragment.FAV:
+                    return getActivity().getString(R.string.favorite_title);
+                case NewsOverViewFragment.RECENT:
+                    return getActivity().getString(R.string.recent_title);
+                case NewsOverViewFragment.UNREAD:
+                    return getActivity().getString(R.string.unread_title);
+            }
+        }
+        return "News"; // should not be called
     }
 
     @Override
@@ -603,7 +610,6 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
             for(int i = 0; i < mCursor.getCount(); i++){
                 onListItemCheck(i, false);
             }
-            OpenActionModeIfNecessary();
 
             if (mActionMode != null) {
                 mActionMode.setTitle(String.valueOf(myExpandableListItemAdapter.getSelectedCount()));
@@ -739,6 +745,7 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
                     break;
                 case R.id.menu_item_deselect_all:
                     myExpandableListItemAdapter.deselectAllIds();
+                    OpenActionModeIfNecessary();
                     shouldFinish = true;
                     break;
                 case R.id.menu_item_delete:

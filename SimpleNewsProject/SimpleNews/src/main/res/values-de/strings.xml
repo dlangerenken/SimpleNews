@@ -106,4 +106,10 @@
     <string name="unread_title">Ungelesene</string>
     <string name="no_feeds_found">Keine Feeds gefunden</string>
     <string name="no_browser_found">Hoppla, es wurde kein Browser gefunden. Bitte installiere zuerst einen Browser und versuche es dann erneut!</string>
+    <string name="category_feeds_fragment_title">%s: Feeds</string>
+    <string name="category_modifier_fragment">Kategorien</string>
+    <string name="category_selection_fragment_title">Kategorien</string>
+    <string name="opml_assign_fragment_title">Opml-Feeds zuweisen</string>
+    <string name="opml_import_fragment_title">Opml importieren</string>
+    <string name="pref_fragment_title">Einstellungen</string>
 </resources>

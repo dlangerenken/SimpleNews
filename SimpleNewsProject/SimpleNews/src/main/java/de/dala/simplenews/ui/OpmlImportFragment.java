@@ -1,6 +1,7 @@
 package de.dala.simplenews.ui;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -19,7 +20,6 @@ import com.rometools.rome.feed.opml.Opml;
 import com.rometools.rome.io.FeedException;
 import com.rometools.rome.io.WireFeedInput;
 import com.rometools.rome.io.XmlReader;
-
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -147,8 +147,6 @@ public class  OpmlImportFragment extends BaseFragment implements BaseNavigation 
             }
         });
 
-
-        ((ActionBarActivity) getActivity()).getSupportActionBar().setTitle("Import Opml");
         ((ActionBarActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         return rootView;
     }
@@ -237,14 +235,18 @@ public class  OpmlImportFragment extends BaseFragment implements BaseNavigation 
     }
 
 
-    private void enableProgressView(boolean b) {
-        importButton.setVisibility(b ? View.INVISIBLE : View.VISIBLE);
-        importProgres.setVisibility(b ? View.VISIBLE : View.INVISIBLE);
+    private void enableProgressView(boolean progress) {
+        importButton.setVisibility(progress ? View.INVISIBLE : View.VISIBLE);
+        importProgres.setVisibility(progress  ? View.VISIBLE : View.INVISIBLE);
     }
 
     @Override
     public String getTitle() {
-        return "OpmlImportFragment";
+        Context mContext = getActivity();
+        if (mContext != null) {
+            return mContext.getString(R.string.opml_import_fragment_title);
+        }
+        return "SimpleNews"; //should not be called
     }
 
     @Override

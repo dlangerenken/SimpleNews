@@ -239,6 +239,12 @@ public class FloatingActionMenu {
         Point point = getActionViewCoordinates();
         point.x += mainActionView.getMeasuredWidth() / 2;
         point.y += mainActionView.getMeasuredHeight() / 2;
+        if (point.x < 0){
+            point.x = 0;
+        }
+        if (point.y < 0){
+            point.y = 0;
+        }
         return point;
     }
 

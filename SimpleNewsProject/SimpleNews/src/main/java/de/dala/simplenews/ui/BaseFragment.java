@@ -1,19 +1,31 @@
 package de.dala.simplenews.ui;
+import android.support.v4.app.FragmentManager;
 import android.content.res.Resources;
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 
 import java.lang.reflect.Field;
+import java.util.List;
+
+import de.dala.simplenews.utilities.BaseNavigation;
 
 /**
  * Created by Daniel on 29.08.2014.
  * http://stackoverflow.com/questions/14900738/nested-fragments-disappear-during-transition-animation
  */
-public class BaseFragment extends Fragment{
+public class BaseFragment extends Fragment implements FragmentManager.OnBackStackChangedListener{
     // Arbitrary value; set it to some reasonable default
     private static final int DEFAULT_CHILD_ANIMATION_DURATION = 600;
+    private Fragment currentFragment;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        getChildFragmentManager().addOnBackStackChangedListener(this);
+    }
 
     @Override
     public Animation onCreateAnimation(int transit, boolean enter, int nextAnim) {
@@ -54,5 +66,33 @@ public class BaseFragment extends Fragment{
             e.printStackTrace();
             return defValue;
         }
+    }
+
+    @Override
+    public void onBackStackChanged() {
+        Fragment visibleFragment = getVisibleFragment();
+        if (visibleFragment instanceof NewsOverViewFragment){
+            ((NewsOverViewFragment)visibleFragment).onBackStackChanged();
+        }
+        updateNavigation();
+    }
+
+    public void updateNavigation() {
+        currentFragment = getVisibleFragment();
+        if (currentFragment != null && currentFragment instanceof BaseNavigation) {
+            BaseNavigation navigation = (BaseNavigation) currentFragment;
+            ((MainActivity) getActivity()).updateNavigation(navigation.getNavigationDrawerId(), navigation.getTitle());
+        }
+    }
+
+    public Fragment getVisibleFragment(){
+        FragmentManager fragmentManager = getChildFragmentManager();
+        List<Fragment> fragments = fragmentManager.getFragments();
+        for(Fragment fragment : fragments) {
+            if (fragment != null && fragment.isVisible() && !(fragment instanceof NavigationDrawerFragment)) {
+                return fragment;
+            }
+        }
+        return null;
     }
 }

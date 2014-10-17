@@ -2,29 +2,53 @@
 <pre-dex-items>
 
     <item
+        dex="D:\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\pre-dexed\releaseVersion\debug\okhttp-urlconnection-2.0.0-06f71f8a99f26cc880a8adab09ee4e4efa4bf8f9.jar"
+        jar="C:\Users\Daniel\.gradle\caches\modules-2\files-2.1\com.squareup.okhttp\okhttp-urlconnection\2.0.0\afe8399d352713b66e597e9670c741d1e60ae923\okhttp-urlconnection-2.0.0.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="afe8399d352713b66e597e9670c741d1e60ae923"/>
+    <item
         dex="D:\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\pre-dexed\releaseVersion\debug\library-2.4.0-f04fd066cb2942f40899b7b05a2b4e692293b4e4.jar"
         jar="C:\Users\Daniel\.gradle\caches\modules-2\files-2.1\com.nineoldandroids\library\2.4.0\e9b63380f3a242dbdbf103a2355ad7e43bad17cb\library-2.4.0.jar"
         jumboMode="false"
         revision="19.1.0"
         sha1="e9b63380f3a242dbdbf103a2355ad7e43bad17cb"/>
     <item
-        dex="D:\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\pre-dexed\releaseVersion\release\classes-beb105f475fd28b988ea4033a7dc952e5018fe60.jar"
+        dex="D:\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\pre-dexed\releaseVersion\debug\crouton-1.8.5-8962f08e20eae1f7b09651faa0d40bc7e148fd62.jar"
+        jar="C:\Users\Daniel\.gradle\caches\modules-2\files-2.1\de.keyboardsurfer.android.widget\crouton\1.8.5\f085933fd4fad9693229d105d6d6d01fa90bb599\crouton-1.8.5.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="f085933fd4fad9693229d105d6d6d01fa90bb599"/>
+    <item
+        dex="D:\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\pre-dexed\releaseVersion\debug\classes-97c5629fb4a102df642ca229908cc687506e87a2.jar"
+        jar="D:\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\exploded-aar\com.nhaarman.listviewanimations\lib-manipulation\3.1.0\classes.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="5660e4bf78904137e90e62a5d4cc2e987258f02c"/>
+    <item
+        dex="D:\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\pre-dexed\releaseVersion\debug\classes-beb105f475fd28b988ea4033a7dc952e5018fe60.jar"
         jar="D:\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\exploded-aar\SimpleNewsProject\feeds\unspecified\classes.jar"
         jumboMode="false"
         revision="19.1.0"
-        sha1="4fb0eb4b1edde685d9dfb4df74640fec6cb7133d"/>
+        sha1="673a42c3b5fcb71dd72e05752a03ccf90444f403"/>
+    <item
+        dex="D:\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\pre-dexed\releaseVersion\debug\okhttp-2.0.0-b7ea36f2743e295466ec6a45f210977449cfeed8.jar"
+        jar="C:\Users\Daniel\.gradle\caches\modules-2\files-2.1\com.squareup.okhttp\okhttp\2.0.0\4c8d1536dba3812cc1592090dc20c47a4ed3c35e\okhttp-2.0.0.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="4c8d1536dba3812cc1592090dc20c47a4ed3c35e"/>
+    <item
+        dex="D:\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\pre-dexed\releaseVersion\debug\crashlytics-1.1.13-3e6e3c0a3613ea3aad63ca7a17c0ab7f40bb27fe.jar"
+        jar="C:\Users\Daniel\.gradle\caches\modules-2\files-2.1\com.crashlytics.android\crashlytics\1.1.13\e821eafa1bf489a26bdb71f95078c26785b37a1\crashlytics-1.1.13.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="0e821eafa1bf489a26bdb71f95078c26785b37a1"/>
     <item
         dex="D:\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\pre-dexed\releaseVersion\debug\classes-fd8fcff610f2aaeab888eec9a1399a0b2496c67d.jar"
         jar="D:\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\exploded-aar\com.astuetz\pagerslidingtabstrip\1.0.1\classes.jar"
         jumboMode="false"
         revision="19.1.0"
         sha1="7912610ed96381c25c36d986eba422731b9641b6"/>
-    <item
-        dex="D:\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\pre-dexed\releaseVersion\debug\library-2.6.0-43a87f0889ad6195c6bacf70b07a1de92b883bf2.jar"
-        jar="C:\Users\Daniel\.gradle\caches\modules-2\files-2.1\com.nhaarman.listviewanimations\library\2.6.0\59351ccb0a1631d30358f6a92749a072f2df7602\library-2.6.0.jar"
-        jumboMode="false"
-        revision="19.1.0"
-        sha1="59351ccb0a1631d30358f6a92749a072f2df7602"/>
     <item
         dex="D:\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\pre-dexed\releaseVersion\debug\jdom2-2.0.5-795b1d649c652a8d70073efe02ca65e26c1170c7.jar"
         jar="C:\Users\Daniel\.gradle\caches\modules-2\files-2.1\org.jdom\jdom2\2.0.5\2001db51c131e555bafdb77fc52af6a9408c505e\jdom2-2.0.5.jar"
@@ -62,12 +86,6 @@
         revision="19.1.0"
         sha1="f1678f81f938d991e46e194eacf1f224ffbf970f"/>
     <item
-        dex="D:\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\pre-dexed\releaseVersion\debug\crouton-1.8.4-422a076fdfad433d4ab75a13c1618fc74ca2ba43.jar"
-        jar="C:\Users\Daniel\.gradle\caches\modules-2\files-2.1\de.keyboardsurfer.android.widget\crouton\1.8.4\c2544779f1579b0fd6e81590812fcdea034e6a69\crouton-1.8.4.jar"
-        jumboMode="false"
-        revision="19.1.0"
-        sha1="c2544779f1579b0fd6e81590812fcdea034e6a69"/>
-    <item
         dex="D:\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\pre-dexed\releaseVersion\debug\bitlyj-2.0.0-bb190e55c03927fbea537f9e01a26afd9926dde7.jar"
         jar="C:\Users\Daniel\.gradle\caches\modules-2\files-2.1\com.rosaloves\bitlyj\2.0.0\4556d1395fb808de976eaa4c110d86c5a30a9778\bitlyj-2.0.0.jar"
         jumboMode="false"
@@ -86,16 +104,22 @@
         revision="19.1.0"
         sha1="3499ceba05ca1f6037c6a2fad73df8f636224a28"/>
     <item
+        dex="D:\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\pre-dexed\releaseVersion\debug\okio-1.0.0-d680e3f2a1f1562d55d9018550ea71e3dc4a7687.jar"
+        jar="C:\Users\Daniel\.gradle\caches\modules-2\files-2.1\com.squareup.okio\okio\1.0.0\2534c458682c73f5b9871131ab3098d3f987ca3\okio-1.0.0.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="02534c458682c73f5b9871131ab3098d3f987ca3"/>
+    <item
         dex="D:\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\pre-dexed\releaseVersion\debug\classes-132e214e1911b49340d0a325bfe9b0d68e0bbe44.jar"
         jar="D:\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\exploded-aar\com.mcxiaoke.volley\library\1.0.6\classes.jar"
         jumboMode="false"
         revision="19.1.0"
         sha1="a89762bbbd7f29b4b555f12961653b11d01c8c79"/>
     <item
-        dex="D:\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\pre-dexed\releaseVersion\debug\crashlytics-1.1.11-1c44e6f2f28a365c9b62bbc4f925509d7aa0eb45.jar"
-        jar="C:\Users\Daniel\.gradle\caches\modules-2\files-2.1\com.crashlytics.android\crashlytics\1.1.11\b8189e9eef2f07fae743e05d7fe7e69daebe98d1\crashlytics-1.1.11.jar"
+        dex="D:\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\pre-dexed\releaseVersion\debug\classes-668a251f72c98f0142903346808c12bdf4616264.jar"
+        jar="D:\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\exploded-aar\com.nhaarman.listviewanimations\lib-core\3.1.0\classes.jar"
         jumboMode="false"
         revision="19.1.0"
-        sha1="b8189e9eef2f07fae743e05d7fe7e69daebe98d1"/>
+        sha1="acf66033b1418ccf9e15c8e77750981e4809c4ea"/>
 
 </pre-dex-items>

@@ -66,7 +66,7 @@ public class RateMyApp {
                                                     + APP_PACKAGE_NAME)
                                     ));
                                 } catch (ActivityNotFoundException e) {
-                                    Toast.makeText(mContext, mContext.getString(R.string.playstore_not_found), Toast.LENGTH_LONG);
+                                    Toast.makeText(mContext, mContext.getString(R.string.playstore_not_found), Toast.LENGTH_LONG).show();
                                 }
                                 dialog.dismiss();
                             }

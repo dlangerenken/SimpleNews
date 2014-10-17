@@ -24,6 +24,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.nhaarman.listviewanimations.ArrayAdapter;
+import com.nhaarman.listviewanimations.itemmanipulation.DynamicListView;
+import com.nhaarman.listviewanimations.itemmanipulation.dragdrop.OnItemMovedListener;
+import com.nhaarman.listviewanimations.itemmanipulation.dragdrop.TouchViewDraggableManager;
 import com.rometools.rome.feed.opml.Opml;
 import com.rometools.rome.io.impl.OPML20Generator;
 import com.rometools.rome.io.FeedException;
@@ -70,6 +73,7 @@ public class CategorySelectionFragment extends BaseFragment implements BaseNavig
     private TextView topTextView;
     private ViewGroup topView;
     private ShareActionProvider shareActionProvider;
+    private MyOnItemLongClickListener myOnItemLongClickListener;
 
     public CategorySelectionFragment() {
     }
@@ -86,8 +90,6 @@ public class CategorySelectionFragment extends BaseFragment implements BaseNavig
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        ((ActionBarActivity) getActivity()).getSupportActionBar().setTitle(getString(R.string.categories_title));
-
         this.categoryClicked = UIUtils.getParent(this, OnCategoryClicked.class);
         if (categoryClicked == null) {
             throw new ClassCastException("No Parent with Interface OnCategoryClicked");
@@ -99,9 +101,20 @@ public class CategorySelectionFragment extends BaseFragment implements BaseNavig
             topTextView.setText(getActivity().getString(R.string.category_add));
             topTextView.setVisibility(View.VISIBLE);
         }
-
         categoryListView = (MyDynamicListView) rootView.findViewById(R.id.listView);
         categoryListView.setDivider(null);
+        categoryListView.enableDragAndDrop();
+        myOnItemLongClickListener = new MyOnItemLongClickListener(categoryListView);
+        categoryListView.setOnItemLongClickListener(myOnItemLongClickListener);
+        categoryListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if (isSelected()){
+                    onListItemCheck(position);
+                }
+            }
+        });
+        categoryListView.setDraggableManager(new TouchViewDraggableManager(R.id.list_row_draganddrop_touchview));
         categoryListView.setAdditionalOnLongItemClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
@@ -109,9 +122,29 @@ public class CategorySelectionFragment extends BaseFragment implements BaseNavig
                 return adapter.getSelectedCount() > 1;
             }
         });
-
         initAdapter();
         return rootView;
+    }
+
+    public boolean isSelected(){
+        return adapter.getSelectedCount() > 0;
+    }
+
+    private static class MyOnItemLongClickListener implements AdapterView.OnItemLongClickListener {
+
+        private final DynamicListView mListView;
+
+        MyOnItemLongClickListener(final DynamicListView listView) {
+            mListView = listView;
+        }
+
+        @Override
+        public boolean onItemLongClick(final AdapterView<?> parent, final View view, final int position, final long id) {
+            if (mListView != null) {
+                mListView.startDragging(position - mListView.getHeaderViewsCount());
+            }
+            return true;
+        }
     }
 
     @Override
@@ -278,7 +311,11 @@ public class CategorySelectionFragment extends BaseFragment implements BaseNavig
 
     @Override
     public String getTitle() {
-        return "CategorySelectionFragment";
+        Context context = getActivity();
+        if (context != null) {
+            return String.format(context.getString(R.string.category_selection_fragment_title));
+        }
+        return "SimpleNews"; //default
     }
 
     @Override
@@ -296,7 +333,6 @@ public class CategorySelectionFragment extends BaseFragment implements BaseNavig
 
     private class CategoryListAdapter extends ArrayAdapter<Category> {
 
-        private int recentChangedViewId = -1;
         private Context context;
         private IDatabaseHandler database;
         private SparseBooleanArray mSelectedItemIds;
@@ -360,11 +396,10 @@ public class CategorySelectionFragment extends BaseFragment implements BaseNavig
 
         @Override
         public void swapItems(int positionOne, int positionTwo) {
-            Category temp = getItem(positionOne);
-            set(positionOne, getItem(positionTwo));
-            set(positionTwo, temp);
+            super.swapItems(positionOne, positionTwo);
             Category one = getItem(positionOne);
             Category two = getItem(positionTwo);
+
             one.setOrder(positionOne);
             two.setOrder(positionTwo);
             database.updateCategory(one);
@@ -377,7 +412,6 @@ public class CategorySelectionFragment extends BaseFragment implements BaseNavig
         }
 
         public void toggleSelection(int position) {
-            recentChangedViewId = position;
             selectView(position, !mSelectedItemIds.get(position));
         }
 
@@ -400,10 +434,16 @@ public class CategorySelectionFragment extends BaseFragment implements BaseNavig
         }
 
         public void removeSelection() {
-            mSelectedItemIds = new SparseBooleanArray();
-            if (recentChangedViewId > -1) {
-                switchBackgroundOfView(recentChangedViewId, categoryListView.getChildAt(recentChangedViewId));
+            for (int i = 0; i < mSelectedItemIds.size(); i++) {
+                if (mSelectedItemIds.valueAt(i)) {
+                    int key = mSelectedItemIds.keyAt(i);
+                    if (key > -1) {
+                        mSelectedItemIds.put(key, false);
+                        switchBackgroundOfView(key, categoryListView.getChildAt(key));
+                    }
+                }
             }
+            mSelectedItemIds = new SparseBooleanArray();
         }
 
         class ViewHolder {

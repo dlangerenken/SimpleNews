@@ -5,7 +5,7 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.AdapterView;
 
-import com.nhaarman.listviewanimations.widget.DynamicListView;
+import com.nhaarman.listviewanimations.itemmanipulation.DynamicListView;
 
 /**
  * The DynamicListView is an extension of {@link ListView} that supports cell dragging
@@ -53,33 +53,29 @@ public class MyDynamicListView extends DynamicListView {
                     return true;
                 }
             }
-            return first.onItemLongClick(arg0, arg1, pos, id);
+            if (first != null) {
+                return first.onItemLongClick(arg0, arg1, pos, id);
+            }
+            return true;
         }
     };
 
     public MyDynamicListView(Context context) {
         super(context);
-        super.init(context);
-        first = getOnItemLongClickListener();
-        super.setOnItemLongClickListener(mOnItemLongClickListener);
     }
 
     public MyDynamicListView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        super.init(context);
-        first = getOnItemLongClickListener();
-        super.setOnItemLongClickListener(mOnItemLongClickListener);
     }
 
     public MyDynamicListView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        super.init(context);
-        first = getOnItemLongClickListener();
-        super.setOnItemLongClickListener(mOnItemLongClickListener);
     }
 
     public void setAdditionalOnLongItemClickListener(OnItemLongClickListener additionalListener) {
+        first = getOnItemLongClickListener();
         this.mAdditionalOnLongItemClickListener = additionalListener;
+        setOnItemLongClickListener(mOnItemLongClickListener);
     }
 
 }

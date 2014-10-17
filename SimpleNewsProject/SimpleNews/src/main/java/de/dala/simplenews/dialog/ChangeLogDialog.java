@@ -18,7 +18,13 @@ import it.gmariotti.changelibs.library.view.ChangeLogListView;
  */
 public class ChangeLogDialog extends DialogFragment {
 
+    private DialogInterface mDialogInterface;
+
     public ChangeLogDialog() {
+    }
+
+    public void setDialogInterface(DialogInterface dialogInterface) {
+        mDialogInterface = dialogInterface;
     }
 
     @Override
@@ -27,11 +33,9 @@ public class ChangeLogDialog extends DialogFragment {
         LayoutInflater layoutInflater = (LayoutInflater) getActivity().getSystemService(
                 Context.LAYOUT_INFLATER_SERVICE);
         ChangeLogListView chgList = (ChangeLogListView) layoutInflater.inflate(R.layout.changelog_fragment_dialog, null);
-
-        return LightAlertDialog.Builder.create(getActivity())
+        AlertDialog dialog = LightAlertDialog.Builder.create(getActivity())
                 .setTitle(R.string.changelog_title)
-                .setView(chgList)
-                .setPositiveButton(R.string.about_ok,
+                .setView(chgList).setPositiveButton(R.string.about_ok,
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
                                 dialog.dismiss();
@@ -39,5 +43,15 @@ public class ChangeLogDialog extends DialogFragment {
                         }
                 )
                 .create();
+        dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogInterface dialog) {
+                        if (mDialogInterface != null){
+                            mDialogInterface.dismiss();
+                        }
+                    }
+                });
+
+        return dialog;
     }
 }

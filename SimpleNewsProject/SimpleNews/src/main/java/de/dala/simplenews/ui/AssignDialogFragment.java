@@ -4,12 +4,9 @@ package de.dala.simplenews.ui;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
-import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -84,8 +81,8 @@ public class AssignDialogFragment extends DialogFragment implements BaseNavigati
 
     @Override
     public String getTitle() {
-        return "";
-    }
+        return "AssignDialogFragment";
+    } // should not be called
 
     @Override
     public int getNavigationDrawerId() {

@@ -183,17 +183,7 @@ public class NavigationDrawerFragment extends Fragment implements FragmentManage
             PrefUtilities.getInstance().setUserLearnedDrawer(true);
         }
         updateDrawerToggle();
-    }
-
-    // Defer code dependent on restoration of previous instance state.
-    public void updateDrawerToggle(boolean drawerIndicatorEnabled) {
-        mDrawerLayout.post(new Runnable() {
-            @Override
-            public void run() {
-                mDrawerToggle.syncState();
-            }
-        });
-        mDrawerToggle.setDrawerIndicatorEnabled(drawerIndicatorEnabled);
+        setActionBarArrowDependingOnFragmentsBackStack();
     }
 
     // Defer code dependent on restoration of previous instance state.
@@ -234,8 +224,6 @@ public class NavigationDrawerFragment extends Fragment implements FragmentManage
     }
 
     private void selectItem(NavDrawerItem item) {
-        //checkItem(position, true);
-
         if (mDrawerLayout != null) {
             mDrawerLayout.closeDrawer(mFragmentContainerView);
         }
@@ -312,7 +300,7 @@ public class NavigationDrawerFragment extends Fragment implements FragmentManage
         ActionBar actionBar = getActionBar();
         actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-        actionBar.setTitle(R.string.app_name);
+        //actionBar.setTitle(R.string.app_name);
     }
 
     private ActionBar getActionBar() {

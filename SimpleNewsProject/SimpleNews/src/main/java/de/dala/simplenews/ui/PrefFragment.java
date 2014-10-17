@@ -4,6 +4,7 @@ package de.dala.simplenews.ui;
  * Created by Daniel on 22.04.2014.
  */
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.preference.PreferenceFragment;
@@ -39,12 +40,16 @@ public class PrefFragment extends PreferenceFragment implements BaseNavigation {
 
     @Override
     public String getTitle() {
-        return null;
+        Context mContext = getActivity();
+        if (mContext != null) {
+            return mContext.getString(R.string.pref_fragment_title);
+        }
+        return "SimpleNews"; // Should not be called
     }
 
     @Override
     public int getNavigationDrawerId() {
-        return 0;
+        return NavigationDrawerFragment.SETTINGS;
     }
 }
 

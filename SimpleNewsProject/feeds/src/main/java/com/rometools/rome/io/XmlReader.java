@@ -16,6 +16,9 @@
  */
 package com.rometools.rome.io;
 
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.OkUrlFactory;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -214,7 +217,7 @@ public class XmlReader extends Reader {
      *
      */
     public XmlReader(final URL url) throws IOException {
-        this(url.openConnection());
+        this(new OkUrlFactory(new OkHttpClient()).open(url));
     }
 
     /**
@@ -278,136 +281,6 @@ public class XmlReader extends Reader {
             // Also seen this in the wild, not sure what to make of it. Probably a bad URL
             throw new IOException(iae.toString());
         }
-    }
-
-    /**
-     * Creates a Reader using an InputStream and the associated content-type header.
-     * <p>
-     * First it checks if the stream has BOM. If there is not BOM checks the content-type encoding.
-     * If there is not content-type encoding checks the XML prolog encoding. If there is not XML
-     * prolog encoding uses the default encoding mandated by the content-type MIME type.
-     * <p>
-     * It does a lenient charset encoding detection, check the constructor with the lenient
-     * parameter for details.
-     * <p>
-     *
-     * @param is InputStream to create the reader from.
-     * @param httpContentType content-type header to use for the resolution of the charset encoding.
-     * @throws IOException thrown if there is a problem reading the file.
-     *
-     */
-    public XmlReader(final InputStream is, final String httpContentType) throws IOException {
-        this(is, httpContentType, true);
-    }
-
-    /**
-     * Creates a Reader using an InputStream and the associated content-type header.
-     * <p>
-     * First it checks if the stream has BOM. If there is not BOM checks the content-type encoding.
-     * If there is not content-type encoding checks the XML prolog encoding. If there is not XML
-     * prolog encoding uses the default encoding mandated by the content-type MIME type.
-     * <p>
-     * If lenient detection is indicated and the detection above fails as per specifications it then
-     * attempts the following:
-     * <p>
-     * If the content type was 'text/html' it replaces it with 'text/xml' and tries the detection
-     * again.
-     * <p>
-     * Else if the XML prolog had a charset encoding that encoding is used.
-     * <p>
-     * Else if the content type had a charset encoding that encoding is used.
-     * <p>
-     * Else 'UTF-8' is used.
-     * <p>
-     * If lenient detection is indicated and XmlReaderException is never thrown.
-     * <p>
-     *
-     * @param is InputStream to create the reader from.
-     * @param httpContentType content-type header to use for the resolution of the charset encoding.
-     * @param lenient indicates if the charset encoding detection should be relaxed.
-     * @param defaultEncoding default encoding to use if one cannot be detected.
-     * @throws IOException thrown if there is a problem reading the file.
-     * @throws XmlReaderException thrown if the charset encoding could not be determined according
-     *             to the specs.
-     *
-     */
-    public XmlReader(final InputStream is, final String httpContentType, final boolean lenient, final String defaultEncoding) throws IOException {
-        if (defaultEncoding == null) {
-            this.defaultEncoding = staticDefaultEncoding;
-        } else {
-            this.defaultEncoding = defaultEncoding;
-        }
-        try {
-            doHttpStream(is, httpContentType, lenient);
-        } catch (final XmlReaderException ex) {
-            if (!lenient) {
-                throw ex;
-            } else {
-                doLenientDetection(httpContentType, ex);
-            }
-        }
-    }
-
-    /**
-     * Creates a Reader using an InputStream and the associated content-type header.
-     * <p>
-     * First it checks if the stream has BOM. If there is not BOM checks the content-type encoding.
-     * If there is not content-type encoding checks the XML prolog encoding. If there is not XML
-     * prolog encoding uses the default encoding mandated by the content-type MIME type.
-     * <p>
-     * If lenient detection is indicated and the detection above fails as per specifications it then
-     * attempts the following:
-     * <p>
-     * If the content type was 'text/html' it replaces it with 'text/xml' and tries the detection
-     * again.
-     * <p>
-     * Else if the XML prolog had a charset encoding that encoding is used.
-     * <p>
-     * Else if the content type had a charset encoding that encoding is used.
-     * <p>
-     * Else 'UTF-8' is used.
-     * <p>
-     * If lenient detection is indicated and XmlReaderException is never thrown.
-     * <p>
-     *
-     * @param is InputStream to create the reader from.
-     * @param httpContentType content-type header to use for the resolution of the charset encoding.
-     * @param lenient indicates if the charset encoding detection should be relaxed.
-     * @throws IOException thrown if there is a problem reading the file.
-     * @throws XmlReaderException thrown if the charset encoding could not be determined according
-     *             to the specs.
-     *
-     */
-    public XmlReader(final InputStream is, final String httpContentType, final boolean lenient) throws IOException {
-        this(is, httpContentType, lenient, null);
-    }
-
-    /**
-     * Returns the default encoding to use if none is set in HTTP content-type, XML prolog and the
-     * rules based on content-type are not adequate.
-     * <p/>
-     * If it is NULL the content-type based rules are used.
-     * <p/>
-     *
-     * @return the default encoding to use.
-     */
-    public static String getDefaultEncoding() {
-        return staticDefaultEncoding;
-    }
-
-    /**
-     * Sets the default encoding to use if none is set in HTTP content-type, XML prolog and the
-     * rules based on content-type are not adequate.
-     * <p/>
-     * If it is set to NULL the content-type based rules are used.
-     * <p/>
-     * By default it is NULL.
-     * <p/>
-     *
-     * @param encoding charset encoding to default to.
-     */
-    public static void setDefaultEncoding(final String encoding) {
-        staticDefaultEncoding = encoding;
     }
 
     /**

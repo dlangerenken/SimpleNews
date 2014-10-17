@@ -11,9 +11,10 @@ import android.widget.AbsListView;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
-import com.nhaarman.listviewanimations.ListViewSetter;
-import com.nhaarman.listviewanimations.itemmanipulation.ExpandCollapseListener;
+import com.nhaarman.listviewanimations.itemmanipulation.expandablelistitem.ExpandableListItemAdapter;
 import com.nhaarman.listviewanimations.util.AdapterViewUtil;
+import com.nhaarman.listviewanimations.util.ListViewWrapper;
+import com.nhaarman.listviewanimations.util.ListViewWrapperSetter;
 import com.nineoldandroids.animation.Animator;
 import com.nineoldandroids.animation.AnimatorListenerAdapter;
 import com.nineoldandroids.animation.ValueAnimator;
@@ -27,7 +28,7 @@ import java.util.Set;
  * An {@link com.nhaarman.listviewanimations.ArrayAdapter} which allows items to be expanded using an animation.
  */
 @SuppressWarnings("UnusedDeclaration")
-public abstract class ExpandableGridItemCursorAdapter extends CursorAdapter implements ListViewSetter {
+public abstract class ExpandableGridItemCursorAdapter extends CursorAdapter implements ListViewWrapperSetter {
 
     private static final int DEFAULTTITLEPARENTRESID = 10000;
     private static final int DEFAULTCONTENTPARENTRESID = 10001;
@@ -41,8 +42,9 @@ public abstract class ExpandableGridItemCursorAdapter extends CursorAdapter impl
     private int mLimit;
 
     private AbsListView mAbsListView;
+    private ListViewWrapper mListViewWrapper;
 
-    private ExpandCollapseListener mExpandCollapseListener;
+    private ExpandableListItemAdapter.ExpandCollapseListener mExpandCollapseListener;
 
     /**
      * Creates a new {@link ExpandableGridItemCursorAdapter} with the specified list,
@@ -55,6 +57,12 @@ public abstract class ExpandableGridItemCursorAdapter extends CursorAdapter impl
         mContentParentResId = DEFAULTCONTENTPARENTRESID;
 
         mExpandedIds = new ArrayList<Long>();
+    }
+
+    @SuppressWarnings("NullableProblems")
+    @Override
+    public void setListViewWrapper(final ListViewWrapper listViewWrapper) {
+        mListViewWrapper = listViewWrapper;
     }
 
     /**
@@ -82,7 +90,6 @@ public abstract class ExpandableGridItemCursorAdapter extends CursorAdapter impl
         mExpandedIds = new ArrayList<Long>();
     }
 
-    @Override
     public void setAbsListView(final AbsListView listView) {
         mAbsListView = listView;
     }
@@ -115,9 +122,9 @@ public abstract class ExpandableGridItemCursorAdapter extends CursorAdapter impl
     }
 
     /**
-     * Set the {@link com.nhaarman.listviewanimations.itemmanipulation.ExpandCollapseListener} that should be notified of expand / collapse events.
+     * Set the {@link com.nhaarman.listviewanimations.itemmanipulation.expandablelistitem} that should be notified of expand / collapse events.
      */
-    public void setExpandCollapseListener(final ExpandCollapseListener expandCollapseListener) {
+    public void setExpandCollapseListener(final ExpandableListItemAdapter.ExpandCollapseListener expandCollapseListener) {
         mExpandCollapseListener = expandCollapseListener;
     }
 
@@ -330,10 +337,14 @@ public abstract class ExpandableGridItemCursorAdapter extends CursorAdapter impl
     }
 
     private View findViewForPosition(final int position) {
+        if (mListViewWrapper == null) {
+            throw new IllegalStateException("Call setAbsListView on this ExpanableListItemAdapter!");
+        }
+
         View result = null;
-        for (int i = 0; i < mAbsListView.getChildCount() && result == null; i++) {
-            View childView = mAbsListView.getChildAt(i);
-            if (AdapterViewUtil.getPositionForView(mAbsListView, childView) == position) {
+        for (int i = 0; i < mListViewWrapper.getChildCount() && result == null; i++) {
+            View childView = mListViewWrapper.getChildAt(i);
+            if (childView != null && AdapterViewUtil.getPositionForView(mListViewWrapper, childView) == position) {
                 result = childView;
             }
         }
@@ -372,11 +383,22 @@ public abstract class ExpandableGridItemCursorAdapter extends CursorAdapter impl
 
     @Override
     public long getItemId(int position){
+        if (!mCursor.isClosed()) {
+            return -1;
+        }
         Cursor cursor = (Cursor)getItem(position);
+        if (cursor.isClosed()){
+            return -1;
+        }
+
         return cursor.getLong(0);
     }
 
     private void toggle(final View contentParent) {
+        if (mListViewWrapper == null) {
+            throw new IllegalStateException("No ListView set!");
+        }
+
         boolean isVisible = contentParent.getVisibility() == View.VISIBLE;
         boolean shouldCollapseOther = !isVisible && mLimit > 0 && mExpandedIds.size() >= mLimit;
         if (shouldCollapseOther) {
@@ -405,7 +427,7 @@ public abstract class ExpandableGridItemCursorAdapter extends CursorAdapter impl
             }
 
         } else {
-            ExpandCollapseHelper.animateExpanding(contentParent, mAbsListView);
+            ExpandCollapseHelper.animateExpanding(contentParent, mListViewWrapper);
             mExpandedIds.add(id);
 
             if (mExpandCollapseListener != null) {
@@ -465,7 +487,7 @@ public abstract class ExpandableGridItemCursorAdapter extends CursorAdapter impl
             animator.start();
         }
 
-        public static void animateExpanding(final View view, final AbsListView listView) {
+        public static void animateExpanding(final View view, final ListViewWrapper listViewWrapper) {
             view.setVisibility(View.VISIBLE);
 
             View parent = (View) view.getParent();
@@ -474,29 +496,31 @@ public abstract class ExpandableGridItemCursorAdapter extends CursorAdapter impl
             view.measure(widthSpec, heightSpec);
 
             ValueAnimator animator = createHeightAnimator(view, 0, view.getMeasuredHeight());
-            animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                final int listViewHeight = listView.getHeight();
-                final int listViewBottomPadding = listView.getPaddingBottom();
-                final View v = findDirectChild(view, listView);
+            animator.addUpdateListener(
+                    new ValueAnimator.AnimatorUpdateListener() {
+                        final int listViewHeight = listViewWrapper.getListView().getHeight();
+                        final int listViewBottomPadding = listViewWrapper.getListView().getPaddingBottom();
+                        final View v = findDirectChild(view, listViewWrapper.getListView());
 
-                @Override
-                public void onAnimationUpdate(final ValueAnimator valueAnimator) {
-                    final int bottom = v.getBottom();
-                    if (bottom > listViewHeight) {
-                        final int top = v.getTop();
-                        if (top > 0) {
-                            listView.smoothScrollBy(Math.min(bottom - listViewHeight + listViewBottomPadding, top), 0);
+                        @Override
+                        public void onAnimationUpdate(final ValueAnimator animation) {
+                            final int bottom = v.getBottom();
+                            if (bottom > listViewHeight) {
+                                final int top = v.getTop();
+                                if (top > 0) {
+                                    listViewWrapper.smoothScrollBy(Math.min(bottom - listViewHeight + listViewBottomPadding, top), 0);
+                                }
+                            }
                         }
                     }
-                }
-            });
+            );
             animator.start();
         }
 
-        private static View findDirectChild(final View view, final AbsListView listView) {
+        private static View findDirectChild(final View view, final ViewGroup listView) {
             View result = view;
             View parent = (View) result.getParent();
-            while (parent != listView) {
+            while (!parent.equals(listView)) {
                 result = parent;
                 parent = (View) result.getParent();
             }

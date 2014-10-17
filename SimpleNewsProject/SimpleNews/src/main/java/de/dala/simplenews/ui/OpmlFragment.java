@@ -52,8 +52,9 @@ public class OpmlFragment extends BaseFragment implements OpmlImportFragment.OnF
     @Override
     public void assignFeeds(List<Feed> feeds) {
         FragmentTransaction t = getChildFragmentManager().beginTransaction();
+        fragment = OpmlAssignFragment.newInstance(feeds);
         t.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_left, R.anim.slide_in_right, R.anim.slide_out_right);
-        t.replace(R.id.container, OpmlAssignFragment.newInstance(feeds), OPML_ASSIGN_TAG);
+        t.replace(R.id.container, fragment, OPML_ASSIGN_TAG);
         t.addToBackStack(null);
         t.commit();
         getActivity().supportInvalidateOptionsMenu();
@@ -61,7 +62,13 @@ public class OpmlFragment extends BaseFragment implements OpmlImportFragment.OnF
 
     @Override
     public String getTitle() {
-        return "OpmlFragment";
+        if (fragment == null){
+            fragment = getVisibleFragment();
+        }
+        if (fragment != null && fragment instanceof BaseNavigation && fragment.isAdded()) {
+            return ((BaseNavigation)fragment).getTitle();
+        }
+        return "SimpleNews"; // Should not be called
     }
 
     @Override

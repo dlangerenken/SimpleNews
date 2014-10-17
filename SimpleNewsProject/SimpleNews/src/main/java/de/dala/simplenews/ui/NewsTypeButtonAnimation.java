@@ -1,21 +1,14 @@
 package de.dala.simplenews.ui;
 
-import android.content.Context;
 import android.os.Handler;
-import android.util.AttributeSet;
-import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
 import android.widget.AbsListView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import circularmenu.FloatingActionMenu;
-import de.dala.simplenews.R;
-import de.dala.simplenews.utilities.UIUtils;
 
 /**
  * Created by Daniel on 16.07.2014.
@@ -49,15 +42,13 @@ public class NewsTypeButtonAnimation  {
                 if (totalItemCount == 0){
                     fadeIn();
                 }
-                if (view.getId() == view.getId()) {
-                    final int currentFirstVisibleItem = view.getFirstVisiblePosition();
-                    if (currentFirstVisibleItem < mLastFirstVisibleItem) {
-                        fadeIn();
-                    } else if (currentFirstVisibleItem > mLastFirstVisibleItem) {
-                        fadeOut();
-                    }
-                    mLastFirstVisibleItem = currentFirstVisibleItem;
+                final int currentFirstVisibleItem = view.getFirstVisiblePosition();
+                if (currentFirstVisibleItem < mLastFirstVisibleItem) {
+                    fadeIn();
+                } else if (currentFirstVisibleItem > mLastFirstVisibleItem) {
+                    fadeOut();
                 }
+                mLastFirstVisibleItem = currentFirstVisibleItem;
             }
 
             @Override

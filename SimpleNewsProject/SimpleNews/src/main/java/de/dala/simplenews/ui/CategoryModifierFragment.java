@@ -1,28 +1,11 @@
 package de.dala.simplenews.ui;
 
-import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Rect;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AlphaAnimation;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-
-import com.nineoldandroids.view.ViewHelper;
-
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 
 import de.dala.simplenews.R;
@@ -30,7 +13,6 @@ import de.dala.simplenews.common.Category;
 import de.dala.simplenews.common.Feed;
 import de.dala.simplenews.database.DatabaseHandler;
 import de.dala.simplenews.utilities.BaseNavigation;
-import de.dala.simplenews.utilities.UIUtils;
 
 /**
  * Created by Daniel on 29.12.13.
@@ -39,7 +21,7 @@ public class CategoryModifierFragment extends BaseFragment implements CategorySe
     private static final String CATEGORY_FEEDS_TAG = "feed";
     private static final String CATEGORY_SELECTION_TAG = "selection";
     private static final String FROM_RSS = "from_rss";
-    private ArrayList<Category> categories;
+
     private boolean fromRSS = false;
     Fragment fragment = null;
 
@@ -61,7 +43,7 @@ public class CategoryModifierFragment extends BaseFragment implements CategorySe
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        categories = new ArrayList<Category>(DatabaseHandler.getInstance().getCategories(false, true, null));
+        ArrayList<Category> categories = new ArrayList<Category>(DatabaseHandler.getInstance().getCategories(false, true, null));
         FragmentTransaction t = getChildFragmentManager().beginTransaction();
         String rssPath = getArguments() != null ? getArguments().getString(FROM_RSS) : null;
         if (rssPath != null) {
@@ -74,6 +56,7 @@ public class CategoryModifierFragment extends BaseFragment implements CategorySe
         }
         t.replace(R.id.container, fragment, CATEGORY_SELECTION_TAG);
         t.commit();
+        setRetainInstance(true);
     }
 
     @Override
@@ -84,10 +67,11 @@ public class CategoryModifierFragment extends BaseFragment implements CategorySe
 
     @Override
     public void onMoreClicked(Category category) {
+        fragment = CategoryFeedsFragment.newInstance(category);
         FragmentTransaction t = getChildFragmentManager().beginTransaction();
         t.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_left, R.anim.slide_in_right, R.anim.slide_out_right);
         t.addToBackStack(null);
-        t.replace(R.id.container, CategoryFeedsFragment.newInstance(category), CATEGORY_FEEDS_TAG);
+        t.replace(R.id.container, fragment, CATEGORY_FEEDS_TAG);
         t.commit();
         getActivity().supportInvalidateOptionsMenu();
     }
@@ -109,7 +93,13 @@ public class CategoryModifierFragment extends BaseFragment implements CategorySe
 
     @Override
     public String getTitle() {
-        return "CategoryModifierFragment";
+        if (fragment == null){
+            fragment = getVisibleFragment();
+        }
+        if (fragment != null && fragment instanceof BaseNavigation && fragment.isAdded()) {
+            return ((BaseNavigation) fragment).getTitle();
+        }
+        return getActivity().getString(R.string.category_modifier_fragment);
     }
 
     @Override

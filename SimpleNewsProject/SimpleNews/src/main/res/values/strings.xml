@@ -106,4 +106,10 @@
     <string name="unread_title">Unread</string>
     <string name="no_feeds_found">No Feeds found</string>
     <string name="no_browser_found">Sorry, no browser found. Please install a browser and try again!</string>
+    <string name="category_feeds_fragment_title">%s: Feeds</string>
+    <string name="category_modifier_fragment">Categories</string>
+    <string name="category_selection_fragment_title">Categories</string>
+    <string name="opml_assign_fragment_title">Assign Opml-Feeds</string>
+    <string name="opml_import_fragment_title">Import Opml</string>
+    <string name="pref_fragment_title">Preferences</string>
 </resources>

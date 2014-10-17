@@ -1,5 +1,9 @@
 package de.dala.simplenews.ui;
 
+import android.content.DialogInterface;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.TransitionDrawable;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
@@ -14,10 +18,9 @@ import java.util.List;
 import de.dala.simplenews.R;
 import de.dala.simplenews.dialog.ChangeLogDialog;
 import de.dala.simplenews.utilities.BaseNavigation;
+import de.dala.simplenews.utilities.ColorManager;
 
 public class MainActivity extends ActionBarActivity implements NavigationDrawerFragment.NavigationDrawerCallbacks, FragmentManager.OnBackStackChangedListener {
-
-    private static String TAG = "MainActivity";
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
@@ -50,6 +53,11 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
                 currentFragment = NewsOverViewFragment.getInstance(NewsOverViewFragment.ALL);
                 transaction.replace(R.id.container, currentFragment).commit();
             }
+        }else{
+            if (savedInstanceState.containsKey("actionbar_color")) {
+                int color = savedInstanceState.getInt("actionbar_color");
+                changeColor(color);
+            }
         }
         getSupportFragmentManager().addOnBackStackChangedListener(this);
         updateNavigation();
@@ -58,7 +66,6 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
     @Override
     public boolean onSupportNavigateUp() {
         currentFragment = getVisibleFragment();
-
         if (currentFragment != null && currentFragment.getChildFragmentManager().getBackStackEntryCount() > 0){
             currentFragment.getChildFragmentManager().popBackStackImmediate();
         }else{
@@ -67,6 +74,21 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
         }
 
         return true;
+    }
+
+    @Override
+    public void onBackPressed() {
+        currentFragment = getVisibleFragment();
+        boolean popped;
+        if (currentFragment != null && currentFragment.getChildFragmentManager().getBackStackEntryCount() > 0){
+            popped = currentFragment.getChildFragmentManager().popBackStackImmediate();
+        }else{
+            //This method is called when the up button is pressed. Just the pop back stack.
+            popped = getSupportFragmentManager().popBackStackImmediate();
+        }
+        if (!popped) {
+            super.onBackPressed();
+        }
     }
 
     @Override
@@ -95,70 +117,87 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
     public void onNavigationDrawerItemSelected(int item) {
         switch (item) {
             case NavigationDrawerFragment.HOME:
-                clearBackStack();
+                clearBackStackKeep(0);
                 currentFragment = NewsOverViewFragment.getInstance(NewsOverViewFragment.ALL);
                 FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
                 transaction.replace(R.id.container, currentFragment).commit();
                 break;
             case NavigationDrawerFragment.FAVORITE:
-                clearBackStack();
+                clearBackStackKeep(0);
                 currentFragment = NewsOverViewFragment.getInstance(NewsOverViewFragment.FAV);
                 transaction = getSupportFragmentManager().beginTransaction();
                 transaction.replace(R.id.container, currentFragment).commit();
                 break;
             case NavigationDrawerFragment.RECENT:
-                clearBackStack();
+                clearBackStackKeep(0);
                 currentFragment = NewsOverViewFragment.getInstance(NewsOverViewFragment.RECENT);
                 transaction = getSupportFragmentManager().beginTransaction();
                 transaction.replace(R.id.container, currentFragment).commit();
                 break;
             case NavigationDrawerFragment.UNREAD:
-                clearBackStack();
+                clearBackStackKeep(0);
                 currentFragment = NewsOverViewFragment.getInstance(NewsOverViewFragment.UNREAD);
                 transaction = getSupportFragmentManager().beginTransaction();
                 transaction.replace(R.id.container, currentFragment).commit();
                 break;
             case NavigationDrawerFragment.CATEGORIES:
+                clearBackStackKeep(1);
                 currentFragment = CategoryModifierFragment.getInstance();
                 transaction = getSupportFragmentManager().beginTransaction();
                 transaction.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_left, R.anim.slide_in_right, R.anim.slide_out_right);
                 transaction.replace(R.id.container, currentFragment).addToBackStack(null).commit();
                 break;
             case NavigationDrawerFragment.SETTINGS:
+                clearBackStackKeep(1);
                 currentFragment = PrefFragment.getInstance();
                 transaction = getSupportFragmentManager().beginTransaction();
                 transaction.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_left, R.anim.slide_in_right, R.anim.slide_out_right);
                 transaction.replace(R.id.container, currentFragment).addToBackStack(null).commit();
                 break;
             case NavigationDrawerFragment.CHANGELOG:
-                DialogFragment dialog = new ChangeLogDialog();
+                ChangeLogDialog dialog = new ChangeLogDialog();
+                dialog.setDialogInterface(new DialogInterface() {
+                    @Override
+                    public void cancel() {
+                        updateNavigation();
+                    }
+
+                    @Override
+                    public void dismiss() {
+                        updateNavigation();
+                    }
+                });
                 dialog.show(getSupportFragmentManager(), "ChangeLog");
                 break;
             case NavigationDrawerFragment.RATING:
                 RateMyApp.showRateDialog(this);
+                // TODO ondismiss
                 break;
             case NavigationDrawerFragment.IMPORT:
+                clearBackStackKeep(1);
                 currentFragment = OpmlFragment.getInstance();
                 transaction = getSupportFragmentManager().beginTransaction();
                 transaction.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_left, R.anim.slide_in_right, R.anim.slide_out_right);
                 transaction.replace(R.id.container, currentFragment).addToBackStack(null).commit();
                 break;
         }
+        updateNavigation();
     }
 
 
-    private void clearBackStack(){
+    private void clearBackStackKeep(int toKeep){
         FragmentManager manager = getSupportFragmentManager();
-        if (manager.getBackStackEntryCount() > 0) {
-            FragmentManager.BackStackEntry first = manager.getBackStackEntryAt(0);
+        if (manager.getBackStackEntryCount() > toKeep) {
+            FragmentManager.BackStackEntry first = manager.getBackStackEntryAt(toKeep);
             manager.popBackStack(first.getId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
         }
         updateNavigation();
     }
 
-    protected void changeDrawerColor(int newColor) {
-        mNavigationDrawerFragment.changeColor(newColor);
+    private void clearBackStack(){
+        clearBackStackKeep(0);
     }
+
 
 
     public void updateNavigation() {
@@ -166,6 +205,10 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
         if (currentFragment != null && currentFragment instanceof BaseNavigation){
             BaseNavigation navigation = (BaseNavigation) currentFragment;
             mNavigationDrawerFragment.checkItem(navigation.getNavigationDrawerId());
+            ActionBar actionBar = getSupportActionBar();
+            if (actionBar != null) {
+                actionBar.setTitle(navigation.getTitle());
+            }
         }
     }
 
@@ -173,7 +216,7 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
         FragmentManager fragmentManager = getSupportFragmentManager();
         List<Fragment> fragments = fragmentManager.getFragments();
         for(Fragment fragment : fragments){
-            if(fragment != null && fragment.isVisible()) {
+            if(fragment != null && fragment.isAdded() && !(fragment instanceof NavigationDrawerFragment)) {
                 return fragment;
             }
         }
@@ -182,10 +225,47 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
 
     @Override
     public void onBackStackChanged() {
-        updateNavigation();
         Fragment visibleFragment = getVisibleFragment();
         if (visibleFragment instanceof NewsOverViewFragment){
             ((NewsOverViewFragment)visibleFragment).onBackStackChanged();
         }
+        updateNavigation();
     }
+
+    public void updateNavigation(int navigationDrawerId, String title) {
+        mNavigationDrawerFragment.checkItem(navigationDrawerId);
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setTitle(title);
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt("actionbar_color", lastColor);
+    }
+
+    private Drawable oldBackground = null;
+    private int lastColor;
+
+    public void changeColor(int color) {
+        ColorDrawable colorDrawable = new ColorDrawable(color);
+        lastColor = color;
+        if (oldBackground == null) {
+            getSupportActionBar().setBackgroundDrawable(colorDrawable);
+        } else {
+            //getSupportActionBar().setBackgroundDrawable(ld); //BUG otherwise
+            TransitionDrawable td = new TransitionDrawable(new Drawable[]{oldBackground, colorDrawable});
+            getSupportActionBar().setBackgroundDrawable(td);
+            td.startTransition(400);
+        }
+        oldBackground = colorDrawable;
+        changeDrawerColor(color);
+    }
+
+    private void changeDrawerColor(int newColor) {
+        mNavigationDrawerFragment.changeColor(newColor);
+    }
+
 }
