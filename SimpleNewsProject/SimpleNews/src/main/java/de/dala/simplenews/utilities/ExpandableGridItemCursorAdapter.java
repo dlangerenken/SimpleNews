@@ -383,9 +383,10 @@ public abstract class ExpandableGridItemCursorAdapter extends CursorAdapter impl
 
     @Override
     public long getItemId(int position){
-        if (!mCursor.isClosed()) {
+        if (mCursor.isClosed()) {
             return -1;
         }
+
         Cursor cursor = (Cursor)getItem(position);
         if (cursor.isClosed()){
             return -1;

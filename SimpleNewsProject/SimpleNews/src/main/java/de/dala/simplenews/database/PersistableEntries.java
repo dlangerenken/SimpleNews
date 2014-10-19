@@ -2,6 +2,7 @@ package de.dala.simplenews.database;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.CursorIndexOutOfBoundsException;
 import android.database.sqlite.SQLiteDatabase;
 
 import java.util.ArrayList;
@@ -73,20 +74,24 @@ public class PersistableEntries implements IPersistableObject<Entry>{
 
     public static Entry loadFromCursor(Cursor cursor){
         Entry entry = new Entry();
-        entry.setId(cursor.getLong(0));
-        entry.setCategoryId(cursor.getLong(1));
-        entry.setFeedId(cursor.getLong(2));
-        entry.setTitle(cursor.getString(3));
-        entry.setDescription(cursor.getString(4));
-        entry.setDate(cursor.getLong(5));
-        entry.setSrcName(cursor.getString(6));
-        entry.setLink(cursor.getString(7));
-        entry.setShortenedLink(cursor.getString(8));
-        entry.setImageLink(cursor.getString(9));
-        entry.setVisible(cursor.getInt(10) == 1);
-        entry.setVisitedDate(cursor.getLong(11));
-        entry.setFavoriteDate(cursor.getLong(12));
-        entry.setExpanded(cursor.getInt(13) == 1);
+        try {
+            entry.setId(cursor.getLong(0));
+            entry.setCategoryId(cursor.getLong(1));
+            entry.setFeedId(cursor.getLong(2));
+            entry.setTitle(cursor.getString(3));
+            entry.setDescription(cursor.getString(4));
+            entry.setDate(cursor.getLong(5));
+            entry.setSrcName(cursor.getString(6));
+            entry.setLink(cursor.getString(7));
+            entry.setShortenedLink(cursor.getString(8));
+            entry.setImageLink(cursor.getString(9));
+            entry.setVisible(cursor.getInt(10) == 1);
+            entry.setVisitedDate(cursor.getLong(11));
+            entry.setFavoriteDate(cursor.getLong(12));
+            entry.setExpanded(cursor.getInt(13) == 1);
+        }catch (CursorIndexOutOfBoundsException e){
+            //ignore for this time...
+        }
         return entry;
     }
 

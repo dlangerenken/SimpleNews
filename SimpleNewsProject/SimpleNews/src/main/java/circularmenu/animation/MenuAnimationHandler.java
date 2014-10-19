@@ -3,6 +3,7 @@
  */
 package circularmenu.animation;
 import android.graphics.Point;
+import android.os.Handler;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import com.nineoldandroids.animation.Animator;
@@ -60,24 +61,28 @@ public abstract class MenuAnimationHandler {
      * @param subActionItem
      * @param actionType
      */
-    protected void restoreSubActionViewAfterAnimation(FloatingActionMenu.Item subActionItem, ActionType actionType) {
-        FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) subActionItem.view.getLayoutParams();
-        ViewHelper.setTranslationX(subActionItem.view, 0);
-        ViewHelper.setTranslationY(subActionItem.view, 0);
-        ViewHelper.setRotation(subActionItem.view, 0);
-        ViewHelper.setScaleX(subActionItem.view, 1);
-        ViewHelper.setScaleY(subActionItem.view, 1);
-        ViewHelper.setAlpha(subActionItem.view, 1);
+    protected void restoreSubActionViewAfterAnimation(final FloatingActionMenu.Item subActionItem, final ActionType actionType) {
+        new Handler().post(new Runnable() {
+            public void run() {
+                FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) subActionItem.view.getLayoutParams();
+                ViewHelper.setTranslationX(subActionItem.view, 0);
+                ViewHelper.setTranslationY(subActionItem.view, 0);
+                ViewHelper.setRotation(subActionItem.view, 0);
+                ViewHelper.setScaleX(subActionItem.view, 1);
+                ViewHelper.setScaleY(subActionItem.view, 1);
+                ViewHelper.setAlpha(subActionItem.view, 1);
 
-        if (actionType == ActionType.OPENING) {
-            params.setMargins(subActionItem.x, subActionItem.y, 0, 0);
-            subActionItem.view.setLayoutParams(params);
-        } else if (actionType == ActionType.CLOSING) {
-            Point center = menu.getActionViewCenter();
-            params.setMargins(center.x - subActionItem.width / 2, center.y - subActionItem.height / 2, 0, 0);
-            subActionItem.view.setLayoutParams(params);
-            ((ViewGroup) menu.getActivityContentView()).removeView(subActionItem.view);
-        }
+                if (actionType == ActionType.OPENING) {
+                    params.setMargins(subActionItem.x, subActionItem.y, 0, 0);
+                    subActionItem.view.setLayoutParams(params);
+                } else if (actionType == ActionType.CLOSING) {
+                    Point center = menu.getActionViewCenter();
+                    params.setMargins(center.x - subActionItem.width / 2, center.y - subActionItem.height / 2, 0, 0);
+                    subActionItem.view.setLayoutParams(params);
+                    ((ViewGroup) menu.getActivityContentView()).removeView(subActionItem.view);
+                }
+            }
+        });
     }
 
     /**
@@ -93,7 +98,12 @@ public abstract class MenuAnimationHandler {
 
         @Override
         public void onAnimationEnd(Animator animation) {
-            setAnimating(false);
+            new Handler().post(new Runnable() {
+                                   public void run() {
+                                       setAnimating(false);
+                                   }
+                               }
+            );
         }
 
         @Override

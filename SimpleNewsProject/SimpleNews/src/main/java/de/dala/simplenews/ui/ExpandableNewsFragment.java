@@ -279,7 +279,12 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
         boolean hasCheckedItems = myExpandableListItemAdapter.getSelectedCount() > 0;
         if (hasCheckedItems && mActionMode == null) {
             // there are some selected items, start the actionMode
-            mActionMode = ((ActionBarActivity) getActivity()).startSupportActionMode(new ActionModeCallBack());
+            new Handler().post(new Runnable() {
+                @Override
+                public void run() {
+                    mActionMode = ((ActionBarActivity) getActivity()).startSupportActionMode(new ActionModeCallBack());
+                }
+            });
         } else if (!hasCheckedItems && mActionMode != null) {
             // there no selected items, finish the actionMode
             mActionMode.finish();

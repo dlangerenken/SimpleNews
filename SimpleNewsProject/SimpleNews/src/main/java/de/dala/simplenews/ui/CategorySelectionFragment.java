@@ -3,6 +3,7 @@ package de.dala.simplenews.ui;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
@@ -103,7 +104,10 @@ public class CategorySelectionFragment extends BaseFragment implements BaseNavig
         }
         categoryListView = (MyDynamicListView) rootView.findViewById(R.id.listView);
         categoryListView.setDivider(null);
-        categoryListView.enableDragAndDrop();
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+            // only for gingerbread and newer versions
+            categoryListView.enableDragAndDrop();
+        }
         myOnItemLongClickListener = new MyOnItemLongClickListener(categoryListView);
         categoryListView.setOnItemLongClickListener(myOnItemLongClickListener);
         categoryListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {

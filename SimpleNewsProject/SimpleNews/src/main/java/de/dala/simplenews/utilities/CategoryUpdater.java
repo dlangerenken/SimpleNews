@@ -258,6 +258,8 @@ public class CategoryUpdater {
                     e.printStackTrace();
                 } catch (IOException e) {
                     e.printStackTrace();
+                } catch (IllegalArgumentException e){
+                    e.printStackTrace();
                 }
             }
 
