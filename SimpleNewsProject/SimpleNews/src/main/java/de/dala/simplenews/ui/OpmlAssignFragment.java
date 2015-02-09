@@ -242,7 +242,6 @@ public class OpmlAssignFragment extends BaseFragment implements ViewPager.OnPage
 
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-            changeOverflowIcon();
             // inflate contextual menu
             mode.getMenuInflater().inflate(R.menu.contextual_opml_import_menu, menu);
             return true;
@@ -251,10 +250,6 @@ public class OpmlAssignFragment extends BaseFragment implements ViewPager.OnPage
         @Override
         public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
             return false;
-        }
-
-        public void changeOverflowIcon() {
-            getActivity().getTheme().applyStyle(R.style.ChangeOverflowToDark, true);
         }
 
         @Override

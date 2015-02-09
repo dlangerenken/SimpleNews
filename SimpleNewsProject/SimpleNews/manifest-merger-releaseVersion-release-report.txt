@@ -1,0 +1,106 @@
+-- Merging decision tree log ---
+manifest
+ADDED from AndroidManifest.xml:2:1
+	xmlns:android
+		ADDED from AndroidManifest.xml:2:11
+	package
+		ADDED from AndroidManifest.xml:3:5
+	android:versionName
+		ADDED from AndroidManifest.xml:5:5
+	android:versionCode
+		ADDED from AndroidManifest.xml:4:5
+		INJECTED from AndroidManifest.xml:0:0
+		INJECTED from AndroidManifest.xml:0:0
+uses-permission#android.permission.INTERNET
+ADDED from AndroidManifest.xml:7:5
+MERGED from SimpleNewsProject:feeds:unspecified:11:5
+	android:name
+		ADDED from AndroidManifest.xml:7:22
+application
+ADDED from AndroidManifest.xml:9:5
+MERGED from com.astuetz:pagerslidingtabstrip:1.0.1:4:5
+MERGED from com.android.support:support-v4:21.0.3:16:5
+MERGED from com.github.gabrielemariotti.changeloglib:library:1.5.1:11:5
+MERGED from com.github.castorflex.smoothprogressbar:library:0.5.2:4:5
+MERGED from com.nhaarman.listviewanimations:lib-core:3.1.0:26:5
+MERGED from com.nhaarman.listviewanimations:lib-manipulation:3.1.0:26:5
+MERGED from com.etsy.android.grid:library:1.0.5:6:5
+MERGED from com.android.support:support-v4:21.0.3:16:5
+MERGED from com.android.support:support-v13:21.0.3:16:5
+MERGED from com.android.support:support-v4:21.0.3:16:5
+MERGED from com.android.support:appcompat-v7:21.0.3:16:5
+MERGED from com.android.support:support-v4:21.0.3:16:5
+	android:label
+		ADDED from AndroidManifest.xml:13:9
+	android:allowBackup
+		ADDED from AndroidManifest.xml:11:9
+	android:icon
+		ADDED from AndroidManifest.xml:12:9
+	android:theme
+		ADDED from AndroidManifest.xml:14:9
+	android:name
+		ADDED from AndroidManifest.xml:10:9
+activity#de.dala.simplenews.ui.MainActivity
+ADDED from AndroidManifest.xml:15:9
+	android:label
+		ADDED from AndroidManifest.xml:18:13
+	android:name
+		ADDED from AndroidManifest.xml:17:13
+intent-filter#android.intent.action.MAIN+android.intent.category.LAUNCHER
+ADDED from AndroidManifest.xml:19:13
+action#android.intent.action.MAIN
+ADDED from AndroidManifest.xml:20:17
+	android:name
+		ADDED from AndroidManifest.xml:20:25
+category#android.intent.category.LAUNCHER
+ADDED from AndroidManifest.xml:21:17
+	android:name
+		ADDED from AndroidManifest.xml:21:27
+intent-filter#android.intent.action.VIEW+android.intent.category.BROWSABLE+android.intent.category.DEFAULT
+ADDED from AndroidManifest.xml:24:13
+action#android.intent.action.VIEW
+ADDED from AndroidManifest.xml:25:17
+	android:name
+		ADDED from AndroidManifest.xml:25:25
+category#android.intent.category.DEFAULT
+ADDED from AndroidManifest.xml:27:17
+	android:name
+		ADDED from AndroidManifest.xml:27:27
+category#android.intent.category.BROWSABLE
+ADDED from AndroidManifest.xml:28:17
+	android:name
+		ADDED from AndroidManifest.xml:28:27
+data
+ADDED from AndroidManifest.xml:30:17
+	android:scheme
+		ADDED from AndroidManifest.xml:30:23
+uses-sdk
+INJECTED from AndroidManifest.xml:0:0 reason: use-sdk injection requested
+MERGED from SimpleNewsProject:feeds:unspecified:7:5
+MERGED from com.astuetz:pagerslidingtabstrip:1.0.1:2:5
+MERGED from com.android.support:support-v4:21.0.3:15:5
+MERGED from com.github.gabrielemariotti.changeloglib:library:1.5.1:7:5
+MERGED from com.android.support:support-v4-preferencefragment:1.0.0:15:5
+MERGED from com.github.castorflex.smoothprogressbar:library:0.5.2:2:5
+MERGED from com.nhaarman.listviewanimations:lib-core:3.1.0:22:5
+MERGED from com.nhaarman.listviewanimations:lib-manipulation:3.1.0:22:5
+MERGED from com.etsy.android.grid:library:1.0.5:4:5
+MERGED from com.android.support:support-v4:21.0.3:15:5
+MERGED from com.android.support:support-v13:21.0.3:15:5
+MERGED from com.android.support:support-v4:21.0.3:15:5
+MERGED from com.android.support:appcompat-v7:21.0.3:15:5
+MERGED from com.android.support:support-v4:21.0.3:15:5
+	android:targetSdkVersion
+		INJECTED from AndroidManifest.xml:0:0
+		INJECTED from AndroidManifest.xml:0:0
+	android:minSdkVersion
+		INJECTED from AndroidManifest.xml:0:0
+		INJECTED from AndroidManifest.xml:0:0
+activity#com.nhaarman.listviewanimations.itemmanipulation.swipedismiss.SwipeTouchListenerTestActivity
+ADDED from com.nhaarman.listviewanimations:lib-manipulation:3.1.0:27:9
+	android:name
+		ADDED from com.nhaarman.listviewanimations:lib-manipulation:3.1.0:27:19
+activity#com.nhaarman.listviewanimations.itemmanipulation.dragdrop.DynamicListViewTestActivity
+ADDED from com.nhaarman.listviewanimations:lib-manipulation:3.1.0:28:9
+	android:name
+		ADDED from com.nhaarman.listviewanimations:lib-manipulation:3.1.0:28:19

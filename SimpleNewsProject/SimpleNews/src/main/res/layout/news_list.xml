@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <android.support.v4.widget.SwipeRefreshLayoutExtended
+    <android.support.v4.widget.SwipeRefreshLayout
         android:id="@+id/ptr_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -21,7 +21,7 @@
             android:layout_marginRight = "2dp"
             app:item_margin="2dp"
             android:stretchMode="columnWidth" />
-    </android.support.v4.widget.SwipeRefreshLayoutExtended>
+    </android.support.v4.widget.SwipeRefreshLayout>
 
         <LinearLayout android:id="@+id/emptyView"
             android:layout_width="match_parent"

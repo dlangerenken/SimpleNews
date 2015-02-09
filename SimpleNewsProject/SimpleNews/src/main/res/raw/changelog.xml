@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog bulletedList="true">
-
+    <changelogversion changeDate="Feb 10, 2015" versionName="0.99">
+        <changelogtext>App materialized (Android 5.0 Design)</changelogtext>
+        <changelogtext>better network communication</changelogtext>
+    </changelogversion>
     <changelogversion changeDate="April 22, 2014" versionName="0.95">
         <changelogtext>Better support for special characters (e.g. german "umlaute")</changelogtext>
         <changelogtext>Better design, less frameworks (abs removed)</changelogtext>

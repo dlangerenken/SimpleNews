@@ -1,7 +1,16 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
+
+    <style name="ActionBar" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
+
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="@style/Theme.AppCompat.Light">
+    <style name="AppTheme" parent="@style/Theme.AppCompat.Light.DarkActionBar">
+        <item name="android:windowActionBarOverlay">true</item>
+        <item name="android:windowActionBar">false</item>
+        <item name="windowActionModeOverlay">true</item>
+        <item name="android:windowActionModeOverlay">true</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowActionBarOverlay">true</item>
         <item name="android:actionOverflowButtonStyle" tools:targetApi="11">@style/OverflowActionBar11</item>
         <item name="actionOverflowButtonStyle">@style/OverflowActionBar</item>
 
@@ -20,10 +29,13 @@
 
     <style name="ContextualBar" parent="android:style/Widget.Holo.ActionMode">
         <item name="actionMenuTextColor">#ffffff</item>
+        <item name="background">@color/textual_background</item>
+        <item name="height">?attr/actionBarSize</item>
     </style>
 
     <style name="ContextualBar14" parent="android:style/Widget.Holo.ActionMode" tools:targetApi="11">
         <item name="android:actionMenuTextColor">#ffffff</item>
+        <item name="android:height">?attr/actionBarSize</item>
     </style>
 
     <style name="ActionBarStyle13" tools:targetApi="13" parent="@android:style/Widget.Holo.Light.ActionBar">
@@ -55,19 +67,15 @@
     <style name="OverflowActionBar" parent="@style/Widget.AppCompat.ActionButton.Overflow">
         <item name="android:src">@drawable/ic_action_overflow</item>
     </style>
-
     <style name="OverflowActionMode11" tools:targetApi="11" parent="@android:style/Widget.Holo.ActionButton.Overflow">
         <item name="android:src">@drawable/ic_action_overflow_light</item>
     </style>
     <style name="OverflowActionMode" parent="@style/Widget.AppCompat.ActionButton.Overflow">
         <item name="android:src">@drawable/ic_action_overflow_light</item>
     </style>
-
-
     <style name="ChangeOverflowToDark" parent="@style/AppTheme">
         <item name="android:actionOverflowButtonStyle" tools:targetApi="11">@style/OverflowActionMode11</item>
         <item name="actionOverflowButtonStyle">@style/OverflowActionMode</item>
     </style>
-
     <style name="ProgressBar.Horizontal" parent="@android:style/Widget.ProgressBar.Horizontal"/>
 </resources>

@@ -18,11 +18,7 @@ import de.dala.simplenews.utilities.BaseNavigation;
  * Created by Daniel on 29.12.13.
  */
 public class CategoryModifierFragment extends BaseFragment implements CategorySelectionFragment.OnCategoryClicked, BaseNavigation {
-    private static final String CATEGORY_FEEDS_TAG = "feed";
-    private static final String CATEGORY_SELECTION_TAG = "selection";
     private static final String FROM_RSS = "from_rss";
-
-    private boolean fromRSS = false;
     Fragment fragment = null;
 
     public CategoryModifierFragment() {
@@ -44,19 +40,27 @@ public class CategoryModifierFragment extends BaseFragment implements CategorySe
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ArrayList<Category> categories = new ArrayList<Category>(DatabaseHandler.getInstance().getCategories(false, true, null));
-        FragmentTransaction t = getChildFragmentManager().beginTransaction();
         String rssPath = getArguments() != null ? getArguments().getString(FROM_RSS) : null;
-        if (rssPath != null) {
-            fromRSS = true;
-            fragment = CategorySelectionFragment.newInstance(categories, fromRSS, rssPath);
-        } else {
-            if (!fromRSS) {
-                fragment = CategorySelectionFragment.newInstance(categories, fromRSS, null);
+        if (savedInstanceState != null) {
+            boolean isCategoryFeedsFragment = savedInstanceState.getBoolean("isCategoryFeedsFragment");
+            if (isCategoryFeedsFragment){
+                lastCategoryClick = savedInstanceState.getLong("lastCategoryClick");
+                for (Category category : categories){
+                    if (category.getId() == lastCategoryClick){
+                        fragment = CategoryFeedsFragment.newInstance(category);
+                        break;
+                    }
+                }
+            }else{
+                fragment = CategorySelectionFragment.newInstance(categories, rssPath);
             }
         }
-        t.replace(R.id.container, fragment, CATEGORY_SELECTION_TAG);
+        if (fragment == null) {
+            fragment = CategorySelectionFragment.newInstance(categories, rssPath);
+        }
+        FragmentTransaction t = getChildFragmentManager().beginTransaction();
+        t.replace(R.id.container, fragment);
         t.commit();
-        setRetainInstance(true);
     }
 
     @Override
@@ -66,12 +70,20 @@ public class CategoryModifierFragment extends BaseFragment implements CategorySe
     }
 
     @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean("isCategoryFeedsFragment", fragment instanceof CategoryFeedsFragment);
+        outState.putLong("lastCategoryClick", lastCategoryClick);
+    }
+
+    private long lastCategoryClick = 0;
+    @Override
     public void onMoreClicked(Category category) {
+        lastCategoryClick = category.getId();
         fragment = CategoryFeedsFragment.newInstance(category);
         FragmentTransaction t = getChildFragmentManager().beginTransaction();
         t.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_left, R.anim.slide_in_right, R.anim.slide_out_right);
-        t.addToBackStack(null);
-        t.replace(R.id.container, fragment, CATEGORY_FEEDS_TAG);
+        t.replace(R.id.container, fragment);
         t.commit();
         getActivity().supportInvalidateOptionsMenu();
     }

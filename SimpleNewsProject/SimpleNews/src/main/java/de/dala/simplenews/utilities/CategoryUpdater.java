@@ -6,8 +6,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.rometools.rome.feed.synd.SyndContent;
 import com.rometools.rome.feed.synd.SyndEntry;
 import com.rometools.rome.feed.synd.SyndFeed;
@@ -16,6 +14,7 @@ import com.rometools.rome.io.SyndFeedInput;
 import com.rometools.rome.io.XmlReader;
 import com.rosaloves.bitlyj.BitlyMethod;
 import com.rosaloves.bitlyj.data.Pair;
+import com.squareup.okhttp.Request;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -33,6 +32,7 @@ import de.dala.simplenews.common.Feed;
 import de.dala.simplenews.database.DatabaseHandler;
 import de.dala.simplenews.database.IDatabaseHandler;
 import de.dala.simplenews.network.NetworkCommunication;
+import de.dala.simplenews.network.StringCallback;
 import de.dala.simplenews.parser.XmlParser;
 
 import static com.rosaloves.bitlyj.Bitly.shorten;
@@ -121,43 +121,42 @@ public class CategoryUpdater {
     private void shortenWithBitly(final Entry entry) {
         if (entry != null) {
             String urlForCall = getUrlForCall(shorten(entry.getLink()));
-            NetworkCommunication.loadShortenedUrl(urlForCall, new Response.Listener<String>() {
-                        @Override
-                        public void onResponse(String s) {
-                            String shortenedUrl = XmlParser.getInstance().readShortenedLink(s);
-                            if (shortenedUrl != null) {
-                                entry.setShortenedLink(shortenedUrl);
-                                databaseHandler.updateEntry(entry);
-                            }
-                        }
-                    }, new Response.ErrorListener() {
-                        @Override
-                        public void onErrorResponse(VolleyError volleyError) {
+            NetworkCommunication.loadShortenedUrl(urlForCall,new StringCallback() {
+                @Override
+                public void onFailure(Request request, IOException e) {
 
-                        }
+                }
+
+                @Override
+                public void success(String result) {
+                    String shortenedUrl = XmlParser.getInstance().readShortenedLink(result);
+                    if (shortenedUrl != null) {
+                        entry.setShortenedLink(shortenedUrl);
+                        databaseHandler.updateEntry(entry);
                     }
-            );
+                }
+            });
         }
     }
 
     private void shortenWithAdfly(final Entry entry) {
         String urlForCall = String.format("http://api.adf.ly/api.php?key=86a235af637887da35e4627465b784cb&uid=6090236&advert_type=int&domain=adf.ly&url=%s", entry.getLink());
 
-        NetworkCommunication.loadShortenedUrl(urlForCall, new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String shortenedLink) {
-                        if (!"error".equalsIgnoreCase(shortenedLink)) {
-                            entry.setShortenedLink(shortenedLink);
-                            databaseHandler.updateEntry(entry);
-                        }
-                    }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError volleyError) {
-                        Log.e("CategoryUpdater", String.format("Entry with id: %s could not be shortened", entry.getId() + ""));
-                    }
+        NetworkCommunication.loadShortenedUrl(urlForCall, new StringCallback() {
+            @Override
+            public void onFailure(Request request, IOException e) {
+
+                Log.e("CategoryUpdater", String.format("Entry with id: %s could not be shortened", entry.getId() + ""));
+            }
+
+            @Override
+            public void success(String result) {
+                if (!"error".equalsIgnoreCase(result)) {
+                    entry.setShortenedLink(result);
+                    databaseHandler.updateEntry(entry);
                 }
-        );
+            }
+        } );
     }
 
     protected String getUrlForCall(BitlyMethod<?> m) {

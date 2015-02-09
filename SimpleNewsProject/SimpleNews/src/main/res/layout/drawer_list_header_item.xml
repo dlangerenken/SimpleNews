@@ -12,8 +12,6 @@
         android:minHeight="40dip"
         android:paddingLeft="4dp"
         android:paddingRight="4dp"
-        android:paddingStart="4dp"
-        android:paddingEnd="4dp"
         android:textAppearance="@android:style/TextAppearance.Medium" />
 
 </RelativeLayout>

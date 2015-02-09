@@ -14,15 +14,13 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.Loader;
-import android.support.v4.view.MenuItemCompat;
-import android.support.v4.widget.SwipeRefreshLayoutExtended;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarActivity;
-import android.support.v7.view.ActionMode;
-import android.support.v7.widget.ShareActionProvider;
 import android.text.TextUtils;
 import android.util.SparseArray;
 import android.util.SparseBooleanArray;
 import android.util.TypedValue;
+import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -31,6 +29,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ShareActionProvider;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,7 +37,6 @@ import com.etsy.android.grid.StaggeredGridView;
 import com.nhaarman.listviewanimations.appearance.AnimationAdapter;
 import com.nhaarman.listviewanimations.appearance.ViewAnimator;
 import com.nhaarman.listviewanimations.appearance.simple.SwingBottomInAnimationAdapter;
-import com.nhaarman.listviewanimations.itemmanipulation.animateaddition.AnimateAdditionAdapter;
 import com.ocpsoft.pretty.time.PrettyTime;
 
 import java.util.ArrayList;
@@ -60,7 +58,7 @@ import de.dala.simplenews.utilities.UIUtils;
 /**
  * Created by Daniel on 18.12.13.
  */
-public class ExpandableNewsFragment extends BaseFragment implements SwipeRefreshLayoutExtended.OnRefreshListener, SimpleCursorLoader.OnLoadCompleteListener, BaseNavigation {
+public class ExpandableNewsFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener, SimpleCursorLoader.OnLoadCompleteListener, BaseNavigation {
     private static final String ARG_CATEGORY = "category";
     private static final String ARG_ENTRY_TYPE = "entryType";
     private static final String ARG_POSITION = "position";
@@ -69,7 +67,7 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
     private MyExpandableGridItemAdapter myExpandableListItemAdapter;
     private ActionMode mActionMode;
     private StaggeredGridView mGridView;
-    private SwipeRefreshLayoutExtended mSwipeRefreshLayout;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
     private AnimationAdapter swingBottomInAnimationAdapter;
 
     private Category category;
@@ -151,7 +149,7 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
         emptyText = (TextView) rootView.findViewById(R.id.emptyMessage);
         emptyImageView = (ImageView) rootView.findViewById(R.id.emptyImageView);
         emptyImageView.setImageResource(R.drawable.logo_animation);
-        mSwipeRefreshLayout = (SwipeRefreshLayoutExtended) rootView.findViewById(R.id.ptr_layout);
+        mSwipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.ptr_layout);
 
         init();
         return rootView;
@@ -160,7 +158,7 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
     private void init(){
         if (mSwipeRefreshLayout != null) {
             mSwipeRefreshLayout.setOnRefreshListener(this);
-            mSwipeRefreshLayout.setColorSchemeFromColors(category.getPrimaryColor(), getResources().getColor(R.color.background_window), category.getPrimaryColor(), getResources().getColor(R.color.background_window));
+            mSwipeRefreshLayout.setColorSchemeColors(category.getPrimaryColor());
         }
         initCardsAdapter(null);
         initNewsTypeBar();
@@ -279,12 +277,7 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
         boolean hasCheckedItems = myExpandableListItemAdapter.getSelectedCount() > 0;
         if (hasCheckedItems && mActionMode == null) {
             // there are some selected items, start the actionMode
-            new Handler().post(new Runnable() {
-                @Override
-                public void run() {
-                    mActionMode = ((ActionBarActivity) getActivity()).startSupportActionMode(new ActionModeCallBack());
-                }
-            });
+            mActionMode = ((ActionBarActivity) getActivity()).startActionMode(new ActionModeCallBack());
         } else if (!hasCheckedItems && mActionMode != null) {
             // there no selected items, finish the actionMode
             mActionMode.finish();
@@ -331,9 +324,9 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
         final MenuItem refreshItem = menu.findItem(R.id.menu_refresh);
         if (refreshItem != null) {
             if (refreshing) {
-                MenuItemCompat.setActionView(refreshItem, R.layout.actionbar_indeterminate_progress);
+                refreshItem.setActionView(R.layout.actionbar_indeterminate_progress);
             } else {
-                MenuItemCompat.setActionView(refreshItem, null);
+                refreshItem.setActionView(null);
             }
         }
     }
@@ -703,7 +696,8 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
             mode.getMenuInflater().inflate(R.menu.contextual_list_view, menu);
             MenuItem item = menu.findItem(R.id.menu_item_share);
 
-            shareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(item);
+            ShareActionProvider shareActionProvider = new ShareActionProvider(getActivity());
+            item.setActionProvider(shareActionProvider);
             shareActionProvider.setShareHistoryFileName(
                     ShareActionProvider.DEFAULT_SHARE_HISTORY_FILE_NAME);
             shareActionProvider.setShareIntent(createShareIntent());

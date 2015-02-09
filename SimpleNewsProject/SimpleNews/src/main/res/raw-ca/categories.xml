@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<news>
+    <category name="Esports" color="0" visible="true">
+        <feed>http://www.324.cat/rss/not_eeesports_rss.xml</feed>
+        <feed>http://www.esport3.cat/rss/ee_eesports_noticies_rss.xml</feed>
+        <feed>http://www.catalunyapress.cat/cat/rss/esports-007.xml</feed>
+    </category>
+    <category name="Cultura" color="1" visible="true">
+        <feed>http://www.324.cat/rss/not_notoci_rss.xml</feed>
+    </category>
+    <category name="Tecnologia" color="2" visible="true">
+        <feed>http://www.softcatala.org/rss.xml</feed>
+    </category>
+    <category name="Ciència" color="3" visible="true">
+        <feed>http://www.accc.cat/index/xml/43/475</feed>
+        <feed>http://ciencia.ara.cat/feed/</feed>
+    </category>
+    <category name="Notícies" color="4" visible="true">
+        <feed>http://www.324.cat/rss/not_notportada_rss.xml</feed>
+        <feed>http://www.elperiodico.cat/ca/rss/rss_portada.xml/</feed>
+        <feed>http://www.ara.cat/rss/</feed>
+        <feed>http://www.vilaweb.cat/rss/vilaweb.rss</feed>
+        <feed>http://www.eldiari.cat/elementosInt/rss/1</feed>
+        <feed>http://forum.ad/feed/</feed>
+        <feed>http://www.bondia.ad/rss.xml</feed>
+        <feed>http://ib3tv.com/seccio/noticies/actualitat/feed</feed>
+        <feed>http://www.racocatala.cat/feed/rss.php</feed>
+    </category>
+</news>

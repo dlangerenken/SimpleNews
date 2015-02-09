@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="de.dala.simplenews"
-    android:versionCode="58"
-    android:versionName="0.99.14">
+    android:versionCode="61"
+    android:versionName="0.99.materialized">
 
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -59,10 +59,6 @@
                 <data android:mimeType="application/xml" />
             </intent-filter>
         </activity>
-
-        <meta-data
-            android:name="com.crashlytics.ApiKey"
-            android:value="61f068c98cc6747fddf476a1bbe5267ab299a3ff" />
     </application>
 
 </manifest>

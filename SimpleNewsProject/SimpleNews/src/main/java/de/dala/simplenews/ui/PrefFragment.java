@@ -4,10 +4,10 @@ package de.dala.simplenews.ui;
  * Created by Daniel on 22.04.2014.
  */
 
-import android.content.Context;
-import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.preference.PreferenceFragment;
+import android.content.Context;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,4 +52,3 @@ public class PrefFragment extends PreferenceFragment implements BaseNavigation {
         return NavigationDrawerFragment.SETTINGS;
     }
 }
-

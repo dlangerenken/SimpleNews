@@ -5,12 +5,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBarActivity;
-import android.support.v7.view.ActionMode;
-import android.support.v7.widget.ShareActionProvider;
 import android.util.SparseBooleanArray;
+import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -21,12 +18,12 @@ import android.widget.AdapterView;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ShareActionProvider;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.nhaarman.listviewanimations.ArrayAdapter;
 import com.nhaarman.listviewanimations.itemmanipulation.DynamicListView;
-import com.nhaarman.listviewanimations.itemmanipulation.dragdrop.OnItemMovedListener;
 import com.nhaarman.listviewanimations.itemmanipulation.dragdrop.TouchViewDraggableManager;
 import com.rometools.rome.feed.opml.Opml;
 import com.rometools.rome.io.impl.OPML20Generator;
@@ -62,14 +59,12 @@ import de.keyboardsurfer.android.widget.crouton.Style;
 public class CategorySelectionFragment extends BaseFragment implements BaseNavigation {
 
     private static final String CATEGORIES_KEY = "categories";
-    private static final String FROM_RSS_KEY = "rss";
     private static final String RSS_PATH_KEY = "path";
     private OnCategoryClicked categoryClicked;
     private ActionMode mActionMode;
     private List<Category> categories;
     private MyDynamicListView categoryListView;
     private CategoryListAdapter adapter;
-    private boolean fromRSS;
     private String rssPath;
     private TextView topTextView;
     private ViewGroup topView;
@@ -79,11 +74,10 @@ public class CategorySelectionFragment extends BaseFragment implements BaseNavig
     public CategorySelectionFragment() {
     }
 
-    public static CategorySelectionFragment newInstance(ArrayList<Category> categories, boolean fromRSS, String path) {
+    public static CategorySelectionFragment newInstance(ArrayList<Category> categories, String path) {
         CategorySelectionFragment fragment = new CategorySelectionFragment();
         Bundle b = new Bundle();
         b.putParcelableArrayList(CATEGORIES_KEY, categories);
-        b.putBoolean(FROM_RSS_KEY, fromRSS);
         b.putString(RSS_PATH_KEY, path);
         fragment.setArguments(b);
         return fragment;
@@ -97,7 +91,7 @@ public class CategorySelectionFragment extends BaseFragment implements BaseNavig
         }
         View rootView = inflater.inflate(R.layout.category_selection, container, false);
         topView = (ViewGroup) rootView.findViewById(R.id.topView);
-        if (fromRSS) {
+        if (rssPath != null) {
             topTextView = (TextView) rootView.findViewById(R.id.topTextView);
             topTextView.setText(getActivity().getString(R.string.category_add));
             topTextView.setVisibility(View.VISIBLE);
@@ -156,7 +150,6 @@ public class CategorySelectionFragment extends BaseFragment implements BaseNavig
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         this.categories = getArguments().getParcelableArrayList(CATEGORIES_KEY);
-        this.fromRSS = getArguments().getBoolean(FROM_RSS_KEY);
         this.rssPath = getArguments().getString(RSS_PATH_KEY);
     }
 
@@ -205,7 +198,7 @@ public class CategorySelectionFragment extends BaseFragment implements BaseNavig
 
         if (hasCheckedItems && mActionMode == null) {
             // there are some selected items, start the actionMode
-            mActionMode = ((ActionBarActivity) getActivity()).startSupportActionMode(new ActionModeCallBack());
+            mActionMode = ((ActionBarActivity) getActivity()).startActionMode(new ActionModeCallBack());
         } else if (!hasCheckedItems && mActionMode != null) {
             // there no selected items, finish the actionMode
             mActionMode.finish();
@@ -377,7 +370,7 @@ public class CategorySelectionFragment extends BaseFragment implements BaseNavig
             holder.name.setText(category.getName());
             holder.color.setBackgroundColor(category.getPrimaryColor());
             holder.show.setChecked(category.isVisible());
-            if (!fromRSS) {
+            if (rssPath == null) {
                 holder.edit.setOnClickListener(new CategoryItemClickListener(category));
                 holder.color.setOnClickListener(new CategoryItemClickListener(category));
                 holder.show.setOnClickListener(new CategoryItemClickListener(category));
@@ -527,14 +520,17 @@ public class CategorySelectionFragment extends BaseFragment implements BaseNavig
     }
 
     private class ActionModeCallBack implements ActionMode.Callback {
+        public void changeOverflowIcon() {
+            getActivity().getTheme().applyStyle(R.style.ChangeOverflowToDark, true);
+        }
 
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            changeOverflowIcon();
             // inflate contextual menu
             mode.getMenuInflater().inflate(R.menu.contextual_category_selection_menu, menu);
             MenuItem item = menu.findItem(R.id.menu_item_share);
-
-            shareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(item);
+            shareActionProvider = new ShareActionProvider(getActivity());
             shareActionProvider.setShareHistoryFileName(
                     ShareActionProvider.DEFAULT_SHARE_HISTORY_FILE_NAME);
             shareActionProvider.setShareIntent(createShareIntent());
@@ -544,6 +540,7 @@ public class CategorySelectionFragment extends BaseFragment implements BaseNavig
                     return false;
                 }
             });
+            item.setActionProvider(shareActionProvider);
             return true;
         }
 

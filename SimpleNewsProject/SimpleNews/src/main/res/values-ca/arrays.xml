@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Nav Drawer Menu Items -->
+    <string-array name="nav_drawer_items">
+        <item>"Inici"</item>
+        <item>"Recents"</item>
+        <item>"Preferits"</item>
+        <item>"No llegits"</item>
+        <item>"Categories"</item>
+        <item>"Registre de canvis"</item>
+        <item>"Configuració"</item>
+        <item>"Simplenews vota"</item>
+        <item>"Importa informació"</item>
+    </string-array>
+
+    <!-- Nav Drawer List Item Icons -->
+    <array name="nav_drawer_icons" translatable="false">
+        <item>@drawable/ic_home</item>
+        <item>@drawable/ic_recent</item>
+        <item>@drawable/ic_favorite</item>
+        <item>@drawable/ic_unread</item>
+        <item>@drawable/ic_nav_categories</item>
+        <item>@android:drawable/ic_menu_agenda</item>
+        <item>@android:drawable/ic_menu_preferences</item>
+        <item>@drawable/ic_rating</item>
+        <item>@android:drawable/ic_menu_upload</item>
+        <item>@android:drawable/ic_menu_save</item>
+    </array>
+
+    <string-array name="listOptions">
+        <item>"Cada 5 minuts"</item>
+        <item>"Cada 15 minuts"</item>
+        <item>"Cada 30 minuts"</item>
+        <item>"Cada hora"</item>
+
+        <item>"Cada 4 hores"</item>
+        <item>"Cada 8 hores"</item>
+        <item>"Cada dia"</item>
+    </string-array>
+
+    <string-array name="listValues" translatable="false">
+        <item>"300000"</item>
+        <item>"900000"</item>
+        <item>"1800000"</item>
+        <item>"3600000"</item>
+        <item>"14400000"</item>
+        <item>"28800000"</item>
+        <item>"86400000"</item>
+    </string-array>
+
+    <string-array name="keep_old_entries">
+        <item>"Cada dia"</item>
+        <item>"Cada 3 dies"</item>
+        <item>"Cada setmana"</item>
+        <item>"Cada dues setmanes"</item>
+        <item>"Cada mes"</item>
+        <item>"Mai"</item>
+    </string-array>
+
+    <string-array name="oldEntryValues" translatable="false">
+        <item>"86400000"</item>
+        <item>"259200000"</item>
+        <item>"604800000"</item>
+        <item>"1209600000"</item>
+        <item>"2678400000"</item>
+        <item>"mai"</item>
+    </string-array>
+
+</resources>

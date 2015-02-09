@@ -1,47 +1,30 @@
 package de.dala.simplenews.network;
 
-import com.android.volley.DefaultRetryPolicy;
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.RetryPolicy;
-import com.android.volley.toolbox.StringRequest;
+import com.squareup.okhttp.Call;
+import com.squareup.okhttp.Callback;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
 
 
 public class NetworkCommunication {
 
-    private static final int TIMEOUT_MS = 5000;
-    private static final int MAX_RETRIES = 2;
-    private static final int BACKOFF_MULT = 2;
+    static OkHttpClient client = new OkHttpClient();
 
-    private static RetryPolicy myRetryPolicy = new DefaultRetryPolicy(TIMEOUT_MS,
-            MAX_RETRIES,
-            BACKOFF_MULT);
-    private static boolean customizedPolicy = true;
+	public static void addRequest(String url, Callback callback) {
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+        Call call = client.newCall(request);
+        call.enqueue(callback);
+	}
 
-    public static void addRequest(Request<?> request) {
-        if (customizedPolicy) {
-            request.setRetryPolicy(myRetryPolicy);
-        }
-        VolleySingleton.getRequestQueue().add(request);
+
+    public static void loadRSSFeed(String serverURL, StringCallback callback) {
+        addRequest(serverURL, callback);
     }
 
-
-    public static void loadRSSFeed(String serverURL, Response.Listener<String> successListener,
-                                   Response.ErrorListener errorListener) {
-        Request request = new StringRequest(serverURL,
-                successListener, errorListener);
-        addRequest(request);
+    public static void loadShortenedUrl(String url, StringCallback callback){
+        addRequest(url, callback);
     }
 
-    public static void loadShortenedUrl(String url, Response.Listener<String> successListener, Response.ErrorListener errorListener) {
-        Request request = new StringRequest(url, successListener, errorListener);
-        addRequest(request);
-    }
-
-    public static void loadOpmlFeeds(String serverURL, Response.Listener<String> successListener,
-                                     Response.ErrorListener errorListener) {
-        Request request = new StringRequest(serverURL,
-                successListener, errorListener);
-        addRequest(request);
-    }
 }
