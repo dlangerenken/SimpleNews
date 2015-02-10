@@ -2,9 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/card_background_white"
-    android:orientation="vertical"
-    android:padding="@dimen/card_layout_padding">
+    android:background="@android:color/white"
+    android:orientation="vertical">
 
     <FrameLayout
         android:id="@+id/card_title"
@@ -15,6 +14,6 @@
         android:id="@+id/expandable_card_content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp" />
+        android:layout_marginTop="3dp"/>
 
 </LinearLayout>

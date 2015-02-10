@@ -522,7 +522,7 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
                     return false;
                 }
             });
-            view.setBackgroundResource(mSelectedItemIds.get(position) ? R.drawable.card_background_blue : R.drawable.card_background_white);
+            view.setBackgroundResource(mSelectedItemIds.get(position) ? R.color.list_background_selected : R.color.list_background);
             int pad = getResources().getDimensionPixelSize(R.dimen.card_layout_padding);
             view.setPadding(pad, pad, pad, pad);
             return view;
