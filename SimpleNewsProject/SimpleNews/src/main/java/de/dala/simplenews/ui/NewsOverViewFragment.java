@@ -137,12 +137,10 @@ public class NewsOverViewFragment extends BaseFragment implements ViewPager.OnPa
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        menu.clear();
+        super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.news_overview_menu, menu);
         columnsMenu = menu.findItem(R.id.menu_columns);
         updateMenu();
-
-        super.onCreateOptionsMenu(menu, inflater);
     }
 
     private void updateMenu(){

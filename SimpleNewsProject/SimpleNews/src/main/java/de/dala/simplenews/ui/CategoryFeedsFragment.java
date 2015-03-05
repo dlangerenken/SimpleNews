@@ -102,6 +102,7 @@ public class CategoryFeedsFragment extends BaseFragment implements BaseNavigatio
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.feed_selection_menu, menu);
     }
 

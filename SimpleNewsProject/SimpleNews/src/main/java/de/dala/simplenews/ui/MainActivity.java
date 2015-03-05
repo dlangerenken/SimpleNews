@@ -1,13 +1,18 @@
 package de.dala.simplenews.ui;
 
+import android.app.PendingIntent;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentSender;
+import android.content.ServiceConnection;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
+import android.os.IBinder;
+import android.os.RemoteException;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -15,13 +20,19 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
+import android.widget.Toast;
+
+import com.android.vending.billing.IInAppBillingService;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.List;
 
 import de.dala.simplenews.R;
 import de.dala.simplenews.dialog.ChangeLogDialog;
 import de.dala.simplenews.utilities.BaseNavigation;
-import de.dala.simplenews.utilities.ColorManager;
 
 public class MainActivity extends ActionBarActivity implements NavigationDrawerFragment.NavigationDrawerCallbacks, FragmentManager.OnBackStackChangedListener {
     /**
@@ -29,6 +40,7 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
      */
     private NavigationDrawerFragment mNavigationDrawerFragment;
     private Fragment currentFragment;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,7 +77,10 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
         }
         getSupportFragmentManager().addOnBackStackChangedListener(this);
         updateNavigation();
+        initDonationsButton();
     }
+
+
 
     @Override
     public boolean onSupportNavigateUp() {
@@ -105,6 +120,7 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
     @Override
     public boolean onCreateOptionsMenu(android.view.Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
+        menu.findItem(R.id.menu_main_donate).setVisible(mService != null);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -175,7 +191,6 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
                 break;
             case NavigationDrawerFragment.RATING:
                 RateMyApp.showRateDialog(this);
-                // TODO ondismiss
                 break;
             case NavigationDrawerFragment.IMPORT:
                 clearBackStackKeep(1);
@@ -188,7 +203,6 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
         updateNavigation();
     }
 
-
     private void clearBackStackKeep(int toKeep){
         FragmentManager manager = getSupportFragmentManager();
         if (manager.getBackStackEntryCount() > toKeep) {
@@ -197,12 +211,6 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
         }
         updateNavigation();
     }
-
-    private void clearBackStack(){
-        clearBackStackKeep(0);
-    }
-
-
 
     public void updateNavigation() {
         currentFragment = getVisibleFragment();
@@ -270,6 +278,123 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
 
     private void changeDrawerColor(int newColor) {
         mNavigationDrawerFragment.changeColor(newColor);
+    }
+
+
+    /**
+     * Donation things
+     */
+
+    private final ServiceConnection mServiceConn = new MyServiceConnection();
+    private IInAppBillingService mService;
+
+    void initDonationsButton(){
+        bindService(new Intent("com.android.vending.billing.InAppBillingService.BIND"), mServiceConn, Context.BIND_AUTO_CREATE);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        unbindService(mServiceConn);
+    }
+
+    @Override
+    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode == RESULT_OK) {
+            Toast.makeText(this, getString(R.string.thanks), Toast.LENGTH_LONG).show();
+
+            new Thread(new ConsumePurchaseRunnable(data)).start();
+        }
+    }
+
+
+    private void buy(final String sku) {
+        try {
+            Bundle buyIntentBundle = mService.getBuyIntent(3, getPackageName(), sku, "inapp", "JbDGoa+HjaKaö3042kl42()&da/4pJ7g/KwqqXvuf+");
+            PendingIntent pendingIntent = buyIntentBundle.getParcelable("BUY_INTENT");
+            if (pendingIntent != null) {
+                startIntentSenderForResult(pendingIntent.getIntentSender(), 1001, new Intent(), 0, 0, 0);
+            }
+        } catch (RemoteException | IntentSender.SendIntentException ignored) {
+            Toast.makeText(this, getString(R.string.exception), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private class MyServiceConnection implements ServiceConnection {
+        @Override
+        public void onServiceDisconnected(final ComponentName name) {
+            mService = null;
+        }
+
+        @Override
+        public void onServiceConnected(final ComponentName name, final IBinder service) {
+            mService = IInAppBillingService.Stub.asInterface(service);
+
+            new Thread(new RetrievePurchasesRunnable()).start();
+        }
+    }
+
+    private class RetrievePurchasesRunnable implements Runnable {
+        @Override
+        public void run() {
+            try {
+                Bundle ownedItems = mService.getPurchases(3, getPackageName(), "inapp", null);
+
+                int response = ownedItems.getInt("RESPONSE_CODE");
+                if (response == 0) {
+                    Iterable<String> purchaseDataList = ownedItems.getStringArrayList("INAPP_PURCHASE_DATA_LIST");
+
+                    if (purchaseDataList != null) {
+                        for (String purchaseData : purchaseDataList) {
+                            JSONObject json = new JSONObject(purchaseData);
+                            mService.consumePurchase(3, getPackageName(), json.getString("purchaseToken"));
+                        }
+                    }
+                }
+            } catch (RemoteException | JSONException ignored) {
+                Toast.makeText(MainActivity.this, getString(R.string.exception), Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    private class ConsumePurchaseRunnable implements Runnable {
+        private final Intent mData;
+
+        ConsumePurchaseRunnable(final Intent data) {
+            mData = data;
+        }
+
+        @Override
+        public void run() {
+            try {
+                JSONObject json = new JSONObject(mData.getStringExtra("INAPP_PURCHASE_DATA"));
+                mService.consumePurchase(3, getPackageName(), json.getString("purchaseToken"));
+            } catch (JSONException | RemoteException ignored) {
+                Toast.makeText(MainActivity.this, getString(R.string.exception), Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(final MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_main_coffee:
+                buy("coffee");
+                return true;
+            case R.id.menu_main_coffee2:
+                buy("coffee2");
+                return true;
+            case R.id.menu_main_coffee3:
+                buy("coffee3");
+                return true;
+            case R.id.menu_main_coffee4:
+                buy("coffee4");
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
 }

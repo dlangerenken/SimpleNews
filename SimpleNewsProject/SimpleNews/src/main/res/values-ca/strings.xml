@@ -92,7 +92,6 @@
     <string name="navdrawer_settings">"Configuració"</string>
     <string name="menu_delete_entry">"Elimina"</string>
     <string name="not_valid_url_nor_opml_file">"El text introduït no és ni una adreça, ni un contingut d'arxiu OPML vàlids."</string>
-    <string name="beta" translatable="false">"BETA"</string>
     <string name="choose_category_for_feeds">"Trieu una categoria"</string>
     <string name="beta_version_disclaimer">"Aquesta és una versió beta. No valoreu l'aplicació en base a aquesta funcionalitat. En lloc d'això, envieu un informe del error o un suggeriment."</string>
     <string name="feed_selection_assign">"Seleccioneu els canals per assignar-los a la categoria"</string>
@@ -111,4 +110,13 @@
     <string name="opml_assign_fragment_title">"Assigneu canals OPML"</string>
     <string name="opml_import_fragment_title">"Importa OPML"</string>
     <string name="pref_fragment_title">"Preferències"</string>
+
+
+    <string name="thanks">Thank you!</string>
+    <string name="exception">Oops! Something went wrong!</string>
+    <string name="menu_donate">Buy me a coffee!</string>
+    <string name="menu_coffee">Buy me a coffee!</string>
+    <string name="menu_coffee2">Buy me 2 coffees!</string>
+    <string name="menu_coffee3">Buy me 5 coffees!</string>
+    <string name="menu_coffee4">Buy me 10 coffees!</string>
 </resources>

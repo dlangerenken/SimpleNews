@@ -30,15 +30,6 @@ public class ColorUtils {
         return mColorChoices;
     }
 
-    /**
-     * Parse whiteColor
-     *
-     * @return
-     */
-    public static int parseWhiteColor() {
-        return Color.parseColor("#FFFFFF");
-    }
-
     public static boolean isTablet(Context context) {
         return (context.getResources().getConfiguration().screenLayout
                 & Configuration.SCREENLAYOUT_SIZE_MASK)

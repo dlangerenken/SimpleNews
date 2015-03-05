@@ -23,6 +23,14 @@
         <item>Jeden Tag</item>
     </string-array>
 
+    <string-array name="oldEntryValues">
+        <item>86400000</item>
+        <item>259200000</item>
+        <item>604800000</item>
+        <item>1209600000</item>
+        <item>2678400000</item>
+        <item>niemals</item>
+    </string-array>
 
     <string-array name="keep_old_entries">
         <item>Jeden Tag</item>

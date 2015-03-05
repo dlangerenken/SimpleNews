@@ -112,4 +112,13 @@
     <string name="opml_assign_fragment_title">Opml-Feeds zuweisen</string>
     <string name="opml_import_fragment_title">Opml importieren</string>
     <string name="pref_fragment_title">Einstellungen</string>
+
+
+    <string name="thanks">Vielen Dank!</string>
+    <string name="exception">Oops! Da ist etwas schief gelaufen!</string>
+    <string name="menu_donate">Spendier mir einen Kaffee!</string>
+    <string name="menu_coffee">Spendier mir einen Kaffee!</string>
+    <string name="menu_coffee2">Spendier mir 2 Kaffee!</string>
+    <string name="menu_coffee3">Spendier mir 5 Kaffee!</string>
+    <string name="menu_coffee4">Spendier mir 10 Kaffee!</string>
 </resources>

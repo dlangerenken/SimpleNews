@@ -1,6 +1,7 @@
 package de.dala.simplenews.utilities;
 
 import android.content.Context;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Message;
@@ -12,15 +13,11 @@ import com.rometools.rome.feed.synd.SyndFeed;
 import com.rometools.rome.io.FeedException;
 import com.rometools.rome.io.SyndFeedInput;
 import com.rometools.rome.io.XmlReader;
-import com.rosaloves.bitlyj.BitlyMethod;
-import com.rosaloves.bitlyj.data.Pair;
 import com.squareup.okhttp.Request;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -33,9 +30,6 @@ import de.dala.simplenews.database.DatabaseHandler;
 import de.dala.simplenews.database.IDatabaseHandler;
 import de.dala.simplenews.network.NetworkCommunication;
 import de.dala.simplenews.network.StringCallback;
-import de.dala.simplenews.parser.XmlParser;
-
-import static com.rosaloves.bitlyj.Bitly.shorten;
 
 /**
  * Created by Daniel on 27.12.13.
@@ -113,67 +107,35 @@ public class CategoryUpdater {
             if (entry.getShortenedLink() != null) {
                 continue;
             }
-            //shortenWithAdfly(entry);
-            shortenWithBitly(entry);
+            shortenWithAdfly(entry);
         }
     }
 
-    private void shortenWithBitly(final Entry entry) {
-        if (entry != null) {
-            String urlForCall = getUrlForCall(shorten(entry.getLink()));
-            NetworkCommunication.loadShortenedUrl(urlForCall,new StringCallback() {
+    private void shortenWithAdfly(final Entry entry) {
+        String link = entry.getLink();
+        if (link != null) {
+            String urlForCall = String.format("http://api.adf.ly/api.php?key=86a235af637887da35e4627465b784cb&uid=6090236&advert_type=int&domain=adf.ly&url=%s", Uri.encode(link));
+            Log.d("CategoryUpdater", String.format("Shorten started for: %s", urlForCall));
+            NetworkCommunication.loadShortenedUrl(urlForCall, new StringCallback() {
                 @Override
                 public void onFailure(Request request, IOException e) {
-
+                    Log.e("CategoryUpdater", String.format("Entry with id: %s could not be shortened", entry.getId() + ""));
                 }
 
                 @Override
                 public void success(String result) {
-                    String shortenedUrl = XmlParser.getInstance().readShortenedLink(result);
-                    if (shortenedUrl != null) {
-                        entry.setShortenedLink(shortenedUrl);
+                    Log.d("CategoryUpdater", "Success in shorten: " + result);
+                    if (!"error".equalsIgnoreCase(result)) {
+                        entry.setShortenedLink(result);
                         databaseHandler.updateEntry(entry);
+                    }else{
+                        Log.e("CategoryUpdater", String.format("Entry with id: %s could not be shortened", entry.getId() + ""));
                     }
                 }
             });
         }
     }
 
-    private void shortenWithAdfly(final Entry entry) {
-        String urlForCall = String.format("http://api.adf.ly/api.php?key=86a235af637887da35e4627465b784cb&uid=6090236&advert_type=int&domain=adf.ly&url=%s", entry.getLink());
-
-        NetworkCommunication.loadShortenedUrl(urlForCall, new StringCallback() {
-            @Override
-            public void onFailure(Request request, IOException e) {
-
-                Log.e("CategoryUpdater", String.format("Entry with id: %s could not be shortened", entry.getId() + ""));
-            }
-
-            @Override
-            public void success(String result) {
-                if (!"error".equalsIgnoreCase(result)) {
-                    entry.setShortenedLink(result);
-                    databaseHandler.updateEntry(entry);
-                }
-            }
-        } );
-    }
-
-    protected String getUrlForCall(BitlyMethod<?> m) {
-        StringBuilder sb = new StringBuilder("http://api.bit.ly/v3/").append(m.getName()).append("?")
-                .append("&login=").append(Constants.USER)
-                .append("&apiKey=").append(Constants.API_KEY)
-                .append("&format=xml");
-
-        try {
-            for (Pair<String, String> p : m.getParameters()) {
-                sb.append("&").append(p.getOne()).append("=").append(URLEncoder.encode(p.getTwo(), "UTF-8"));
-            }
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
-        return sb.toString();
-    }
 
     private Entry getEntryFromRSSItem(SyndEntry item, Long feedId, String source) {
         if (item != null) {

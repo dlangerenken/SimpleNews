@@ -73,7 +73,6 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
     private Category category;
     private CategoryUpdater updater;
     private Menu menu;
-    private ShareActionProvider shareActionProvider;
     private int newsTypeMode;
     private NewsOverViewFragment parentFragment;
 
@@ -268,9 +267,6 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
         if (mActionMode != null) {
             mActionMode.setTitle(String.valueOf(myExpandableListItemAdapter.getSelectedCount()));
         }
-        if (shareActionProvider != null) {
-            shareActionProvider.setShareIntent(createShareIntent());
-        }
     }
 
     private void OpenActionModeIfNecessary(){
@@ -333,12 +329,12 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
         this.menu = menu;
         if (menu.findItem(R.id.menu_refresh) != null){
             return;
         }
         inflater.inflate(R.menu.expandable_news_menu, menu);
-        super.onCreateOptionsMenu(menu, inflater);
     }
 
     private void loadEntries(boolean forceRefresh, boolean showNewsInteraction) {
@@ -575,7 +571,8 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
                     entry.setVisitedDate(new Date().getTime());
                     DatabaseHandler.getInstance().updateEntry(entry);
                     myExpandableListItemAdapter.notifyDataSetChanged();
-                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(entry.getLink())); //TODO link or shortenedlink
+                    //String link = entry.getShortenedLink() != null ? entry.getShortenedLink() : entry.getLink();
+                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(entry.getLink()));
                     try{
                         startActivity(browserIntent);
                     } catch (ActivityNotFoundException e){
@@ -597,9 +594,6 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
             if (mActionMode != null) {
                 mActionMode.setTitle(String.valueOf(myExpandableListItemAdapter.getSelectedCount()));
             }
-            if (shareActionProvider != null) {
-                shareActionProvider.setShareIntent(createShareIntent());
-            }
             notifyDataSetChanged();
         }
 
@@ -611,9 +605,6 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
 
             if (mActionMode != null) {
                 mActionMode.setTitle(String.valueOf(myExpandableListItemAdapter.getSelectedCount()));
-            }
-            if (shareActionProvider != null) {
-                shareActionProvider.setShareIntent(createShareIntent());
             }
             notifyDataSetChanged();
         }

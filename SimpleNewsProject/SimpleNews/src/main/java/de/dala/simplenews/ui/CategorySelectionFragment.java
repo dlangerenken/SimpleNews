@@ -155,7 +155,7 @@ public class CategorySelectionFragment extends BaseFragment implements BaseNavig
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        menu.clear();
+        super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.category_selection_menu, menu);
     }
 

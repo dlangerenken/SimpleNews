@@ -56,7 +56,7 @@
         <item>Never</item>
     </string-array>
 
-    <string-array name="oldEntryValues" translatable="false">
+    <string-array name="oldEntryValues">
         <item>86400000</item>
         <item>259200000</item>
         <item>604800000</item>

@@ -6,154 +6,147 @@
         jumboMode="false"
         revision="21.1.2"
         sha1="7ffb3bd5c0254f3895a2b647ea882df4eea0a166">
-        <dex dex="D:\Projects\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\pre-dexed\releaseVersion\debug\ocpsoft-pretty-time-1.0.7-19c0d3727bfde3d744f862b37b225d24078f5e04.jar" />
+        <dex dex="D:\Projects\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\pre-dexed\releaseVersion\release\ocpsoft-pretty-time-1.0.7-19c0d3727bfde3d744f862b37b225d24078f5e04.jar" />
     </item>
     <item
         jar="D:\Projects\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\exploded-aar\com.astuetz\pagerslidingtabstrip\1.0.1\classes.jar"
         jumboMode="false"
         revision="21.1.2"
         sha1="7912610ed96381c25c36d986eba422731b9641b6">
-        <dex dex="D:\Projects\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\pre-dexed\releaseVersion\debug\classes-968131dfb7039701cccc209321597d429138555d.jar" />
+        <dex dex="D:\Projects\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\pre-dexed\releaseVersion\release\classes-968131dfb7039701cccc209321597d429138555d.jar" />
     </item>
     <item
         jar="D:\Projects\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\exploded-aar\com.android.support\support-v4\21.0.3\libs\internal_impl-21.0.3.jar"
         jumboMode="false"
         revision="21.1.2"
         sha1="01ec05bfbafcc07646ba813000bf2ef11742dd03">
-        <dex dex="D:\Projects\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\pre-dexed\releaseVersion\debug\internal_impl-21.0.3-7b61f2910a4fa244d3aae778210eb3bf813e9de4.jar" />
+        <dex dex="D:\Projects\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\pre-dexed\releaseVersion\release\internal_impl-21.0.3-7b61f2910a4fa244d3aae778210eb3bf813e9de4.jar" />
     </item>
     <item
         jar="D:\Projects\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\exploded-aar\SimpleNewsProject\feeds\unspecified\classes.jar"
         jumboMode="false"
         revision="21.1.2"
-        sha1="77f979437b8b50d09acb23e0eea6044df5605a6a">
-        <dex dex="D:\Projects\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\pre-dexed\releaseVersion\debug\classes-626367ff451e74e4d2cc645ff5df909b23448d9a.jar" />
+        sha1="d30b5a41884342f9d7be2049b678dc7a56e5b81b">
+        <dex dex="D:\Projects\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\pre-dexed\releaseVersion\release\classes-626367ff451e74e4d2cc645ff5df909b23448d9a.jar" />
     </item>
     <item
         jar="D:\Projects\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\exploded-aar\com.nhaarman.listviewanimations\lib-core\3.1.0\classes.jar"
         jumboMode="false"
         revision="21.1.2"
         sha1="acf66033b1418ccf9e15c8e77750981e4809c4ea">
-        <dex dex="D:\Projects\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\pre-dexed\releaseVersion\debug\classes-05c69fbeaee110b359631d5475796284295bf2f7.jar" />
+        <dex dex="D:\Projects\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\pre-dexed\releaseVersion\release\classes-05c69fbeaee110b359631d5475796284295bf2f7.jar" />
     </item>
     <item
         jar="D:\Projects\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\exploded-aar\com.android.support\support-v4\21.0.3\classes.jar"
         jumboMode="false"
         revision="21.1.2"
         sha1="2c91c949a45a21cdecf26e03951e46c7beec9ad8">
-        <dex dex="D:\Projects\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\pre-dexed\releaseVersion\debug\classes-bcddbe7bd3b1a5c8545e7cde1d1c164e7485a1a4.jar" />
+        <dex dex="D:\Projects\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\pre-dexed\releaseVersion\release\classes-bcddbe7bd3b1a5c8545e7cde1d1c164e7485a1a4.jar" />
     </item>
     <item
         jar="C:\Program Files (x86)\Android\android-sdk\extras\android\m2repository\com\android\support\support-annotations\21.0.3\support-annotations-21.0.3.jar"
         jumboMode="false"
         revision="21.1.2"
         sha1="4b74cefe1f0c1b819e7260c8627a14674e37fd35">
-        <dex dex="D:\Projects\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\pre-dexed\releaseVersion\debug\support-annotations-21.0.3-ff2d7f5022b5a92fc988e7ecf40140c2621ade2e.jar" />
+        <dex dex="D:\Projects\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\pre-dexed\releaseVersion\release\support-annotations-21.0.3-ff2d7f5022b5a92fc988e7ecf40140c2621ade2e.jar" />
     </item>
     <item
         jar="C:\Users\Daniel\.gradle\caches\modules-2\files-2.1\com.squareup.okio\okio\1.2.0\c0b52915a48fa91b1b94a28d4a2997bac5f524df\okio-1.2.0.jar"
         jumboMode="false"
         revision="21.1.2"
         sha1="c0b52915a48fa91b1b94a28d4a2997bac5f524df">
-        <dex dex="D:\Projects\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\pre-dexed\releaseVersion\debug\okio-1.2.0-52eacd3c1dd30cc92bdd9cb9828c3d641d6bf428.jar" />
+        <dex dex="D:\Projects\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\pre-dexed\releaseVersion\release\okio-1.2.0-52eacd3c1dd30cc92bdd9cb9828c3d641d6bf428.jar" />
     </item>
     <item
         jar="D:\Projects\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\exploded-aar\com.android.support\support-v13\21.0.3\classes.jar"
         jumboMode="false"
         revision="21.1.2"
         sha1="2c2071dcaf7a008c3b01a6381a33be55396bab09">
-        <dex dex="D:\Projects\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\pre-dexed\releaseVersion\debug\classes-165916f649bb28762a437b4da6a6e01e5c4ef4a3.jar" />
+        <dex dex="D:\Projects\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\pre-dexed\releaseVersion\release\classes-165916f649bb28762a437b4da6a6e01e5c4ef4a3.jar" />
     </item>
     <item
         jar="D:\Projects\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\exploded-aar\com.nhaarman.listviewanimations\lib-manipulation\3.1.0\classes.jar"
         jumboMode="false"
         revision="21.1.2"
         sha1="5660e4bf78904137e90e62a5d4cc2e987258f02c">
-        <dex dex="D:\Projects\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\pre-dexed\releaseVersion\debug\classes-81f50ebf89d1875c963ca6697132c0ec939ef716.jar" />
-    </item>
-    <item
-        jar="D:\Projects\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\exploded-aar\com.github.castorflex.smoothprogressbar\library\0.5.2\classes.jar"
-        jumboMode="false"
-        revision="21.1.2"
-        sha1="00c945daa09c5775dcb0c61f19cee94b7916a28d">
-        <dex dex="D:\Projects\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\pre-dexed\releaseVersion\debug\classes-b19c8c1f6708b58adf1c2f4b81527b6d9f94d5a2.jar" />
+        <dex dex="D:\Projects\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\pre-dexed\releaseVersion\release\classes-81f50ebf89d1875c963ca6697132c0ec939ef716.jar" />
     </item>
     <item
         jar="C:\Users\Daniel\.gradle\caches\modules-2\files-2.1\com.squareup.okhttp\okhttp\2.2.0\959c454243581fdf730abfd4f4745441724bcf2c\okhttp-2.2.0.jar"
         jumboMode="false"
         revision="21.1.2"
         sha1="959c454243581fdf730abfd4f4745441724bcf2c">
-        <dex dex="D:\Projects\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\pre-dexed\releaseVersion\debug\okhttp-2.2.0-4552351bb03028664ac2f940f5651aa29b87dc7d.jar" />
+        <dex dex="D:\Projects\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\pre-dexed\releaseVersion\release\okhttp-2.2.0-4552351bb03028664ac2f940f5651aa29b87dc7d.jar" />
+    </item>
+    <item
+        jar="D:\Projects\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\exploded-aar\com.github.castorflex.smoothprogressbar\library\0.5.2\classes.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="00c945daa09c5775dcb0c61f19cee94b7916a28d">
+        <dex dex="D:\Projects\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\pre-dexed\releaseVersion\release\classes-b19c8c1f6708b58adf1c2f4b81527b6d9f94d5a2.jar" />
     </item>
     <item
         jar="C:\Users\Daniel\.gradle\caches\modules-2\files-2.1\com.nineoldandroids\library\2.4.0\e9b63380f3a242dbdbf103a2355ad7e43bad17cb\library-2.4.0.jar"
         jumboMode="false"
         revision="21.1.2"
         sha1="e9b63380f3a242dbdbf103a2355ad7e43bad17cb">
-        <dex dex="D:\Projects\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\pre-dexed\releaseVersion\debug\library-2.4.0-f04fd066cb2942f40899b7b05a2b4e692293b4e4.jar" />
-    </item>
-    <item
-        jar="C:\Users\Daniel\.gradle\caches\modules-2\files-2.1\com.rosaloves\bitlyj\2.0.0\4556d1395fb808de976eaa4c110d86c5a30a9778\bitlyj-2.0.0.jar"
-        jumboMode="false"
-        revision="21.1.2"
-        sha1="4556d1395fb808de976eaa4c110d86c5a30a9778">
-        <dex dex="D:\Projects\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\pre-dexed\releaseVersion\debug\bitlyj-2.0.0-bb190e55c03927fbea537f9e01a26afd9926dde7.jar" />
+        <dex dex="D:\Projects\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\pre-dexed\releaseVersion\release\library-2.4.0-f04fd066cb2942f40899b7b05a2b4e692293b4e4.jar" />
     </item>
     <item
         jar="D:\Projects\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\exploded-aar\com.android.support\support-v4-preferencefragment\1.0.0\classes.jar"
         jumboMode="false"
         revision="21.1.2"
         sha1="f1678f81f938d991e46e194eacf1f224ffbf970f">
-        <dex dex="D:\Projects\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\pre-dexed\releaseVersion\debug\classes-9cc112b120f13cb4b3037eef5aebb4792516c449.jar" />
+        <dex dex="D:\Projects\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\pre-dexed\releaseVersion\release\classes-9cc112b120f13cb4b3037eef5aebb4792516c449.jar" />
     </item>
     <item
         jar="D:\Projects\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\exploded-aar\com.android.support\support-v13\21.0.3\libs\internal_impl-21.0.3.jar"
         jumboMode="false"
         revision="21.1.2"
         sha1="0dcc55e70f7ebf7238fe2ec53f662eb378ab2668">
-        <dex dex="D:\Projects\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\pre-dexed\releaseVersion\debug\internal_impl-21.0.3-31258e0bd189218af1a1a57cf658eb10fe238676.jar" />
+        <dex dex="D:\Projects\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\pre-dexed\releaseVersion\release\internal_impl-21.0.3-31258e0bd189218af1a1a57cf658eb10fe238676.jar" />
     </item>
     <item
         jar="D:\Projects\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\exploded-aar\com.android.support\appcompat-v7\21.0.3\classes.jar"
         jumboMode="false"
         revision="21.1.2"
         sha1="81d42bf983a8741f4888a6e333e454e4a5e0eeb7">
-        <dex dex="D:\Projects\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\pre-dexed\releaseVersion\debug\classes-500c656f246da61ab4619abef781489436b52225.jar" />
+        <dex dex="D:\Projects\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\pre-dexed\releaseVersion\release\classes-500c656f246da61ab4619abef781489436b52225.jar" />
     </item>
     <item
         jar="D:\Projects\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\exploded-aar\com.etsy.android.grid\library\1.0.5\classes.jar"
         jumboMode="false"
         revision="21.1.2"
         sha1="8218789edb56bdcfff7da48e892b37460fc707e2">
-        <dex dex="D:\Projects\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\pre-dexed\releaseVersion\debug\classes-c7053d80c2b2e2becc0b05c318dcba3592e98601.jar" />
+        <dex dex="D:\Projects\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\pre-dexed\releaseVersion\release\classes-c7053d80c2b2e2becc0b05c318dcba3592e98601.jar" />
     </item>
     <item
         jar="C:\Users\Daniel\.gradle\caches\modules-2\files-2.1\de.keyboardsurfer.android.widget\crouton\1.8.5\f085933fd4fad9693229d105d6d6d01fa90bb599\crouton-1.8.5.jar"
         jumboMode="false"
         revision="21.1.2"
         sha1="f085933fd4fad9693229d105d6d6d01fa90bb599">
-        <dex dex="D:\Projects\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\pre-dexed\releaseVersion\debug\crouton-1.8.5-8962f08e20eae1f7b09651faa0d40bc7e148fd62.jar" />
+        <dex dex="D:\Projects\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\pre-dexed\releaseVersion\release\crouton-1.8.5-8962f08e20eae1f7b09651faa0d40bc7e148fd62.jar" />
     </item>
     <item
         jar="D:\Projects\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\exploded-aar\com.github.gabrielemariotti.changeloglib\library\1.5.1\classes.jar"
         jumboMode="false"
         revision="21.1.2"
         sha1="74a89f0f8b56d9f11d70b8d8134cf4109f4797dc">
-        <dex dex="D:\Projects\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\pre-dexed\releaseVersion\debug\classes-cb0677a4d15cc964178288ca42c348edaa65f509.jar" />
+        <dex dex="D:\Projects\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\pre-dexed\releaseVersion\release\classes-cb0677a4d15cc964178288ca42c348edaa65f509.jar" />
     </item>
     <item
         jar="C:\Users\Daniel\.gradle\caches\modules-2\files-2.1\org.jdom\jdom2\2.0.5\2001db51c131e555bafdb77fc52af6a9408c505e\jdom2-2.0.5.jar"
         jumboMode="false"
         revision="21.1.2"
         sha1="2001db51c131e555bafdb77fc52af6a9408c505e">
-        <dex dex="D:\Projects\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\pre-dexed\releaseVersion\debug\jdom2-2.0.5-795b1d649c652a8d70073efe02ca65e26c1170c7.jar" />
+        <dex dex="D:\Projects\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\pre-dexed\releaseVersion\release\jdom2-2.0.5-795b1d649c652a8d70073efe02ca65e26c1170c7.jar" />
     </item>
     <item
         jar="C:\Users\Daniel\.gradle\caches\modules-2\files-2.1\com.squareup.okhttp\okhttp-urlconnection\2.2.0\cb20062e14c523637b7643295418097b48cccec2\okhttp-urlconnection-2.2.0.jar"
         jumboMode="false"
         revision="21.1.2"
         sha1="cb20062e14c523637b7643295418097b48cccec2">
-        <dex dex="D:\Projects\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\pre-dexed\releaseVersion\debug\okhttp-urlconnection-2.2.0-40a28f7a2160e7871051310315805b4eab72e653.jar" />
+        <dex dex="D:\Projects\SimpleNews\SimpleNewsRepo\SimpleNewsProject\SimpleNews\build\intermediates\pre-dexed\releaseVersion\release\okhttp-urlconnection-2.2.0-40a28f7a2160e7871051310315805b4eab72e653.jar" />
     </item>
 
 </items>

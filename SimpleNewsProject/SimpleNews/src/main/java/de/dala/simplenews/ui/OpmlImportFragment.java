@@ -88,33 +88,12 @@ public class  OpmlImportFragment extends BaseFragment implements BaseNavigation 
         fragment.setArguments(b);
         return fragment;
     }
-    private String readTxt()
-    {
-        InputStream raw = getResources().openRawResource(R.raw.opml_sample);
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        try
-        {
-            int i = raw.read();
-            while (i != -1)
-            {
-                byteArrayOutputStream.write(i);
-                i = raw.read();
-            }
-            raw.close();
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
-        return byteArrayOutputStream.toString();
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.opml_import_view, container, false);
 
         final EditText opmlContentEditText = (EditText) rootView.findViewById(R.id.opmlContentEditText);
-        // opmlContentEditText.setText(readTxt());
 
         importButton = (Button) rootView.findViewById(R.id.button);
         importProgres = (ProgressBar) rootView.findViewById(R.id.import_progress);
@@ -175,16 +154,7 @@ public class  OpmlImportFragment extends BaseFragment implements BaseNavigation 
                     feeds = OpmlConverter.convertOpmlListToFeedList((Opml)feed);
                 }
                 loaded = feeds != null && feeds.size() > 0;
-            } catch (FeedException e) {
-                e.printStackTrace();
-                loaded = false;
-            } catch (IOException e) {
-                e.printStackTrace();
-                loaded = false;
-            } catch (ClassCastException e){
-                e.printStackTrace();
-                loaded = false;
-            } catch (IllegalArgumentException e){
+            } catch (Exception e) {
                 e.printStackTrace();
                 loaded = false;
             }

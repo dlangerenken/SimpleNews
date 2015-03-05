@@ -38,15 +38,6 @@
         <item>"Cada dia"</item>
     </string-array>
 
-    <string-array name="listValues" translatable="false">
-        <item>"300000"</item>
-        <item>"900000"</item>
-        <item>"1800000"</item>
-        <item>"3600000"</item>
-        <item>"14400000"</item>
-        <item>"28800000"</item>
-        <item>"86400000"</item>
-    </string-array>
 
     <string-array name="keep_old_entries">
         <item>"Cada dia"</item>
@@ -57,7 +48,7 @@
         <item>"Mai"</item>
     </string-array>
 
-    <string-array name="oldEntryValues" translatable="false">
+    <string-array name="oldEntryValues">
         <item>"86400000"</item>
         <item>"259200000"</item>
         <item>"604800000"</item>
