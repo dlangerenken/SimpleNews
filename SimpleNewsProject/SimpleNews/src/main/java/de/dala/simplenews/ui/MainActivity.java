@@ -289,7 +289,9 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
     private IInAppBillingService mService;
 
     void initDonationsButton(){
-        bindService(new Intent("com.android.vending.billing.InAppBillingService.BIND"), mServiceConn, Context.BIND_AUTO_CREATE);
+        Intent intent = new Intent("com.android.vending.billing.InAppBillingService.BIND");
+        intent.setPackage("com.android.vending");
+        bindService(intent, mServiceConn, Context.BIND_AUTO_CREATE);
     }
 
     @Override
