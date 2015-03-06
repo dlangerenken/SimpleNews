@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.view.ActionMode;
@@ -499,16 +498,22 @@ public class CategoryFeedsFragment extends BaseFragment implements BaseNavigatio
             // inflate contextual menu
             mode.getMenuInflater().inflate(R.menu.contextual_feed_selection_menu, menu);
             MenuItem item = menu.findItem(R.id.menu_item_share);
-            shareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(item);
-            shareActionProvider.setShareHistoryFileName(
-                    ShareActionProvider.DEFAULT_SHARE_HISTORY_FILE_NAME);
-            shareActionProvider.setShareIntent(createShareIntent());
-            shareActionProvider.setOnShareTargetSelectedListener(new ShareActionProvider.OnShareTargetSelectedListener() {
-                @Override
-                public boolean onShareTargetSelected(ShareActionProvider shareActionProvider, Intent intent) {
-                    return false;
+            if (item != null) {
+                shareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(item);
+                if (shareActionProvider != null) {
+                    String shareHistoryFileName = ShareActionProvider.DEFAULT_SHARE_HISTORY_FILE_NAME;
+                    if (shareHistoryFileName != null) {
+                        shareActionProvider.setShareHistoryFileName(shareHistoryFileName);
+                        shareActionProvider.setShareIntent(createShareIntent());
+                        shareActionProvider.setOnShareTargetSelectedListener(new ShareActionProvider.OnShareTargetSelectedListener() {
+                            @Override
+                            public boolean onShareTargetSelected(ShareActionProvider shareActionProvider, Intent intent) {
+                                return false;
+                            }
+                        });
+                    }
                 }
-            });
+            }
             return true;
         }
 
