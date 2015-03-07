@@ -74,7 +74,7 @@
     <string name="selection_save">Speichern</string>
     <string name="selection_share">Teilen</string>
     <string name="shorten_links_title">Links zum Teilen verkürzen?</string>
-    <string name="shorten_links_summary">Sollen Links zum Teilen gekürzt werden? (z.B. www.sehrsehrlangewebsite.de -> www.bit.ly/kurzername)</string>
+    <string name="shorten_links_summary">Sollen Links zum Teilen gekürzt werden? (z.B. www.sehrsehrlangewebsite.de -> www.adf.ly/kurzername)</string>
     <string name="feed_selection_remove">Entfernen</string>
     <string name="feed_selection_add">Hinzufügen</string>
     <string name="mark_read">Gelesen markieren</string>
@@ -121,4 +121,6 @@
     <string name="menu_coffee2">Spendier mir 2 Kaffee!</string>
     <string name="menu_coffee3">Spendier mir 5 Kaffee!</string>
     <string name="menu_coffee4">Spendier mir 10 Kaffee!</string>
+    <string name="coffee_pref_title">Spendenknopf ausblenden</string>
+    <string name="coffee_pref_summary">Der Spendenknopf erscheint nur noch in der Navigation.</string>
 </resources>

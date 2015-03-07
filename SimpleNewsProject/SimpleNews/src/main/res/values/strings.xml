@@ -73,7 +73,7 @@
     <string name="selection_save">Save</string>
     <string name="selection_share">Share</string>
     <string name="shorten_links_title">Shorten links for sharing?</string>
-    <string name="shorten_links_summary">Should the shared links be shortened? (e.g. www.thisismyverylongnewssite.com to www.bit.ly/newname)</string>
+    <string name="shorten_links_summary">Should the shared links be shortened? (e.g. www.thisismyverylongnewssite.com to www.adf.ly/newname)</string>
     <string name="feed_selection_remove">Remove</string>
     <string name="feed_selection_add">Add</string>
     <string name="mark_read">Mark as read</string>
@@ -121,4 +121,6 @@
     <string name="menu_coffee2">Buy me 2 coffees!</string>
     <string name="menu_coffee3">Buy me 5 coffees!</string>
     <string name="menu_coffee4">Buy me 10 coffees!</string>
+    <string name="coffee_pref_title">Hide donation button</string>
+    <string name="coffee_pref_summary">If hidden, the coffee symbol is only shown inside of the navigation drawer</string>
 </resources>

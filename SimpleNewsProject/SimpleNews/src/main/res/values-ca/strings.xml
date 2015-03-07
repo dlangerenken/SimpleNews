@@ -73,7 +73,7 @@
     <string name="selection_save">"Desa"</string>
     <string name="selection_share">"Comparteix"</string>
     <string name="shorten_links_title">"Escurçar els enllaços per compartir?"</string>
-    <string name="shorten_links_summary">"S'han d'escurçar els enllaços compartits? (p. ex. www.unnomllarguissimdecanal.com a www.bit.ly/nomnou)"</string>
+    <string name="shorten_links_summary">"S'han d'escurçar els enllaços compartits? (p. ex. www.unnomllarguissimdecanal.com a www.adf.ly/nomnou)"</string>
     <string name="feed_selection_remove">"Elimina"</string>
     <string name="feed_selection_add">"Afegei"</string>
     <string name="mark_read">"Marca com a llegit"</string>
@@ -119,4 +119,6 @@
     <string name="menu_coffee2">Buy me 2 coffees!</string>
     <string name="menu_coffee3">Buy me 5 coffees!</string>
     <string name="menu_coffee4">Buy me 10 coffees!</string>
+    <string name="coffee_pref_title">Botó de donació Amaga</string>
+    <string name="coffee_pref_summary">Si oculta, el símbol del cafè només es mostra a l\'interior del calaix de navegació</string>
 </resources>

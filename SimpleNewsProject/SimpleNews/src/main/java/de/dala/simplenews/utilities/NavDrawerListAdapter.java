@@ -76,10 +76,6 @@ public class NavDrawerListAdapter extends BaseAdapter {
         }
 
         TextView txtTitle = (TextView) convertView.findViewById(R.id.title);
-        //View leftBorder = convertView.findViewById(R.id.left_border);
-        //View rightBorder = convertView.findViewById(R.id.right_border);
-        //UIUtils.setBackground(leftBorder, colorDrawable);
-        //UIUtils.setBackground(rightBorder, colorDrawable);
         txtTitle.setText(item.getTitle());
 
         convertView.setEnabled(false);

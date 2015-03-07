@@ -25,6 +25,7 @@ public class PrefUtilities {
     public static final String MULTIPLE_COLUMNS_PORTRAIT = "multiple_columns_portrait";
     public static final String MULTIPLE_COLUMNS_LANDSCAPE = "multiple_columns_landscape";
     public static final String CATEGORY_INDEX = "category_index";
+    public static final String DONATION_BUTTON = "coffee_actionbar";
     /**
      * Remember the position of the selected item.
      */
@@ -75,6 +76,10 @@ public class PrefUtilities {
 
     public boolean shouldAskForRatingAgain() {
         return preferences.getBoolean(ASK_FOR_RATING, true);
+    }
+
+    public boolean shouldHideDonationButton() {
+        return preferences.getBoolean(DONATION_BUTTON, false);
     }
 
     public boolean useMultipleColumnsLandscape() {

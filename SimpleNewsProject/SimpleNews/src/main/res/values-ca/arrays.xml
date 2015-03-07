@@ -11,21 +11,8 @@
         <item>"Configuració"</item>
         <item>"Simplenews vota"</item>
         <item>"Importa informació"</item>
+        <item>Buy me a coffee!</item>
     </string-array>
-
-    <!-- Nav Drawer List Item Icons -->
-    <array name="nav_drawer_icons" translatable="false">
-        <item>@drawable/ic_home</item>
-        <item>@drawable/ic_recent</item>
-        <item>@drawable/ic_favorite</item>
-        <item>@drawable/ic_unread</item>
-        <item>@drawable/ic_nav_categories</item>
-        <item>@android:drawable/ic_menu_agenda</item>
-        <item>@android:drawable/ic_menu_preferences</item>
-        <item>@drawable/ic_rating</item>
-        <item>@android:drawable/ic_menu_upload</item>
-        <item>@android:drawable/ic_menu_save</item>
-    </array>
 
     <string-array name="listOptions">
         <item>"Cada 5 minuts"</item>

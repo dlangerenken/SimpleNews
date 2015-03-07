@@ -1,18 +1,18 @@
 package de.dala.simplenews.ui;
 
+import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentSender;
 import android.content.ServiceConnection;
+import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.os.RemoteException;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -21,11 +21,10 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 import com.android.vending.billing.IInAppBillingService;
-
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.List;
@@ -33,6 +32,7 @@ import java.util.List;
 import de.dala.simplenews.R;
 import de.dala.simplenews.dialog.ChangeLogDialog;
 import de.dala.simplenews.utilities.BaseNavigation;
+import de.dala.simplenews.utilities.PrefUtilities;
 
 public class MainActivity extends ActionBarActivity implements NavigationDrawerFragment.NavigationDrawerCallbacks, FragmentManager.OnBackStackChangedListener {
     /**
@@ -60,6 +60,7 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
 
         if (savedInstanceState == null) {
             if (getIntent().getDataString() != null) {
+                changeColor(Color.parseColor("#ff33b5e5"));
                 String path = getIntent().getDataString();
                 FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
                 currentFragment = CategoryModifierFragment.getInstance(path);
@@ -73,6 +74,8 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
             if (savedInstanceState.containsKey("actionbar_color")) {
                 int color = savedInstanceState.getInt("actionbar_color");
                 changeColor(color);
+            }else{
+                changeColor(Color.parseColor("#ff33b5e5"));
             }
         }
         getSupportFragmentManager().addOnBackStackChangedListener(this);
@@ -120,7 +123,7 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
     @Override
     public boolean onCreateOptionsMenu(android.view.Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
-        menu.findItem(R.id.menu_main_donate).setVisible(mService != null);
+        menu.findItem(R.id.menu_main_donate).setVisible(mService != null && !PrefUtilities.getInstance().shouldHideDonationButton());
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -199,8 +202,43 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
                 transaction.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_left, R.anim.slide_in_right, R.anim.slide_out_right);
                 transaction.replace(R.id.container, currentFragment).addToBackStack(null).commit();
                 break;
+            case NavigationDrawerFragment.DONATION:
+                showCoffeeDialog();
+                break;
         }
         updateNavigation();
+    }
+
+    private void showCoffeeDialog() {
+        AlertDialog.Builder builderSingle = new AlertDialog.Builder(
+                this);
+        builderSingle.setIcon(R.drawable.ic_coffee_red);
+        builderSingle.setTitle(getResources().getString(R.string.menu_coffee));
+        final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
+                this,
+                android.R.layout.select_dialog_singlechoice);
+        arrayAdapter.add(getResources().getString(R.string.menu_coffee));
+        arrayAdapter.add(getResources().getString(R.string.menu_coffee2));
+        arrayAdapter.add(getResources().getString(R.string.menu_coffee3));
+        arrayAdapter.add(getResources().getString(R.string.menu_coffee4));
+        builderSingle.setNegativeButton(getResources().getString(R.string.cancel),
+                new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+
+        builderSingle.setAdapter(arrayAdapter,
+                new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        buy(which);
+                    }
+                });
+        builderSingle.show();
     }
 
     private void clearBackStackKeep(int toKeep){
@@ -311,6 +349,25 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
         }
     }
 
+    private void buy(final int id){
+        switch (id){
+            case 0:
+                buy("coffee");
+                break;
+            case 1:
+                buy("coffee2");
+                break;
+            case 2:
+                buy("coffee3");
+                break;
+            case 3:
+                buy("coffee4");
+                break;
+            default:
+                buy("coffee");
+                break;
+        }
+    }
 
     private void buy(final String sku) {
         try {
@@ -319,7 +376,7 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
             if (pendingIntent != null) {
                 startIntentSenderForResult(pendingIntent.getIntentSender(), 1001, new Intent(), 0, 0, 0);
             }
-        } catch (RemoteException | IntentSender.SendIntentException ignored) {
+        } catch (Exception ignored) {
             Toast.makeText(this, getString(R.string.exception), Toast.LENGTH_LONG).show();
         }
     }
@@ -355,7 +412,7 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
                         }
                     }
                 }
-            } catch (RemoteException | JSONException ignored) {
+            } catch (Exception ignored) {
                 Toast.makeText(MainActivity.this, getString(R.string.exception), Toast.LENGTH_LONG).show();
             }
         }
@@ -373,7 +430,7 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
             try {
                 JSONObject json = new JSONObject(mData.getStringExtra("INAPP_PURCHASE_DATA"));
                 mService.consumePurchase(3, getPackageName(), json.getString("purchaseToken"));
-            } catch (JSONException | RemoteException ignored) {
+            } catch (Exception ignored) {
                 Toast.makeText(MainActivity.this, getString(R.string.exception), Toast.LENGTH_LONG).show();
             }
         }

@@ -22,5 +22,10 @@
             android:key="deprecated_time"
             android:summary="@string/remove_old_entries_summary"
             android:title="@string/remove_old_entries_title" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="coffee_actionbar"
+            android:summary="@string/coffee_pref_summary"
+            android:title="@string/coffee_pref_title" />
     </PreferenceCategory>
 </PreferenceScreen>

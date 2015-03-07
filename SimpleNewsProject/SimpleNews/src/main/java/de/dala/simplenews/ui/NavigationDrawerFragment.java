@@ -46,6 +46,7 @@ public class NavigationDrawerFragment extends Fragment implements FragmentManage
     public static final int SETTINGS = 6;
     public static final int RATING = 7;
     public static final int IMPORT = 8;
+    public static final int DONATION = 9;
 
     /**
      * A pointer to the current callbacks instance (the Activity).
@@ -212,6 +213,9 @@ public class NavigationDrawerFragment extends Fragment implements FragmentManage
             navDrawerItems.add(new NavDrawerItem(CHANGELOG, navMenuTitles[CHANGELOG], navMenuIcons.getResourceId(CHANGELOG, -1), NavDrawerItem.SETTING_ITEM));
             navDrawerItems.add(new NavDrawerItem(IMPORT, navMenuTitles[IMPORT], navMenuIcons.getResourceId(IMPORT, -1), NavDrawerItem.SETTING_ITEM_BETA));
 
+            if (PrefUtilities.getInstance().shouldHideDonationButton()) {
+                navDrawerItems.add(new NavDrawerItem(DONATION, navMenuTitles[DONATION], navMenuIcons.getResourceId(DONATION, -1), NavDrawerItem.SETTING_ITEM));
+            }
             navMenuIcons.recycle();
             // set up the drawer's list view with items and click listener
             navDrawAdapter = new NavDrawerListAdapter(getActivity(), navDrawerItems);
