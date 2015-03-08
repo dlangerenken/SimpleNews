@@ -329,6 +329,12 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
     }
 
     @Override
+    public List<Entry> getUnreadEntries(long categoryId) {
+        IPersistableObject<Entry> persistence = new PersistableUnreadEntries(categoryId, null, null, null);
+        return load(persistence);
+    }
+
+    @Override
     public Cursor getEntriesCursor(Long categoryId, Long feedId, Boolean onlyVisible) {
         IPersistableObject<Entry> persistence = new PersistableEntries(categoryId, feedId, null, onlyVisible);
         return persistence.getCursor();

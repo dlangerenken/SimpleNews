@@ -42,11 +42,10 @@ public class NavigationDrawerFragment extends Fragment implements FragmentManage
     public static final int FAVORITE = 2;
     public static final int UNREAD = 3;
     public static final int CATEGORIES = 4;
-    public static final int CHANGELOG = 5;
-    public static final int SETTINGS = 6;
-    public static final int RATING = 7;
-    public static final int IMPORT = 8;
-    public static final int DONATION = 9;
+    public static final int SETTINGS = 5;
+    public static final int RATING = 6;
+    public static final int IMPORT = 7;
+    public static final int DONATION = 8;
 
     /**
      * A pointer to the current callbacks instance (the Activity).
@@ -210,7 +209,6 @@ public class NavigationDrawerFragment extends Fragment implements FragmentManage
             navDrawerItems.add(new NavDrawerItem(RATING, navMenuTitles[RATING], navMenuIcons.getResourceId(RATING, -1)));
 
             navDrawerItems.add(new NavDrawerItem(SETTINGS, navMenuTitles[SETTINGS], navMenuIcons.getResourceId(SETTINGS, -1)));
-            navDrawerItems.add(new NavDrawerItem(CHANGELOG, navMenuTitles[CHANGELOG], navMenuIcons.getResourceId(CHANGELOG, -1), NavDrawerItem.SETTING_ITEM));
             navDrawerItems.add(new NavDrawerItem(IMPORT, navMenuTitles[IMPORT], navMenuIcons.getResourceId(IMPORT, -1), NavDrawerItem.SETTING_ITEM_BETA));
 
             if (PrefUtilities.getInstance().shouldHideDonationButton()) {

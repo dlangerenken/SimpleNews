@@ -1,5 +1,8 @@
 package de.dala.simplenews.ui;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ObjectAnimator;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -16,6 +19,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewPropertyAnimator;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
@@ -26,9 +30,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.nhaarman.listviewanimations.ArrayAdapter;
-import com.nineoldandroids.animation.Animator;
-import com.nineoldandroids.animation.AnimatorListenerAdapter;
-import com.nineoldandroids.view.ViewPropertyAnimator;
 import com.rometools.rome.feed.opml.Opml;
 import com.rometools.rome.io.impl.OPML20Generator;
 import com.rometools.rome.feed.synd.SyndFeed;
@@ -156,22 +157,25 @@ public class CategoryFeedsFragment extends BaseFragment implements BaseNavigatio
                 android.R.integer.config_shortAnimTime);
         // Set the content view to 0% opacity but visible, so that it is visible
         // (but fully transparent) during the animation.
-        ViewPropertyAnimator.animate(firstView).alpha(0f);
+        ObjectAnimator.ofFloat(firstView, "alpha", 0f).start();
         firstView.setVisibility(View.VISIBLE);
 
         // Animate the content view to 100% opacity, and clear any animation
         // listener set on the view.
-        ViewPropertyAnimator.animate(firstView).alpha(1f).setDuration(mShortAnimationDuration).setListener(null);
+        ObjectAnimator.ofFloat(firstView, "alpha", 1f).setDuration(mShortAnimationDuration).start();
 
         // Animate the loading view to 0% opacity. After the animation ends,
         // set its visibility to GONE as an optimization step (it won't
         // participate in layout passes, etc.)
-        ViewPropertyAnimator.animate(secondView).alpha(0f).setDuration(mShortAnimationDuration).setListener(new AnimatorListenerAdapter() {
+
+        ObjectAnimator animator = ObjectAnimator.ofFloat(firstView, "alpha", 0f).setDuration(mShortAnimationDuration);
+        animator.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
                 secondView.setVisibility(View.GONE);
             }
         });
+        animator.start();
     }
 
     private void editClicked(final Feed feed) {

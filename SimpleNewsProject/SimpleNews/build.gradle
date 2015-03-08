@@ -36,7 +36,7 @@ android {
             dexOptions {
                 preDexLibraries = false
             }
-            minifyEnabled true
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.txt'
         }
     }
@@ -52,22 +52,19 @@ android {
 
 dependencies {
     compile project(':feeds')
-    compile 'com.nineoldandroids:library:2.4.0'
+    compile 'com.android.support:recyclerview-v7:21.0.3'
     compile 'com.astuetz:pagerslidingtabstrip:1.0.1'
-    compile 'com.github.gabrielemariotti.changeloglib:library:1.5.1'
     compile('de.keyboardsurfer.android.widget:crouton:1.8.5') {
         exclude module: 'support-v4'
     }
-
-    compile('com.android.support:support-v4-preferencefragment:1.0.0@aar') {
-        exclude module: 'support-v4'
-    }
     compile 'com.ocpsoft:ocpsoft-pretty-time:1.0.7'
-    compile 'com.github.castorflex.smoothprogressbar:library:0.5.2'
-    compile 'com.nhaarman.listviewanimations:lib-core:3.1.0@aar'
-    compile 'com.nhaarman.listviewanimations:lib-manipulation:3.1.0@aar'
-    compile 'com.etsy.android.grid:library:1.0.5'
     compile 'com.squareup.okhttp:okhttp:2.2.0'
     compile 'com.android.support:support-v13:21.0.3'
     compile 'com.android.support:appcompat-v7:21.0.3'
+    compile 'com.nhaarman.listviewanimations:lib-core:3.1.0@aar'
+    compile 'com.nhaarman.listviewanimations:lib-manipulation:3.1.0@aar'
+    compile('com.android.support:support-v4-preferencefragment:1.0.0@aar') {
+        exclude module: 'support-v4'
+    }
+    compile 'com.nineoldandroids:library:2.4.0'
 }

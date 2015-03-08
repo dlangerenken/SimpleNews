@@ -37,6 +37,9 @@ public interface IDatabaseHandler {
     int removeEntries(Long categoryId, Long feedId, Long entryId);
     List<Entry> getFavoriteEntries(long categoryId);
     List<Entry> getVisitedEntries(long categoryId);
+
+    List<Entry> getUnreadEntries(long categoryId);
+
     Cursor getEntriesCursor(Long categoryId, Long feedId, Boolean onlyVisible);
     Cursor getFavoriteEntriesCursor(Long categoryId, Long feedId);
     Cursor getRecentEntriesCursor(Long categoryId, Long feedId);

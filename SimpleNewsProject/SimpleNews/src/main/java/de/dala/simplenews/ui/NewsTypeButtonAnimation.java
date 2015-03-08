@@ -1,12 +1,11 @@
 package de.dala.simplenews.ui;
 
 import android.os.Handler;
-import android.view.MotionEvent;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
-import android.widget.AbsListView;
 
 import circularmenu.FloatingActionMenu;
 
@@ -23,37 +22,28 @@ public class NewsTypeButtonAnimation  {
         }
     }
 
-    public void init(final AbsListView view, FloatingActionMenu viewToAnimate) {
+    public void init(final RecyclerView view, FloatingActionMenu viewToAnimate) {
         mViewToAnimate = viewToAnimate;
         initScrollClass(view);
     }
 
-    private void initScrollClass(final AbsListView view) {
+    private void initScrollClass(final RecyclerView view) {
         myScrollClass = new ScrollClass() {
-            int mLastFirstVisibleItem = 0;
             boolean sliding = false;
-            int mTotalItemCount = 0;
-
-            @Override public void onScrollStateChanged(AbsListView view, int scrollState) {}
 
             @Override
-            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                mTotalItemCount = totalItemCount;
-                if (totalItemCount == 0){
-                    fadeIn();
-                }
-                final int currentFirstVisibleItem = view.getFirstVisiblePosition();
-                if (currentFirstVisibleItem < mLastFirstVisibleItem) {
-                    fadeIn();
-                } else if (currentFirstVisibleItem > mLastFirstVisibleItem) {
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                if (dx > 0 || dy > 0){
                     fadeOut();
+                }else if (dx < 0 || dy < 0){
+                    fadeIn();
                 }
-                mLastFirstVisibleItem = currentFirstVisibleItem;
             }
+
 
             @Override
             public void fadeOut() {
-                if (!sliding && mTotalItemCount > 0) {
+                if (!sliding) {
                     final int height = mViewToAnimate.getMainActionView().getMeasuredHeight();
                     if (mViewToAnimate.getMainActionView().getVisibility() == View.VISIBLE) {
                         Animation animation = new TranslateAnimation(0, 0, 0,
@@ -124,29 +114,9 @@ public class NewsTypeButtonAnimation  {
         };
 
         view.setOnScrollListener(myScrollClass);
-        view.setOnTouchListener(new View.OnTouchListener() {
-            private int mLastMotionY;
-
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                final int y = (int) event.getY();
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_MOVE:
-                        if (y < mLastMotionY && view.getFirstVisiblePosition() <= 0) {
-                            myScrollClass.fadeIn();
-                        }
-                        break;
-                    case MotionEvent.ACTION_DOWN:
-                        mLastMotionY = (int) event.getY();
-                        break;
-                }
-                return false;
-            }
-
-        });
     }
 
-    private abstract class ScrollClass implements AbsListView.OnScrollListener {
+    private abstract class ScrollClass extends RecyclerView.OnScrollListener {
         Handler mHandler = new Handler();
         Runnable mRunnable = new Runnable() {
             @Override

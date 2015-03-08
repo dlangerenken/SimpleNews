@@ -2,9 +2,6 @@ package de.dala.simplenews.common;
 
 import java.io.Serializable;
 
-/**
- * Created by Daniel on 19.12.13.
- */
 public class Entry implements Comparable<Entry>, Serializable {
     private Long id;
     private Long feedId;
@@ -166,22 +163,23 @@ public class Entry implements Comparable<Entry>, Serializable {
         this.favoriteDate = favoriteDate;
     }
 
-/*
     @Override
     public boolean equals(Object o) {
-        if (o == null || !(o instanceof Entry)){
-            return false;
-        }
-        Entry other = (Entry) o;
-        return other.getDescription().equals(description)
-                && other.getTitle().equals(title);
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Entry entry = (Entry) o;
+
+        if (date != null ? !date.equals(entry.date) : entry.date != null) return false;
+        if (id != null ? !id.equals(entry.id) : entry.id != null) return false;
+
+        return true;
     }
 
     @Override
     public int hashCode() {
-        int a = description.hashCode() * 7;
-        a = a + title.hashCode() * 13;
-        return a;
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (date != null ? date.hashCode() : 0);
+        return result;
     }
-    */
 }

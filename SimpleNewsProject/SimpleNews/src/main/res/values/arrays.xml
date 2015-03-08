@@ -7,7 +7,6 @@
         <item>Favorite</item>
         <item>Unread</item>
         <item>Categories</item>
-        <item>Changelog</item>
         <item>Settings</item>
         <item>Rate SimpleNews!</item>
         <item>Import Feeds</item>
@@ -21,7 +20,6 @@
         <item>@drawable/ic_favorite</item>
         <item>@drawable/ic_unread</item>
         <item>@drawable/ic_nav_categories</item>
-        <item>@android:drawable/ic_menu_agenda</item>
         <item>@android:drawable/ic_menu_preferences</item>
         <item>@drawable/ic_rating</item>
         <item>@android:drawable/ic_menu_upload</item>

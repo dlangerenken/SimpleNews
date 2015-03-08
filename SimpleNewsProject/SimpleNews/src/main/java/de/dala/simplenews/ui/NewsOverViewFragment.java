@@ -1,10 +1,9 @@
 package de.dala.simplenews.ui;
 
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.TransitionDrawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -20,11 +19,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import com.astuetz.PagerSlidingTabStrip;
-import com.nineoldandroids.view.ViewHelper;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -40,10 +36,7 @@ import de.dala.simplenews.common.Category;
 import de.dala.simplenews.database.DatabaseHandler;
 import de.dala.simplenews.utilities.BaseNavigation;
 import de.dala.simplenews.utilities.PrefUtilities;
-import de.keyboardsurfer.android.widget.crouton.Configuration;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
-
-import static com.nineoldandroids.view.ViewPropertyAnimator.animate;
 
 /**
  * Created by Daniel on 20.02.14.
@@ -52,10 +45,7 @@ public class NewsOverViewFragment extends BaseFragment implements ViewPager.OnPa
 
     private PagerSlidingTabStrip tabs;
 
-    private View progressView;
     private List<Category> categories;
-    private RelativeLayout bottomView;
-    private Crouton crouton;
     private int loadingNews = -1;
     private MainActivity mainActivity;
     private int entryType = ALL;
@@ -145,8 +135,11 @@ public class NewsOverViewFragment extends BaseFragment implements ViewPager.OnPa
 
     private void updateMenu(){
         boolean useMultiple = shouldUseMultipleColumns();
-        if (columnsMenu != null){
-            columnsMenu.setTitle(useMultiple ? getString(R.string.single_columns) : getString(R.string.multiple_columns));
+        Context mContext = getActivity();
+        if (mContext != null){
+            if (columnsMenu != null) {
+                columnsMenu.setTitle(useMultiple ? mContext.getString(R.string.single_columns) : mContext.getString(R.string.multiple_columns));
+            }
         }
     }
 
@@ -226,8 +219,6 @@ public class NewsOverViewFragment extends BaseFragment implements ViewPager.OnPa
         View rootView = inflater.inflate(R.layout.news_overview, container, false);
         pager = (ViewPager) rootView.findViewById(R.id.pager);
         tabs = (PagerSlidingTabStrip) rootView.findViewById(R.id.tabs);
-        bottomView = (RelativeLayout) rootView.findViewById(R.id.bottom_view);
-        createProgressView();
 
         if (!PrefUtilities.getInstance().xmlIsAlreadyLoaded()) {
             DatabaseHandler.getInstance().loadXmlIntoDatabase(R.raw.categories);
@@ -279,7 +270,6 @@ public class NewsOverViewFragment extends BaseFragment implements ViewPager.OnPa
     private void changeColor(Category category) {
         tabs.setIndicatorColor(category.getSecondaryColor());
         mainActivity.changeColor(category.getPrimaryColor());
-        progressView.setBackgroundColor(category.getPrimaryColor());
 
         // http://stackoverflow.com/questions/11002691/actionbar-setbackgrounddrawable-nulling-background-from-thread-handler
         ((ActionBarActivity) getActivity()).getSupportActionBar().setDisplayShowTitleEnabled(false);
@@ -321,16 +311,32 @@ public class NewsOverViewFragment extends BaseFragment implements ViewPager.OnPa
                 .setRadius(actionMenuRadius)
                 .attachTo(button)
                 .build();
-        ViewHelper.setScaleX(button, 0);
-        ViewHelper.setScaleY(button, 0);
-        ViewHelper.setAlpha(subactionButton1, 0);
-        ViewHelper.setAlpha(subactionButton2, 0);
-        ViewHelper.setAlpha(subactionButton3, 0);
+        button.setScaleX(0);
+        button.setScaleY(0);
 
-        animate(button).setStartDelay(1200).scaleX(1).scaleY(1).setDuration(500);
-        animate(subactionButton1).setStartDelay(1200).alpha(1).setDuration(0);
-        animate(subactionButton2).setStartDelay(1200).alpha(1).setDuration(0);
-        animate(subactionButton3).setStartDelay(1200).alpha(1).setDuration(0);
+        subactionButton1.setAlpha(0);
+        subactionButton2.setAlpha(0);
+        subactionButton3.setAlpha(0);
+
+        AnimatorSet set = new AnimatorSet();
+        set.playTogether(
+                ObjectAnimator.ofFloat(button, "scaleX", 1),
+                ObjectAnimator.ofFloat(button, "scaleY", 1)
+        );
+        set.setDuration(500);
+        set.setStartDelay(1200);
+        set.start();
+
+        set = new AnimatorSet();
+        set.playTogether(
+                ObjectAnimator.ofFloat(subactionButton1, "alpha", 1),
+                ObjectAnimator.ofFloat(subactionButton2, "alpha", 1),
+                ObjectAnimator.ofFloat(subactionButton3, "alpha", 1)
+        );
+        set.setDuration(0);
+        set.setStartDelay(1200);
+        set.start();
+
         updateNewsIcon();
     }
 
@@ -410,38 +416,6 @@ public class NewsOverViewFragment extends BaseFragment implements ViewPager.OnPa
     }
 
 
-    public void updateNews() {
-        if (crouton != null) {
-            crouton.cancel();
-        }
-        Configuration config = new Configuration.Builder().setOutAnimation(R.anim.abc_slide_out_bottom).setInAnimation(R.anim.abc_slide_in_bottom).setDuration(Configuration.DURATION_INFINITE).build();
-        crouton = Crouton.make(getActivity(), createProgressView(), bottomView);
-        crouton.setConfiguration(config);
-        crouton.show();
-    }
-
-    public void showLoadingNews() {
-        loadingNews++;
-        if (loadingNews == 0) {
-            updateNews();
-        }
-    }
-
-    public void cancelLoadingNews() {
-        loadingNews--;
-        if (loadingNews >= -1) {
-            crouton.cancel();
-            loadingNews = -1;
-        }
-    }
-
-    private View createProgressView() {
-        progressView = mainActivity.getLayoutInflater().inflate(R.layout.progress_layout, null);
-        TextView progressText = (TextView) progressView.findViewById(R.id.progress_text);
-        progressText.setText(getString(R.string.update_news));
-        return progressView;
-    }
-
     public class MyPagerAdapter extends FragmentPagerAdapter {
 
         private FragmentManager mFragmentManager;
@@ -466,7 +440,7 @@ public class NewsOverViewFragment extends BaseFragment implements ViewPager.OnPa
             // Check if this Fragment already exists.
             String name = makeFragmentName(R.id.pager, position);
             if (newsTypeTags == null){
-                newsTypeTags = new ArrayList<String>();
+                newsTypeTags = new ArrayList<>();
             }
             if (!newsTypeTags.contains(name)){
                 newsTypeTags.add(name);

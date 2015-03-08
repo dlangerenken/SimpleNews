@@ -2,12 +2,12 @@
  *   Copyright 2014 Oguz Bilgener
  */
 package circularmenu.animation;
+import android.animation.Animator;
 import android.graphics.Point;
 import android.os.Handler;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
-import com.nineoldandroids.animation.Animator;
-import com.nineoldandroids.view.ViewHelper;
 import circularmenu.FloatingActionMenu;
 
 /**
@@ -62,27 +62,45 @@ public abstract class MenuAnimationHandler {
      * @param actionType
      */
     protected void restoreSubActionViewAfterAnimation(final FloatingActionMenu.Item subActionItem, final ActionType actionType) {
-        new Handler().post(new Runnable() {
-            public void run() {
-                FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) subActionItem.view.getLayoutParams();
-                ViewHelper.setTranslationX(subActionItem.view, 0);
-                ViewHelper.setTranslationY(subActionItem.view, 0);
-                ViewHelper.setRotation(subActionItem.view, 0);
-                ViewHelper.setScaleX(subActionItem.view, 1);
-                ViewHelper.setScaleY(subActionItem.view, 1);
-                ViewHelper.setAlpha(subActionItem.view, 1);
+        ViewGroup.LayoutParams params = subActionItem.view.getLayoutParams();
+        subActionItem.view.setTranslationX(0);
+        subActionItem.view.setTranslationY(0);
+        subActionItem.view.setRotation(0);
+        subActionItem.view.setScaleX(1);
+        subActionItem.view.setScaleY(1);
+        subActionItem.view.setAlpha(1);
+        if(actionType == ActionType.OPENING) {
+            FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) params;
+            if(menu.isSystemOverlay()) {
+                WindowManager.LayoutParams overlayParams = (WindowManager.LayoutParams) menu.getOverlayContainer().getLayoutParams();
+                lp.setMargins(subActionItem.x - overlayParams.x, subActionItem.y - overlayParams.y, 0, 0);
+            }
+            else {
+                lp.setMargins(subActionItem.x, subActionItem.y, 0, 0);
+            }
+            subActionItem.view.setLayoutParams(lp);
+        }
+        else if(actionType == ActionType.CLOSING) {
+            Point center = menu.getActionViewCenter();
+            FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) params;
+            if(menu.isSystemOverlay()) {
+                WindowManager.LayoutParams overlayParams = (WindowManager.LayoutParams) menu.getOverlayContainer().getLayoutParams();
+                lp.setMargins(center.x - overlayParams.x - subActionItem.width / 2, center.y - overlayParams.y - subActionItem.height / 2, 0, 0);
+            }
+            else {
+                lp.setMargins(center.x - subActionItem.width / 2, center.y - subActionItem.height / 2, 0, 0);
+            }
+            subActionItem.view.setLayoutParams(lp);
+            menu.removeViewFromCurrentContainer(subActionItem.view);
 
-                if (actionType == ActionType.OPENING) {
-                    params.setMargins(subActionItem.x, subActionItem.y, 0, 0);
-                    subActionItem.view.setLayoutParams(params);
-                } else if (actionType == ActionType.CLOSING) {
-                    Point center = menu.getActionViewCenter();
-                    params.setMargins(center.x - subActionItem.width / 2, center.y - subActionItem.height / 2, 0, 0);
-                    subActionItem.view.setLayoutParams(params);
-                    ((ViewGroup) menu.getActivityContentView()).removeView(subActionItem.view);
+            if(menu.isSystemOverlay()) {
+                // When all the views are removed from the overlay container,
+                // we also need to detach it
+                if (menu.getOverlayContainer().getChildCount() == 0) {
+                    menu.detachOverlayContainer();
                 }
             }
-        });
+        }
     }
 
     /**
@@ -98,12 +116,7 @@ public abstract class MenuAnimationHandler {
 
         @Override
         public void onAnimationEnd(Animator animation) {
-            new Handler().post(new Runnable() {
-                                   public void run() {
-                                       setAnimating(false);
-                                   }
-                               }
-            );
+            setAnimating(false);
         }
 
         @Override
