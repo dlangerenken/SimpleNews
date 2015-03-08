@@ -13,8 +13,11 @@ import android.widget.TextView;
 
 import com.ocpsoft.pretty.time.PrettyTime;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -25,9 +28,6 @@ import de.dala.simplenews.utilities.ExpandCollapseHelper;
 import de.dala.simplenews.utilities.UIUtils;
 
 
-/**
- * Created by Daniel on 08.03.2015.
- */
 public class ExpandableItemRecyclerAdapter extends RecyclerView.Adapter<ExpandableItemRecyclerAdapter.EntryViewHolder>{
     private List<Entry> mEntries;
     private Category mCategory;
@@ -39,8 +39,42 @@ public class ExpandableItemRecyclerAdapter extends RecyclerView.Adapter<Expandab
     }
 
     public void updateEntries(List<Entry> entries) {
-        mEntries = entries;
-        notifyDataSetChanged();
+        if (mEntries == null) {
+            mEntries = new ArrayList<>();
+        }
+
+        Iterator<Entry> iterator = mEntries.iterator();
+        while (iterator.hasNext()) {
+            Entry next = iterator.next();
+            if (!entries.contains(next)) {
+                int index = mEntries.indexOf(next);
+                iterator.remove();
+                notifyItemRemoved(index);
+            }
+        }
+        iterator = entries.iterator();
+        while (iterator.hasNext()) {
+            Entry next = iterator.next();
+            if (!mEntries.contains(next)) {
+                mEntries.add(next);
+                Collections.sort(mEntries);
+                int index = mEntries.indexOf(next);
+                notifyItemInserted(index);
+            }
+        }
+    }
+
+    public void remove(Set<Entry> selectedEntries) {
+        List<Entry> diff = new ArrayList<>(mEntries);
+        diff.removeAll(selectedEntries);
+        mSelectedItemIds.removeAll(selectedEntries);
+        updateEntries(diff);
+    }
+
+    public void refresh(Set<Entry> selectedEntries) {
+        for(Entry entry : selectedEntries){
+            notifyItemChanged(mEntries.indexOf(entry));
+        }
     }
 
 
@@ -98,6 +132,7 @@ public class ExpandableItemRecyclerAdapter extends RecyclerView.Adapter<Expandab
             @Override
             public void onSelectItem() {
                 onListItemCheck(currentEntry);
+                mItemClickListener.updateActionMode();
             }
 
             @Override
@@ -106,6 +141,7 @@ public class ExpandableItemRecyclerAdapter extends RecyclerView.Adapter<Expandab
                     toggle(currentEntry, holder.contentLayout);
                 }else{
                     onListItemCheck(currentEntry);
+                    mItemClickListener.updateActionMode();
                 }
             }
 
@@ -115,6 +151,7 @@ public class ExpandableItemRecyclerAdapter extends RecyclerView.Adapter<Expandab
                     mItemClickListener.onItemClick(currentEntry);
                 }else{
                     onListItemCheck(currentEntry);
+                    mItemClickListener.updateActionMode();
                 }
             }
         };
@@ -166,6 +203,7 @@ public class ExpandableItemRecyclerAdapter extends RecyclerView.Adapter<Expandab
                 public boolean onLongClick(View v) {
                     if (clickListener != null){
                         clickListener.onSelectItem();
+                        return true;
                     }
                     return false;
                 }
@@ -201,8 +239,6 @@ public class ExpandableItemRecyclerAdapter extends RecyclerView.Adapter<Expandab
 
     private void onListItemCheck(Entry entry) {
         toggleSelection(entry);
-        mItemClickListener.updateActionMode();
-
     }
 
     public void selectAllIds(){
@@ -210,15 +246,15 @@ public class ExpandableItemRecyclerAdapter extends RecyclerView.Adapter<Expandab
             onListItemCheck(i, true);
         }
         mItemClickListener.updateActionMode();
-        notifyDataSetChanged();
     }
 
     public void deselectAllIds(){
-        for (int i = 0; i < mEntries.size(); i++){
-            onListItemCheck(i, false);
+        List<Entry> entriesToRemove = new ArrayList<>(mSelectedItemIds);
+        for (Entry entry : entriesToRemove){
+            mSelectedItemIds.remove(entry);
+            notifyItemChanged(mEntries.indexOf(entry));
         }
         mItemClickListener.updateActionMode();
-        notifyDataSetChanged();
     }
 
     private void onListItemCheck(int position, boolean value) {
@@ -236,8 +272,7 @@ public class ExpandableItemRecyclerAdapter extends RecyclerView.Adapter<Expandab
         } else {
             mSelectedItemIds.remove(entry);
         }
-        notifyDataSetChanged();
-        mItemClickListener.updateActionMode();
+        notifyItemChanged(mEntries.indexOf(entry));
     }
 
     public int getSelectedCount() {
@@ -246,11 +281,6 @@ public class ExpandableItemRecyclerAdapter extends RecyclerView.Adapter<Expandab
 
     public Set<Entry> getSelectedIds() {
         return mSelectedItemIds;
-    }
-
-    public void removeSelection() {
-        mSelectedItemIds.clear();
-        notifyDataSetChanged();
     }
 
     private void toggle(Entry entry, final View contentParent) {

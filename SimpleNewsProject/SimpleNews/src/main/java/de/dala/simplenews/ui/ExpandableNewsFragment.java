@@ -63,6 +63,7 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
     private int newsTypeMode;
     private NewsOverViewFragment parentFragment;
 
+    private View emptyView;
     private TextView emptyText;
     private ImageView emptyImageView;
     private String noEntriesText;
@@ -123,6 +124,11 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
         }
     }
 
+    private void showEmptyView(boolean visible){
+        mRecyclerView.setVisibility(visible ? View.VISIBLE :  View.INVISIBLE);
+        emptyView.setVisibility(!visible? View.INVISIBLE :  View.VISIBLE);
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         setHasOptionsMenu(true);
@@ -130,7 +136,7 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
         View rootView = inflater.inflate(R.layout.news_list, container, false);
 
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.news_gridview);
-        //mRecyclerView.setEmptyView(rootView.findViewById(R.id.emptyView));
+        emptyView = rootView.findViewById(R.id.emptyView);
         emptyText = (TextView) rootView.findViewById(R.id.emptyMessage);
         emptyImageView = (ImageView) rootView.findViewById(R.id.emptyImageView);
         emptyImageView.setImageResource(R.drawable.logo_animation);
@@ -147,7 +153,7 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
         }
         initCardsAdapter();
         initNewsTypeBar();
-        loadEntries(false, true);
+        loadEntries(false);
     }
 
     private void initNewsTypeBar() {
@@ -184,12 +190,20 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
         }
     }
 
+    private void setRefresh(boolean refresh){
+        if (mSwipeRefreshLayout != null) {
+            mSwipeRefreshLayout.setRefreshing(refresh);
+        }
+        setRefreshActionButtonState(refresh);
+    }
+
+
     @Override
     public void onRefresh() {
         if (updater != null && updater.isRunning()) {
-            mSwipeRefreshLayout.setRefreshing(false);
+            setRefresh(true);
         } else {
-            loadEntries(true, false);
+            loadEntries(true);
         }
     }
 
@@ -197,20 +211,22 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_refresh:
-                loadEntries(true, true);
+                loadEntries(true);
                 return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
     private void initCardsAdapter() {
-        mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setItemAnimator(new FadeInUpAnimator());
         mExpandableItemRecyclerAdapter = new ExpandableItemRecyclerAdapter(new ArrayList<Entry>(), category,getActivity(), this, mRecyclerView);
-        if (mRecyclerView != null) {
-            mRecyclerView.setAdapter(new AlphaAnimationAdapter(new SlideInBottomAnimationAdapter(mExpandableItemRecyclerAdapter)));
-        }
         mLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+        mRecyclerView.setLayoutManager(mLayoutManager);
+        if (mRecyclerView != null) {
+            mRecyclerView.setAdapter(mExpandableItemRecyclerAdapter);
+            //mRecyclerView.setAdapter(new AlphaAnimationAdapter(new SlideInBottomAnimationAdapter(mExpandableItemRecyclerAdapter)));
+        }
+        updateColumnCount();
     }
 
     public void refreshFeeds() {
@@ -218,7 +234,7 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
             updater = new CategoryUpdater(new CategoryUpdateHandler(), category, true, getActivity());
         }
         if (updater.start()) {
-            setRefreshActionButtonState(true);
+            setRefresh(true);
         }
     }
 
@@ -230,8 +246,12 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
             if (mActionMode != null) {
                 mActionMode.finish();
             }
-            setRefreshActionButtonState(false);
+            setRefresh(false);
             setEmptyText(false);
+
+            if (success || mExpandableItemRecyclerAdapter != null && mExpandableItemRecyclerAdapter.getCount() == 0) {
+                new BackgroundEntryLoading().execute(newsTypeMode);
+            }
         }
     }
 
@@ -261,7 +281,8 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
     }
 
     private boolean loadingEntries = false;
-    private void loadEntries(boolean forceRefresh, boolean showNewsInteraction) {
+
+    private void loadEntries(boolean forceRefresh) {
         setEmptyText(true);
         long timeForRefresh = PrefUtilities.getInstance().getTimeForRefresh();
         if (forceRefresh || (category != null && category.getLastUpdateTime() != null && category.getLastUpdateTime() < new Date().getTime() - timeForRefresh)) {
@@ -293,6 +314,7 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
             entry.setVisible(false);
             DatabaseHandler.getInstance().updateEntry(entry);
         }
+        mExpandableItemRecyclerAdapter.remove(selectedEntries);
     }
 
     private void saveSelectedEntries(Set<Entry> selectedEntries) {
@@ -300,6 +322,7 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
             entry.setFavoriteDate((entry.getFavoriteDate() == null || entry.getFavoriteDate() == 0) ? new Date().getTime() : null);
             DatabaseHandler.getInstance().updateEntry(entry);
         }
+        mExpandableItemRecyclerAdapter.refresh(selectedEntries);
     }
 
     private void markEntriesAsRead(Set<Entry> selectedEntries) {
@@ -307,6 +330,7 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
             entry.setVisitedDate((entry.getVisitedDate() == null || entry.getVisitedDate() == 0) ? new Date().getTime() : null);
             DatabaseHandler.getInstance().updateEntry(entry);
         }
+        mExpandableItemRecyclerAdapter.refresh(selectedEntries);
     }
 
 
@@ -364,7 +388,10 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
         entry.setVisitedDate(new Date().getTime());
 
         DatabaseHandler.getInstance().updateEntry(entry);
-        mExpandableItemRecyclerAdapter.notifyDataSetChanged();
+        List<Entry> updatedEntries = new ArrayList<>();
+        updatedEntries.add(entry);
+        mExpandableItemRecyclerAdapter.updateEntries(updatedEntries);
+
         //String link = entry.getShortenedLink() != null ? entry.getShortenedLink() : entry.getLink();
         Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(entry.getLink()));
         try{
@@ -504,8 +531,6 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
 
             if (shouldFinish) {
                 mode.finish();
-                mExpandableItemRecyclerAdapter.removeSelection();
-                mExpandableItemRecyclerAdapter.notifyDataSetChanged();
                 return true;
             }
             return false;

@@ -136,7 +136,7 @@ public class Entry implements Comparable<Entry>, Serializable {
 
     @Override
     public int compareTo(Entry another) {
-        return getDate().compareTo(another.getDate());
+        return another.getDate().compareTo(getDate());
     }
 
     @Override

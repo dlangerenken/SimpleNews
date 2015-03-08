@@ -82,8 +82,6 @@ public class MainActivity extends ActionBarActivity implements NavigationDrawerF
         initDonationsButton();
     }
 
-
-
     @Override
     public boolean onSupportNavigateUp() {
         currentFragment = getVisibleFragment();
