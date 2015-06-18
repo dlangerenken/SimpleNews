@@ -17,4 +17,9 @@
     <dimen name="sub_action_button_size_medium">46dp</dimen>
 
     <dimen name="sub_action_button_content_margin">9dp</dimen>
+
+
+    <dimen name="tab_height">48dp</dimen>
+
+
 </resources>

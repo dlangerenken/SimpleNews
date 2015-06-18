@@ -17,8 +17,8 @@ import de.dala.simplenews.utilities.PrefUtilities;
  * based on http://blog.zeezonline.com/2012/07/android-rate-my-app-dialog/
  */
 public class RateMyApp {
-    private final static String APP_TITLE = "SimpleNews - RSS Reader";
-    private final static String APP_PACKAGE_NAME = "de.dala.simplenews";
+    private final static String APP_TITLE = "SimpleNews - Feed Reader (Pro)";
+    private final static String APP_PACKAGE_NAME = "de.dala.simplenews.smarties";
     private final static int DAYS_UNTIL_PROMPT = 5;
     private final static int LAUNCHES_UNTIL_PROMPT = 7;
 

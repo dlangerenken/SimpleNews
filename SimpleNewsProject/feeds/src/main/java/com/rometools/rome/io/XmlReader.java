@@ -16,6 +16,10 @@
  */
 package com.rometools.rome.io;
 
+import android.content.Context;
+
+import com.squareup.okhttp.Cache;
+import com.squareup.okhttp.CacheControl;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.OkUrlFactory;
 
@@ -33,33 +37,33 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.text.MessageFormat;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
  * Character stream that handles (or at least attemtps to) all the necessary Voodo to figure out the
  * charset encoding of the XML document within the stream.
- * <p>
+ * <p/>
  * IMPORTANT: This class is not related in any way to the org.xml.sax.XMLReader. This one IS a
  * character stream.
- * <p>
+ * <p/>
  * All this has to be done without consuming characters from the stream, if not the XML parser will
  * not recognized the document as a valid XML. This is not 100% true, but it's close enough (UTF-8
  * BOM is not handled by all parsers right now, XmlReader handles it and things work in all
  * parsers).
- * <p>
+ * <p/>
  * The XmlReader class handles the charset encoding of XML documents in Files, raw streams and HTTP
  * streams by offering a wide set of constructors.
- * <P>
+ * <p/>
  * By default the charset encoding detection is lenient, the constructor with the lenient flag can
  * be used for an script (following HTTP MIME and XML specifications). All this is nicely explained
  * by Mark Pilgrim in his blog, <a
  * href="http://diveintomark.org/archives/2004/02/13/xml-media-types"> Determining the character
  * encoding of a feed</a>.
- * <p>
+ * <p/>
  *
  * @author Alejandro Abdelnur
- *
  */
 public class XmlReader extends Reader {
 
@@ -82,24 +86,23 @@ public class XmlReader extends Reader {
 
     private static String staticDefaultEncoding = null;
 
-    private final String defaultEncoding;
+    private String defaultEncoding;
 
     private Reader reader;
     private String encoding;
 
     /**
      * Creates a Reader for a File.
-     * <p>
+     * <p/>
      * It looks for the UTF-8 BOM first, if none sniffs the XML prolog charset, if this is also
      * missing defaults to UTF-8.
-     * <p>
+     * <p/>
      * It does a lenient charset encoding detection, check the constructor with the lenient
      * parameter for details.
-     * <p>
+     * <p/>
      *
      * @param file File to create a Reader from.
      * @throws IOException thrown if there is a problem reading the file.
-     *
      */
     public XmlReader(final File file) throws IOException {
         this(new FileInputStream(file));
@@ -107,16 +110,15 @@ public class XmlReader extends Reader {
 
     /**
      * Creates a Reader for a raw InputStream.
-     * <p>
+     * <p/>
      * It follows the same logic used for files.
-     * <p>
+     * <p/>
      * It does a lenient charset encoding detection, check the constructor with the lenient
      * parameter for details.
-     * <p>
+     * <p/>
      *
      * @param is InputStream to create a Reader from.
      * @throws IOException thrown if there is a problem reading the stream.
-     *
      */
     public XmlReader(final InputStream is) throws IOException {
         this(is, true);
@@ -125,31 +127,30 @@ public class XmlReader extends Reader {
     /**
      * Creates a Reader for a raw InputStream and uses the provided default encoding if none is
      * determined.
-     * <p>
+     * <p/>
      * It follows the same logic used for files.
-     * <p>
+     * <p/>
      * If lenient detection is indicated and the detection above fails as per specifications it then
      * attempts the following:
-     * <p>
+     * <p/>
      * If the content type was 'text/html' it replaces it with 'text/xml' and tries the detection
      * again.
-     * <p>
+     * <p/>
      * Else if the XML prolog had a charset encoding that encoding is used.
-     * <p>
+     * <p/>
      * Else if the content type had a charset encoding that encoding is used.
-     * <p>
+     * <p/>
      * Else 'UTF-8' is used.
-     * <p>
+     * <p/>
      * If lenient detection is indicated an XmlReaderException is never thrown.
-     * <p>
+     * <p/>
      *
-     * @param is InputStream to create a Reader from.
-     * @param lenient indicates if the charset encoding detection should be relaxed.
+     * @param is              InputStream to create a Reader from.
+     * @param lenient         indicates if the charset encoding detection should be relaxed.
      * @param defaultEncoding default encoding to use if one cannot be detected.
-     * @throws IOException thrown if there is a problem reading the stream.
+     * @throws IOException        thrown if there is a problem reading the stream.
      * @throws XmlReaderException thrown if the charset encoding could not be determined according
-     *             to the specs.
-     *
+     *                            to the specs.
      */
     public XmlReader(final InputStream is, final boolean lenient, final String defaultEncoding) throws IOException {
         if (defaultEncoding == null) {
@@ -170,30 +171,29 @@ public class XmlReader extends Reader {
 
     /**
      * Creates a Reader for a raw InputStream.
-     * <p>
+     * <p/>
      * It follows the same logic used for files.
-     * <p>
+     * <p/>
      * If lenient detection is indicated and the detection above fails as per specifications it then
      * attempts the following:
-     * <p>
+     * <p/>
      * If the content type was 'text/html' it replaces it with 'text/xml' and tries the detection
      * again.
-     * <p>
+     * <p/>
      * Else if the XML prolog had a charset encoding that encoding is used.
-     * <p>
+     * <p/>
      * Else if the content type had a charset encoding that encoding is used.
-     * <p>
+     * <p/>
      * Else 'UTF-8' is used.
-     * <p>
+     * <p/>
      * If lenient detection is indicated an XmlReaderException is never thrown.
-     * <p>
+     * <p/>
      *
-     * @param is InputStream to create a Reader from.
+     * @param is      InputStream to create a Reader from.
      * @param lenient indicates if the charset encoding detection should be relaxed.
-     * @throws IOException thrown if there is a problem reading the stream.
+     * @throws IOException        thrown if there is a problem reading the stream.
      * @throws XmlReaderException thrown if the charset encoding could not be determined according
-     *             to the specs.
-     *
+     *                            to the specs.
      */
     public XmlReader(final InputStream is, final boolean lenient) throws IOException {
         this(is, lenient, null);
@@ -201,43 +201,59 @@ public class XmlReader extends Reader {
 
     /**
      * Creates a Reader using the InputStream of a URL.
-     * <p>
+     * <p/>
      * If the URL is not of type HTTP and there is not 'content-type' header in the fetched data it
      * uses the same logic used for Files.
-     * <p>
+     * <p/>
      * If the URL is a HTTP Url or there is a 'content-type' header in the fetched data it uses the
      * same logic used for an InputStream with content-type.
-     * <p>
+     * <p/>
      * It does a lenient charset encoding detection, check the constructor with the lenient
      * parameter for details.
-     * <p>
+     * <p/>
      *
      * @param url URL to create a Reader from.
      * @throws IOException thrown if there is a problem reading the stream of the URL.
-     *
      */
-    public XmlReader(final URL url) throws IOException {
-        this(new OkUrlFactory(new OkHttpClient()).open(url));
+    public XmlReader(final URL url, Context context) throws IOException {
+        int cacheSize = 5 * 1024 * 1024; // 5 MiB
+        OkHttpClient client = new OkHttpClient();
+        if (context != null) {
+            Cache cache = new Cache(getCacheDirectory(context), cacheSize);
+            client.setCache(cache);
+        }
+        client.setConnectTimeout(10, TimeUnit.SECONDS); // connect timeout
+        client.setReadTimeout(10, TimeUnit.SECONDS);    // socket timeout
+        OkUrlFactory factory = new OkUrlFactory(client);
+        doUrl(factory.open(url));
+    }
+
+
+    public static File getCacheDirectory(Context context) {
+        return context.getCacheDir();
     }
 
     /**
      * Creates a Reader using the InputStream of a URLConnection.
-     * <p>
+     * <p/>
      * If the URLConnection is not of type HttpURLConnection and there is not 'content-type' header
      * in the fetched data it uses the same logic used for files.
-     * <p>
+     * <p/>
      * If the URLConnection is a HTTP Url or there is a 'content-type' header in the fetched data it
      * uses the same logic used for an InputStream with content-type.
-     * <p>
+     * <p/>
      * It does a lenient charset encoding detection, check the constructor with the lenient
      * parameter for details.
-     * <p>
+     * <p/>
      *
      * @param conn URLConnection to create a Reader from.
      * @throws IOException thrown if there is a problem reading the stream of the URLConnection.
-     *
      */
     public XmlReader(final URLConnection conn) throws IOException {
+        doUrl(conn);
+    }
+
+    private void doUrl(URLConnection conn) throws IOException {
         defaultEncoding = staticDefaultEncoding;
         final boolean lenient = true;
         try {
@@ -285,10 +301,9 @@ public class XmlReader extends Reader {
 
     /**
      * Returns the charset encoding of the XmlReader.
-     * <p>
+     * <p/>
      *
      * @return charset encoding.
-     *
      */
     public String getEncoding() {
         return encoding;
@@ -330,10 +345,9 @@ public class XmlReader extends Reader {
 
     /**
      * Closes the XmlReader stream.
-     * <p>
+     * <p/>
      *
      * @throws IOException thrown if there was a problem closing the stream.
-     *
      */
     @Override
     public void close() throws IOException {
@@ -382,29 +396,29 @@ public class XmlReader extends Reader {
             }
         } else if (bomEnc.equals(UTF_8)) {
             if (xmlGuessEnc != null && !xmlGuessEnc.equals(UTF_8)) {
-                throw new XmlReaderException(RAW_EX_1.format(new Object[] { bomEnc, xmlGuessEnc, xmlEnc }), bomEnc, xmlGuessEnc, xmlEnc, is);
+                throw new XmlReaderException(RAW_EX_1.format(new Object[]{bomEnc, xmlGuessEnc, xmlEnc}), bomEnc, xmlGuessEnc, xmlEnc, is);
             }
             if (xmlEnc != null && !xmlEnc.equals(UTF_8)) {
-                throw new XmlReaderException(RAW_EX_1.format(new Object[] { bomEnc, xmlGuessEnc, xmlEnc }), bomEnc, xmlGuessEnc, xmlEnc, is);
+                throw new XmlReaderException(RAW_EX_1.format(new Object[]{bomEnc, xmlGuessEnc, xmlEnc}), bomEnc, xmlGuessEnc, xmlEnc, is);
             }
             encoding = UTF_8;
         } else if (bomEnc.equals(UTF_16BE) || bomEnc.equals(UTF_16LE)) {
             if (xmlGuessEnc != null && !xmlGuessEnc.equals(bomEnc)) {
-                throw new IOException(RAW_EX_1.format(new Object[] { bomEnc, xmlGuessEnc, xmlEnc }));
+                throw new IOException(RAW_EX_1.format(new Object[]{bomEnc, xmlGuessEnc, xmlEnc}));
             }
             if (xmlEnc != null && !xmlEnc.equals(UTF_16) && !xmlEnc.equals(bomEnc)) {
-                throw new XmlReaderException(RAW_EX_1.format(new Object[] { bomEnc, xmlGuessEnc, xmlEnc }), bomEnc, xmlGuessEnc, xmlEnc, is);
+                throw new XmlReaderException(RAW_EX_1.format(new Object[]{bomEnc, xmlGuessEnc, xmlEnc}), bomEnc, xmlGuessEnc, xmlEnc, is);
             }
             encoding = bomEnc;
         } else {
-            throw new XmlReaderException(RAW_EX_2.format(new Object[] { bomEnc, xmlGuessEnc, xmlEnc }), bomEnc, xmlGuessEnc, xmlEnc, is);
+            throw new XmlReaderException(RAW_EX_2.format(new Object[]{bomEnc, xmlGuessEnc, xmlEnc}), bomEnc, xmlGuessEnc, xmlEnc, is);
         }
         return encoding;
     }
 
     // InputStream is passed for XmlReaderException creation only
     private String calculateHttpEncoding(final String cTMime, final String cTEnc, final String bomEnc, final String xmlGuessEnc, final String xmlEnc,
-            final InputStream is, final boolean lenient) throws IOException {
+                                         final InputStream is, final boolean lenient) throws IOException {
         String encoding;
         if (lenient & xmlEnc != null) {
             encoding = xmlEnc;
@@ -423,20 +437,20 @@ public class XmlReader extends Reader {
                         }
                     }
                 } else if (bomEnc != null && (cTEnc.equals(UTF_16BE) || cTEnc.equals(UTF_16LE))) {
-                    throw new XmlReaderException(HTTP_EX_1.format(new Object[] { cTMime, cTEnc, bomEnc, xmlGuessEnc, xmlEnc }), cTMime, cTEnc, bomEnc,
+                    throw new XmlReaderException(HTTP_EX_1.format(new Object[]{cTMime, cTEnc, bomEnc, xmlGuessEnc, xmlEnc}), cTMime, cTEnc, bomEnc,
                             xmlGuessEnc, xmlEnc, is);
                 } else if (cTEnc.equals(UTF_16)) {
                     if (bomEnc != null && bomEnc.startsWith(UTF_16)) {
                         encoding = bomEnc;
                     } else {
-                        throw new XmlReaderException(HTTP_EX_2.format(new Object[] { cTMime, cTEnc, bomEnc, xmlGuessEnc, xmlEnc }), cTMime, cTEnc, bomEnc,
+                        throw new XmlReaderException(HTTP_EX_2.format(new Object[]{cTMime, cTEnc, bomEnc, xmlGuessEnc, xmlEnc}), cTMime, cTEnc, bomEnc,
                                 xmlGuessEnc, xmlEnc, is);
                     }
                 } else {
                     encoding = cTEnc;
                 }
             } else {
-                throw new XmlReaderException(HTTP_EX_3.format(new Object[] { cTMime, cTEnc, bomEnc, xmlGuessEnc, xmlEnc }), cTMime, cTEnc, bomEnc, xmlGuessEnc,
+                throw new XmlReaderException(HTTP_EX_3.format(new Object[]{cTMime, cTEnc, bomEnc, xmlGuessEnc, xmlEnc}), cTMime, cTEnc, bomEnc, xmlGuessEnc,
                         xmlEnc, is);
             }
         }
@@ -578,7 +592,7 @@ public class XmlReader extends Reader {
     private static boolean isAppXml(final String mime) {
         return mime != null
                 && (mime.equals("application/xml") || mime.equals("application/xml-dtd") || mime.equals("application/xml-external-parsed-entity") || mime
-                        .startsWith("application/") && mime.endsWith("+xml"));
+                .startsWith("application/") && mime.endsWith("+xml"));
     }
 
     // indicates if the MIME type belongs to the TEXT XML family

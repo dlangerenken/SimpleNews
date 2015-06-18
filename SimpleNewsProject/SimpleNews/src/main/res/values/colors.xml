@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="background_window">#FFE5E5E5</color>
-
-
     <color name="textual_background">#FFE5E5E5</color>
 
     <integer-array name="my_colors">
@@ -19,4 +17,5 @@
     <color name="counter_text_color">#c5c4c4</color>
 
     <color name="holo_red_dark">#ffcc0000</color>
+
 </resources>

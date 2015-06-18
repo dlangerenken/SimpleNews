@@ -1,20 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.github.ksoichiro.android.observablescrollview.TouchInterceptionFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/container"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
-
-    <com.astuetz.PagerSlidingTabStrip
-        android:id="@+id/tabs"
-        android:fitsSystemWindows="true"
-        android:layout_width="match_parent"
-        android:layout_height="48dip" />
-
-    <de.dala.simplenews.utilities.RestrictedViewPager
-        android:id="@+id/pager"
+    android:layout_height="match_parent">
+    <!--
+    Padding for ViewPager must be set outside the ViewPager itself
+    because with padding, EdgeEffect of ViewPager become strange.
+    -->
+    <FrameLayout
+        android:id="@+id/pager_wrapper"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/tabs" />
+        android:paddingTop="@dimen/tab_height">
 
-</RelativeLayout>
+        <android.support.v4.view.ViewPager
+            android:id="@+id/pager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </FrameLayout>
+
+    <de.dala.simplenews.utilities.SlidingTabLayout
+        android:id="@+id/tabs"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/tab_height" />
+</com.github.ksoichiro.android.observablescrollview.TouchInterceptionFrameLayout>

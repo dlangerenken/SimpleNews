@@ -4,6 +4,7 @@ package de.dala.simplenews.ui;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,27 +22,26 @@ import de.dala.simplenews.database.DatabaseHandler;
 import de.dala.simplenews.database.IDatabaseHandler;
 import de.dala.simplenews.utilities.BaseNavigation;
 
-/**
- * Created by Daniel on 21.08.2014.
- */
 public class AssignDialogFragment extends DialogFragment implements BaseNavigation {
 
     private ArrayList<Feed> feeds;
-    private CategoryAdapter adapter;
+
     public interface IDialogHandler {
         void assigned();
+
         void canceled();
     }
+
     private IDialogHandler dialogHandler;
 
-    public void setDialogHandler(IDialogHandler handler){
+    public void setDialogHandler(IDialogHandler handler) {
         dialogHandler = handler;
     }
 
-    public AssignDialogFragment(){
+    public AssignDialogFragment() {
     }
 
-    public static AssignDialogFragment newInstance(ArrayList<Feed> feeds){
+    public static AssignDialogFragment newInstance(ArrayList<Feed> feeds) {
         AssignDialogFragment fragment = new AssignDialogFragment();
         Bundle bundle = new Bundle();
         bundle.putSerializable("feeds", feeds);
@@ -70,7 +70,7 @@ public class AssignDialogFragment extends DialogFragment implements BaseNavigati
         if (feedsObject != null && feedsObject instanceof ArrayList<?>) {
             feeds = (ArrayList<Feed>) feedsObject;
             List<Category> categories = DatabaseHandler.getInstance().getCategories(true, true, null);
-            adapter = new CategoryAdapter(getActivity(), categories);
+            CategoryAdapter adapter = new CategoryAdapter(getActivity(), categories);
             assignCategoryView.setAdapter(adapter);
         }
 
@@ -89,15 +89,44 @@ public class AssignDialogFragment extends DialogFragment implements BaseNavigati
         return NavigationDrawerFragment.IMPORT;
     }
 
-    private class CategoryAdapter extends com.nhaarman.listviewanimations.ArrayAdapter<Category> {
+    class CategoryViewHolder extends RecyclerView.ViewHolder {
+        public TextView name;
+        public ImageView image;
+
+        public CategoryViewHolder(View itemView) {
+            super(itemView);
+            LayoutInflater inflater = LayoutInflater.from(context);
+            convertView = inflater.inflate(R.layout.category_assign_item, parent, false);viewHolder.image = (ImageView) convertView.findViewById(R.id.image);
+            viewHolder.name = (TextView) convertView.findViewById(R.id.name);
+        }
+    }
+
+    private class CategoryAdapter extends RecyclerView.Adapter<CategoryViewHolder> {
+
 
         private Context context;
         private IDatabaseHandler database;
+        private List<Category> mCategories;
 
-        public CategoryAdapter(Context context, List<Category> feeds) {
-            super(feeds);
+        public CategoryAdapter(Context context, List<Category> categories) {
+            mCategories = categories;
             this.context = context;
             this.database = DatabaseHandler.getInstance();
+        }
+
+        @Override
+        public CategoryViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            return null;
+        }
+
+        @Override
+        public void onBindViewHolder(CategoryViewHolder holder, int position) {
+
+        }
+
+        @Override
+        public int getItemCount() {
+            return 0;
         }
 
         @Override
@@ -110,11 +139,8 @@ public class AssignDialogFragment extends DialogFragment implements BaseNavigati
             final Category category = getItem(position);
 
             if (convertView == null) {
-                LayoutInflater inflater = LayoutInflater.from(context);
-                convertView = inflater.inflate(R.layout.category_assign_item, parent, false);
                 ViewHolder viewHolder = new ViewHolder();
-                viewHolder.image = (ImageView) convertView.findViewById(R.id.image);
-                viewHolder.name = (TextView) convertView.findViewById(R.id.name);
+
                 convertView.setTag(viewHolder);
             }
             final ViewHolder holder = (ViewHolder) convertView.getTag();
@@ -134,19 +160,15 @@ public class AssignDialogFragment extends DialogFragment implements BaseNavigati
             return convertView;
         }
 
-        class ViewHolder {
-            public TextView name;
-            public ImageView image;
-        }
 
         private void assignSelectedEntries(Category category) {
-            for(Feed feed : feeds){
+            for (Feed feed : feeds) {
                 feed.setCategoryId(category.getId());
-                if (feed.getCategoryId() != null && feed.getCategoryId() > 0){
+                if (feed.getCategoryId() != null && feed.getCategoryId() > 0) {
                     database.addFeed(feed.getCategoryId(), feed, true);
                 }
             }
-            if (dialogHandler != null){
+            if (dialogHandler != null) {
                 dialogHandler.assigned();
             }
             dismiss();

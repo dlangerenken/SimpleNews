@@ -39,7 +39,7 @@ public class CategoryModifierFragment extends BaseFragment implements CategorySe
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ArrayList<Category> categories = new ArrayList<Category>(DatabaseHandler.getInstance().getCategories(false, true, null));
+        ArrayList<Category> categories = new ArrayList<>(DatabaseHandler.getInstance().getCategories(false, true, null));
         String rssPath = getArguments() != null ? getArguments().getString(FROM_RSS) : null;
         if (savedInstanceState != null) {
             boolean isCategoryFeedsFragment = savedInstanceState.getBoolean("isCategoryFeedsFragment");

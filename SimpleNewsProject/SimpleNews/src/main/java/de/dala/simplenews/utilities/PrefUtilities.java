@@ -25,11 +25,7 @@ public class PrefUtilities {
     public static final String MULTIPLE_COLUMNS_PORTRAIT = "multiple_columns_portrait";
     public static final String MULTIPLE_COLUMNS_LANDSCAPE = "multiple_columns_landscape";
     public static final String CATEGORY_INDEX = "category_index";
-    public static final String DONATION_BUTTON = "coffee_actionbar";
-    /**
-     * Remember the position of the selected item.
-     */
-    private static final String STATE_SELECTED_POSITION = "selected_navigation_drawer_position";
+
     /**
      * Per the design guidelines, you should show the drawer on launch until the user manually
      * expands it. This shared preference tracks this.
@@ -76,10 +72,6 @@ public class PrefUtilities {
 
     public boolean shouldAskForRatingAgain() {
         return preferences.getBoolean(ASK_FOR_RATING, true);
-    }
-
-    public boolean shouldHideDonationButton() {
-        return preferences.getBoolean(DONATION_BUTTON, false);
     }
 
     public boolean useMultipleColumnsLandscape() {

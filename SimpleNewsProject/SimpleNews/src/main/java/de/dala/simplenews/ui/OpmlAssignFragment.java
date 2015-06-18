@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -59,7 +60,7 @@ public class OpmlAssignFragment extends BaseFragment implements ViewPager.OnPage
         View rootView = inflater.inflate(R.layout.opml_list_view, container, false);
         feedListView = (ListView) rootView.findViewById(R.id.listView);
         initAdapter();
-        ((ActionBarActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         return rootView;
     }
@@ -106,7 +107,7 @@ public class OpmlAssignFragment extends BaseFragment implements ViewPager.OnPage
         public OpmlListAdapter(Context context, List<Feed> feeds) {
             super(feeds);
             this.context = context;
-            mSelectedItemIds = new HashMap<Feed, Boolean>();
+            mSelectedItemIds = new HashMap<>();
         }
 
         @Override
@@ -181,7 +182,7 @@ public class OpmlAssignFragment extends BaseFragment implements ViewPager.OnPage
         }
 
         public void removeSelection() {
-            mSelectedItemIds = new HashMap<Feed, Boolean>();
+            mSelectedItemIds = new HashMap<>();
             notifyDataSetChanged();
         }
 
@@ -204,7 +205,7 @@ public class OpmlAssignFragment extends BaseFragment implements ViewPager.OnPage
 
         if (hasCheckedItems && mActionMode == null) {
             // there are some selected items, start the actionMode
-            mActionMode = ((ActionBarActivity) getActivity()).startSupportActionMode(new ActionModeCallBack());
+            mActionMode = ((AppCompatActivity) getActivity()).startSupportActionMode(new ActionModeCallBack());
         }
 
         if (!hasCheckedItems && mActionMode != null){
@@ -218,7 +219,7 @@ public class OpmlAssignFragment extends BaseFragment implements ViewPager.OnPage
 
     private void onListItemClicked(int position) {
         Feed feed = adapter.getItem(position);
-        final ArrayList<Feed> selectedEntries = new ArrayList<Feed>();
+        final ArrayList<Feed> selectedEntries = new ArrayList<>();
         selectedEntries.add(feed);
         AssignDialogFragment assignFeedsDialog = AssignDialogFragment.newInstance(selectedEntries);
         assignFeedsDialog.setDialogHandler(new AssignDialogFragment.IDialogHandler(){
@@ -256,7 +257,7 @@ public class OpmlAssignFragment extends BaseFragment implements ViewPager.OnPage
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
             // retrieve selected items and print them out
             Map<Feed, Boolean> selected = adapter.getSelectedIds();
-            final ArrayList<Feed> selectedEntries = new ArrayList<Feed>();
+            final ArrayList<Feed> selectedEntries = new ArrayList<>();
             for (Map.Entry<Feed, Boolean> entry : selected.entrySet()){
                 if (Boolean.TRUE.equals(entry.getValue())) {
                     selectedEntries.add(entry.getKey());

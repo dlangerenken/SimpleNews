@@ -1,11 +1,12 @@
 package de.dala.simplenews.ui;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -17,15 +18,10 @@ import android.widget.ProgressBar;
 
 import com.rometools.rome.feed.WireFeed;
 import com.rometools.rome.feed.opml.Opml;
-import com.rometools.rome.io.FeedException;
 import com.rometools.rome.io.WireFeedInput;
 import com.rometools.rome.io.XmlReader;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,13 +30,14 @@ import de.dala.simplenews.R;
 import de.dala.simplenews.common.Feed;
 import de.dala.simplenews.utilities.BaseNavigation;
 import de.dala.simplenews.utilities.OpmlConverter;
+import de.dala.simplenews.utilities.Utilities;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
 
 /**
  * Created by Daniel on 01.08.2014.
  */
-public class  OpmlImportFragment extends BaseFragment implements BaseNavigation {
+public class OpmlImportFragment extends BaseFragment implements BaseNavigation {
 
     private OnFeedsLoaded parent;
     private Button importButton;
@@ -58,7 +55,7 @@ public class  OpmlImportFragment extends BaseFragment implements BaseNavigation 
     @Override
     public void onPause() {
         super.onPause();
-        if (task != null){
+        if (task != null) {
             task.cancel(true);
         }
     }
@@ -66,7 +63,7 @@ public class  OpmlImportFragment extends BaseFragment implements BaseNavigation 
     @Override
     public void onStop() {
         super.onStop();
-        if (task != null){
+        if (task != null) {
             task.cancel(true);
         }
     }
@@ -75,9 +72,9 @@ public class  OpmlImportFragment extends BaseFragment implements BaseNavigation 
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         Fragment newsFragment = getParentFragment();
-        if (newsFragment != null && newsFragment instanceof OnFeedsLoaded){
+        if (newsFragment != null && newsFragment instanceof OnFeedsLoaded) {
             this.parent = (OnFeedsLoaded) newsFragment;
-        }else{
+        } else {
             throw new ClassCastException("ParentFragment is not of type OnFeedsLoaded");
         }
     }
@@ -118,7 +115,7 @@ public class  OpmlImportFragment extends BaseFragment implements BaseNavigation 
         importButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (opmlContentEditText.getText() != null && opmlContentEditText.getText().toString() != ""){
+                if (opmlContentEditText.getText() != null && !Utilities.equals(opmlContentEditText.getText().toString(), "")) {
                     //content added
                     task = new ImportAsyncTask();
                     task.execute(opmlContentEditText.getText().toString());
@@ -126,7 +123,13 @@ public class  OpmlImportFragment extends BaseFragment implements BaseNavigation 
             }
         });
 
-        ((ActionBarActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        AppCompatActivity activity = (AppCompatActivity) getActivity();
+        if (activity != null) {
+            ActionBar actionBar = activity.getActionBar();
+            if (actionBar != null) {
+                actionBar.setDisplayHomeAsUpEnabled(true);
+            }
+        }
         return rootView;
     }
 
@@ -140,18 +143,18 @@ public class  OpmlImportFragment extends BaseFragment implements BaseNavigation 
 
         @Override
         protected String doInBackground(String[] params) {
-            if (params == null ||params.length == 0 ||params[0] == null || params[0].equals("")){
+            if (params == null || params.length == 0 || params[0] == null || params[0].equals("")) {
                 return null;
             }
             String enteredText = params[0];
             boolean loaded;
 
-            List<Feed> feeds = new ArrayList<Feed>();
+            List<Feed> feeds = new ArrayList<>();
             WireFeedInput input = new WireFeedInput();
             try {
                 WireFeed feed = input.build(new XmlReader(new ByteArrayInputStream(enteredText.getBytes())));
                 if (feed != null && feed instanceof Opml) {
-                    feeds = OpmlConverter.convertOpmlListToFeedList((Opml)feed);
+                    feeds = OpmlConverter.convertOpmlListToFeedList((Opml) feed);
                 }
                 loaded = feeds != null && feeds.size() > 0;
             } catch (Exception e) {
@@ -162,24 +165,15 @@ public class  OpmlImportFragment extends BaseFragment implements BaseNavigation 
             if (!loaded) {
                 // try to load by url
                 try {
-                    if (!enteredText.startsWith("http://")){
+                    if (!enteredText.startsWith("http://")) {
                         enteredText = "http://" + enteredText;
                     }
-                    WireFeed feed = input.build(new XmlReader(new URL(enteredText)));
+                    WireFeed feed = input.build(new XmlReader(new URL(enteredText), getActivity()));
                     if (feed != null && feed instanceof Opml) {
-                        feeds = OpmlConverter.convertOpmlListToFeedList((Opml)feed);
+                        feeds = OpmlConverter.convertOpmlListToFeedList((Opml) feed);
                     }
                     loaded = feeds != null && feeds.size() > 0;
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
-                    loaded = false;
-                } catch (FeedException e) {
-                    e.printStackTrace();
-                    loaded = false;
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    loaded = false;
-                } catch (IllegalArgumentException e){
+                } catch (Exception e) {
                     e.printStackTrace();
                     loaded = false;
                 }
@@ -197,7 +191,7 @@ public class  OpmlImportFragment extends BaseFragment implements BaseNavigation 
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
-            if (s == null){
+            if (s == null) {
                 Crouton.makeText(getActivity(), getActivity().getString(R.string.not_valid_url_nor_opml_file), Style.ALERT).show();
             }
             enableProgressView(false);
@@ -207,7 +201,7 @@ public class  OpmlImportFragment extends BaseFragment implements BaseNavigation 
 
     private void enableProgressView(boolean progress) {
         importButton.setVisibility(progress ? View.INVISIBLE : View.VISIBLE);
-        importProgres.setVisibility(progress  ? View.VISIBLE : View.INVISIBLE);
+        importProgres.setVisibility(progress ? View.VISIBLE : View.INVISIBLE);
     }
 
     @Override

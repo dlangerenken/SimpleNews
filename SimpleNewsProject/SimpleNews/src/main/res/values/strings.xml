@@ -116,11 +116,4 @@
 
     <string name="thanks">Thank you!</string>
     <string name="exception">Oops! Something went wrong!</string>
-    <string name="menu_donate">Buy me a coffee!</string>
-    <string name="menu_coffee">Buy me a coffee!</string>
-    <string name="menu_coffee2">Buy me 2 coffees!</string>
-    <string name="menu_coffee3">Buy me 5 coffees!</string>
-    <string name="menu_coffee4">Buy me 10 coffees!</string>
-    <string name="coffee_pref_title">Hide donation button</string>
-    <string name="coffee_pref_summary">If hidden, the coffee symbol is only shown inside of the navigation drawer</string>
-</resources>
+   </resources>

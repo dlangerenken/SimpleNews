@@ -10,7 +10,6 @@
         <item>Settings</item>
         <item>Rate SimpleNews!</item>
         <item>Import Feeds</item>
-        <item>Buy me a coffee!</item>
     </string-array>
 
     <!-- Nav Drawer List Item Icons -->
@@ -23,7 +22,6 @@
         <item>@android:drawable/ic_menu_preferences</item>
         <item>@drawable/ic_rating</item>
         <item>@android:drawable/ic_menu_upload</item>
-        <item>@drawable/ic_coffee_red</item>
     </array>
 
     <string-array name="listOptions">

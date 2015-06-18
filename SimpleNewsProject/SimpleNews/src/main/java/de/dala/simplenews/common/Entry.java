@@ -2,6 +2,8 @@ package de.dala.simplenews.common;
 
 import java.io.Serializable;
 
+import de.dala.simplenews.utilities.Utilities;
+
 public class Entry implements Comparable<Entry>, Serializable {
     private Long id;
     private Long feedId;
@@ -37,6 +39,7 @@ public class Entry implements Comparable<Entry>, Serializable {
         this.visitedDate = visitedDate;
         this.expanded = isExpanded;
     }
+
     public boolean isExpanded() {
         return expanded;
     }
@@ -169,17 +172,22 @@ public class Entry implements Comparable<Entry>, Serializable {
         if (o == null || getClass() != o.getClass()) return false;
 
         Entry entry = (Entry) o;
-
-        if (date != null ? !date.equals(entry.date) : entry.date != null) return false;
-        if (id != null ? !id.equals(entry.id) : entry.id != null) return false;
-
-        return true;
+        return Utilities.equals(feedId, entry.feedId) &&
+                Utilities.equals(link, entry.link) &&
+                Utilities.equals(categoryId, entry.categoryId) &&
+                Utilities.equals(title, entry.title) &&
+                Utilities.equals(description, entry.description) &&
+                Utilities.equals(srcName, entry.srcName);
     }
 
     @Override
     public int hashCode() {
-        int result = id != null ? id.hashCode() : 0;
-        result = 31 * result + (date != null ? date.hashCode() : 0);
+        int result = feedId != null ? feedId.hashCode() : 0;
+        result = 31 * result + (categoryId != null ? categoryId.hashCode() : 0);
+        result = 31 * result + (title != null ? title.hashCode() : 0);
+        result = 31 * result + (link != null ? link.hashCode() : 0);
+        result = 31 * result + (description != null ? description.hashCode() : 0);
+        result = 31 * result + (srcName != null ? srcName.hashCode() : 0);
         return result;
     }
 }

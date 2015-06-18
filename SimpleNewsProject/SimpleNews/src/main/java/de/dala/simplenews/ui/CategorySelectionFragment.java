@@ -521,7 +521,7 @@ public class CategorySelectionFragment extends BaseFragment implements BaseNavig
 
     private class ActionModeCallBack implements ActionMode.Callback {
         public void changeOverflowIcon() {
-            getActivity().getTheme().applyStyle(R.style.ChangeOverflowToDark, true);
+            //getActivity().getTheme().applyStyle(R.style.ChangeOverflowToDark, true);
         }
 
         @Override

@@ -1,11 +1,8 @@
 package de.dala.simplenews.ui;
 
-/**
- * Created by Daniel on 22.04.2014.
- */
 
-import android.support.v4.app.Fragment;
-import android.support.v4.preference.PreferenceFragment;
+import android.app.Fragment;
+import android.preference.PreferenceFragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -15,14 +12,10 @@ import android.view.ViewGroup;
 import de.dala.simplenews.R;
 import de.dala.simplenews.utilities.BaseNavigation;
 
-/**
- * Created by Daniel on 22.02.14.
- */
 public class PrefFragment extends PreferenceFragment implements BaseNavigation {
 
     public static Fragment getInstance() {
-        Fragment fragment = new PrefFragment();
-        return fragment;
+        return new PrefFragment();
     }
 
     @Override
@@ -34,7 +27,10 @@ public class PrefFragment extends PreferenceFragment implements BaseNavigation {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = super.onCreateView(inflater, container, savedInstanceState);
-        view.setBackgroundColor(getResources().getColor(R.color.background_window));
+        if (view != null) {
+            int color = getResources().getColor(R.color.background_window);
+            view.setBackgroundColor(color);
+        }
         return view;
     }
 

@@ -10,17 +10,24 @@ import android.util.Log;
 import com.rometools.rome.feed.synd.SyndContent;
 import com.rometools.rome.feed.synd.SyndEntry;
 import com.rometools.rome.feed.synd.SyndFeed;
-import com.rometools.rome.io.FeedException;
 import com.rometools.rome.io.SyndFeedInput;
 import com.rometools.rome.io.XmlReader;
 import com.squareup.okhttp.Request;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import de.dala.simplenews.R;
 import de.dala.simplenews.common.Category;
@@ -31,21 +38,22 @@ import de.dala.simplenews.database.IDatabaseHandler;
 import de.dala.simplenews.network.NetworkCommunication;
 import de.dala.simplenews.network.StringCallback;
 
-/**
- * Created by Daniel on 27.12.13.
- */
 public class CategoryUpdater {
 
     public static final int ERROR = -1;
     public static final int CANCEL = -2;
     public static final int STATUS_CHANGED = 3;
     public static final int RESULT = 4;
+    public static final int PART_RESULT = 5;
+
     private Handler handler;
     private Category category;
     private IDatabaseHandler databaseHandler;
     private boolean updateDatabase;
     private boolean isRunning = false;
     private Context context;
+    private int finishedUpdates = 0;
+    private int newEntries = 0;
     private UpdatingTask task;
 
     public CategoryUpdater(Handler handler, Category category, boolean updateDatabase, Context context) {
@@ -61,7 +69,6 @@ public class CategoryUpdater {
             return false;
         }
         isRunning = true;
-
         task = new UpdatingTask();
         task.execute();
         return true;
@@ -71,31 +78,37 @@ public class CategoryUpdater {
         databaseHandler.removeEntries(category.getId(), null, null);
     }
 
-
     private void addToDatabase(List<Entry> entries) {
         Long deprecatedTime = PrefUtilities.getInstance().getDeprecatedTime();
         for (Entry entry : entries) {
-            if (deprecatedTime == null || (entry.getFavoriteDate() != null && entry.getFavoriteDate() > 0) || (entry.getDate() != null && entry.getDate() > deprecatedTime)){
+            if (deprecatedTime == null || (entry.getFavoriteDate() != null && entry.getFavoriteDate() > 0) || (entry.getDate() != null && entry.getDate() > deprecatedTime)) {
                 databaseHandler.addEntry(category.getId(), entry.getFeedId(), entry);
             }
         }
     }
 
     private void getNewItems(List<Entry> entries) {
+        finishedUpdates++;
         if (entries != null && !entries.isEmpty()) {
-            category.setLastUpdateTime(new Date().getTime());
-            databaseHandler.updateCategory(category);
-
-            deleteDeprecatedEntries();
-
-            sendMessage(null, RESULT);
-            if (PrefUtilities.getInstance().shouldShortenLinks()) {
-                getShortenedLinks(entries);
-            }
-        } else {
-            sendMessage(null, CANCEL);
+            sendMessage(entries, PART_RESULT);
         }
-        isRunning = false;
+
+        if (finishedUpdates == category.getFeeds().size()) {
+            //done here
+            if (newEntries > 0) {
+                // change things only, when category is not empty, otherwise keep links
+                databaseHandler.updateCategory(category);
+                category.setLastUpdateTime(new Date().getTime());
+                deleteDeprecatedEntries();
+                if (PrefUtilities.getInstance().shouldShortenLinks()) {
+                    getShortenedLinks(entries);
+                }
+                sendMessage(null, RESULT);
+            } else {
+                sendMessage(null, CANCEL);
+            }
+            isRunning = false;
+        }
     }
 
     private void deleteDeprecatedEntries() {
@@ -128,7 +141,7 @@ public class CategoryUpdater {
                     if (!"error".equalsIgnoreCase(result)) {
                         entry.setShortenedLink(result);
                         databaseHandler.updateEntry(entry);
-                    }else{
+                    } else {
                         Log.e("CategoryUpdater", String.format("Entry with id: %s could not be shortened", entry.getId() + ""));
                     }
                 }
@@ -139,12 +152,12 @@ public class CategoryUpdater {
 
     private Entry getEntryFromRSSItem(SyndEntry item, Long feedId, String source) {
         if (item != null) {
-            if (item.getTitle() == null){
+            if (item.getTitle() == null) {
                 return null;
             }
 
             Object url = item.getLink();
-            if (url == null){
+            if (url == null) {
                 return null;
             }
 
@@ -156,7 +169,7 @@ public class CategoryUpdater {
 
             SyndContent desc = item.getDescription();
             String description = null;
-            if (desc != null && desc.getValue() != null){
+            if (desc != null && desc.getValue() != null) {
                 description = desc.getValue();
                 description = description.replaceAll("<.*?>", "").replace("()", "").replace("&nbsp;", "").trim();
             }
@@ -178,59 +191,89 @@ public class CategoryUpdater {
     }
 
     public void cancel() {
-        if (task != null){
-            sendMessage(null, CANCEL);
+        isRunning = false;
+        if (task != null) {
             task.cancel(true);
         }
+        sendMessage(null, CANCEL);
     }
 
     private class UpdatingTask extends AsyncTask<Void, Void, Void> {
+
         @Override
-        protected Void doInBackground(Void[] params) {
-            if (category  == null || category.getFeeds() == null){
+        protected Void doInBackground(Void... params) {
+            if (category == null || category.getFeeds() == null) {
                 sendMessage(null, CANCEL);
                 return null;
             }
+            finishedUpdates = 0;
+            newEntries = 0;
             String msg = context != null ? context.getString(R.string.update_news) : "";
             sendMessage(msg, STATUS_CHANGED);
             if (category.getFeeds().size() == 0) {
                 sendMessage(context.getString(R.string.no_feeds_found), ERROR);
             }
 
-            SyndFeedInput input = new SyndFeedInput();
-            List<Entry> entries = new ArrayList<Entry>();
+            List<Entry> entries = new ArrayList<>();
+            List<Callable<List<Entry>>> futures = new ArrayList<>();
             for (final Feed feed : category.getFeeds()) {
-                try {
-                    SyndFeed syndFeed = input.build(new XmlReader(new URL(feed.getXmlUrl())));
-                    String title = syndFeed.getTitle();
-                    if (feed.getTitle() == null) {
-                        feed.setTitle(title);
-                        databaseHandler.updateFeed(feed);
+                futures.add(new FeedFutureTask(feed));
+            }
+            ExecutorService executor = Executors.newFixedThreadPool(4);
+            try {
+                List<Future<List<Entry>>> results = executor.invokeAll(futures, 10, TimeUnit.SECONDS);
+                for (Future<List<Entry>> future : results) {
+                    try {
+                        entries.addAll(future.get(10, TimeUnit.SECONDS));
+                    } catch (TimeoutException e) {
+                        continue;
                     }
-                    for (SyndEntry item : syndFeed.getEntries()) {
-                        Entry entry = getEntryFromRSSItem(item, feed.getId(), title);
-                        if (entry != null) {
-                            entries.add(entry);
-                        }
-                    }
-                } catch (FeedException e) {
-                    e.printStackTrace();
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (IllegalArgumentException e){
-                    e.printStackTrace();
                 }
+            } catch (InterruptedException e) {
+                sendMessage(null, CANCEL);
+                return null;
+            } catch (ExecutionException e) {
+                sendMessage(null, CANCEL);
+                return null;
             }
 
             if (updateDatabase) {
                 dropCategory();
                 addToDatabase(entries);
             }
-
-            getNewItems(entries);
             return null;
+        }
+    }
+
+    private class FeedFutureTask implements Callable<List<Entry>> {
+        SyndFeedInput input = new SyndFeedInput();
+        Feed mFeed;
+
+        public FeedFutureTask(Feed feed) {
+            mFeed = feed;
+        }
+
+        @Override
+        public List<Entry> call() throws Exception {
+            List<Entry> feedEntries = new ArrayList<>();
+            try {
+                SyndFeed syndFeed = input.build(new XmlReader(new URL(mFeed.getXmlUrl()), context));
+                String title = syndFeed.getTitle();
+                if (mFeed.getTitle() == null) {
+                    mFeed.setTitle(title);
+                    databaseHandler.updateFeed(mFeed);
+                }
+                for (SyndEntry item : syndFeed.getEntries()) {
+                    Entry entry = getEntryFromRSSItem(item, mFeed.getId(), title);
+                    if (entry != null) {
+                        feedEntries.add(entry);
+                    }
+                }
+                getNewItems(feedEntries);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return feedEntries;
         }
     }
 }

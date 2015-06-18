@@ -6,16 +6,14 @@ import android.content.res.TypedArray;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.v4.app.ActionBarDrawerToggle;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,7 +43,6 @@ public class NavigationDrawerFragment extends Fragment implements FragmentManage
     public static final int SETTINGS = 5;
     public static final int RATING = 6;
     public static final int IMPORT = 7;
-    public static final int DONATION = 8;
 
     /**
      * A pointer to the current callbacks instance (the Activity).
@@ -57,14 +54,10 @@ public class NavigationDrawerFragment extends Fragment implements FragmentManage
     private ActionBarDrawerToggle mDrawerToggle;
     private DrawerLayout mDrawerLayout;
     private View mFragmentContainerView;
-    private LinearLayout mDrawerView;
     private View verticalLine;
     private ListView mDrawerList;
     private NavDrawerListAdapter navDrawAdapter;
 
-    // slide menu items
-    private String[] navMenuTitles;
-    private TypedArray navMenuIcons;
     private ArrayList<NavDrawerItem> navDrawerItems;
 
     public NavigationDrawerFragment() {
@@ -92,7 +85,7 @@ public class NavigationDrawerFragment extends Fragment implements FragmentManage
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        mDrawerView = (LinearLayout) inflater.inflate(R.layout.fragment_navigation_drawer, container, false);
+        LinearLayout mDrawerView = (LinearLayout) inflater.inflate(R.layout.fragment_navigation_drawer, container, false);
         mDrawerList = (ListView) mDrawerView.findViewById(R.id.left_drawer);
         mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -140,7 +133,6 @@ public class NavigationDrawerFragment extends Fragment implements FragmentManage
         mDrawerToggle = new ActionBarDrawerToggle(
                 getActivity(),                    /* host Activity */
                 mDrawerLayout,                    /* DrawerLayout object */
-                R.drawable.ic_navigation_drawer,             /* nav drawer image to replace 'Up' caret */
                 R.string.navigation_drawer_open,  /* "open drawer" description for accessibility */
                 R.string.navigation_drawer_close  /* "close drawer" description for accessibility */
         ) {
@@ -196,11 +188,11 @@ public class NavigationDrawerFragment extends Fragment implements FragmentManage
     private void initNavDrawerAdapter() {
         if (isAdded()) {
             // load slide menu items
-            navMenuTitles = getResources().getStringArray(R.array.nav_drawer_items);
+            String[] navMenuTitles = getResources().getStringArray(R.array.nav_drawer_items);
             // nav drawer icons from resources
-            navMenuIcons = getResources()
+            TypedArray navMenuIcons = getResources()
                     .obtainTypedArray(R.array.nav_drawer_icons);
-            navDrawerItems = new ArrayList<NavDrawerItem>();
+            navDrawerItems = new ArrayList<>();
             navDrawerItems.add(new NavDrawerItem(HOME, navMenuTitles[HOME], navMenuIcons.getResourceId(HOME, -1)));
             navDrawerItems.add(new NavDrawerItem(RECENT, navMenuTitles[RECENT], navMenuIcons.getResourceId(RECENT, -1), NavDrawerItem.SETTING_ITEM));
             navDrawerItems.add(new NavDrawerItem(FAVORITE, navMenuTitles[FAVORITE], navMenuIcons.getResourceId(FAVORITE, -1), NavDrawerItem.SETTING_ITEM));
@@ -211,10 +203,7 @@ public class NavigationDrawerFragment extends Fragment implements FragmentManage
             navDrawerItems.add(new NavDrawerItem(SETTINGS, navMenuTitles[SETTINGS], navMenuIcons.getResourceId(SETTINGS, -1)));
             navDrawerItems.add(new NavDrawerItem(IMPORT, navMenuTitles[IMPORT], navMenuIcons.getResourceId(IMPORT, -1), NavDrawerItem.SETTING_ITEM_BETA));
 
-            if (PrefUtilities.getInstance().shouldHideDonationButton()) {
-                navDrawerItems.add(new NavDrawerItem(DONATION, navMenuTitles[DONATION], navMenuIcons.getResourceId(DONATION, -1), NavDrawerItem.SETTING_ITEM));
-            }
-            navMenuIcons.recycle();
+           navMenuIcons.recycle();
             // set up the drawer's list view with items and click listener
             navDrawAdapter = new NavDrawerListAdapter(getActivity(), navDrawerItems);
             mDrawerList.setAdapter(navDrawAdapter);
@@ -280,7 +269,7 @@ public class NavigationDrawerFragment extends Fragment implements FragmentManage
     }
 
     private ActionBar getActionBar() {
-        return ((ActionBarActivity) getActivity()).getSupportActionBar();
+        return ((AppCompatActivity) getActivity()).getSupportActionBar();
     }
 
     public void changeColor(int color) {
@@ -294,7 +283,7 @@ public class NavigationDrawerFragment extends Fragment implements FragmentManage
     /**
      * Callbacks interface that all activities using this fragment must implement.
      */
-    public static interface NavigationDrawerCallbacks {
+    public interface NavigationDrawerCallbacks {
         /**
          * Called when an item in the navigation drawer is selected.
          *

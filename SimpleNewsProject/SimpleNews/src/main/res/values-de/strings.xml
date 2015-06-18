@@ -116,11 +116,4 @@
 
     <string name="thanks">Vielen Dank!</string>
     <string name="exception">Oops! Da ist etwas schief gelaufen!</string>
-    <string name="menu_donate">Spendier mir einen Kaffee!</string>
-    <string name="menu_coffee">Spendier mir einen Kaffee!</string>
-    <string name="menu_coffee2">Spendier mir 2 Kaffee!</string>
-    <string name="menu_coffee3">Spendier mir 5 Kaffee!</string>
-    <string name="menu_coffee4">Spendier mir 10 Kaffee!</string>
-    <string name="coffee_pref_title">Spendenknopf ausblenden</string>
-    <string name="coffee_pref_summary">Der Spendenknopf erscheint nur noch in der Navigation.</string>
-</resources>
+    </resources>

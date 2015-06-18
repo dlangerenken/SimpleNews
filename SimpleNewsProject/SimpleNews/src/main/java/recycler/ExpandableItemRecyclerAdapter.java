@@ -28,85 +28,86 @@ import de.dala.simplenews.utilities.ExpandCollapseHelper;
 import de.dala.simplenews.utilities.UIUtils;
 
 
-public class ExpandableItemRecyclerAdapter extends RecyclerView.Adapter<ExpandableItemRecyclerAdapter.EntryViewHolder>{
-    private List<Entry> mEntries;
+public class ExpandableItemRecyclerAdapter extends ChoiceModeRecyclerAdapter<ExpandableItemRecyclerAdapter.EntryViewHolder, Entry> {
     private Category mCategory;
     private Context mContext;
     private RecyclerView mRecyclerView;
 
-    public int getCount() {
-        return mEntries.size();
-    }
-
-    public void updateEntries(List<Entry> entries) {
-        if (mEntries == null) {
-            mEntries = new ArrayList<>();
-        }
-
-        Iterator<Entry> iterator = mEntries.iterator();
+    public void removeOldEntries(List<Entry> newEntries) {
+        Iterator<Entry> iterator = getItems().iterator();
         while (iterator.hasNext()) {
             Entry next = iterator.next();
-            if (!entries.contains(next)) {
-                int index = mEntries.indexOf(next);
+            if (!newEntries.contains(next)) {
+                int index = indexOf(next);
                 iterator.remove();
                 notifyItemRemoved(index);
             }
         }
-        iterator = entries.iterator();
-        while (iterator.hasNext()) {
-            Entry next = iterator.next();
-            if (!mEntries.contains(next)) {
-                mEntries.add(next);
-                Collections.sort(mEntries);
-                int index = mEntries.indexOf(next);
-                notifyItemInserted(index);
+    }
+
+    public void addNewEntries(List<Entry> entries) {
+        if (getItems() == null) {
+            setItems(new ArrayList<Entry>());
+        }
+
+        List<Entry> addedEntries = new ArrayList<>();
+        for (Entry next : entries) {
+            if (!getItems().contains(next)) {
+                getItems().add(next);
+                addedEntries.add(next);
             }
+        }
+
+        Collections.sort(getItems());
+        for (Entry addedEntry : addedEntries) {
+            int index = indexOf(addedEntry);
+            notifyItemInserted(index);
         }
     }
 
+    public void addNewEntriesAndRemoveOld(List<Entry> entries) {
+        addNewEntries(entries);
+        removeOldEntries(entries);
+    }
+
     public void remove(Set<Entry> selectedEntries) {
-        List<Entry> diff = new ArrayList<>(mEntries);
+        List<Entry> diff = new ArrayList<>(getItems());
         diff.removeAll(selectedEntries);
-        mSelectedItemIds.removeAll(selectedEntries);
-        updateEntries(diff);
+        removeOldEntries(diff);
     }
 
     public void refresh(Set<Entry> selectedEntries) {
-        for(Entry entry : selectedEntries){
-            notifyItemChanged(mEntries.indexOf(entry));
+        for (Entry entry : selectedEntries) {
+            notifyItemChanged(indexOf(entry));
         }
     }
 
 
     public interface ItemClickListener {
         void onItemClick(Entry entry);
-        void updateActionMode();
     }
 
     private ItemClickListener mItemClickListener;
-    private Set<Entry> mSelectedItemIds;
     private Set<Entry> mExpandedItemIds;
 
-    public ExpandableItemRecyclerAdapter(List<Entry> entries, Category category, Context context, ItemClickListener itemClickListener, RecyclerView recyclerView){
-        mEntries = entries;
+    public ExpandableItemRecyclerAdapter(List<Entry> entries, Category category, Context context, ItemClickListener itemClickListener, RecyclerView recyclerView, ChoiceModeListener listener) {
+        super(entries, listener);
         mCategory = category;
         mContext = context;
         mItemClickListener = itemClickListener;
         mRecyclerView = recyclerView;
-        mSelectedItemIds = new HashSet<>();
         mExpandedItemIds = new HashSet<>();
     }
 
     @Override
-    public EntryViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.news_card_layout, parent, false);
-        EntryViewHolder viewHolder = new EntryViewHolder(itemView);
-        return viewHolder;
+    void onBindSelectedViewHolder(EntryViewHolder holder, int position) {
+        onBindNormalViewHolder(holder, position);
+        holder.itemView.setBackgroundResource(R.color.list_background_selected);
     }
 
     @Override
-    public void onBindViewHolder(final EntryViewHolder holder, final int position) {
-        final Entry currentEntry = mEntries.get(position);
+    void onBindNormalViewHolder(final EntryViewHolder holder, int position) {
+        final Entry currentEntry = get(position);
 
         long current = Math.min(new Date().getTime(), currentEntry.getDate());
         String formattedDate = new PrettyTime().format(new Date(current));
@@ -123,7 +124,7 @@ public class ExpandableItemRecyclerAdapter extends RecyclerView.Adapter<Expandab
         UIUtils.setTextMaybeHtml(holder.descriptionTextView, currentEntry.getDescription());
 
         /* general */
-        holder.itemView.setBackgroundResource(mSelectedItemIds.contains(currentEntry) ? R.color.list_background_selected : R.color.list_background);
+        holder.itemView.setBackgroundResource(R.color.list_background);
         int pad = mContext.getResources().getDimensionPixelSize(R.dimen.card_layout_padding);
         holder.itemView.setPadding(pad, pad, pad, pad);
 
@@ -131,35 +132,38 @@ public class ExpandableItemRecyclerAdapter extends RecyclerView.Adapter<Expandab
         holder.clickListener = new EntryViewHolder.ClickListener() {
             @Override
             public void onSelectItem() {
-                onListItemCheck(currentEntry);
-                mItemClickListener.updateActionMode();
+                toggle(indexOf(currentEntry));
             }
 
             @Override
             public void onTitleClicked() {
-                if (mSelectedItemIds.isEmpty()) {
-                    toggle(currentEntry, holder.contentLayout);
-                }else{
-                    onListItemCheck(currentEntry);
-                    mItemClickListener.updateActionMode();
+                if (!isInSelectionMode()) {
+                    toggleExpandingElement(currentEntry, holder.contentLayout);
+                } else {
+                    toggleIfActionMode(indexOf(currentEntry));
                 }
             }
 
             @Override
             public void onDescriptionClicked() {
-                if (mSelectedItemIds.isEmpty()) {
+                if (!isInSelectionMode()) {
                     mItemClickListener.onItemClick(currentEntry);
-                }else{
-                    onListItemCheck(currentEntry);
-                    mItemClickListener.updateActionMode();
+                } else {
+                    toggleIfActionMode(indexOf(currentEntry));
                 }
             }
         };
     }
 
     @Override
-    public int getItemCount() {
-        return mEntries.size();
+    EntryViewHolder onCreateNormalViewHolder(ViewGroup parent) {
+        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.news_card_layout, parent, false);
+        return new EntryViewHolder(itemView);
+    }
+
+    @Override
+    EntryViewHolder onCreateSelectedViewHolder(ViewGroup parent) {
+        return onCreateNormalViewHolder(parent);
     }
 
     static class EntryViewHolder extends RecyclerView.ViewHolder {
@@ -178,7 +182,9 @@ public class ExpandableItemRecyclerAdapter extends RecyclerView.Adapter<Expandab
 
         interface ClickListener {
             void onSelectItem();
+
             void onTitleClicked();
+
             void onDescriptionClicked();
         }
 
@@ -201,7 +207,7 @@ public class ExpandableItemRecyclerAdapter extends RecyclerView.Adapter<Expandab
             titleLayout.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
-                    if (clickListener != null){
+                    if (clickListener != null) {
                         clickListener.onSelectItem();
                         return true;
                     }
@@ -211,7 +217,7 @@ public class ExpandableItemRecyclerAdapter extends RecyclerView.Adapter<Expandab
             titleLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (clickListener != null){
+                    if (clickListener != null) {
                         clickListener.onTitleClicked();
                     }
                 }
@@ -219,7 +225,7 @@ public class ExpandableItemRecyclerAdapter extends RecyclerView.Adapter<Expandab
             contentLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (clickListener != null){
+                    if (clickListener != null) {
                         clickListener.onDescriptionClicked();
                     }
                 }
@@ -237,53 +243,7 @@ public class ExpandableItemRecyclerAdapter extends RecyclerView.Adapter<Expandab
         entryType.setImageDrawable(drawable);
     }
 
-    private void onListItemCheck(Entry entry) {
-        toggleSelection(entry);
-    }
-
-    public void selectAllIds(){
-        for (int i = 0; i < mEntries.size(); i++){
-            onListItemCheck(i, true);
-        }
-        mItemClickListener.updateActionMode();
-    }
-
-    public void deselectAllIds(){
-        List<Entry> entriesToRemove = new ArrayList<>(mSelectedItemIds);
-        for (Entry entry : entriesToRemove){
-            mSelectedItemIds.remove(entry);
-            notifyItemChanged(mEntries.indexOf(entry));
-        }
-        mItemClickListener.updateActionMode();
-    }
-
-    private void onListItemCheck(int position, boolean value) {
-        selectView(mEntries.get(position), value);
-    }
-
-    public void toggleSelection(Entry entry) {
-        selectView(entry, !mSelectedItemIds.contains(entry));
-    }
-
-
-    public void selectView(Entry entry, boolean value) {
-        if (value) {
-            mSelectedItemIds.add(entry);
-        } else {
-            mSelectedItemIds.remove(entry);
-        }
-        notifyItemChanged(mEntries.indexOf(entry));
-    }
-
-    public int getSelectedCount() {
-        return mSelectedItemIds.size();
-    }
-
-    public Set<Entry> getSelectedIds() {
-        return mSelectedItemIds;
-    }
-
-    private void toggle(Entry entry, final View contentParent) {
+    private void toggleExpandingElement(Entry entry, final View contentParent) {
         if (mRecyclerView != null) {
             boolean isVisible = contentParent.getVisibility() == View.VISIBLE;
             if (isVisible) {
@@ -294,12 +254,12 @@ public class ExpandableItemRecyclerAdapter extends RecyclerView.Adapter<Expandab
         }
     }
 
-    private void expand(Entry entry, final View contentParent){
+    private void expand(Entry entry, final View contentParent) {
         ExpandCollapseHelper.animateExpanding(contentParent, mRecyclerView);
         mExpandedItemIds.add(entry);
     }
 
-    private void collapse(Entry entry, final View contentParent){
+    private void collapse(Entry entry, final View contentParent) {
         ExpandCollapseHelper.animateCollapsing(contentParent);
         mExpandedItemIds.remove(entry);
     }

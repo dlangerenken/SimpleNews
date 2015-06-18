@@ -76,7 +76,7 @@ import de.dala.simplenews.common.Feed;
         return outline;
     }
 
-    public static Opml convertFeedsToOpml(String name, ArrayList<Feed> feeds) {
+    public static Opml convertFeedsToOpml(String name, List<Feed> feeds) {
         Opml opml = new Opml();
         opml.setTitle("SimpleNews - OPML");
         opml.getOutlines().add(convertFeedsToOutline(name, feeds));

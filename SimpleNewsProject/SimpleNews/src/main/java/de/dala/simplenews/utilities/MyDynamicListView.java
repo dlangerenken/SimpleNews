@@ -53,10 +53,7 @@ public class MyDynamicListView extends DynamicListView {
                     return true;
                 }
             }
-            if (first != null) {
-                return first.onItemLongClick(arg0, arg1, pos, id);
-            }
-            return true;
+            return first == null || first.onItemLongClick(arg0, arg1, pos, id);
         }
     };
 

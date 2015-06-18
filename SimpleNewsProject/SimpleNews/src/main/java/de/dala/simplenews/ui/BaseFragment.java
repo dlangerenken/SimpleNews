@@ -19,7 +19,6 @@ import de.dala.simplenews.utilities.BaseNavigation;
 public class BaseFragment extends Fragment implements FragmentManager.OnBackStackChangedListener{
     // Arbitrary value; set it to some reasonable default
     private static final int DEFAULT_CHILD_ANIMATION_DURATION = 600;
-    private Fragment currentFragment;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -78,7 +77,7 @@ public class BaseFragment extends Fragment implements FragmentManager.OnBackStac
     }
 
     public void updateNavigation() {
-        currentFragment = getVisibleFragment();
+        Fragment currentFragment = getVisibleFragment();
         if (currentFragment != null && currentFragment instanceof BaseNavigation) {
             BaseNavigation navigation = (BaseNavigation) currentFragment;
             ((MainActivity) getActivity()).updateNavigation(navigation.getNavigationDrawerId(), navigation.getTitle());

@@ -3,32 +3,30 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
 
-    <RelativeLayout
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
         <android.support.v7.widget.Toolbar
-            android:id="@+id/main_toolbar"
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
+            android:minHeight="?attr/actionBarSize"
+            auto:popupTheme="@style/Theme.AppCompat.Light.DarkActionBar"
             android:layout_height="?attr/actionBarSize"
-            auto:theme="@style/ActionBar" />
+            auto:theme="@style/Toolbar" />
 
-        <FrameLayout android:id="@+id/container"
+        <FrameLayout
+            android:paddingTop="?attr/actionBarSize"
+            android:id="@+id/fragment"
             android:layout_width="match_parent"
-            android:layout_below="@id/main_toolbar"
-            tools:context=".MainActivity"
-            tools:ignore="MergeRootFrame"
-            android:layout_height="match_parent" />
-    </RelativeLayout>
+            android:layout_height="match_parent"
+            tools:context=".MainActivame"
+            tools:ignore="MergeRootFrent" />
+    </FrameLayout>
 
-    <!-- android:layout_gravity="start" tells DrawerLayout to treat
-        this as a sliding drawer on the left side for left-to-right
-        languages and on the right side for right-to-left languages.
-        If you're not building against API 17 or higher, use
-        android:layout_gravity="left" instead. -->
-    <!-- The drawer is given a fixed width in dp and extends the full height of
-         the container. -->
     <fragment
         android:id="@+id/navigation_drawer"
         android:name="de.dala.simplenews.ui.NavigationDrawerFragment"
