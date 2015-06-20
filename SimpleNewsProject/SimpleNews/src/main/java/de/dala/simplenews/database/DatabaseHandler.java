@@ -29,8 +29,8 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
     /**
      * Database Name and Version
      */
-    private static final int DATABASE_VERSION = 45;
-    public static final String DATABASE_NAME = "news_database";
+    private static final int DATABASE_VERSION = 1;
+    public static final String DATABASE_NAME = "simple_db";
 
     /**
      * Table names

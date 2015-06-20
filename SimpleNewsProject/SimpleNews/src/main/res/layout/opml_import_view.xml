@@ -1,59 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-     android:layout_width="match_parent"
-    android:layout_height="match_parent" android:layout_margin="10dp">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="10dp">
 
     <RelativeLayout
+        android:id="@+id/bottom"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/bottom"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true" >
+        android:layout_centerHorizontal="true">
+
         <Button
-            android:layout_centerHorizontal="true"
+            android:id="@+id/button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/import_button"
-            android:id="@+id/button"/>
+            android:layout_centerHorizontal="true"
+            android:text="@string/import_button" />
+
         <ProgressBar
+            android:id="@+id/import_progress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:indeterminate="true"
-            android:visibility="invisible"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/import_progress"/>
+            android:visibility="invisible" />
     </RelativeLayout>
 
 
     <TextView
+        android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="@string/enter_url_or_content_import"
-        android:id="@+id/textView"
         android:layout_alignParentBottom="false"
+        android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_alignParentTop="true" />
+        android:text="@string/enter_url_or_content_import"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <LinearLayout
-        android:layout_margin="5dp"
-        android:orientation="horizontal"
+        android:id="@+id/opml_content_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/border"
-        android:id="@+id/opml_content_layout"
+        android:layout_above="@id/bottom"
         android:layout_below="@id/textView"
-        android:layout_above="@id/bottom">
+        android:layout_margin="5dp"
+        android:background="@drawable/border"
+        android:orientation="horizontal">
+
         <EditText
+            android:id="@+id/opmlContentEditText"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:inputType="textMultiLine"
-            android:id="@+id/opmlContentEditText"
+            android:gravity="start"
             android:hint="@string/opml_url"
-            android:gravity="start">
-            <requestFocus/>
-         </EditText>
+            android:inputType="textMultiLine">
+
+            <requestFocus />
+        </EditText>
     </LinearLayout>
 
 </RelativeLayout>

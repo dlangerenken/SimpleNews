@@ -5,7 +5,7 @@
     android:layout_gravity="start"
     android:orientation="horizontal">
 
-    <ListView
+    <de.dala.simplenews.utilities.EmptyObservableRecyclerView
         android:id="@+id/left_drawer"
         android:layout_width="237dp"
         android:layout_height="match_parent"

@@ -3,38 +3,32 @@ package de.dala.simplenews.ui;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.view.ActionMode;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
-import android.widget.ListView;
-import android.widget.TextView;
 
-import com.nhaarman.listviewanimations.ArrayAdapter;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import de.dala.simplenews.R;
 import de.dala.simplenews.common.Feed;
 import de.dala.simplenews.utilities.BaseNavigation;
+import recycler.ChoiceModeRecyclerAdapter;
+import recycler.OpmlRecyclerAdapter;
 
-/**
- * Created by Daniel on 04.08.2014.
- */
-public class OpmlAssignFragment extends BaseFragment implements ViewPager.OnPageChangeListener, BaseNavigation{
+public class OpmlAssignFragment extends BaseFragment implements BaseNavigation, ChoiceModeRecyclerAdapter.ChoiceModeListener {
 
-    private OpmlListAdapter adapter;
     private static final String FEED_LIST_KEY = "feeds";
-    private ListView feedListView;
+
+    private OpmlRecyclerAdapter mAdapter;
+    private RecyclerView feedRecyclerView;
     private List<Feed> feedsToImport;
     private ActionMode mActionMode;
 
@@ -50,7 +44,7 @@ public class OpmlAssignFragment extends BaseFragment implements ViewPager.OnPage
     public static Fragment newInstance(List<Feed> feeds) {
         OpmlAssignFragment fragment = new OpmlAssignFragment();
         Bundle b = new Bundle();
-        b.putSerializable(FEED_LIST_KEY, new ArrayList<Feed>(feeds));
+        b.putSerializable(FEED_LIST_KEY, new ArrayList<>(feeds));
         fragment.setArguments(b);
         return fragment;
     }
@@ -58,31 +52,22 @@ public class OpmlAssignFragment extends BaseFragment implements ViewPager.OnPage
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.opml_list_view, container, false);
-        feedListView = (ListView) rootView.findViewById(R.id.listView);
+        feedRecyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_view);
+        feedRecyclerView.setLayoutManager(new LinearLayoutManager(inflater.getContext()));
         initAdapter();
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
+        AppCompatActivity activity = (AppCompatActivity) getActivity();
+        if (activity != null) {
+            ActionBar ab = activity.getSupportActionBar();
+            if (ab != null) {
+                ab.setDisplayHomeAsUpEnabled(true);
+            }
+        }
         return rootView;
     }
 
     private void initAdapter() {
-        adapter = new OpmlListAdapter(getActivity(), feedsToImport);
-        feedListView.setAdapter(adapter);
-    }
-
-    @Override
-    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-    }
-
-    @Override
-    public void onPageSelected(int position) {
-
-    }
-
-    @Override
-    public void onPageScrollStateChanged(int state) {
-
+        mAdapter = new OpmlRecyclerAdapter(getActivity(), feedsToImport, this);
+        feedRecyclerView.setAdapter(mAdapter);
     }
 
     @Override
@@ -99,144 +84,23 @@ public class OpmlAssignFragment extends BaseFragment implements ViewPager.OnPage
         return NavigationDrawerFragment.IMPORT;
     }
 
-    private class OpmlListAdapter extends ArrayAdapter<Feed> {
+    @Override
+    public void startSelectionMode() {
+        mActionMode = getActivity().startActionMode(new ActionModeCallBack());
+    }
 
-        private Context context;
-        private Map<Feed, Boolean> mSelectedItemIds;
-
-        public OpmlListAdapter(Context context, List<Feed> feeds) {
-            super(feeds);
-            this.context = context;
-            mSelectedItemIds = new HashMap<>();
-        }
-
-        @Override
-        public boolean hasStableIds() {
-            return true;
-        }
-
-        @Override
-        public View getView(final int position, View convertView, ViewGroup parent) {
-            final Feed feed = getItem(position);
-
-            if (convertView == null) {
-                LayoutInflater inflater = LayoutInflater.from(context);
-                convertView = inflater.inflate(R.layout.opml_list_item, parent, false);
-                ViewHolder viewHolder = new ViewHolder();
-                viewHolder.name = (TextView) convertView.findViewById(R.id.title);
-                viewHolder.link = (TextView) convertView.findViewById(R.id.url);
-                viewHolder.checkBox = (CheckBox) convertView.findViewById(R.id.checkbox);
-                convertView.setTag(viewHolder);
-            }
-            final ViewHolder holder = (ViewHolder) convertView.getTag();
-            holder.name.setText(feed.getTitle() == null ? context.getString(R.string.feed_title_not_found) : feed.getTitle());
-            holder.link.setText(feed.getXmlUrl());
-            holder.checkBox.setChecked(Boolean.TRUE.equals(mSelectedItemIds.get(feed)));
-            holder.checkBox.setOnClickListener(new View.OnClickListener(){
-                @Override
-                public void onClick(View v) {
-                    onListItemCheck(feed);
-                }
-            });
-
-            convertView.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View v) {
-                    holder.checkBox.toggle();
-                    onListItemClicked(position);
-                    return false;
-                }
-            });
-            convertView.setOnClickListener(new View.OnClickListener() {
-
-                @Override
-                public void onClick(View v) {
-                    holder.checkBox.toggle();
-                    onListItemCheck(feed);
-                }
-            });
-            int pad = getResources().getDimensionPixelSize(R.dimen.card_layout_padding);
-            convertView.setPadding(pad, pad, pad, pad);
-            return convertView;
-        }
-
-        public void toggleSelection(Feed feed) {
-            selectView(feed, !Boolean.TRUE.equals(mSelectedItemIds.get(feed)));
-        }
-
-        public void selectView(Feed feed, Boolean value) {
-            if (Boolean.TRUE.equals(value)) {
-                mSelectedItemIds.put(feed, true);
-            } else {
-                mSelectedItemIds.remove(feed);
-            }
-            notifyDataSetChanged();
-        }
-
-        public int getSelectedCount() {
-            return mSelectedItemIds.size();// mSelectedCount;
-        }
-
-        public Map<Feed, Boolean> getSelectedIds() {
-            return mSelectedItemIds;
-        }
-
-        public void removeSelection() {
-            mSelectedItemIds = new HashMap<>();
-            notifyDataSetChanged();
-        }
-
-        class ViewHolder {
-            public TextView name;
-            public TextView link;
-            public CheckBox checkBox;
+    @Override
+    public void updateSelectionMode(int numberOfElements) {
+        if (mActionMode != null) {
+            mActionMode.setTitle(String.valueOf(numberOfElements));
         }
     }
 
-    private void removeFeed(Feed feed){
-        feedsToImport.remove(feed);
-        adapter.remove(feed);
-        adapter.notifyDataSetChanged();
-    }
-
-    private void onListItemCheck(Feed feedUrl) {
-        adapter.toggleSelection(feedUrl);
-        boolean hasCheckedItems = adapter.getSelectedCount() > 0;
-
-        if (hasCheckedItems && mActionMode == null) {
-            // there are some selected items, start the actionMode
-            mActionMode = ((AppCompatActivity) getActivity()).startSupportActionMode(new ActionModeCallBack());
-        }
-
-        if (!hasCheckedItems && mActionMode != null){
+    @Override
+    public void finishSelectionMode() {
+        if (mActionMode != null) {
             mActionMode.finish();
         }
-
-        if (mActionMode != null) {
-            mActionMode.setTitle(String.valueOf(adapter.getSelectedCount()));
-        }
-    }
-
-    private void onListItemClicked(int position) {
-        Feed feed = adapter.getItem(position);
-        final ArrayList<Feed> selectedEntries = new ArrayList<>();
-        selectedEntries.add(feed);
-        AssignDialogFragment assignFeedsDialog = AssignDialogFragment.newInstance(selectedEntries);
-        assignFeedsDialog.setDialogHandler(new AssignDialogFragment.IDialogHandler(){
-
-            @Override
-            public void assigned() {
-                removeSelectedFeeds(selectedEntries);
-                adapter.removeSelection();
-            }
-
-            @Override
-            public void canceled() {
-                adapter.removeSelection();
-            }
-        });
-
-        assignFeedsDialog.show(getFragmentManager(), "AssignFeedsDialog");
     }
 
     private class ActionModeCallBack implements ActionMode.Callback {
@@ -255,32 +119,24 @@ public class OpmlAssignFragment extends BaseFragment implements ViewPager.OnPage
 
         @Override
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-            // retrieve selected items and print them out
-            Map<Feed, Boolean> selected = adapter.getSelectedIds();
-            final ArrayList<Feed> selectedEntries = new ArrayList<>();
-            for (Map.Entry<Feed, Boolean> entry : selected.entrySet()){
-                if (Boolean.TRUE.equals(entry.getValue())) {
-                    selectedEntries.add(entry.getKey());
-                }
-            }
+            final List<Feed> feeds = mAdapter.getSelectedItems();
             // close action mode
             switch (item.getItemId()) {
                 case R.id.menu_item_remove:
-                    removeSelectedFeeds(selectedEntries);
+                    mAdapter.remove(feeds);
                     break;
                 case R.id.menu_item_assign:
-                    AssignDialogFragment assignFeedsDialog = AssignDialogFragment.newInstance(selectedEntries);
-                    assignFeedsDialog.setDialogHandler(new AssignDialogFragment.IDialogHandler(){
+                    AssignDialogFragment assignFeedsDialog = AssignDialogFragment.newInstance(feeds);
+                    assignFeedsDialog.setDialogHandler(new AssignDialogFragment.IDialogHandler() {
 
                         @Override
                         public void assigned() {
-                            removeSelectedFeeds(selectedEntries);
-                            adapter.removeSelection();
+                            mAdapter.remove(feeds);
                         }
 
                         @Override
                         public void canceled() {
-                            adapter.removeSelection();
+                            mAdapter.clearSelections();
                         }
                     });
                     assignFeedsDialog.show(getFragmentManager(), "AssignFeedsDialog");
@@ -294,21 +150,9 @@ public class OpmlAssignFragment extends BaseFragment implements ViewPager.OnPage
         @Override
         public void onDestroyActionMode(ActionMode mode) {
             // remove selection
-            adapter.removeSelection();
+            mAdapter.clearSelections();
             mActionMode = null;
         }
-    }
-
-    private void removeSelectedFeeds(List<Feed> selectedFeeds) {
-        for (Feed feed : selectedFeeds) {
-            removeFeed(feed);
-        }
-        adapter.removeSelection();
-        if (feedsToImport.size() == 0){
-            FragmentManager fm = getActivity().getSupportFragmentManager();
-            fm.popBackStack();
-        }
-
     }
 
 }

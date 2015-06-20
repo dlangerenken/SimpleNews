@@ -148,24 +148,19 @@ public class FeedRecyclerAdapter extends ChoiceModeRecyclerAdapter<FeedRecyclerA
     }
 
     public void removeFeeds(List<Feed> selectedFeeds) {
+        remove(selectedFeeds);
         for (Feed feed : selectedFeeds) {
-            int index = indexOf(feed);
-            getItems().remove(feed);
-            notifyItemRemoved(index);
             DatabaseHandler.getInstance().removeFeeds(null, feed.getId(), false);
         }
     }
 
     @Override
     public void onFeedLoaded(Feed feed) {
-        getItems().add(feed);
-        int index = indexOf(feed);
-        notifyItemInserted(index);
+        add(feed);
     }
 
     @Override
     public void onFeedUpdated(Feed feed) {
-        int index = indexOf(feed);
-        notifyItemChanged(index);
+        update(feed);
     }
 }

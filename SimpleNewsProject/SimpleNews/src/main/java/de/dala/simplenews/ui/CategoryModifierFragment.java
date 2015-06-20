@@ -13,13 +13,12 @@ import de.dala.simplenews.common.Category;
 import de.dala.simplenews.common.Feed;
 import de.dala.simplenews.database.DatabaseHandler;
 import de.dala.simplenews.utilities.BaseNavigation;
+import recycler.CategoryRecyclerAdapter;
 
-/**
- * Created by Daniel on 29.12.13.
- */
-public class CategoryModifierFragment extends BaseFragment implements CategorySelectionFragment.OnCategoryClicked, BaseNavigation {
+public class CategoryModifierFragment extends BaseFragment implements CategoryRecyclerAdapter.OnCategoryClicked, BaseNavigation {
     private static final String FROM_RSS = "from_rss";
-    Fragment fragment = null;
+    private Fragment fragment = null;
+    private long lastCategoryClick = 0;
 
     public CategoryModifierFragment() {
     }
@@ -59,8 +58,7 @@ public class CategoryModifierFragment extends BaseFragment implements CategorySe
             fragment = CategorySelectionFragment.newInstance(categories, rssPath);
         }
         FragmentTransaction t = getChildFragmentManager().beginTransaction();
-        t.replace(R.id.container, fragment);
-        t.commit();
+        t.replace(R.id.container, fragment).commit();
     }
 
     @Override
@@ -76,15 +74,13 @@ public class CategoryModifierFragment extends BaseFragment implements CategorySe
         outState.putLong("lastCategoryClick", lastCategoryClick);
     }
 
-    private long lastCategoryClick = 0;
     @Override
     public void onMoreClicked(Category category) {
         lastCategoryClick = category.getId();
         fragment = CategoryFeedsFragment.newInstance(category);
         FragmentTransaction t = getChildFragmentManager().beginTransaction();
         t.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_left, R.anim.slide_in_right, R.anim.slide_out_right);
-        t.replace(R.id.container, fragment);
-        t.commit();
+        t.replace(R.id.container, fragment).commit();
         getActivity().supportInvalidateOptionsMenu();
     }
 
@@ -101,6 +97,23 @@ public class CategoryModifierFragment extends BaseFragment implements CategorySe
     public void onRestore() {
         DatabaseHandler.getInstance().removeAllCategories();
         DatabaseHandler.getInstance().loadXmlIntoDatabase(R.raw.categories);
+    }
+
+    @Override
+    public void onShowClicked(Category category) {
+        boolean visible = !category.isVisible();
+        category.setVisible(visible);
+        DatabaseHandler.getInstance().updateCategory(category);
+    }
+
+    @Override
+    public void onColorClicked(Category category) {
+
+    }
+
+    @Override
+    public void editClicked(Category category) {
+
     }
 
     @Override

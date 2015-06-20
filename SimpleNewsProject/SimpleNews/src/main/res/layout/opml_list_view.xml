@@ -9,11 +9,11 @@
         android:textAppearance="@android:style/TextAppearance.Small"
         android:layout_height="wrap_content" android:text="@string/feed_selection_assign"
         android:layout_margin="5dp"/>
-    <ListView
+    <de.dala.simplenews.utilities.EmptyObservableRecyclerView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:dividerHeight="1dp"
         android:divider="@android:color/darker_gray"
-        android:id="@+id/listView"
+        android:id="@+id/recycler_view"
         android:layout_gravity="center_horizontal" />
 </LinearLayout>

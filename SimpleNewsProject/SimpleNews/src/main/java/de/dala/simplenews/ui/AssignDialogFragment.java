@@ -1,16 +1,11 @@
 package de.dala.simplenews.ui;
 
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.ListView;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,12 +14,14 @@ import de.dala.simplenews.R;
 import de.dala.simplenews.common.Category;
 import de.dala.simplenews.common.Feed;
 import de.dala.simplenews.database.DatabaseHandler;
-import de.dala.simplenews.database.IDatabaseHandler;
 import de.dala.simplenews.utilities.BaseNavigation;
+import de.dala.simplenews.utilities.EmptyObservableRecyclerView;
+import recycler.CategoryAssignRecyclerAdapter;
 
-public class AssignDialogFragment extends DialogFragment implements BaseNavigation {
+public class AssignDialogFragment extends DialogFragment implements BaseNavigation, CategoryAssignRecyclerAdapter.OnClickListener {
 
-    private ArrayList<Feed> feeds;
+    private List<Feed> feeds;
+    private IDialogHandler dialogHandler;
 
     public interface IDialogHandler {
         void assigned();
@@ -32,19 +29,13 @@ public class AssignDialogFragment extends DialogFragment implements BaseNavigati
         void canceled();
     }
 
-    private IDialogHandler dialogHandler;
-
-    public void setDialogHandler(IDialogHandler handler) {
-        dialogHandler = handler;
-    }
-
     public AssignDialogFragment() {
     }
 
-    public static AssignDialogFragment newInstance(ArrayList<Feed> feeds) {
+    public static AssignDialogFragment newInstance(List<Feed> feeds) {
         AssignDialogFragment fragment = new AssignDialogFragment();
         Bundle bundle = new Bundle();
-        bundle.putSerializable("feeds", feeds);
+        bundle.putSerializable("feeds", new ArrayList<>(feeds));
         fragment.setArguments(bundle);
         return fragment;
     }
@@ -58,7 +49,7 @@ public class AssignDialogFragment extends DialogFragment implements BaseNavigati
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.assign_category_list, container, false);
-        ListView assignCategoryView = (ListView) rootView.findViewById(R.id.listView);
+        EmptyObservableRecyclerView assignCategoryView = (EmptyObservableRecyclerView) rootView.findViewById(R.id.listView);
 
         Object feedsObject = null;
         if (getArguments() != null) {
@@ -70,7 +61,7 @@ public class AssignDialogFragment extends DialogFragment implements BaseNavigati
         if (feedsObject != null && feedsObject instanceof ArrayList<?>) {
             feeds = (ArrayList<Feed>) feedsObject;
             List<Category> categories = DatabaseHandler.getInstance().getCategories(true, true, null);
-            CategoryAdapter adapter = new CategoryAdapter(getActivity(), categories);
+            CategoryAssignRecyclerAdapter adapter = new CategoryAssignRecyclerAdapter(getActivity(), categories, this);
             assignCategoryView.setAdapter(adapter);
         }
 
@@ -79,100 +70,36 @@ public class AssignDialogFragment extends DialogFragment implements BaseNavigati
         return rootView;
     }
 
+    private void assignSelectedEntries(Category category) {
+        for (Feed feed : feeds) {
+            feed.setCategoryId(category.getId());
+            if (feed.getCategoryId() != null && feed.getCategoryId() > 0) {
+                DatabaseHandler.getInstance().addFeed(feed.getCategoryId(), feed, true);
+            }
+        }
+        if (dialogHandler != null) {
+            dialogHandler.assigned();
+        }
+        dismiss();
+    }
+
     @Override
     public String getTitle() {
         return "AssignDialogFragment";
-    } // should not be called
+    }
 
     @Override
     public int getNavigationDrawerId() {
         return NavigationDrawerFragment.IMPORT;
     }
 
-    class CategoryViewHolder extends RecyclerView.ViewHolder {
-        public TextView name;
-        public ImageView image;
 
-        public CategoryViewHolder(View itemView) {
-            super(itemView);
-            LayoutInflater inflater = LayoutInflater.from(context);
-            convertView = inflater.inflate(R.layout.category_assign_item, parent, false);viewHolder.image = (ImageView) convertView.findViewById(R.id.image);
-            viewHolder.name = (TextView) convertView.findViewById(R.id.name);
-        }
+    @Override
+    public void onClick(Category category) {
+        assignSelectedEntries(category);
     }
 
-    private class CategoryAdapter extends RecyclerView.Adapter<CategoryViewHolder> {
-
-
-        private Context context;
-        private IDatabaseHandler database;
-        private List<Category> mCategories;
-
-        public CategoryAdapter(Context context, List<Category> categories) {
-            mCategories = categories;
-            this.context = context;
-            this.database = DatabaseHandler.getInstance();
-        }
-
-        @Override
-        public CategoryViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            return null;
-        }
-
-        @Override
-        public void onBindViewHolder(CategoryViewHolder holder, int position) {
-
-        }
-
-        @Override
-        public int getItemCount() {
-            return 0;
-        }
-
-        @Override
-        public boolean hasStableIds() {
-            return true;
-        }
-
-        @Override
-        public View getView(final int position, View convertView, ViewGroup parent) {
-            final Category category = getItem(position);
-
-            if (convertView == null) {
-                ViewHolder viewHolder = new ViewHolder();
-
-                convertView.setTag(viewHolder);
-            }
-            final ViewHolder holder = (ViewHolder) convertView.getTag();
-            holder.name.setText(category.getName());
-            holder.image.setBackgroundColor(category.getPrimaryColor());
-
-            convertView.setOnClickListener(new View.OnClickListener() {
-
-                @Override
-                public void onClick(View v) {
-                    assignSelectedEntries(category);
-                }
-
-            });
-            int pad = getResources().getDimensionPixelSize(R.dimen.card_layout_padding);
-            convertView.setPadding(pad, pad, pad, pad);
-            return convertView;
-        }
-
-
-        private void assignSelectedEntries(Category category) {
-            for (Feed feed : feeds) {
-                feed.setCategoryId(category.getId());
-                if (feed.getCategoryId() != null && feed.getCategoryId() > 0) {
-                    database.addFeed(feed.getCategoryId(), feed, true);
-                }
-            }
-            if (dialogHandler != null) {
-                dialogHandler.assigned();
-            }
-            dismiss();
-        }
+    public void setDialogHandler(IDialogHandler handler) {
+        dialogHandler = handler;
     }
-
 }

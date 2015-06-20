@@ -13,20 +13,21 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import de.dala.simplenews.R;
 import de.dala.simplenews.common.NavDrawerItem;
-import de.dala.simplenews.utilities.NavDrawerListAdapter;
 import de.dala.simplenews.utilities.PrefUtilities;
+import recycler.NavDrawerRecyclerAdapter;
 
 
 /**
@@ -55,10 +56,9 @@ public class NavigationDrawerFragment extends Fragment implements FragmentManage
     private DrawerLayout mDrawerLayout;
     private View mFragmentContainerView;
     private View verticalLine;
-    private ListView mDrawerList;
-    private NavDrawerListAdapter navDrawAdapter;
-
-    private ArrayList<NavDrawerItem> navDrawerItems;
+    private RecyclerView mDrawerList;
+    private NavDrawerRecyclerAdapter navDrawAdapter;
+    private List<NavDrawerItem> navDrawerItems;
 
     public NavigationDrawerFragment() {
     }
@@ -85,25 +85,9 @@ public class NavigationDrawerFragment extends Fragment implements FragmentManage
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        LinearLayout mDrawerView = (LinearLayout) inflater.inflate(R.layout.fragment_navigation_drawer, container, false);
-        mDrawerList = (ListView) mDrawerView.findViewById(R.id.left_drawer);
-        mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                NavDrawerItem item = (NavDrawerItem) parent.getItemAtPosition(position);
-                switch (item.getType()){
-                    case NavDrawerItem.MAIN_ITEM:
-                        selectItem(item);
-                        break;
-                    case NavDrawerItem.SETTING_ITEM:
-                        selectItem(item);
-                        break;
-                    case NavDrawerItem.SETTING_ITEM_BETA:
-                        selectItem(item);
-                        break;
-                }
-            }
-        });
+        View mDrawerView = inflater.inflate(R.layout.fragment_navigation_drawer, container, false);
+        mDrawerList = (RecyclerView) mDrawerView.findViewById(R.id.left_drawer);
+        mDrawerList.setLayoutManager(new LinearLayoutManager(inflater.getContext()));
         verticalLine = mDrawerView.findViewById(R.id.vertical_line);
         return mDrawerView;
     }
@@ -203,28 +187,20 @@ public class NavigationDrawerFragment extends Fragment implements FragmentManage
             navDrawerItems.add(new NavDrawerItem(SETTINGS, navMenuTitles[SETTINGS], navMenuIcons.getResourceId(SETTINGS, -1)));
             navDrawerItems.add(new NavDrawerItem(IMPORT, navMenuTitles[IMPORT], navMenuIcons.getResourceId(IMPORT, -1), NavDrawerItem.SETTING_ITEM_BETA));
 
-           navMenuIcons.recycle();
+            navMenuIcons.recycle();
             // set up the drawer's list view with items and click listener
-            navDrawAdapter = new NavDrawerListAdapter(getActivity(), navDrawerItems);
+            navDrawAdapter = new NavDrawerRecyclerAdapter(navDrawerItems, new NavDrawerRecyclerAdapter.OnItemClicked() {
+                @Override
+                public void onClick(NavDrawerItem item) {
+                    if (mDrawerLayout != null) {
+                        mDrawerLayout.closeDrawer(mFragmentContainerView);
+                    }
+                    if (mCallbacks != null) {
+                        mCallbacks.onNavigationDrawerItemSelected(item.getId());
+                    }
+                }
+            });
             mDrawerList.setAdapter(navDrawAdapter);
-        }
-    }
-
-    private void selectItem(NavDrawerItem item) {
-        if (mDrawerLayout != null) {
-            mDrawerLayout.closeDrawer(mFragmentContainerView);
-        }
-        if (mCallbacks != null) {
-            mCallbacks.onNavigationDrawerItemSelected(item.getId());
-        }
-    }
-
-    public void checkItem(int position) {
-        if (mDrawerList != null) {
-            for (int i = 0; i < navDrawerItems.size(); i++){
-                NavDrawerItem item = navDrawerItems.get(i);
-                mDrawerList.setItemChecked(i, item.getId() ==  position);
-            }
         }
     }
 
@@ -257,10 +233,10 @@ public class NavigationDrawerFragment extends Fragment implements FragmentManage
                 mDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.home:
                 boolean popBackSuccessful = getActivity().getSupportFragmentManager().popBackStackImmediate();
-                if (popBackSuccessful){
+                if (popBackSuccessful) {
                     return true;
                 }
                 break;
@@ -275,8 +251,6 @@ public class NavigationDrawerFragment extends Fragment implements FragmentManage
     public void changeColor(int color) {
         Drawable mColorDrawable = new ColorDrawable(color);
         verticalLine.setBackgroundColor(color);
-        mDrawerList.setDivider(new ColorDrawable(color));
-        mDrawerList.setDividerHeight(1);
         navDrawAdapter.setCategoryDrawable(mColorDrawable);
     }
 
@@ -295,7 +269,7 @@ public class NavigationDrawerFragment extends Fragment implements FragmentManage
     @Override
     public void onBackStackChanged() {
         setActionBarArrowDependingOnFragmentsBackStack();
-        ((MainActivity)getActivity()).updateNavigation();
+        ((MainActivity) getActivity()).updateNavigation();
     }
 
     private void setActionBarArrowDependingOnFragmentsBackStack() {

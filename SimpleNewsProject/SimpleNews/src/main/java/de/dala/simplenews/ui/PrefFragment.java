@@ -1,10 +1,10 @@
 package de.dala.simplenews.ui;
 
 
-import android.app.Fragment;
-import android.preference.PreferenceFragment;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.preference.PreferenceFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,17 +21,17 @@ public class PrefFragment extends PreferenceFragment implements BaseNavigation {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        addPreferencesFromResource(R.xml.preferences);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = super.onCreateView(inflater, container, savedInstanceState);
-        if (view != null) {
+        View rootView = inflater.inflate(R.layout.fragment_preferences, container, false);
+        if (rootView != null) {
             int color = getResources().getColor(R.color.background_window);
-            view.setBackgroundColor(color);
+            rootView.setBackgroundColor(color);
         }
-        return view;
+        addPreferencesFromResource(R.xml.preferences);
+        return rootView;
     }
 
     @Override

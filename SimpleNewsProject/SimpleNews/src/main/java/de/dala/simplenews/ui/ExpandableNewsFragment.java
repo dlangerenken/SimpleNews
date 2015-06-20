@@ -29,9 +29,7 @@ import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCal
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import de.dala.simplenews.utilities.EmptyObservableRecyclerView;
 import recycler.ChoiceModeRecyclerAdapter;
@@ -63,13 +61,11 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
     private int position;
     private StaggeredGridLayoutManager mLayoutManager;
 
-    private MenuItem refreshItem;
     private boolean isRefreshing;
-
+    private MenuItem refreshItem;
     private ShareActionProvider shareActionProvider;
 
     public ExpandableNewsFragment() {
-        //shouldn't be called
     }
 
     public static ExpandableNewsFragment newInstance(Category category, int entryType, int position) {
@@ -201,8 +197,8 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
         mLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         if (mRecyclerView != null) {
             mExpandableItemRecyclerAdapter = new ExpandableItemRecyclerAdapter(new ArrayList<Entry>(), category, getActivity(), this, mRecyclerView, this);
-            mRecyclerView.setItemAnimator(new FadeInUpAnimator());
             mRecyclerView.setLayoutManager(mLayoutManager);
+            mRecyclerView.setItemAnimator(new FadeInUpAnimator());
             mRecyclerView.setAdapter(mExpandableItemRecyclerAdapter);
         }
         updateColumnCount();
@@ -217,7 +213,7 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
     }
 
     private void receivePartResult(List<Entry> entries) {
-        mExpandableItemRecyclerAdapter.addNewEntries(entries);
+        mExpandableItemRecyclerAdapter.add(entries);
     }
 
     private void updateFinished(boolean success, List<Entry> entries) {
@@ -270,7 +266,7 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
         return shareIntent;
     }
 
-    private void deleteSelectedEntries(Set<Entry> selectedEntries) {
+    private void deleteSelectedEntries(List<Entry> selectedEntries) {
         for (Entry entry : selectedEntries) {
             entry.setVisible(false);
             DatabaseHandler.getInstance().updateEntry(entry);
@@ -278,20 +274,20 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
         mExpandableItemRecyclerAdapter.remove(selectedEntries);
     }
 
-    private void saveSelectedEntries(Set<Entry> selectedEntries) {
+    private void saveSelectedEntries(List<Entry> selectedEntries) {
         for (Entry entry : selectedEntries) {
             entry.setFavoriteDate((entry.getFavoriteDate() == null || entry.getFavoriteDate() == 0) ? new Date().getTime() : null);
             DatabaseHandler.getInstance().updateEntry(entry);
         }
-        mExpandableItemRecyclerAdapter.refresh(selectedEntries);
+        mExpandableItemRecyclerAdapter.update(selectedEntries);
     }
 
-    private void markEntriesAsRead(Set<Entry> selectedEntries) {
+    private void markEntriesAsRead(List<Entry> selectedEntries) {
         for (Entry entry : selectedEntries) {
             entry.setVisitedDate((entry.getVisitedDate() == null || entry.getVisitedDate() == 0) ? new Date().getTime() : null);
             DatabaseHandler.getInstance().updateEntry(entry);
         }
-        mExpandableItemRecyclerAdapter.refresh(selectedEntries);
+        mExpandableItemRecyclerAdapter.update(selectedEntries);
     }
 
 
@@ -349,9 +345,7 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
         entry.setVisitedDate(new Date().getTime());
 
         DatabaseHandler.getInstance().updateEntry(entry);
-        Set<Entry> updatedEntries = new HashSet<>();
-        updatedEntries.add(entry);
-        mExpandableItemRecyclerAdapter.refresh(updatedEntries);
+        mExpandableItemRecyclerAdapter.update(entry);
 
         String link = entry.getShortenedLink() != null ? entry.getShortenedLink() : entry.getLink();
         Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(link));
@@ -489,7 +483,7 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
 
         @Override
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-            Set<Entry> selectedEntries = new HashSet<>(mExpandableItemRecyclerAdapter.getSelectedItems());
+            List<Entry> selectedEntries = mExpandableItemRecyclerAdapter.getSelectedItems();
 
             boolean shouldFinish = false;
             switch (item.getItemId()) {

@@ -4,9 +4,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by Daniel on 23.12.13.
- */
 public class News implements Serializable {
     private List<Category> categories;
 

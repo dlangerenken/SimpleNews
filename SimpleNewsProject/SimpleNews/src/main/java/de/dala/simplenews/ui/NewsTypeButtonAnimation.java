@@ -9,9 +9,6 @@ import android.view.animation.TranslateAnimation;
 
 import circularmenu.FloatingActionMenu;
 
-/**
- * Created by Daniel on 16.07.2014.
- */
 public class NewsTypeButtonAnimation  {
     private FloatingActionMenu mViewToAnimate;
     private ScrollClass myScrollClass;

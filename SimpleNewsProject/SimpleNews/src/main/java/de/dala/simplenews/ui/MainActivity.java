@@ -21,7 +21,6 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
     private NavigationDrawerFragment mNavigationDrawerFragment;
     private Fragment currentFragment;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -136,9 +135,10 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
                 break;
             case NavigationDrawerFragment.SETTINGS:
                 clearBackStackKeep(1);
-                android.app.FragmentTransaction transactionNative = getFragmentManager().beginTransaction();
-                transactionNative.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_left, R.anim.slide_in_right, R.anim.slide_out_right);
-                transactionNative.replace(R.id.fragment, PrefFragment.getInstance()).addToBackStack(null).commit();
+                currentFragment = PrefFragment.getInstance();
+                transaction = getSupportFragmentManager().beginTransaction();
+                transaction.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_left, R.anim.slide_in_right, R.anim.slide_out_right);
+                transaction.replace(R.id.fragment, currentFragment).addToBackStack(null).commit();
                 break;
             case NavigationDrawerFragment.RATING:
                 RateMyApp.showRateDialog(this);
@@ -167,7 +167,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         currentFragment = getVisibleFragment();
         if (currentFragment != null && currentFragment instanceof BaseNavigation) {
             BaseNavigation navigation = (BaseNavigation) currentFragment;
-            mNavigationDrawerFragment.checkItem(navigation.getNavigationDrawerId());
+            //mNavigationDrawerFragment.checkItem(navigation.getNavigationDrawerId());
             ActionBar actionBar = getSupportActionBar();
             if (actionBar != null) {
                 actionBar.setTitle(navigation.getTitle());
@@ -196,7 +196,7 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
     }
 
     public void updateNavigation(int navigationDrawerId, String title) {
-        mNavigationDrawerFragment.checkItem(navigationDrawerId);
+        //mNavigationDrawerFragment.checkItem(navigationDrawerId);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setTitle(title);
@@ -206,6 +206,4 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
     public void changeDrawerColor(int newColor) {
         mNavigationDrawerFragment.changeColor(newColor);
     }
-
-
 }

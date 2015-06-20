@@ -66,6 +66,9 @@ dependencies {
     compile('de.keyboardsurfer.android.widget:crouton:1.8.5') {
         exclude module: 'support-v4'
     }
+    compile('com.android.support:support-v4-preferencefragment:1.0.0@aar') {
+        exclude module: 'support-v4'
+    }
     compile 'com.ocpsoft:ocpsoft-pretty-time:1.0.7'
     compile 'com.squareup.okhttp:okhttp:2.2.0'
     compile 'com.android.support:support-v13:21.0.3'

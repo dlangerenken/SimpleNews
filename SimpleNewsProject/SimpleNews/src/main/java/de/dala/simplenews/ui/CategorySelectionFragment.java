@@ -3,10 +3,9 @@ package de.dala.simplenews.ui;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
-import android.util.SparseBooleanArray;
+import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -14,17 +13,11 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.ShareActionProvider;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.nhaarman.listviewanimations.ArrayAdapter;
-import com.nhaarman.listviewanimations.itemmanipulation.DynamicListView;
-import com.nhaarman.listviewanimations.itemmanipulation.dragdrop.TouchViewDraggableManager;
 import com.rometools.rome.feed.opml.Opml;
 import com.rometools.rome.io.impl.OPML20Generator;
 import com.rometools.rome.io.FeedException;
@@ -40,36 +33,29 @@ import colorpicker.ColorUtils;
 import colorpicker.OnColorSelectedListener;
 import de.dala.simplenews.R;
 import de.dala.simplenews.common.Category;
-import de.dala.simplenews.common.Feed;
 import de.dala.simplenews.database.DatabaseHandler;
-import de.dala.simplenews.database.IDatabaseHandler;
 import de.dala.simplenews.utilities.BaseNavigation;
 import de.dala.simplenews.utilities.ColorManager;
+import de.dala.simplenews.utilities.EmptyObservableRecyclerView;
 import de.dala.simplenews.utilities.LightAlertDialog;
-import de.dala.simplenews.utilities.MyDynamicListView;
 import de.dala.simplenews.utilities.OpmlConverter;
 import de.dala.simplenews.utilities.PrefUtilities;
-import de.dala.simplenews.utilities.UIUtils;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
+import recycler.CategoryRecyclerAdapter;
+import recycler.ChoiceModeRecyclerAdapter;
 
-/**
- * Created by Daniel on 29.12.13.
- */
-public class CategorySelectionFragment extends BaseFragment implements BaseNavigation {
+public class CategorySelectionFragment extends BaseFragment implements BaseNavigation, CategoryRecyclerAdapter.OnCategoryClicked, ChoiceModeRecyclerAdapter.ChoiceModeListener {
 
     private static final String CATEGORIES_KEY = "categories";
     private static final String RSS_PATH_KEY = "path";
-    private OnCategoryClicked categoryClicked;
     private ActionMode mActionMode;
     private List<Category> categories;
-    private MyDynamicListView categoryListView;
-    private CategoryListAdapter adapter;
+    private EmptyObservableRecyclerView recyclerView;
+    private CategoryRecyclerAdapter adapter;
     private String rssPath;
-    private TextView topTextView;
     private ViewGroup topView;
     private ShareActionProvider shareActionProvider;
-    private MyOnItemLongClickListener myOnItemLongClickListener;
 
     public CategorySelectionFragment() {
     }
@@ -85,64 +71,41 @@ public class CategorySelectionFragment extends BaseFragment implements BaseNavig
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        this.categoryClicked = UIUtils.getParent(this, OnCategoryClicked.class);
-        if (categoryClicked == null) {
-            throw new ClassCastException("No Parent with Interface OnCategoryClicked");
-        }
         View rootView = inflater.inflate(R.layout.category_selection, container, false);
         topView = (ViewGroup) rootView.findViewById(R.id.topView);
         if (rssPath != null) {
-            topTextView = (TextView) rootView.findViewById(R.id.topTextView);
+            TextView topTextView = (TextView) rootView.findViewById(R.id.topTextView);
             topTextView.setText(getActivity().getString(R.string.category_add));
             topTextView.setVisibility(View.VISIBLE);
         }
-        categoryListView = (MyDynamicListView) rootView.findViewById(R.id.listView);
-        categoryListView.setDivider(null);
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-            // only for gingerbread and newer versions
-            categoryListView.enableDragAndDrop();
-        }
-        myOnItemLongClickListener = new MyOnItemLongClickListener(categoryListView);
-        categoryListView.setOnItemLongClickListener(myOnItemLongClickListener);
-        categoryListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if (isSelected()){
-                    onListItemCheck(position);
-                }
-            }
-        });
-        categoryListView.setDraggableManager(new TouchViewDraggableManager(R.id.list_row_draganddrop_touchview));
-        categoryListView.setAdditionalOnLongItemClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                onListItemCheck(position);
-                return adapter.getSelectedCount() > 1;
-            }
-        });
+        recyclerView = (EmptyObservableRecyclerView) rootView.findViewById(R.id.listView);
+        recyclerView.setLayoutManager(new LinearLayoutManager(inflater.getContext()));
         initAdapter();
         return rootView;
     }
 
-    public boolean isSelected(){
-        return adapter.getSelectedCount() > 0;
+
+    @Override
+    public void startSelectionMode() {
+        mActionMode = getActivity().startActionMode(new ActionModeCallBack());
     }
 
-    private static class MyOnItemLongClickListener implements AdapterView.OnItemLongClickListener {
-
-        private final DynamicListView mListView;
-
-        MyOnItemLongClickListener(final DynamicListView listView) {
-            mListView = listView;
+    @Override
+    public void updateSelectionMode(int numberOfElements) {
+        if (mActionMode != null) {
+            mActionMode.setTitle(String.valueOf(numberOfElements));
         }
-
-        @Override
-        public boolean onItemLongClick(final AdapterView<?> parent, final View view, final int position, final long id) {
-            if (mListView != null) {
-                mListView.startDragging(position - mListView.getHeaderViewsCount());
-            }
-            return true;
+        if (shareActionProvider != null) {
+            shareActionProvider.setShareIntent(getShareIntent());
         }
+    }
+
+    @Override
+    public void finishSelectionMode() {
+        if (mActionMode != null) {
+            mActionMode.finish();
+        }
+        shareActionProvider = null;
     }
 
     @Override
@@ -172,7 +135,7 @@ public class CategorySelectionFragment extends BaseFragment implements BaseNavig
                             public void onClick(DialogInterface dialog, int which) {
                                 DatabaseHandler.getInstance().removeAllCategories();
                                 PrefUtilities.getInstance().saveLoading(false);
-                                categoryClicked.onRestore();
+                                onRestore();
                             }
                         })
                         .setNegativeButton(getActivity().getString(R.string.restore_categories_no), new DialogInterface.OnClickListener() {
@@ -188,28 +151,8 @@ public class CategorySelectionFragment extends BaseFragment implements BaseNavig
 
     private void initAdapter() {
         Collections.sort(categories);
-        adapter = new CategoryListAdapter(getActivity(), categories);
-        categoryListView.setAdapter(adapter);
-    }
-
-    private void onListItemCheck(int position) {
-        adapter.toggleSelection(position);
-        boolean hasCheckedItems = adapter.getSelectedCount() > 0;
-
-        if (hasCheckedItems && mActionMode == null) {
-            // there are some selected items, start the actionMode
-            mActionMode = ((ActionBarActivity) getActivity()).startActionMode(new ActionModeCallBack());
-        } else if (!hasCheckedItems && mActionMode != null) {
-            // there no selected items, finish the actionMode
-            mActionMode.finish();
-        }
-
-        if (mActionMode != null) {
-            mActionMode.setTitle(String.valueOf(adapter.getSelectedCount()));
-        }
-        if (shareActionProvider != null) {
-            shareActionProvider.setShareIntent(createShareIntent());
-        }
+        adapter = new CategoryRecyclerAdapter(getActivity(), categories, rssPath, this, this);
+        recyclerView.setAdapter(adapter);
     }
 
     private void createCategoryClicked() {
@@ -234,7 +177,8 @@ public class CategorySelectionFragment extends BaseFragment implements BaseNavig
                 .setMessage(getActivity().getString(R.string.name_of_category)).setView(input).show();
     }
 
-    private void editClicked(final Category category) {
+    @Override
+    public void editClicked(final Category category) {
         final EditText input = new EditText(getActivity());
         input.setText(category.getName());
         DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
@@ -260,7 +204,46 @@ public class CategorySelectionFragment extends BaseFragment implements BaseNavig
                 .setMessage(R.string.change_category_name).setView(input).show();
     }
 
-    private void onColorClicked(final Category category) {
+    private CategoryModifierFragment getCategoryModifierFragment() {
+        Fragment fragment = getParentFragment();
+        if (fragment instanceof CategoryModifierFragment) {
+            return (CategoryModifierFragment) fragment;
+        }
+        return null;
+    }
+
+    @Override
+    public void onMoreClicked(Category category) {
+        CategoryModifierFragment fragment = getCategoryModifierFragment();
+        if (fragment != null) {
+            fragment.onMoreClicked(category);
+        }
+    }
+
+    @Override
+    public void onRSSSavedClick(Category category, String rssPath) {
+        CategoryModifierFragment fragment = getCategoryModifierFragment();
+        if (fragment != null) {
+            fragment.onRSSSavedClick(category, rssPath);
+        }
+    }
+
+    @Override
+    public void onShowClicked(Category category) {
+        CategoryModifierFragment fragment = getCategoryModifierFragment();
+        if (fragment != null) {
+            fragment.onShowClicked(category);
+        }
+    }
+
+    @Override
+    public void onRestore() {
+
+    }
+
+
+    @Override
+    public void onColorClicked(final Category category) {
         ColorPickerDialog colorCalendar = ColorPickerDialog.newInstance(
                 category.getName(),
                 ColorUtils.colorChoice(getActivity()), category.getPrimaryColor(), 4,
@@ -290,7 +273,6 @@ public class CategorySelectionFragment extends BaseFragment implements BaseNavig
 
                 DatabaseHandler.getInstance().addCategory(newCategory, true, true);
                 adapter.add(newCategory);
-                adapter.notifyDataSetChanged();
                 Crouton.makeText(getActivity(), R.string.category_created, Style.CONFIRM, topView).show();
             }
         });
@@ -301,16 +283,14 @@ public class CategorySelectionFragment extends BaseFragment implements BaseNavig
         for (Category category : selectedCategories) {
             adapter.remove(category);
             DatabaseHandler.getInstance().removeCategory(category.getId(), false, false);
-            categories.remove(category);
         }
-        adapter.notifyDataSetChanged();
     }
 
     @Override
     public String getTitle() {
         Context context = getActivity();
         if (context != null) {
-            return String.format(context.getString(R.string.category_selection_fragment_title));
+            return context.getString(R.string.category_selection_fragment_title);
         }
         return "SimpleNews"; //default
     }
@@ -320,191 +300,8 @@ public class CategorySelectionFragment extends BaseFragment implements BaseNavig
         return NavigationDrawerFragment.CATEGORIES;
     }
 
-    public interface OnCategoryClicked {
-        void onMoreClicked(Category category);
-
-        void onRSSSavedClick(Category category, String rssPath);
-
-        void onRestore();
-    }
-
-    private class CategoryListAdapter extends ArrayAdapter<Category> {
-
-        private Context context;
-        private IDatabaseHandler database;
-        private SparseBooleanArray mSelectedItemIds;
-
-        public CategoryListAdapter(Context context, List<Category> categories) {
-            super(categories);
-            this.context = context;
-            this.database = DatabaseHandler.getInstance();
-            mSelectedItemIds = new SparseBooleanArray();
-        }
-
-        @Override
-        public boolean hasStableIds() {
-            return true;
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return getItem(position).getId();
-        }
-
-        @Override
-        public View getView(final int position, View convertView, ViewGroup parent) {
-            Category category = getItem(position);
-
-            if (convertView == null) {
-                LayoutInflater inflater = LayoutInflater.from(context);
-                convertView = inflater.inflate(R.layout.category_modify_item, null, false);
-                ViewHolder viewHolder = new ViewHolder();
-                viewHolder.name = (TextView) convertView.findViewById(R.id.name);
-                viewHolder.color = (ImageView) convertView.findViewById(R.id.color);
-                viewHolder.more = (ImageView) convertView.findViewById(R.id.more);
-                viewHolder.show = (CheckBox) convertView.findViewById(R.id.show);
-                viewHolder.edit = (ImageView) convertView.findViewById(R.id.edit);
-                convertView.setTag(viewHolder);
-            }
-            ViewHolder holder = (ViewHolder) convertView.getTag();
-            holder.name.setText(category.getName());
-            holder.color.setBackgroundColor(category.getPrimaryColor());
-            holder.show.setChecked(category.isVisible());
-            if (rssPath == null) {
-                holder.edit.setOnClickListener(new CategoryItemClickListener(category));
-                holder.color.setOnClickListener(new CategoryItemClickListener(category));
-                holder.show.setOnClickListener(new CategoryItemClickListener(category));
-                holder.more.setOnClickListener(new CategoryItemClickListener(category));
-            } else {
-                holder.edit.setVisibility(View.GONE);
-                holder.show.setVisibility(View.GONE);
-                holder.more.setVisibility(View.GONE);
-                convertView.setOnClickListener(new CategoryItemRSSClickListener(category));
-            }
-            switchBackgroundOfView(position, convertView);
-            return convertView;
-        }
-
-        private void switchBackgroundOfView(int position, View view) {
-            if (view != null) {
-                view.setBackgroundResource(mSelectedItemIds.get(position) ? R.drawable.card_background_blue : R.drawable.card_background_white);
-            }
-        }
-
-        @Override
-        public void swapItems(int positionOne, int positionTwo) {
-            super.swapItems(positionOne, positionTwo);
-            Category one = getItem(positionOne);
-            Category two = getItem(positionTwo);
-
-            one.setOrder(positionOne);
-            two.setOrder(positionTwo);
-            database.updateCategory(one);
-            database.updateCategory(two);
-
-            if (mActionMode != null) {
-                mActionMode.finish();
-            }
-            adapter.removeSelection();
-        }
-
-        public void toggleSelection(int position) {
-            selectView(position, !mSelectedItemIds.get(position));
-        }
-
-        public void selectView(int position, boolean value) {
-            if (value) {
-                mSelectedItemIds.put(position, value);
-            } else {
-                mSelectedItemIds.delete(position);
-            }
-
-            switchBackgroundOfView(position, categoryListView.getChildAt(position));
-        }
-
-        public int getSelectedCount() {
-            return mSelectedItemIds.size();
-        }
-
-        public SparseBooleanArray getSelectedIds() {
-            return mSelectedItemIds;
-        }
-
-        public void removeSelection() {
-            for (int i = 0; i < mSelectedItemIds.size(); i++) {
-                if (mSelectedItemIds.valueAt(i)) {
-                    int key = mSelectedItemIds.keyAt(i);
-                    if (key > -1) {
-                        mSelectedItemIds.put(key, false);
-                        switchBackgroundOfView(key, categoryListView.getChildAt(key));
-                    }
-                }
-            }
-            mSelectedItemIds = new SparseBooleanArray();
-        }
-
-        class ViewHolder {
-            public TextView name;
-            public ImageView color;
-            public ImageView more;
-            public ImageView edit;
-            public CheckBox show;
-        }
-    }
-
-    class CategoryItemRSSClickListener implements View.OnClickListener {
-        private Category category;
-
-        public CategoryItemRSSClickListener(Category category) {
-            this.category = category;
-        }
-
-        @Override
-        public void onClick(View v) {
-            categoryClicked.onRSSSavedClick(category, rssPath);
-        }
-    }
-
-    class CategoryItemClickListener implements View.OnClickListener {
-        private Category category;
-
-        public CategoryItemClickListener(Category category) {
-            this.category = category;
-        }
-
-        @Override
-        public void onClick(View v) {
-            switch (v.getId()) {
-                case R.id.color:
-                    onColorClicked(category);
-                    break;
-                case R.id.edit:
-                    editClicked(category);
-                    break;
-                case R.id.show:
-                    boolean visible = !category.isVisible();
-                    category.setVisible(visible);
-                    DatabaseHandler.getInstance().updateCategory(category);
-                    break;
-                case R.id.more:
-                    categoryClicked.onMoreClicked(category);
-                    break;
-            }
-        }
-    }
-
-    private Intent createShareIntent() {
-        // retrieve selected items and print them out
-        SparseBooleanArray selected = adapter.getSelectedIds();
-        List<Category> categories = new ArrayList<Category>();
-        ArrayList<Feed> feeds = new ArrayList<Feed>();
-        for (int i = 0; i < selected.size(); i++) {
-            if (selected.valueAt(i)) {
-                Category selectedItem = adapter.getItem(i);
-                categories.add(selectedItem);
-            }
-        }
-
+    private Intent getShareIntent() {
+        List<Category> categories = adapter.getItems();
         Opml opml = OpmlConverter.convertCategoriesToOpml(categories);
         String finalMessage = "";
         try {
@@ -520,27 +317,25 @@ public class CategorySelectionFragment extends BaseFragment implements BaseNavig
     }
 
     private class ActionModeCallBack implements ActionMode.Callback {
-        public void changeOverflowIcon() {
-            //getActivity().getTheme().applyStyle(R.style.ChangeOverflowToDark, true);
-        }
 
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-            changeOverflowIcon();
-            // inflate contextual menu
             mode.getMenuInflater().inflate(R.menu.contextual_category_selection_menu, menu);
             MenuItem item = menu.findItem(R.id.menu_item_share);
-            shareActionProvider = new ShareActionProvider(getActivity());
-            shareActionProvider.setShareHistoryFileName(
-                    ShareActionProvider.DEFAULT_SHARE_HISTORY_FILE_NAME);
-            shareActionProvider.setShareIntent(createShareIntent());
-            shareActionProvider.setOnShareTargetSelectedListener(new ShareActionProvider.OnShareTargetSelectedListener() {
-                @Override
-                public boolean onShareTargetSelected(ShareActionProvider shareActionProvider, Intent intent) {
-                    return false;
+            if (item != null) {
+                shareActionProvider = (ShareActionProvider) item.getActionProvider();
+                if (shareActionProvider != null) {
+                    String shareHistoryFileName = ShareActionProvider.DEFAULT_SHARE_HISTORY_FILE_NAME;
+                    shareActionProvider.setShareHistoryFileName(shareHistoryFileName);
+                    shareActionProvider.setShareIntent(getShareIntent());
+                    shareActionProvider.setOnShareTargetSelectedListener(new ShareActionProvider.OnShareTargetSelectedListener() {
+                        @Override
+                        public boolean onShareTargetSelected(ShareActionProvider shareActionProvider, Intent intent) {
+                            return false;
+                        }
+                    });
                 }
-            });
-            item.setActionProvider(shareActionProvider);
+            }
             return true;
         }
 
@@ -551,33 +346,21 @@ public class CategorySelectionFragment extends BaseFragment implements BaseNavig
 
         @Override
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-            // retrieve selected items and print them out
-            SparseBooleanArray selected = adapter.getSelectedIds();
-            List<Category> selectedCategories = new ArrayList<Category>();
-            for (int i = 0; i < selected.size(); i++) {
-                if (selected.valueAt(i)) {
-                    Category selectedItem = adapter.getItem(selected.keyAt(i));
-                    selectedCategories.add(selectedItem);
-                }
-            }
+            List<Category> selectedCategories = adapter.getSelectedItems();
             // close action mode
             switch (item.getItemId()) {
                 case R.id.menu_item_remove:
                     removeSelectedCategories(selectedCategories);
                     break;
             }
-            mode.finish();
-            adapter.removeSelection();
+            adapter.clearSelections();
             return true;
         }
 
         @Override
         public void onDestroyActionMode(ActionMode mode) {
-            // remove selection
-            adapter.removeSelection();
-            mActionMode = null;
+            adapter.clearSelections();
         }
-
 
 
     }

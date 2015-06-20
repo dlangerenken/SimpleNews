@@ -6,9 +6,10 @@ import android.util.SparseBooleanArray;
 import android.view.ViewGroup;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-public abstract class ChoiceModeRecyclerAdapter<VH extends RecyclerView.ViewHolder, Item> extends RecyclerView.Adapter<VH> {
+public abstract class ChoiceModeRecyclerAdapter<VH extends RecyclerView.ViewHolder, Item extends Comparable> extends RecyclerView.Adapter<VH> {
 
     private List<Item> mItems;
     private SparseBooleanArray mSelectedPositions = new SparseBooleanArray();
@@ -139,9 +140,58 @@ public abstract class ChoiceModeRecyclerAdapter<VH extends RecyclerView.ViewHold
         updateSelection();
     }
 
-    public void setAllItemsSelected(){
-        for (int i = 0; i < mItems.size(); i++){
+    public void setAllItemsSelected() {
+        for (int i = 0; i < mItems.size(); i++) {
             setItemChecked(i, true);
+        }
+    }
+
+    public void update(List<Item> updateItems) {
+        for (Item item : updateItems) {
+            update(item);
+        }
+    }
+
+    public void update(Item item) {
+        notifyItemChanged(indexOf(item));
+    }
+
+
+    public void remove(List<Item> oldItems) {
+        for (Item item : oldItems) {
+            remove(item);
+        }
+    }
+
+    public void remove(Item item) {
+        int index = indexOf(item);
+        if (index >= 0) {
+            mItems.remove(item);
+            notifyItemRemoved(index);
+        }
+    }
+
+    public void add(List<Item> newItems) {
+        List<Item> addedItems = new ArrayList<>();
+        for (Item item : newItems) {
+            if (!mItems.contains(item)) {
+                addedItems.add(item);
+                mItems.add(item);
+            }
+        }
+        Collections.sort(mItems);
+        for (Item addedItem : addedItems) {
+            int index = indexOf(addedItem);
+            notifyItemInserted(index);
+        }
+    }
+
+    public void add(Item item) {
+        if (!mItems.contains(item)) {
+            mItems.add(item);
+            Collections.sort(mItems);
+            int index = indexOf(item);
+            notifyItemInserted(index);
         }
     }
 

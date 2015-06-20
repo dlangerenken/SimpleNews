@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
@@ -61,6 +62,7 @@ public class CategoryFeedsFragment extends BaseFragment implements BaseNavigatio
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.feed_selection, container, false);
         feedListView = (RecyclerView) rootView.findViewById(R.id.recyclerView);
+        feedListView.setLayoutManager(new LinearLayoutManager(inflater.getContext()));
         initAdapter();
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         if (activity != null) {

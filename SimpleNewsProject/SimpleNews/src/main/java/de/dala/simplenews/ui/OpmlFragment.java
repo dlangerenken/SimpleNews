@@ -13,9 +13,6 @@ import de.dala.simplenews.R;
 import de.dala.simplenews.common.Feed;
 import de.dala.simplenews.utilities.BaseNavigation;
 
-/**
- * Created by Daniel on 29.12.13.
- */
 public class OpmlFragment extends BaseFragment implements OpmlImportFragment.OnFeedsLoaded, BaseNavigation {
     private static final String OPML_IMPORT_TAG = "import";
     private static final String OPML_ASSIGN_TAG = "assign";

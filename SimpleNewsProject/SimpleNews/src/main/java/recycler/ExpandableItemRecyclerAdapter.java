@@ -13,11 +13,8 @@ import android.widget.TextView;
 
 import com.ocpsoft.pretty.time.PrettyTime;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -26,6 +23,7 @@ import de.dala.simplenews.common.Category;
 import de.dala.simplenews.common.Entry;
 import de.dala.simplenews.utilities.ExpandCollapseHelper;
 import de.dala.simplenews.utilities.UIUtils;
+import de.dala.simplenews.utilities.Utilities;
 
 
 public class ExpandableItemRecyclerAdapter extends ChoiceModeRecyclerAdapter<ExpandableItemRecyclerAdapter.EntryViewHolder, Entry> {
@@ -34,54 +32,13 @@ public class ExpandableItemRecyclerAdapter extends ChoiceModeRecyclerAdapter<Exp
     private RecyclerView mRecyclerView;
 
     public void removeOldEntries(List<Entry> newEntries) {
-        Iterator<Entry> iterator = getItems().iterator();
-        while (iterator.hasNext()) {
-            Entry next = iterator.next();
-            if (!newEntries.contains(next)) {
-                int index = indexOf(next);
-                iterator.remove();
-                notifyItemRemoved(index);
-            }
-        }
-    }
-
-    public void addNewEntries(List<Entry> entries) {
-        if (getItems() == null) {
-            setItems(new ArrayList<Entry>());
-        }
-
-        List<Entry> addedEntries = new ArrayList<>();
-        for (Entry next : entries) {
-            if (!getItems().contains(next)) {
-                getItems().add(next);
-                addedEntries.add(next);
-            }
-        }
-
-        Collections.sort(getItems());
-        for (Entry addedEntry : addedEntries) {
-            int index = indexOf(addedEntry);
-            notifyItemInserted(index);
-        }
+        remove(Utilities.nonIntersection(newEntries, getItems()));
     }
 
     public void addNewEntriesAndRemoveOld(List<Entry> entries) {
-        addNewEntries(entries);
+        add(entries);
         removeOldEntries(entries);
     }
-
-    public void remove(Set<Entry> selectedEntries) {
-        List<Entry> diff = new ArrayList<>(getItems());
-        diff.removeAll(selectedEntries);
-        removeOldEntries(diff);
-    }
-
-    public void refresh(Set<Entry> selectedEntries) {
-        for (Entry entry : selectedEntries) {
-            notifyItemChanged(indexOf(entry));
-        }
-    }
-
 
     public interface ItemClickListener {
         void onItemClick(Entry entry);

@@ -34,9 +34,6 @@ import de.dala.simplenews.utilities.Utilities;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
 
-/**
- * Created by Daniel on 01.08.2014.
- */
 public class OpmlImportFragment extends BaseFragment implements BaseNavigation {
 
     private OnFeedsLoaded parent;

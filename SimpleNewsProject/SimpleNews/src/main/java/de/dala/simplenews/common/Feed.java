@@ -4,10 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by Daniel on 19.12.13.
- */
-public class Feed implements Serializable {
+public class Feed implements Serializable, Comparable<Feed> {
     private Long id;
     private String xmlUrl;
     private String htmlUrl;
@@ -22,19 +19,19 @@ public class Feed implements Serializable {
     private String type;
 
     public Feed(String xmlUrl) {
-        this.entries = new ArrayList<Entry>();
+        this.entries = new ArrayList<>();
         this.xmlUrl = xmlUrl;
     }
 
     public Feed() {
-        this.entries = new ArrayList<Entry>();
+        this.entries = new ArrayList<>();
     }
 
     public String getType() {
         return type;
     }
 
-    public void setType(String type){
+    public void setType(String type) {
         this.type = type;
     }
 
@@ -98,7 +95,15 @@ public class Feed implements Serializable {
         return htmlUrl;
     }
 
-    public void setHtmlUrl(String htmlUrl){
+    public void setHtmlUrl(String htmlUrl) {
         this.htmlUrl = htmlUrl;
+    }
+
+    @Override
+    public int compareTo(Feed another) {
+        if (another == null){
+            return 1;
+        }
+        return getTitle().compareTo(another.getTitle());
     }
 }
