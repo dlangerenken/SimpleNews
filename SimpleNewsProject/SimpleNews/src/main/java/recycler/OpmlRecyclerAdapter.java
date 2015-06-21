@@ -28,15 +28,15 @@ public class OpmlRecyclerAdapter extends ChoiceModeRecyclerAdapter<OpmlRecyclerA
     }
 
     @Override
-    void onBindNormalViewHolder(final OpmlViewHolder holder, final int position) {
-        Feed feed = get(position);
+    void onBindNormalViewHolder(final OpmlViewHolder holder, int position) {
+        final Feed feed = get(position);
         holder.name.setText(feed.getTitle() == null ? mContext.getString(R.string.feed_title_not_found) : feed.getTitle());
         holder.link.setText(feed.getXmlUrl());
         holder.checkBox.setChecked(isItemChecked(position));
         holder.checkBox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                toggle(position);
+                toggle(feed);
             }
         });
 
@@ -44,7 +44,7 @@ public class OpmlRecyclerAdapter extends ChoiceModeRecyclerAdapter<OpmlRecyclerA
             @Override
             public boolean onLongClick(View v) {
                 holder.checkBox.toggle();
-                toggle(position);
+                toggle(feed);
                 return false;
             }
         });
@@ -53,7 +53,7 @@ public class OpmlRecyclerAdapter extends ChoiceModeRecyclerAdapter<OpmlRecyclerA
             @Override
             public void onClick(View v) {
                 holder.checkBox.toggle();
-                toggle(position);
+                toggle(feed);
             }
         });
         int pad = mContext.getResources().getDimensionPixelSize(R.dimen.card_layout_padding);
@@ -61,14 +61,9 @@ public class OpmlRecyclerAdapter extends ChoiceModeRecyclerAdapter<OpmlRecyclerA
     }
 
     @Override
-    OpmlViewHolder onCreateNormalViewHolder(ViewGroup parent) {
+    public OpmlViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.opml_list_item, parent, false);
         return new OpmlViewHolder(itemView);
-    }
-
-    @Override
-    OpmlViewHolder onCreateSelectedViewHolder(ViewGroup parent) {
-        return onCreateNormalViewHolder(parent);
     }
 
     class OpmlViewHolder extends RecyclerView.ViewHolder {

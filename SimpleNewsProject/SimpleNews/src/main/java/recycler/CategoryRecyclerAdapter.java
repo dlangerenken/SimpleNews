@@ -69,16 +69,10 @@ public class CategoryRecyclerAdapter extends ChoiceModeRecyclerAdapter<CategoryR
     }
 
     @Override
-    CategoryViewHolder onCreateNormalViewHolder(ViewGroup parent) {
+    public CategoryViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.category_modify_item, parent, false);
         return new CategoryViewHolder(itemView);
     }
-
-    @Override
-    CategoryViewHolder onCreateSelectedViewHolder(ViewGroup parent) {
-        return onCreateNormalViewHolder(parent);
-    }
-
 
     class CategoryItemRSSClickListener implements View.OnClickListener {
         private Category category;

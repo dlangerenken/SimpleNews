@@ -1,6 +1,7 @@
 package de.dala.simplenews.ui;
 
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -8,6 +9,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.ActionMode;
 
 import java.util.List;
 
@@ -20,12 +22,14 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
      */
     private NavigationDrawerFragment mNavigationDrawerFragment;
     private Fragment currentFragment;
+    private Toolbar mToolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(mToolbar);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setHomeButtonEnabled(true);
@@ -50,6 +54,16 @@ public class MainActivity extends AppCompatActivity implements NavigationDrawerF
         }
         getSupportFragmentManager().addOnBackStackChangedListener(this);
         updateNavigation();
+    }
+
+    @Nullable
+    @Override
+    public ActionMode startActionMode(ActionMode.Callback callback) {
+        if (mToolbar != null) {
+            return mToolbar.startActionMode(callback);
+        } else {
+            return super.startActionMode(callback);
+        }
     }
 
     @Override

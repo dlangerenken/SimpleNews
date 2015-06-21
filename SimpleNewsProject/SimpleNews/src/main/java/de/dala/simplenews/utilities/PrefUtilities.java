@@ -32,10 +32,10 @@ public class PrefUtilities {
      */
     private static final String PREF_USER_LEARNED_DRAWER = "navigation_drawer_learned";
     private static PrefUtilities _instance;
-    private SharedPreferences preferences;
     private static long DEFAULT_TIME_FOR_REFRESH = 1000 * 60 * 60; //one hour
     private static long DEFAULT_DEPRECATED_TIME = 1000 * 60 * 60 * 24 * 3; // three days
 
+    private SharedPreferences preferences;
 
     private PrefUtilities(Context context) {
         preferences = PreferenceManager

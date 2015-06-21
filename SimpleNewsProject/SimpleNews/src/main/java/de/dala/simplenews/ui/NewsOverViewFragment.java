@@ -670,6 +670,9 @@ public class NewsOverViewFragment extends BaseFragment implements ViewPager.OnPa
     }
 
     private Fragment getCurrentFragment() {
+        if (pager == null || adapter == null) {
+            return null;
+        }
         return adapter.getItem(pager.getCurrentItem());
     }
 

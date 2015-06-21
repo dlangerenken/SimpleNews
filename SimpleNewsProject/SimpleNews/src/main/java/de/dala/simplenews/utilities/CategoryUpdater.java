@@ -20,14 +20,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import de.dala.simplenews.R;
 import de.dala.simplenews.common.Category;
@@ -55,6 +53,7 @@ public class CategoryUpdater {
     private int finishedUpdates = 0;
     private int newEntries = 0;
     private UpdatingTask task;
+    private long startTime;
 
     public CategoryUpdater(Handler handler, Category category, boolean updateDatabase, Context context) {
         this.handler = handler;
@@ -94,6 +93,7 @@ public class CategoryUpdater {
         }
 
         if (finishedUpdates == category.getFeeds().size()) {
+            boolean success;
             //done here
             if (newEntries > 0) {
                 // change things only, when category is not empty, otherwise keep links
@@ -103,11 +103,22 @@ public class CategoryUpdater {
                 if (PrefUtilities.getInstance().shouldShortenLinks()) {
                     getShortenedLinks(entries);
                 }
-                sendMessage(null, RESULT);
+                success = true;
             } else {
-                sendMessage(null, CANCEL);
+                success = false;
             }
+            // wait at least 750 ms to have a better user-feedback
+            long endTime = new Date().getTime();
+            if (endTime - startTime < 750) {
+                try {
+                    Thread.sleep(750 - (endTime - startTime));
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            sendMessage(null, success ? RESULT : CANCEL);
             isRunning = false;
+            startTime = 0;
         }
     }
 
@@ -201,6 +212,12 @@ public class CategoryUpdater {
     private class UpdatingTask extends AsyncTask<Void, Void, Void> {
 
         @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            startTime = new Date().getTime();
+        }
+
+        @Override
         protected Void doInBackground(Void... params) {
             if (category == null || category.getFeeds() == null) {
                 sendMessage(null, CANCEL);
@@ -223,11 +240,13 @@ public class CategoryUpdater {
             try {
                 List<Future<List<Entry>>> results = executor.invokeAll(futures, 10, TimeUnit.SECONDS);
                 for (Future<List<Entry>> future : results) {
+                    List<Entry> receivedEntries = null;
                     try {
-                        entries.addAll(future.get(10, TimeUnit.SECONDS));
-                    } catch (TimeoutException e) {
-                        continue;
+                        receivedEntries = future.get();
+                        entries.addAll(receivedEntries);
+                    } catch (CancellationException e) {
                     }
+                    getNewItems(receivedEntries);
                 }
             } catch (InterruptedException e) {
                 sendMessage(null, CANCEL);
@@ -269,7 +288,6 @@ public class CategoryUpdater {
                         feedEntries.add(entry);
                     }
                 }
-                getNewItems(feedEntries);
             } catch (Exception e) {
                 e.printStackTrace();
             }

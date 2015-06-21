@@ -9,13 +9,30 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.dala.simplenews.common.Entry;
+import de.dala.simplenews.utilities.Utilities;
 
-import static de.dala.simplenews.database.DatabaseHandler.*;
+import static de.dala.simplenews.database.DatabaseHandler.ENTRY_CATEGORY_ID;
+import static de.dala.simplenews.database.DatabaseHandler.ENTRY_DATE;
+import static de.dala.simplenews.database.DatabaseHandler.ENTRY_DESCRIPTION;
+import static de.dala.simplenews.database.DatabaseHandler.ENTRY_DOWNLOAD_DATE;
+import static de.dala.simplenews.database.DatabaseHandler.ENTRY_FAVORITE_DATE;
+import static de.dala.simplenews.database.DatabaseHandler.ENTRY_FEED_ID;
+import static de.dala.simplenews.database.DatabaseHandler.ENTRY_ID;
+import static de.dala.simplenews.database.DatabaseHandler.ENTRY_IMAGE_URL;
+import static de.dala.simplenews.database.DatabaseHandler.ENTRY_IS_EXPANDED;
+import static de.dala.simplenews.database.DatabaseHandler.ENTRY_SHORTENED_URL;
+import static de.dala.simplenews.database.DatabaseHandler.ENTRY_SRC_NAME;
+import static de.dala.simplenews.database.DatabaseHandler.ENTRY_TITLE;
+import static de.dala.simplenews.database.DatabaseHandler.ENTRY_URL;
+import static de.dala.simplenews.database.DatabaseHandler.ENTRY_VISIBLE;
+import static de.dala.simplenews.database.DatabaseHandler.ENTRY_VISITED_DATE;
+import static de.dala.simplenews.database.DatabaseHandler.FEED_ID;
+import static de.dala.simplenews.database.DatabaseHandler.FEED_VISIBLE;
+import static de.dala.simplenews.database.DatabaseHandler.TABLE_ENTRY;
+import static de.dala.simplenews.database.DatabaseHandler.TABLE_FEED;
+import static de.dala.simplenews.database.DatabaseHandler.concatenateQueries;
 
-/**
- * Created by Daniel on 01.08.2014.
- */
-public class PersistableEntries implements IPersistableObject<Entry>{
+public class PersistableEntries implements IPersistableObject<Entry> {
 
     private Long mCategoryId;
     private Long mFeedId;
@@ -27,7 +44,7 @@ public class PersistableEntries implements IPersistableObject<Entry>{
     private static final String feedTableShortName = "cursorTable";
 
 
-    public PersistableEntries(Long categoryId, Long feedId, Long entryId, Boolean onlyVisible){
+    public PersistableEntries(Long categoryId, Long feedId, Long entryId, Boolean onlyVisible) {
         mCategoryId = categoryId;
         mFeedId = feedId;
         mEntryId = entryId;
@@ -35,18 +52,18 @@ public class PersistableEntries implements IPersistableObject<Entry>{
         db = DatabaseHandler.getDbInstance();
     }
 
-    protected String getQuery(){
+    protected String getQuery() {
         String query = null;
         if (mCategoryId != null) {
             query = concatenateQueries(query, entryTableShortName + "." + ENTRY_CATEGORY_ID + "=" + mCategoryId);
         }
-        if (mFeedId != null){
+        if (mFeedId != null) {
             query = concatenateQueries(query, entryTableShortName + "." + ENTRY_FEED_ID + "=" + mFeedId);
         }
-        if (mEntryId != null){
+        if (mEntryId != null) {
             query = concatenateQueries(query, entryTableShortName + "." + ENTRY_ID + "=" + mEntryId);
         }
-        if (mOnlyVisible != null){
+        if (mOnlyVisible != null) {
             query = concatenateQueries(query, entryTableShortName + "." + ENTRY_VISIBLE + "=" + (mOnlyVisible ? "1" : "0"));
             query = concatenateQueries(query, feedTableShortName + "." + FEED_VISIBLE + "=" + (mOnlyVisible ? "1" : "0"));
         }
@@ -59,9 +76,9 @@ public class PersistableEntries implements IPersistableObject<Entry>{
         String entryQuery = "SELECT * FROM " + TABLE_ENTRY + " " + entryTableShortName
                 + " INNER JOIN "
                 + TABLE_FEED + " " + feedTableShortName + " " +
-                " ON " + entryTableShortName+ "." + ENTRY_FEED_ID
-                +"=" + feedTableShortName +"." + FEED_ID
-                +" WHERE " + getQuery()
+                " ON " + entryTableShortName + "." + ENTRY_FEED_ID
+                + "=" + feedTableShortName + "." + FEED_ID
+                + " WHERE " + getQuery()
                 + " ORDER BY " + ENTRY_DATE + " DESC";
 
         return db.rawQuery(entryQuery, null);
@@ -72,7 +89,7 @@ public class PersistableEntries implements IPersistableObject<Entry>{
         return loadFromCursor(cursor);
     }
 
-    public static Entry loadFromCursor(Cursor cursor){
+    public static Entry loadFromCursor(Cursor cursor) {
         Entry entry = new Entry();
         try {
             entry.setId(cursor.getLong(0));
@@ -88,8 +105,9 @@ public class PersistableEntries implements IPersistableObject<Entry>{
             entry.setVisible(cursor.getInt(10) == 1);
             entry.setVisitedDate(cursor.getLong(11));
             entry.setFavoriteDate(cursor.getLong(12));
-            entry.setExpanded(cursor.getInt(13) == 1);
-        }catch (CursorIndexOutOfBoundsException e){
+            entry.setDownloadDate(cursor.getLong(13));
+            entry.setExpanded(cursor.getInt(14) == 1);
+        } catch (CursorIndexOutOfBoundsException e) {
             //ignore for this time...
         }
         return entry;
@@ -97,7 +115,7 @@ public class PersistableEntries implements IPersistableObject<Entry>{
 
     @Override
     public long[] store(List<Entry> items) {
-        if (items == null){
+        if (items == null) {
             return null;
         }
         long[] ids = new long[items.size()];
@@ -111,8 +129,8 @@ public class PersistableEntries implements IPersistableObject<Entry>{
                 for (Entry sEntry : similarEntries) {
                     if (sEntry.getId().equals(entry.getId())) {
                         shouldUpdate = true;
+                        break;
                     }
-                    break;
                 }
                 if (!shouldUpdate) {
                     return null;
@@ -134,6 +152,7 @@ public class PersistableEntries implements IPersistableObject<Entry>{
             values.put(ENTRY_VISIBLE, entry.isVisible() ? 1 : 0);
             values.put(ENTRY_VISITED_DATE, entry.getVisitedDate());
             values.put(ENTRY_FAVORITE_DATE, entry.getFavoriteDate());
+            values.put(ENTRY_DOWNLOAD_DATE, entry.getDownloadDate());
             values.put(ENTRY_IS_EXPANDED, entry.isExpanded() ? 1 : 0);
 
                 /*
@@ -164,7 +183,7 @@ public class PersistableEntries implements IPersistableObject<Entry>{
     }
 
     public List<Entry> getSimilarEntries(Entry oldEntry) {
-        List<Entry> entries = new ArrayList<Entry>();
+        List<Entry> entries = new ArrayList<>();
         if (oldEntry != null) {
             String desc = oldEntry.getLink() == null ? "" : oldEntry.getLink();
             Cursor cursor = db.rawQuery("SELECT * FROM " +
@@ -178,7 +197,7 @@ public class PersistableEntries implements IPersistableObject<Entry>{
             if (cursor.moveToFirst()) {
                 do {
                     Entry entry = loadFrom(cursor);
-                    if (entry.getId() != oldEntry.getId()) {
+                    if (!Utilities.equals(entry.getId(), oldEntry.getId())) {
                         entries.add(entry);
                     }
                 } while (cursor.moveToNext());

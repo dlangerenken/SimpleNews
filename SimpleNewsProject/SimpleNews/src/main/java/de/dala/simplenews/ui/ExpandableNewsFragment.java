@@ -14,6 +14,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.text.TextUtils;
+import android.util.TypedValue;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -31,16 +32,16 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import de.dala.simplenews.utilities.EmptyObservableRecyclerView;
-import recycler.ChoiceModeRecyclerAdapter;
-import recycler.ExpandableItemRecyclerAdapter;
 import de.dala.simplenews.R;
 import de.dala.simplenews.common.Category;
 import de.dala.simplenews.common.Entry;
 import de.dala.simplenews.database.DatabaseHandler;
 import de.dala.simplenews.utilities.BaseNavigation;
 import de.dala.simplenews.utilities.CategoryUpdater;
+import de.dala.simplenews.utilities.EmptyObservableRecyclerView;
 import de.dala.simplenews.utilities.PrefUtilities;
+import recycler.ChoiceModeRecyclerAdapter;
+import recycler.ExpandableItemRecyclerAdapter;
 import recycler.FadeInUpAnimator;
 
 
@@ -137,14 +138,21 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
         return rootView;
     }
 
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        loadEntries(false);
+    }
+
     private void init() {
         if (mSwipeRefreshLayout != null) {
             mSwipeRefreshLayout.setOnRefreshListener(this);
             mSwipeRefreshLayout.setColorSchemeColors(category.getPrimaryColor());
+            mSwipeRefreshLayout.setProgressViewOffset(false, 0,
+                    (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 24, getResources().getDisplayMetrics()));
+
         }
         initCardsAdapter();
         initNewsTypeBar();
-        loadEntries(false);
     }
 
     private void initNewsTypeBar() {
@@ -208,8 +216,8 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
         if (updater == null) {
             updater = new CategoryUpdater(new CategoryUpdateHandler(this), category, true, getActivity());
         }
-        updater.start();
         setRefresh(true);
+        updater.start();
     }
 
     private void receivePartResult(List<Entry> entries) {
@@ -274,20 +282,28 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
         mExpandableItemRecyclerAdapter.remove(selectedEntries);
     }
 
+    private void saveEntry(Entry entry) {
+        entry.setFavoriteDate((entry.getFavoriteDate() == null || entry.getFavoriteDate() == 0) ? new Date().getTime() : null);
+        DatabaseHandler.getInstance().updateEntry(entry);
+        mExpandableItemRecyclerAdapter.update(entry);
+    }
+
     private void saveSelectedEntries(List<Entry> selectedEntries) {
         for (Entry entry : selectedEntries) {
-            entry.setFavoriteDate((entry.getFavoriteDate() == null || entry.getFavoriteDate() == 0) ? new Date().getTime() : null);
-            DatabaseHandler.getInstance().updateEntry(entry);
+            saveEntry(entry);
         }
-        mExpandableItemRecyclerAdapter.update(selectedEntries);
+    }
+
+    private void markEntryAsRead(Entry entry) {
+        entry.setVisitedDate((entry.getVisitedDate() == null || entry.getVisitedDate() == 0) ? new Date().getTime() : null);
+        DatabaseHandler.getInstance().updateEntry(entry);
+        mExpandableItemRecyclerAdapter.update(entry);
     }
 
     private void markEntriesAsRead(List<Entry> selectedEntries) {
         for (Entry entry : selectedEntries) {
-            entry.setVisitedDate((entry.getVisitedDate() == null || entry.getVisitedDate() == 0) ? new Date().getTime() : null);
-            DatabaseHandler.getInstance().updateEntry(entry);
+            markEntryAsRead(entry);
         }
-        mExpandableItemRecyclerAdapter.update(selectedEntries);
     }
 
 
@@ -341,25 +357,6 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
     }
 
     @Override
-    public void onItemClick(Entry entry) {
-        entry.setVisitedDate(new Date().getTime());
-
-        DatabaseHandler.getInstance().updateEntry(entry);
-        mExpandableItemRecyclerAdapter.update(entry);
-
-        String link = entry.getShortenedLink() != null ? entry.getShortenedLink() : entry.getLink();
-        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(link));
-        try {
-            startActivity(browserIntent);
-        } catch (ActivityNotFoundException e) {
-            Context context = getActivity();
-            if (context != null) {
-                Toast.makeText(context, context.getResources().getString(R.string.no_browser_found), Toast.LENGTH_LONG).show();
-            }
-        }
-    }
-
-    @Override
     public void startSelectionMode() {
         mActionMode = getActivity().startActionMode(new ActionModeCallBack());
     }
@@ -380,6 +377,28 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
             mActionMode.finish();
         }
         shareActionProvider = null;
+    }
+
+    @Override
+    public void onSaveClick(final Entry entry) {
+        saveEntry(entry);
+    }
+
+    @Override
+    public void onOpenClick(Entry entry) {
+        markEntryAsRead(entry);
+
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW);
+        String link = entry.getShortenedLink() != null ? entry.getShortenedLink() : entry.getLink();
+        browserIntent.setData(Uri.parse(link));
+        try {
+            startActivity(browserIntent);
+        } catch (ActivityNotFoundException e) {
+            Context context = getActivity();
+            if (context != null) {
+                Toast.makeText(context, context.getResources().getString(R.string.no_browser_found), Toast.LENGTH_LONG).show();
+            }
+        }
     }
 
 
@@ -407,10 +426,6 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
                         break;
                     case CategoryUpdater.ERROR:
                         fragment.updateFinished(false, null);
-                        Context context = fragment.getActivity();
-                        if (context != null && msg.obj != null) {
-                            Toast.makeText(context, (String) msg.obj, Toast.LENGTH_SHORT).show();
-                        }
                         break;
                     case CategoryUpdater.CANCEL:
                         fragment.updateFinished(false, null);
@@ -539,12 +554,16 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
                 switch (type) {
                     case NewsOverViewFragment.ALL:
                         entries.addAll(DatabaseHandler.getInstance().getEntries(category.getId(), null, true));
+                        break;
                     case NewsOverViewFragment.FAV:
                         entries.addAll(DatabaseHandler.getInstance().getFavoriteEntries(category.getId()));
+                        break;
                     case NewsOverViewFragment.RECENT:
                         entries.addAll(DatabaseHandler.getInstance().getVisitedEntries(category.getId()));
+                        break;
                     case NewsOverViewFragment.UNREAD:
                         entries.addAll(DatabaseHandler.getInstance().getUnreadEntries(category.getId()));
+                        break;
                 }
             }
             return entries;

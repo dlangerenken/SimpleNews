@@ -10,6 +10,7 @@ import org.xmlpull.v1.XmlPullParserException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
 import de.dala.simplenews.common.Category;
 import de.dala.simplenews.common.Entry;
 import de.dala.simplenews.common.Feed;
@@ -29,7 +30,7 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
     /**
      * Database Name and Version
      */
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
     public static final String DATABASE_NAME = "simple_db";
 
     /**
@@ -68,6 +69,7 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
     public static final String ENTRY_VISIBLE = "visible";
     public static final String ENTRY_VISITED_DATE = "visited";
     public static final String ENTRY_FAVORITE_DATE = "favorite";
+    public static final String ENTRY_DOWNLOAD_DATE = "download";
     public static final String ENTRY_IS_EXPANDED = "expanded";
 
     private static SQLiteDatabase db;
@@ -83,6 +85,7 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
     public static synchronized IDatabaseHandler getInstance() {
         return instance;
     }
+
     public static synchronized SQLiteDatabase getDbInstance() {
         return db;
     }
@@ -161,7 +164,8 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
                 + ENTRY_VISIBLE + " INTEGER,"
                 + ENTRY_VISITED_DATE + " LONG,"
                 + ENTRY_FAVORITE_DATE + " LONG,"
-                + ENTRY_IS_EXPANDED + " INTEGER"+ ");";
+                + ENTRY_DOWNLOAD_DATE + " LONG,"
+                + ENTRY_IS_EXPANDED + " INTEGER" + ");";
         db.execSQL(createCategoryTable);
         db.execSQL(createFeedTable);
         db.execSQL(createEntryTable);
@@ -169,25 +173,15 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        if (oldVersion < newVersion){
-            //update might be necessary
-            if (oldVersion < 35 && newVersion >= 35){
-                String upgradeQueryVisited = "ALTER TABLE " + TABLE_ENTRY + " ADD COLUMN " + ENTRY_VISITED_DATE + " LONG;";
-                String upgradeQueryFavorite = "ALTER TABLE " + TABLE_ENTRY + " ADD COLUMN " + ENTRY_FAVORITE_DATE + " LONG;";
-                db.execSQL(upgradeQueryVisited);
-                db.execSQL(upgradeQueryFavorite);
-            }
-
-            if (oldVersion < 42 && newVersion >= 42){
-                String upgradeQueryEntry = "ALTER TABLE " + TABLE_ENTRY + " ADD COLUMN " + ENTRY_IS_EXPANDED + " INTEGER;";
-                String upgradeQueryFeed = "ALTER TABLE " + TABLE_FEED + " ADD COLUMN " + FEED_HTML_URL + " TEXT;";
-                db.execSQL(upgradeQueryEntry);
-                db.execSQL(upgradeQueryFeed);
-            }
-
-            if (oldVersion < 43 && newVersion >= 43){
-                String upgradeQueryFeed = "ALTER TABLE " + TABLE_FEED + " ADD COLUMN " + FEED_TYPE + " TEXT;";
-                db.execSQL(upgradeQueryFeed);
+        if (oldVersion < newVersion) {
+            switch (oldVersion) {
+                case -1:
+                    break;
+                default:
+                    db.execSQL("DROP TABLE IF EXISTS " + TABLE_CATEGORY);
+                    db.execSQL("DROP TABLE IF EXISTS " + TABLE_ENTRY);
+                    db.execSQL("DROP TABLE IF EXISTS " + TABLE_FEED);
+                    onCreate(db);
             }
         }
     }
@@ -201,7 +195,7 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
     public Category getCategory(Long categoryId, Boolean excludeFeeds, Boolean excludeEntries) {
         IPersistableObject<Category> persistence = new PersistableCategories(categoryId, excludeFeeds, excludeEntries, null);
         List<Category> result = load(persistence);
-        if (result != null && result.size() == 1){
+        if (result != null && result.size() == 1) {
             return result.get(0);
         }
         return null;
@@ -217,7 +211,7 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
     }
 
     @Override
-    public long[] addCategories(List<Category> categories, Boolean excludeFeeds, Boolean excludeEntries){
+    public long[] addCategories(List<Category> categories, Boolean excludeFeeds, Boolean excludeEntries) {
         IPersistableObject<Category> persistence = new PersistableCategories(null, excludeFeeds, excludeEntries, null);
         return persistence.store(categories);
     }
@@ -237,9 +231,9 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
 
     @Override
     public Feed getFeed(long feedId, Boolean excludeEntries) {
-        IPersistableObject<Feed> persistence = new PersistableFeeds(null , feedId, excludeEntries, null);
+        IPersistableObject<Feed> persistence = new PersistableFeeds(null, feedId, excludeEntries, null);
         List<Feed> result = load(persistence);
-        if (result != null && result.size() == 1){
+        if (result != null && result.size() == 1) {
             return result.get(0);
         }
         return null;
@@ -247,7 +241,7 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
 
     @Override
     public long addFeed(long categoryId, Feed feed, Boolean excludeEntries) {
-        IPersistableObject<Feed> persistence = new PersistableFeeds(categoryId , null, excludeEntries, null);
+        IPersistableObject<Feed> persistence = new PersistableFeeds(categoryId, null, excludeEntries, null);
         List<Feed> result = new ArrayList<Feed>();
         result.add(feed);
         persistence.store(result);
@@ -256,13 +250,13 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
 
     @Override
     public long[] addFeeds(long categoryId, List<Feed> feeds, Boolean excludeEntries) {
-        IPersistableObject<Feed> persistence = new PersistableFeeds(categoryId , null, excludeEntries, null);
+        IPersistableObject<Feed> persistence = new PersistableFeeds(categoryId, null, excludeEntries, null);
         return persistence.store(feeds);
     }
 
     @Override
     public int removeFeeds(Long categoryId, Long feedId, Boolean excludeEntries) {
-        IPersistableObject<Feed> persistence = new PersistableFeeds(categoryId , feedId, excludeEntries, null);
+        IPersistableObject<Feed> persistence = new PersistableFeeds(categoryId, feedId, excludeEntries, null);
         persistence.delete();
         return 0;
     }
@@ -277,7 +271,7 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
     public Entry getEntry(long entryId) {
         IPersistableObject<Entry> persistence = new PersistableEntries(null, null, entryId, null);
         List<Entry> result = load(persistence);
-        if (result != null && result.size() == 1){
+        if (result != null && result.size() == 1) {
             return result.get(0);
         }
         return null;
@@ -286,10 +280,10 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
     @Override
     public long addEntry(long categoryId, long feedId, Entry entry) {
         IPersistableObject<Entry> persistence = new PersistableEntries(categoryId, feedId, null, null);
-        List<Entry> result = new ArrayList<Entry>();
+        List<Entry> result = new ArrayList<>();
         result.add(entry);
         persistence.store(result);
-        if (entry.getId() == null){
+        if (entry.getId() == null) {
             //already added to database
             return -1;
         }
@@ -389,7 +383,7 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
 
     @Override
     public void removeAllCategories() {
-        IPersistableObject<Category> persistence = new PersistableCategories(null , null, null, null);
+        IPersistableObject<Category> persistence = new PersistableCategories(null, null, null, null);
         persistence.delete();
     }
 
@@ -403,11 +397,11 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
     @Override
     public int updateFeed(Feed feed) {
         IPersistableObject<Feed> persistence = new PersistableFeeds(feed.getCategoryId(), feed.getId(), null, null);
-        long[] ids =  update(persistence, feed);
+        long[] ids = update(persistence, feed);
         return ids == null ? 0 : ids.length;
     }
 
-    private <E> long[] update(final IPersistableObject<E> persistableResource, E resource){
+    private <E> long[] update(final IPersistableObject<E> persistableResource, E resource) {
         List<E> result = new ArrayList<E>();
         result.add(resource);
         return persistableResource.store(result);

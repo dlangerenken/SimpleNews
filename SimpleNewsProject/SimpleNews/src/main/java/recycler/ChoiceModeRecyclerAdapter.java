@@ -3,7 +3,6 @@ package recycler;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.util.SparseBooleanArray;
-import android.view.ViewGroup;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -14,8 +13,6 @@ public abstract class ChoiceModeRecyclerAdapter<VH extends RecyclerView.ViewHold
     private List<Item> mItems;
     private SparseBooleanArray mSelectedPositions = new SparseBooleanArray();
     private boolean mInSelectionMode = false;
-    private static final int SELECTED = 1;
-    private static final int NORMAL = 0;
     private static final String SELECTED_POSITIONS = "positions";
     private static final String SELECTING_MODE = "inSelectionMode";
     private ChoiceModeListener mListener;
@@ -39,31 +36,32 @@ public abstract class ChoiceModeRecyclerAdapter<VH extends RecyclerView.ViewHold
         updateSelection();
     }
 
-    public void toggle(int position) {
-        setItemChecked(position, !isItemChecked(position));
+    public void toggle(Item item) {
+        int index = indexOf(item);
+        setItemChecked(index, !isItemChecked(index));
     }
 
-    public void toggleIfActionMode(int position) {
+    public void toggleIfActionMode(Item item) {
         if (isInSelectionMode()) {
-            toggle(position);
+            toggle(item);
         }
     }
 
     private void updateSelection() {
         for (int i = 0; i < mSelectedPositions.size(); i++) {
-            if (mSelectedPositions.get(i)) {
+            if (mSelectedPositions.valueAt(i)) {
                 setSelectionMode(true);
+                if (mListener != null) {
+                    mListener.updateSelectionMode(mSelectedPositions.size());
+                }
                 return;
             }
         }
         setSelectionMode(false);
-        if (mListener != null) {
-            mListener.updateSelectionMode(mSelectedPositions.size());
-        }
     }
 
-    public boolean isItemChecked(int position) {
-        return mSelectedPositions.get(position);
+    public boolean isItemChecked(int key) {
+        return mSelectedPositions.get(key);
     }
 
     public void setSelectionMode(boolean selectionMode) {
@@ -109,8 +107,8 @@ public abstract class ChoiceModeRecyclerAdapter<VH extends RecyclerView.ViewHold
         for (int i = 0; i < selected.size(); i++) {
             position = selected.get(i);
             mSelectedPositions.put(position, true);
+            update(get(position));
         }
-        refreshHolders();
     }
 
     @Override
@@ -135,8 +133,11 @@ public abstract class ChoiceModeRecyclerAdapter<VH extends RecyclerView.ViewHold
     }
 
     public void clearSelections() {
+        List<Item> selectedItems = getSelectedItems();
         mSelectedPositions.clear();
-        refreshHolders();
+        for (Item item : selectedItems) {
+            update(item);
+        }
         updateSelection();
     }
 
@@ -163,15 +164,24 @@ public abstract class ChoiceModeRecyclerAdapter<VH extends RecyclerView.ViewHold
         }
     }
 
-    public void remove(Item item) {
-        int index = indexOf(item);
+    public void remove(Item removingItem) {
+        List<Item> selectedItems = getSelectedItems();
+        clearSelections();
+        int index = indexOf(removingItem);
         if (index >= 0) {
-            mItems.remove(item);
+            mItems.remove(removingItem);
             notifyItemRemoved(index);
+        }
+        for (Item item : mItems) {
+            if (selectedItems.contains(item)) {
+                toggle(item);
+            }
         }
     }
 
     public void add(List<Item> newItems) {
+        List<Item> selectedItems = getSelectedItems();
+        clearSelections();
         List<Item> addedItems = new ArrayList<>();
         for (Item item : newItems) {
             if (!mItems.contains(item)) {
@@ -184,19 +194,27 @@ public abstract class ChoiceModeRecyclerAdapter<VH extends RecyclerView.ViewHold
             int index = indexOf(addedItem);
             notifyItemInserted(index);
         }
-    }
-
-    public void add(Item item) {
-        if (!mItems.contains(item)) {
-            mItems.add(item);
-            Collections.sort(mItems);
-            int index = indexOf(item);
-            notifyItemInserted(index);
+        for (Item item : mItems) {
+            if (selectedItems.contains(item)) {
+                toggle(item);
+            }
         }
     }
 
-    private void refreshHolders() {
-        notifyItemRangeChanged(0, getItemCount());
+    public void add(Item newItem) {
+        List<Item> selectedItems = getSelectedItems();
+        clearSelections();
+        if (!mItems.contains(newItem)) {
+            mItems.add(newItem);
+            Collections.sort(mItems);
+            int index = indexOf(newItem);
+            notifyItemInserted(index);
+        }
+        for (Item item : mItems) {
+            if (selectedItems.contains(item)) {
+                toggle(item);
+            }
+        }
     }
 
     public Bundle saveSelectionStates() {
@@ -213,35 +231,15 @@ public abstract class ChoiceModeRecyclerAdapter<VH extends RecyclerView.ViewHold
     }
 
     @Override
-    public int getItemViewType(int position) {
-        if (mSelectedPositions.get(position)) {
-            return SELECTED;
-        }
-        return NORMAL;
-    }
-
-    @Override
-    public final VH onCreateViewHolder(ViewGroup parent, int viewType) {
-        if (viewType == SELECTED) {
-            return onCreateSelectedViewHolder(parent);
-        }
-        return onCreateNormalViewHolder(parent);
-    }
-
-    @Override
     public final void onBindViewHolder(VH holder, int position) {
-        if (getItemViewType(position) == SELECTED) {
+        if (isItemChecked(position)) {
             onBindSelectedViewHolder(holder, position);
+        } else {
+            onBindNormalViewHolder(holder, position);
         }
-        onBindNormalViewHolder(holder, position);
     }
 
     abstract void onBindSelectedViewHolder(VH holder, int position);
 
     abstract void onBindNormalViewHolder(VH holder, int position);
-
-    abstract VH onCreateNormalViewHolder(ViewGroup parent);
-
-    abstract VH onCreateSelectedViewHolder(ViewGroup parent);
-
 }

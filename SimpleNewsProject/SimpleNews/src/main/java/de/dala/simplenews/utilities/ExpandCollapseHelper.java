@@ -7,21 +7,28 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 
-public class ExpandCollapseHelper {public static void animateCollapsing(final View view) {
-    int origHeight = view.getHeight();
-
-    ValueAnimator animator = createHeightAnimator(view, origHeight, 0);
-    animator.addListener(new AnimatorListenerAdapter() {
-
-        @Override
-        public void onAnimationEnd(final Animator animator) {
-            view.setVisibility(View.GONE);
+public class ExpandCollapseHelper {
+    public static void animateCollapsing(final View view) {
+        if (view.getVisibility() == View.GONE) {
+            return;
         }
-    });
-    animator.start();
-}
+        int origHeight = view.getHeight();
+
+        ValueAnimator animator = createHeightAnimator(view, origHeight, 0);
+        animator.addListener(new AnimatorListenerAdapter() {
+
+            @Override
+            public void onAnimationEnd(final Animator animator) {
+                view.setVisibility(View.GONE);
+            }
+        });
+        animator.start();
+    }
 
     public static void animateExpanding(final View view, final RecyclerView listViewWrapper) {
+        if (view.getVisibility() == View.VISIBLE) {
+            return;
+        }
         view.setVisibility(View.VISIBLE);
 
         View parent = (View) view.getParent();
@@ -54,7 +61,7 @@ public class ExpandCollapseHelper {public static void animateCollapsing(final Vi
     private static View findDirectChild(final View view, final ViewGroup viewGroup) {
         View result = view;
         View parent = (View) result.getParent();
-        while (!parent.equals(viewGroup)) {
+        while (parent != null && !parent.equals(viewGroup)) {
             result = parent;
             parent = (View) result.getParent();
         }

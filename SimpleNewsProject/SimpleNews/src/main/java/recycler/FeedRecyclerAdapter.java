@@ -34,8 +34,8 @@ public class FeedRecyclerAdapter extends ChoiceModeRecyclerAdapter<FeedRecyclerA
 
 
     @Override
-    void onBindNormalViewHolder(FeedViewHolder holder, final int position) {
-        Feed feed = get(position);
+    void onBindNormalViewHolder(FeedViewHolder holder, int position) {
+        final Feed feed = get(position);
         holder.name.setText(feed.getTitle() == null ? mContext.getString(R.string.feed_title_not_found) : feed.getTitle());
         holder.link.setText(feed.getXmlUrl());
         holder.show.setOnClickListener(new FeedItemClickListener(feed));
@@ -45,14 +45,14 @@ public class FeedRecyclerAdapter extends ChoiceModeRecyclerAdapter<FeedRecyclerA
         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                toggle(position);
+                toggle(feed);
                 return false;
             }
         });
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                toggleIfActionMode(position);
+                toggleIfActionMode(feed);
             }
         });
         holder.itemView.setBackgroundResource(R.drawable.card_background_white);
@@ -61,14 +61,9 @@ public class FeedRecyclerAdapter extends ChoiceModeRecyclerAdapter<FeedRecyclerA
     }
 
     @Override
-    FeedViewHolder onCreateNormalViewHolder(ViewGroup parent) {
+    public FeedViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.feed_modify_item, parent, false);
         return new FeedViewHolder(itemView);
-    }
-
-    @Override
-    FeedViewHolder onCreateSelectedViewHolder(ViewGroup parent) {
-        return onCreateNormalViewHolder(parent);
     }
 
     @Override

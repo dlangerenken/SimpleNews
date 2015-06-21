@@ -7,6 +7,7 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -31,21 +32,14 @@ public class ExpandableItemRecyclerAdapter extends ChoiceModeRecyclerAdapter<Exp
     private Context mContext;
     private RecyclerView mRecyclerView;
 
-    public void removeOldEntries(List<Entry> newEntries) {
-        remove(Utilities.nonIntersection(newEntries, getItems()));
-    }
-
-    public void addNewEntriesAndRemoveOld(List<Entry> entries) {
-        add(entries);
-        removeOldEntries(entries);
-    }
-
-    public interface ItemClickListener {
-        void onItemClick(Entry entry);
-    }
-
     private ItemClickListener mItemClickListener;
     private Set<Entry> mExpandedItemIds;
+
+    public interface ItemClickListener {
+        void onSaveClick(Entry entry);
+
+        void onOpenClick(Entry entry);
+    }
 
     public ExpandableItemRecyclerAdapter(List<Entry> entries, Category category, Context context, ItemClickListener itemClickListener, RecyclerView recyclerView, ChoiceModeListener listener) {
         super(entries, listener);
@@ -63,7 +57,7 @@ public class ExpandableItemRecyclerAdapter extends ChoiceModeRecyclerAdapter<Exp
     }
 
     @Override
-    void onBindNormalViewHolder(final EntryViewHolder holder, int position) {
+    void onBindNormalViewHolder(final EntryViewHolder holder, final int position) {
         final Entry currentEntry = get(position);
 
         long current = Math.min(new Date().getTime(), currentEntry.getDate());
@@ -76,8 +70,13 @@ public class ExpandableItemRecyclerAdapter extends ChoiceModeRecyclerAdapter<Exp
         UIUtils.setTextMaybeHtml(holder.titleTextView, currentEntry.getTitle());
         setImageDrawable(holder.imageView, currentEntry);
 
-        /* content */
-        holder.colorBorderView.setBackgroundColor(mCategory.getSecondaryColor());
+        holder.saveButton.setText(currentEntry.getFavoriteDate() != null && currentEntry.getFavoriteDate() > 0 ? "Remove" : "Save");
+        int secondaryColor = mCategory.getSecondaryColor();
+        holder.colorBorderView.setBackgroundColor(secondaryColor);
+        holder.saveButton.setTextColor(secondaryColor);
+        holder.openButton.setTextColor(secondaryColor);
+        holder.buttonDelimitter.setBackgroundColor(secondaryColor);
+        holder.colorBorderView.setBackgroundColor(secondaryColor);
         UIUtils.setTextMaybeHtml(holder.descriptionTextView, currentEntry.getDescription());
 
         /* general */
@@ -89,38 +88,52 @@ public class ExpandableItemRecyclerAdapter extends ChoiceModeRecyclerAdapter<Exp
         holder.clickListener = new EntryViewHolder.ClickListener() {
             @Override
             public void onSelectItem() {
-                toggle(indexOf(currentEntry));
+                toggle(currentEntry);
             }
 
             @Override
-            public void onTitleClicked() {
+            public void onTitleClick() {
                 if (!isInSelectionMode()) {
                     toggleExpandingElement(currentEntry, holder.contentLayout);
                 } else {
-                    toggleIfActionMode(indexOf(currentEntry));
+                    toggleIfActionMode(currentEntry);
                 }
             }
 
             @Override
-            public void onDescriptionClicked() {
+            public void onDescriptionClick() {
                 if (!isInSelectionMode()) {
-                    mItemClickListener.onItemClick(currentEntry);
+                    //mItemClickListener.onItemClick(currentEntry);
                 } else {
-                    toggleIfActionMode(indexOf(currentEntry));
+                    toggleIfActionMode(currentEntry);
+                }
+            }
+
+            @Override
+            public void onOpenClick() {
+                if (!isInSelectionMode()) {
+                    mItemClickListener.onOpenClick(currentEntry);
+                }
+            }
+
+            @Override
+            public void onSaveClick() {
+                if (!isInSelectionMode()) {
+                    mItemClickListener.onSaveClick(currentEntry);
                 }
             }
         };
+        if (mExpandedItemIds.contains(currentEntry)) {
+            expand(currentEntry, holder.contentLayout);
+        } else {
+            collapse(currentEntry, holder.contentLayout);
+        }
     }
 
     @Override
-    EntryViewHolder onCreateNormalViewHolder(ViewGroup parent) {
+    public EntryViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.news_card_layout, parent, false);
         return new EntryViewHolder(itemView);
-    }
-
-    @Override
-    EntryViewHolder onCreateSelectedViewHolder(ViewGroup parent) {
-        return onCreateNormalViewHolder(parent);
     }
 
     static class EntryViewHolder extends RecyclerView.ViewHolder {
@@ -131,6 +144,9 @@ public class ExpandableItemRecyclerAdapter extends ChoiceModeRecyclerAdapter<Exp
         /* Content */
         public View colorBorderView;
         public TextView descriptionTextView;
+        public Button saveButton;
+        public Button openButton;
+        public View buttonDelimitter;
 
         /* Title */
         public ImageView imageView;
@@ -140,9 +156,13 @@ public class ExpandableItemRecyclerAdapter extends ChoiceModeRecyclerAdapter<Exp
         interface ClickListener {
             void onSelectItem();
 
-            void onTitleClicked();
+            void onTitleClick();
 
-            void onDescriptionClicked();
+            void onDescriptionClick();
+
+            void onOpenClick();
+
+            void onSaveClick();
         }
 
         public ClickListener clickListener;
@@ -160,6 +180,9 @@ public class ExpandableItemRecyclerAdapter extends ChoiceModeRecyclerAdapter<Exp
 
             colorBorderView = contentLayout.findViewById(R.id.color_border);
             descriptionTextView = (TextView) contentLayout.findViewById(R.id.content_description);
+            saveButton = (Button) contentLayout.findViewById(R.id.save_button);
+            openButton = (Button) contentLayout.findViewById(R.id.open_button);
+            buttonDelimitter = contentLayout.findViewById(R.id.color_button_border);
 
             titleLayout.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
@@ -171,22 +194,57 @@ public class ExpandableItemRecyclerAdapter extends ChoiceModeRecyclerAdapter<Exp
                     return false;
                 }
             });
-            titleLayout.setOnClickListener(new View.OnClickListener() {
+            contentLayout.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
-                public void onClick(View v) {
+                public boolean onLongClick(View v) {
                     if (clickListener != null) {
-                        clickListener.onTitleClicked();
+                        clickListener.onSelectItem();
+                        return true;
                     }
+                    return false;
                 }
             });
+
             contentLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     if (clickListener != null) {
-                        clickListener.onDescriptionClicked();
+                        clickListener.onDescriptionClick();
                     }
                 }
             });
+            titleLayout.setOnClickListener(
+                    new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (clickListener != null) {
+                                clickListener.onTitleClick();
+                            }
+                        }
+                    }
+
+            );
+            openButton.setOnClickListener(
+                    new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (clickListener != null) {
+                                clickListener.onOpenClick();
+                            }
+                        }
+                    }
+
+            );
+            saveButton.setOnClickListener(
+                    new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (clickListener != null) {
+                                clickListener.onSaveClick();
+                            }
+                        }
+                    }
+            );
         }
     }
 
@@ -219,5 +277,15 @@ public class ExpandableItemRecyclerAdapter extends ChoiceModeRecyclerAdapter<Exp
     private void collapse(Entry entry, final View contentParent) {
         ExpandCollapseHelper.animateCollapsing(contentParent);
         mExpandedItemIds.remove(entry);
+    }
+
+
+    public void removeOldEntries(List<Entry> newEntries) {
+        remove(Utilities.nonIntersection(getItems(), newEntries));
+    }
+
+    public void addNewEntriesAndRemoveOld(List<Entry> entries) {
+        add(entries);
+        removeOldEntries(entries);
     }
 }
