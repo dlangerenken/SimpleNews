@@ -1,14 +1,13 @@
 package de.dala.simplenews.utilities;
 
 import android.content.Context;
+import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.View;
 
-import com.github.ksoichiro.android.observablescrollview.ObservableRecyclerView;
-
-public class EmptyObservableRecyclerView extends ObservableRecyclerView {
+public class EmptyObservableRecyclerView extends RecyclerView {
     private View emptyView;
-    final private AdapterDataObserver observer = new AdapterDataObserver() {
+    final private RecyclerView.AdapterDataObserver observer = new AdapterDataObserver() {
         @Override
         public void onChanged() {
             checkIfEmpty();

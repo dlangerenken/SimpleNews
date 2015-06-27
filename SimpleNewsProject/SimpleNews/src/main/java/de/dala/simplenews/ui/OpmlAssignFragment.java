@@ -1,6 +1,5 @@
 package de.dala.simplenews.ui;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
@@ -14,16 +13,21 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.afollestad.materialdialogs.MaterialDialog;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import de.dala.simplenews.R;
+import de.dala.simplenews.common.Category;
 import de.dala.simplenews.common.Feed;
-import de.dala.simplenews.utilities.BaseNavigation;
+import de.dala.simplenews.database.DatabaseHandler;
+import de.dala.simplenews.utilities.EmptyObservableRecyclerView;
+import recycler.CategoryAssignRecyclerAdapter;
 import recycler.ChoiceModeRecyclerAdapter;
 import recycler.OpmlRecyclerAdapter;
 
-public class OpmlAssignFragment extends BaseFragment implements BaseNavigation, ChoiceModeRecyclerAdapter.ChoiceModeListener {
+public class OpmlAssignFragment extends BaseFragment implements ChoiceModeRecyclerAdapter.ChoiceModeListener {
 
     private static final String FEED_LIST_KEY = "feeds";
 
@@ -71,20 +75,6 @@ public class OpmlAssignFragment extends BaseFragment implements BaseNavigation, 
     }
 
     @Override
-    public String getTitle() {
-        Context mContext = getActivity();
-        if (mContext != null) {
-            return mContext.getString(R.string.opml_assign_fragment_title);
-        }
-        return "SimpleNews"; //should not be called
-    }
-
-    @Override
-    public int getNavigationDrawerId() {
-        return NavigationDrawerFragment.IMPORT;
-    }
-
-    @Override
     public void startSelectionMode() {
         mActionMode = getActivity().startActionMode(new ActionModeCallBack());
     }
@@ -126,20 +116,7 @@ public class OpmlAssignFragment extends BaseFragment implements BaseNavigation, 
                     mAdapter.remove(feeds);
                     break;
                 case R.id.menu_item_assign:
-                    AssignDialogFragment assignFeedsDialog = AssignDialogFragment.newInstance(feeds);
-                    assignFeedsDialog.setDialogHandler(new AssignDialogFragment.IDialogHandler() {
-
-                        @Override
-                        public void assigned() {
-                            mAdapter.remove(feeds);
-                        }
-
-                        @Override
-                        public void canceled() {
-                            mAdapter.clearSelections();
-                        }
-                    });
-                    assignFeedsDialog.show(getFragmentManager(), "AssignFeedsDialog");
+                    openAssign(feeds);
                     break;
             }
 
@@ -155,4 +132,32 @@ public class OpmlAssignFragment extends BaseFragment implements BaseNavigation, 
         }
     }
 
+    private void openAssign(final List<Feed> feedsToAssign) {
+        final MaterialDialog dialog = new MaterialDialog.Builder(getActivity())
+                .title(R.string.choose_category_for_feeds)
+                .customView(R.layout.assign_category_list, true).build();
+        View customView = dialog.getCustomView();
+        if (customView != null) {
+            EmptyObservableRecyclerView assignCategoryView = (EmptyObservableRecyclerView) customView;
+            List<Category> categories = DatabaseHandler.getInstance().getCategories(true, true, null);
+            CategoryAssignRecyclerAdapter adapter = new CategoryAssignRecyclerAdapter(getActivity(), categories, new CategoryAssignRecyclerAdapter.OnClickListener() {
+                @Override
+                public void onClick(Category category) {
+                    assignSelectedEntries(category, feedsToAssign);
+                    dialog.dismiss();
+                }
+            });
+            assignCategoryView.setAdapter(adapter);
+            dialog.show();
+        }
+    }
+
+    private void assignSelectedEntries(Category category, List<Feed> feeds) {
+        for (Feed feed : feeds) {
+            feed.setCategoryId(category.getId());
+            if (feed.getCategoryId() != null && feed.getCategoryId() > 0) {
+                DatabaseHandler.getInstance().addFeed(feed.getCategoryId(), feed, true);
+            }
+        }
+    }
 }

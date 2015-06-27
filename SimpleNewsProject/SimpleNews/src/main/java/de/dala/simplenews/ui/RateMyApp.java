@@ -1,15 +1,14 @@
 package de.dala.simplenews.ui;
 
-import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.MaterialDialog;
+
 import de.dala.simplenews.R;
-import de.dala.simplenews.utilities.LightAlertDialog;
 import de.dala.simplenews.utilities.PrefUtilities;
 
 /**
@@ -46,55 +45,40 @@ public class RateMyApp {
     }
 
     public static void showRateDialog(final Context mContext) {
-        AlertDialog.Builder builder = LightAlertDialog.Builder.create(mContext);
-        String message = String.format(mContext.getString(R.string.rate_my_app_desc), APP_TITLE);
-        builder.setMessage(message)
-                .setTitle(String.format(mContext.getString(R.string.rate_my_app_title), APP_TITLE))
-                .setIcon(mContext.getApplicationInfo().icon)
-                .setCancelable(false)
-                .setPositiveButton(mContext.getString(R.string.rate_my_app_now),
-                        new DialogInterface.OnClickListener() {
-
-                            @Override
-                            public void onClick(DialogInterface dialog,
-                                                int which) {
-                                PrefUtilities.getInstance().shouldNotAskForRatingAnymore();
-                                try {
-                                    mContext.startActivity(new Intent(
-                                            Intent.ACTION_VIEW, Uri
-                                            .parse("market://details?id="
-                                                    + APP_PACKAGE_NAME)
-                                    ));
-                                } catch (ActivityNotFoundException e) {
-                                    Toast.makeText(mContext, mContext.getString(R.string.playstore_not_found), Toast.LENGTH_LONG).show();
-                                }
-                                dialog.dismiss();
-                            }
+        new MaterialDialog.Builder(mContext)
+                .content(String.format(mContext.getString(R.string.rate_my_app_desc), APP_TITLE))
+                .title(String.format(mContext.getString(R.string.rate_my_app_title), APP_TITLE))
+                .iconRes(mContext.getApplicationInfo().icon)
+                .cancelable(false)
+                .positiveText(R.string.rate_my_app_now)
+                .neutralText(R.string.rate_my_app_later)
+                .negativeText(R.string.rate_my_app_never)
+                .callback(new MaterialDialog.ButtonCallback() {
+                    @Override
+                    public void onPositive(MaterialDialog dialog) {
+                        PrefUtilities.getInstance().shouldNotAskForRatingAnymore();
+                        try {
+                            mContext.startActivity(new Intent(
+                                    Intent.ACTION_VIEW, Uri
+                                    .parse("market://details?id="
+                                            + APP_PACKAGE_NAME)
+                            ));
+                        } catch (ActivityNotFoundException e) {
+                            Toast.makeText(mContext, mContext.getString(R.string.playstore_not_found), Toast.LENGTH_LONG).show();
                         }
-                )
-                .setNeutralButton(mContext.getString(R.string.rate_my_app_later),
-                        new DialogInterface.OnClickListener() {
+                    }
 
-                            @Override
-                            public void onClick(DialogInterface dialog,
-                                                int which) {
-                                dialog.dismiss();
+                    @Override
+                    public void onNegative(MaterialDialog dialog) {
+                        PrefUtilities.getInstance().shouldNotAskForRatingAnymore();
+                        super.onNegative(dialog);
+                    }
 
-                            }
-                        }
-                )
-                .setNegativeButton(mContext.getString(R.string.rate_my_app_never),
-                        new DialogInterface.OnClickListener() {
-
-                            @Override
-                            public void onClick(DialogInterface dialog,
-                                                int which) {
-                                PrefUtilities.getInstance().shouldNotAskForRatingAnymore();
-                                dialog.dismiss();
-
-                            }
-                        }
-                );
-        builder.create().show();
+                    @Override
+                    public void onNeutral(MaterialDialog dialog) {
+                        PrefUtilities.getInstance().shouldAskForRatingAgain();
+                        super.onNeutral(dialog);
+                    }
+                }).show();
     }
 }

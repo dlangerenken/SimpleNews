@@ -4,6 +4,7 @@
     <string name="app_name">SimpleNews</string>
     <string name="action_settings">Settings</string>
     <string name="about_ok">OK</string>
+    <string name="ok">OK</string>
     <string name="changelog_title">Changelog</string>
     <string name="changelog_menu">Changelog</string>
     <string name="progress">Progress</string>
@@ -19,8 +20,8 @@
     <string name="description_refresh">Refresh</string>
 
     <plurals name="countdown_seconds">
-        <item quantity="one">Removing in 1...</item>
-        <item quantity="other">Removing in %d...</item>
+        <item quantity="one">Removing in 1…</item>
+        <item quantity="other">Removing in %d…</item>
     </plurals>
 
     <string name="countdown_dismissing">Removing</string>
@@ -116,4 +117,11 @@
 
     <string name="thanks">Thank you!</string>
     <string name="exception">Oops! Something went wrong!</string>
-   </resources>
+    <string name="title_activity_news">NewsActivity</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="title_activity_opml">OpmlActivity</string>
+    <string name="title_activity_category">CategoryActivity</string>
+    <string name="title_activity_settings">SettingActivity</string>
+    <string name="menu_opml">Opml Import/Export</string>
+</resources>

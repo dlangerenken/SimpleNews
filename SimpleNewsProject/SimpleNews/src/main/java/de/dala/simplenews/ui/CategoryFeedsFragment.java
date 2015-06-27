@@ -1,7 +1,5 @@
 package de.dala.simplenews.ui;
 
-import android.app.AlertDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
@@ -15,10 +13,11 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ShareActionProvider;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.GravityEnum;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.rometools.rome.feed.opml.Opml;
 import com.rometools.rome.io.FeedException;
 import com.rometools.rome.io.impl.OPML20Generator;
@@ -30,14 +29,12 @@ import java.util.List;
 import de.dala.simplenews.R;
 import de.dala.simplenews.common.Category;
 import de.dala.simplenews.common.Feed;
-import de.dala.simplenews.utilities.BaseNavigation;
-import de.dala.simplenews.utilities.LightAlertDialog;
 import de.dala.simplenews.utilities.OpmlConverter;
 import de.dala.simplenews.utilities.UpdatingFeedTask;
 import recycler.ChoiceModeRecyclerAdapter;
 import recycler.FeedRecyclerAdapter;
 
-public class CategoryFeedsFragment extends BaseFragment implements BaseNavigation, ChoiceModeRecyclerAdapter.ChoiceModeListener {
+public class CategoryFeedsFragment extends BaseFragment implements ChoiceModeRecyclerAdapter.ChoiceModeListener {
 
     private static final String CATEGORY_KEY = "mCategory";
     private RecyclerView feedListView;
@@ -109,48 +106,48 @@ public class CategoryFeedsFragment extends BaseFragment implements BaseNavigatio
     }
 
     private void createFeedClicked() {
-        final View view = LayoutInflater.from(getActivity()).inflate(R.layout.check_valid_rss_dialog, null);
-        final ViewGroup inputLayout = (ViewGroup) view.findViewById(R.id.inputLayout);
-        final View progress = view.findViewById(R.id.m_progress);
-        final Button positive = (Button) inputLayout.findViewById(R.id.positive);
-        final Button negative = (Button) inputLayout.findViewById(R.id.negative);
-        final EditText input = (EditText) inputLayout.findViewById(R.id.input);
+        MaterialDialog dialog = new MaterialDialog.Builder(getActivity())
+                .title(R.string.new_feed_url_header)
+                .contentGravity(GravityEnum.CENTER)
+                .positiveText(R.string.ok)
+                .negativeText(R.string.cancel)
+                .input(R.string.hint_add_entry, 0, new MaterialDialog.InputCallback() {
 
-        final AlertDialog dialog = LightAlertDialog.Builder.create(getActivity()).setView(view).setTitle(R.string.new_feed_url_header).create();
+                    @Override
+                    public void onInput(final MaterialDialog materialDialog, CharSequence charSequence) {
+                        final View positive = materialDialog.getActionButton(DialogAction.POSITIVE);
+                        final View negative = materialDialog.getActionButton(DialogAction.NEGATIVE);
+                        feedTask = new UpdatingFeedTask(getActivity(), mCategory, new UpdatingFeedTask.UpdatingFeedListener() {
+                            @Override
+                            public void success(Feed feed) {
+                                materialDialog.dismiss();
+                                positive.setEnabled(true);
+                                negative.setEnabled(true);
+                            }
 
-        View.OnClickListener dialogClickListener = new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                switch (v.getId()) {
-                    case R.id.positive:
-                        feedTask = new UpdatingFeedTask(getActivity(), view, inputLayout, progress, dialog, null, mRecyclerAdapter, mCategory);
-                        feedTask.execute(input.getText().toString());
-                        break;
-                    case R.id.negative:
-                        dialog.dismiss();
-                        break;
-                }
-            }
-        };
+                            @Override
+                            public void loading() {
+                                positive.setEnabled(false);
+                                negative.setEnabled(false);
+                            }
 
-        positive.setOnClickListener(dialogClickListener);
-        negative.setOnClickListener(dialogClickListener);
-
+                            @Override
+                            public void fail() {
+                                positive.setEnabled(true);
+                                negative.setEnabled(true);
+                            }
+                        }, null);
+                        feedTask.execute(charSequence.toString());
+                    }
+                })
+                .callback(new MaterialDialog.ButtonCallback() {
+                    @Override
+                    public void onNegative(MaterialDialog dialog) {
+                        dialog.cancel();
+                    }
+                })
+                .autoDismiss(false).build();
         dialog.show();
-    }
-
-    @Override
-    public String getTitle() {
-        Context context = getActivity();
-        if (context != null) {
-            return String.format(context.getString(R.string.category_feeds_fragment_title), mCategory.getName());
-        }
-        return "SimpleNews"; //default
-    }
-
-    @Override
-    public int getNavigationDrawerId() {
-        return NavigationDrawerFragment.CATEGORIES;
     }
 
     @Override
@@ -164,7 +161,9 @@ public class CategoryFeedsFragment extends BaseFragment implements BaseNavigatio
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putBundle("ActionMode", mRecyclerAdapter.saveSelectionStates());
+        if (mRecyclerAdapter != null) {
+            outState.putBundle("ActionMode", mRecyclerAdapter.saveSelectionStates());
+        }
     }
 
     @Override

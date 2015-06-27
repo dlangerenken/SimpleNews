@@ -25,8 +25,6 @@ import android.view.ViewGroup;
 import android.widget.ShareActionProvider;
 import android.widget.Toast;
 
-import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
-
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Date;
@@ -36,7 +34,6 @@ import de.dala.simplenews.R;
 import de.dala.simplenews.common.Category;
 import de.dala.simplenews.common.Entry;
 import de.dala.simplenews.database.DatabaseHandler;
-import de.dala.simplenews.utilities.BaseNavigation;
 import de.dala.simplenews.utilities.CategoryUpdater;
 import de.dala.simplenews.utilities.EmptyObservableRecyclerView;
 import de.dala.simplenews.utilities.PrefUtilities;
@@ -45,7 +42,7 @@ import recycler.ExpandableItemRecyclerAdapter;
 import recycler.FadeInUpAnimator;
 
 
-public class ExpandableNewsFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener, BaseNavigation, ExpandableItemRecyclerAdapter.ItemClickListener, ChoiceModeRecyclerAdapter.ChoiceModeListener {
+public class ExpandableNewsFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener, ExpandableItemRecyclerAdapter.ItemClickListener, ChoiceModeRecyclerAdapter.ChoiceModeListener {
     private static final String ARG_CATEGORY = "category";
     private static final String ARG_ENTRY_TYPE = "entryType";
     private static final String ARG_POSITION = "position";
@@ -125,14 +122,6 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
         mRecyclerView = (EmptyObservableRecyclerView) rootView.findViewById(R.id.scroll);
         mRecyclerView.setEmptyView(rootView.findViewById(R.id.emptyView));
         mSwipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.refresh_layout);
-        Fragment parentFragment = getParentFragment();
-        ViewGroup viewGroup = (ViewGroup) parentFragment.getView();
-        if (viewGroup != null) {
-            mRecyclerView.setTouchInterceptionViewGroup((ViewGroup) viewGroup.findViewById(R.id.container));
-            if (parentFragment instanceof ObservableScrollViewCallbacks) {
-                mRecyclerView.setScrollViewCallbacks((ObservableScrollViewCallbacks) parentFragment);
-            }
-        }
         setHasOptionsMenu(true);
         init();
         return rootView;
@@ -161,15 +150,17 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
     }
 
     private void updateColumnCount() {
-        switch (getResources().getConfiguration().orientation) {
-            case Configuration.ORIENTATION_LANDSCAPE:
-                boolean useMultipleLandscape = PrefUtilities.getInstance().useMultipleColumnsLandscape();
-                mLayoutManager.setSpanCount(useMultipleLandscape ? 2 : 1);
-                break;
-            case Configuration.ORIENTATION_PORTRAIT:
-                boolean useMultiplePortrait = PrefUtilities.getInstance().useMultipleColumnsPortrait();
-                mLayoutManager.setSpanCount(useMultiplePortrait ? 2 : 1);
-                break;
+        if (mLayoutManager != null) {
+            switch (getResources().getConfiguration().orientation) {
+                case Configuration.ORIENTATION_LANDSCAPE:
+                    boolean useMultipleLandscape = PrefUtilities.getInstance().useMultipleColumnsLandscape();
+                    mLayoutManager.setSpanCount(useMultipleLandscape ? 2 : 1);
+                    break;
+                case Configuration.ORIENTATION_PORTRAIT:
+                    boolean useMultiplePortrait = PrefUtilities.getInstance().useMultipleColumnsPortrait();
+                    mLayoutManager.setSpanCount(useMultiplePortrait ? 2 : 1);
+                    break;
+            }
         }
     }
 
@@ -314,39 +305,6 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
 
     public void gridSettingsChanged() {
         updateColumnCount();
-    }
-
-    @Override
-    public String getTitle() {
-        Context mContext = getActivity();
-        if (mContext != null) {
-            switch (newsTypeMode) {
-                case NewsOverViewFragment.ALL:
-                    return getActivity().getString(R.string.home_title);
-                case NewsOverViewFragment.FAV:
-                    return getActivity().getString(R.string.favorite_title);
-                case NewsOverViewFragment.RECENT:
-                    return getActivity().getString(R.string.recent_title);
-                case NewsOverViewFragment.UNREAD:
-                    return getActivity().getString(R.string.unread_title);
-            }
-        }
-        return "News"; // should not be called
-    }
-
-    @Override
-    public int getNavigationDrawerId() {
-        switch (newsTypeMode) {
-            case NewsOverViewFragment.ALL:
-                return NavigationDrawerFragment.HOME;
-            case NewsOverViewFragment.FAV:
-                return NavigationDrawerFragment.FAVORITE;
-            case NewsOverViewFragment.RECENT:
-                return NavigationDrawerFragment.RECENT;
-            case NewsOverViewFragment.UNREAD:
-                return NavigationDrawerFragment.UNREAD;
-        }
-        return NavigationDrawerFragment.HOME;
     }
 
     public void updateCategory(Category category) {

@@ -209,6 +209,9 @@ public abstract class ChoiceModeRecyclerAdapter<VH extends RecyclerView.ViewHold
             Collections.sort(mItems);
             int index = indexOf(newItem);
             notifyItemInserted(index);
+        } else {
+            int index = indexOf(newItem);
+            notifyItemChanged(index);
         }
         for (Item item : mItems) {
             if (selectedItems.contains(item)) {

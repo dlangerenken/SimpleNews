@@ -116,4 +116,5 @@
 
     <string name="thanks">Vielen Dank!</string>
     <string name="exception">Oops! Da ist etwas schief gelaufen!</string>
-    </resources>
+    <string name="menu_opml">Opml Import/Export</string>
+</resources>

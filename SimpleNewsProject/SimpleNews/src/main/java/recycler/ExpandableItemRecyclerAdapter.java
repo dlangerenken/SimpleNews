@@ -70,19 +70,13 @@ public class ExpandableItemRecyclerAdapter extends ChoiceModeRecyclerAdapter<Exp
         UIUtils.setTextMaybeHtml(holder.titleTextView, currentEntry.getTitle());
         setImageDrawable(holder.imageView, currentEntry);
 
-        holder.saveButton.setText(currentEntry.getFavoriteDate() != null && currentEntry.getFavoriteDate() > 0 ? "Remove" : "Save");
         int secondaryColor = mCategory.getSecondaryColor();
         holder.colorBorderView.setBackgroundColor(secondaryColor);
-        holder.saveButton.setTextColor(secondaryColor);
-        holder.openButton.setTextColor(secondaryColor);
-        holder.buttonDelimitter.setBackgroundColor(secondaryColor);
         holder.colorBorderView.setBackgroundColor(secondaryColor);
         UIUtils.setTextMaybeHtml(holder.descriptionTextView, currentEntry.getDescription());
 
         /* general */
         holder.itemView.setBackgroundResource(R.color.list_background);
-        int pad = mContext.getResources().getDimensionPixelSize(R.dimen.card_layout_padding);
-        holder.itemView.setPadding(pad, pad, pad, pad);
 
         /* click listener */
         holder.clickListener = new EntryViewHolder.ClickListener() {
@@ -103,18 +97,12 @@ public class ExpandableItemRecyclerAdapter extends ChoiceModeRecyclerAdapter<Exp
             @Override
             public void onDescriptionClick() {
                 if (!isInSelectionMode()) {
-                    //mItemClickListener.onItemClick(currentEntry);
+                    mItemClickListener.onOpenClick(currentEntry);
                 } else {
                     toggleIfActionMode(currentEntry);
                 }
             }
 
-            @Override
-            public void onOpenClick() {
-                if (!isInSelectionMode()) {
-                    mItemClickListener.onOpenClick(currentEntry);
-                }
-            }
 
             @Override
             public void onSaveClick() {
@@ -144,9 +132,6 @@ public class ExpandableItemRecyclerAdapter extends ChoiceModeRecyclerAdapter<Exp
         /* Content */
         public View colorBorderView;
         public TextView descriptionTextView;
-        public Button saveButton;
-        public Button openButton;
-        public View buttonDelimitter;
 
         /* Title */
         public ImageView imageView;
@@ -159,8 +144,6 @@ public class ExpandableItemRecyclerAdapter extends ChoiceModeRecyclerAdapter<Exp
             void onTitleClick();
 
             void onDescriptionClick();
-
-            void onOpenClick();
 
             void onSaveClick();
         }
@@ -180,9 +163,6 @@ public class ExpandableItemRecyclerAdapter extends ChoiceModeRecyclerAdapter<Exp
 
             colorBorderView = contentLayout.findViewById(R.id.color_border);
             descriptionTextView = (TextView) contentLayout.findViewById(R.id.content_description);
-            saveButton = (Button) contentLayout.findViewById(R.id.save_button);
-            openButton = (Button) contentLayout.findViewById(R.id.open_button);
-            buttonDelimitter = contentLayout.findViewById(R.id.color_button_border);
 
             titleLayout.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
@@ -223,27 +203,6 @@ public class ExpandableItemRecyclerAdapter extends ChoiceModeRecyclerAdapter<Exp
                         }
                     }
 
-            );
-            openButton.setOnClickListener(
-                    new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            if (clickListener != null) {
-                                clickListener.onOpenClick();
-                            }
-                        }
-                    }
-
-            );
-            saveButton.setOnClickListener(
-                    new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            if (clickListener != null) {
-                                clickListener.onSaveClick();
-                            }
-                        }
-                    }
             );
         }
     }

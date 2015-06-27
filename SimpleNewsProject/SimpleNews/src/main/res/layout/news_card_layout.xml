@@ -5,7 +5,7 @@
     android:layout_height="wrap_content"
     android:background="@android:color/white"
     android:orientation="vertical"
-    tools:layout_margin="3dp">
+    android:padding="7dp">
 
     <LinearLayout
         android:id="@+id/card_title"
@@ -90,44 +90,6 @@
                     android:singleLine="false"
                     tools:text="Seit dem letzten Jahr können sich Arbeitnehmer schon mit 63 aus dem Berufsleben verabschieden. Ein Angebot, das offenbar viele annehmen. Die Beschäftigung von älteren Menschen ist deutlich zurückgegangen." />
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <Button
-                        android:layout_marginTop="-5dp"
-                        android:layout_marginBottom="-5dp"
-                        android:id="@+id/save_button"
-                        style="?android:attr/buttonBarButtonStyle"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Speichern"
-                        tools:text="Speichern"
-                        tools:textColor="@android:color/holo_red_light" />
-
-                    <View
-                        android:id="@+id/color_button_border"
-                        android:layout_width="1dp"
-                        android:layout_height="match_parent"
-                        android:layout_gravity="center"
-                        android:layout_marginBottom="10dp"
-                        android:layout_marginTop="10dp"
-                        tools:background="@android:color/holo_red_light" />
-
-                    <Button
-                        android:layout_marginTop="-5dp"
-                        android:layout_marginBottom="-5dp"
-                        android:id="@+id/open_button"
-                        style="?android:attr/buttonBarButtonStyle"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Ansehen"
-                        tools:text="Ansehen"
-                        tools:textColor="@android:color/holo_red_light" />
-                </LinearLayout>
             </LinearLayout>
         </LinearLayout>
 

@@ -4,15 +4,13 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+
 import static android.os.Build.VERSION.SDK_INT;
 import static android.os.Build.VERSION_CODES.GINGERBREAD;
 
 import java.util.Date;
 
 
-/**
- * Created by Daniel on 09.01.14.
- */
 @SuppressLint("CommitPrefEdits")
 public class PrefUtilities {
     public static final String XML_LOADED = "xmlLoaded";
@@ -25,6 +23,7 @@ public class PrefUtilities {
     public static final String MULTIPLE_COLUMNS_PORTRAIT = "multiple_columns_portrait";
     public static final String MULTIPLE_COLUMNS_LANDSCAPE = "multiple_columns_landscape";
     public static final String CATEGORY_INDEX = "category_index";
+    public static final String CURRENT_COLOR = "current_color";
 
     /**
      * Per the design guidelines, you should show the drawer on launch until the user manually
@@ -107,6 +106,14 @@ public class PrefUtilities {
         save(preferences.edit().putLong(FIRST_DAY_OF_LAUNCH, date));
     }
 
+    public void saveCurrentColor(int color) {
+        save(preferences.edit().putInt(CURRENT_COLOR, color));
+    }
+
+    public int getCurrentColor() {
+        return preferences.getInt(CURRENT_COLOR, 0);
+    }
+
     public int getLaunchCount() {
         return preferences.getInt(LAUNCH_COUNT, 0);
     }
@@ -125,14 +132,14 @@ public class PrefUtilities {
 
     public Long getDeprecatedTime() {
         String value = preferences.getString(DEPRECATED_TIME, DEFAULT_DEPRECATED_TIME + "");
-        if ("never".equals(value)){
+        if ("never".equals(value)) {
             return null;
         }
         try {
             Long val = Long.parseLong(value);
             Long now = new Date().getTime();
             return now - val;
-        } catch (NumberFormatException e){
+        } catch (NumberFormatException e) {
             return null;
         }
     }
@@ -147,10 +154,9 @@ public class PrefUtilities {
      * @param editor
      */
     public static void save(final SharedPreferences.Editor editor) {
-        if (isEditorApplyAvailable()){
+        if (isEditorApplyAvailable()) {
             editor.apply();
-        }
-        else {
+        } else {
             editor.commit();
         }
     }
@@ -158,6 +164,7 @@ public class PrefUtilities {
     public int getCategoryIndex() {
         return preferences.getInt(CATEGORY_INDEX, 0);
     }
+
     public void setCategoryIndex(int id) {
         save(preferences.edit().putInt(CATEGORY_INDEX, id));
     }

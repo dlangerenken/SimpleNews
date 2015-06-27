@@ -1,11 +1,10 @@
 package de.dala.simplenews.ui;
 
-import android.content.Context;
-import android.content.DialogInterface;
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
+import android.text.InputType;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -13,11 +12,11 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.ShareActionProvider;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.rometools.rome.feed.opml.Opml;
 import com.rometools.rome.io.impl.OPML20Generator;
 import com.rometools.rome.io.FeedException;
@@ -28,24 +27,18 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import colorpicker.ColorPickerDialog;
-import colorpicker.ColorUtils;
-import colorpicker.OnColorSelectedListener;
 import de.dala.simplenews.R;
 import de.dala.simplenews.common.Category;
 import de.dala.simplenews.database.DatabaseHandler;
-import de.dala.simplenews.utilities.BaseNavigation;
+import de.dala.simplenews.utilities.ColorChooserDialog;
 import de.dala.simplenews.utilities.ColorManager;
 import de.dala.simplenews.utilities.EmptyObservableRecyclerView;
-import de.dala.simplenews.utilities.LightAlertDialog;
 import de.dala.simplenews.utilities.OpmlConverter;
 import de.dala.simplenews.utilities.PrefUtilities;
-import de.keyboardsurfer.android.widget.crouton.Crouton;
-import de.keyboardsurfer.android.widget.crouton.Style;
 import recycler.CategoryRecyclerAdapter;
 import recycler.ChoiceModeRecyclerAdapter;
 
-public class CategorySelectionFragment extends BaseFragment implements BaseNavigation, CategoryRecyclerAdapter.OnCategoryClicked, ChoiceModeRecyclerAdapter.ChoiceModeListener {
+public class CategorySelectionFragment extends BaseFragment implements CategoryRecyclerAdapter.OnCategoryClicked, ChoiceModeRecyclerAdapter.ChoiceModeListener {
 
     private static final String CATEGORIES_KEY = "categories";
     private static final String RSS_PATH_KEY = "path";
@@ -54,8 +47,18 @@ public class CategorySelectionFragment extends BaseFragment implements BaseNavig
     private EmptyObservableRecyclerView recyclerView;
     private CategoryRecyclerAdapter adapter;
     private String rssPath;
-    private ViewGroup topView;
     private ShareActionProvider shareActionProvider;
+    private OnCategorySelectionFragmentAction mListener;
+
+    public interface OnCategorySelectionFragmentAction {
+        void onMoreClicked(Category category);
+
+        void onRSSSavedClick(Category category, String path);
+
+        void onShowClicked(Category category);
+
+        void onRestore();
+    }
 
     public CategorySelectionFragment() {
     }
@@ -70,9 +73,21 @@ public class CategorySelectionFragment extends BaseFragment implements BaseNavig
     }
 
     @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        // This makes sure that the container activity has implemented
+        // the callback interface. If not, it throws an exception
+        try {
+            mListener = (OnCategorySelectionFragmentAction) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                    + " must implement OnCategorySelectionFragmentAction");
+        }
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.category_selection, container, false);
-        topView = (ViewGroup) rootView.findViewById(R.id.topView);
         if (rssPath != null) {
             TextView topTextView = (TextView) rootView.findViewById(R.id.topTextView);
             topTextView.setText(getActivity().getString(R.string.category_add));
@@ -129,21 +144,19 @@ public class CategorySelectionFragment extends BaseFragment implements BaseNavig
                 createCategoryClicked();
                 return true;
             case R.id.restore_categories:
-                LightAlertDialog.Builder.create(getActivity()).setTitle(getActivity().getString(R.string.restore_categories_title)).setMessage(getActivity().getString(R.string.restore_categories_message))
-                        .setPositiveButton(getActivity().getString(R.string.restore_categories_yes), new DialogInterface.OnClickListener() {
+                new MaterialDialog.Builder(getActivity())
+                        .title(R.string.restore_categories_title)
+                        .content(R.string.restore_categories_message)
+                        .positiveText(R.string.restore_categories_yes)
+                        .negativeText(R.string.restore_categories_no)
+                        .callback(new MaterialDialog.ButtonCallback() {
                             @Override
-                            public void onClick(DialogInterface dialog, int which) {
+                            public void onPositive(MaterialDialog dialog) {
                                 DatabaseHandler.getInstance().removeAllCategories();
                                 PrefUtilities.getInstance().saveLoading(false);
                                 onRestore();
                             }
-                        })
-                        .setNegativeButton(getActivity().getString(R.string.restore_categories_no), new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                            }
-                        }).create().show();
+                        }).show();
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -156,127 +169,88 @@ public class CategorySelectionFragment extends BaseFragment implements BaseNavig
     }
 
     private void createCategoryClicked() {
-        final EditText input = new EditText(getActivity());
-        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
-
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                switch (which) {
-                    case DialogInterface.BUTTON_POSITIVE:
-                        String categoryName = input.getText() != null ? input.getText().toString() : "";
+        new MaterialDialog.Builder(getActivity())
+                .title(R.string.create_category_1_2)
+                .positiveText(R.string.submit)
+                .negativeText(R.string.cancel)
+                .content(R.string.name_of_category)
+                .inputType(InputType.TYPE_CLASS_TEXT)
+                .input("", "", new MaterialDialog.InputCallback() {
+                    @Override
+                    public void onInput(MaterialDialog materialDialog, CharSequence charSequence) {
+                        String categoryName = charSequence != null ? charSequence.toString() : "";
                         selectColor(categoryName);
-                        break;
-                    case DialogInterface.BUTTON_NEGATIVE:
-                        break;
-                }
-            }
-        };
-
-        LightAlertDialog.Builder.create(getActivity()).
-                setPositiveButton(getActivity().getString(R.string.submit), dialogClickListener).setNegativeButton(getActivity().getString(R.string.cancel), dialogClickListener).setTitle(getActivity().getString(R.string.create_category_1_2))
-                .setMessage(getActivity().getString(R.string.name_of_category)).setView(input).show();
+                    }
+                }).show();
     }
 
     @Override
     public void editClicked(final Category category) {
-        final EditText input = new EditText(getActivity());
-        input.setText(category.getName());
-        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
-
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                switch (which) {
-                    case DialogInterface.BUTTON_POSITIVE:
-                        String newName = input.getText() != null ? input.getText().toString() : "";
-                        category.setName(newName);
+        new MaterialDialog.Builder(getActivity())
+                .title(R.string.category)
+                .positiveText(R.string.rename)
+                .negativeText(R.string.cancel)
+                .content(R.string.change_category_name)
+                .inputType(InputType.TYPE_CLASS_TEXT)
+                .input("", category.getName(), new MaterialDialog.InputCallback() {
+                    @Override
+                    public void onInput(MaterialDialog materialDialog, CharSequence charSequence) {
+                        String categoryName = charSequence != null ? charSequence.toString() : "";
+                        category.setName(categoryName);
                         adapter.notifyDataSetChanged();
                         DatabaseHandler.getInstance().updateCategory(category);
-                        Toast.makeText(getActivity(), String.format(getActivity().getString(R.string.new_name), newName), Toast.LENGTH_SHORT).show();
-                        break;
-                    case DialogInterface.BUTTON_NEGATIVE:
-                        break;
-                }
-            }
-        };
-
-        LightAlertDialog.Builder.create(getActivity()).
-                setPositiveButton(R.string.rename, dialogClickListener).setNegativeButton(R.string.cancel, dialogClickListener).setTitle(R.string.category)
-                .setMessage(R.string.change_category_name).setView(input).show();
+                        Toast.makeText(getActivity(), String.format(getActivity().getString(R.string.new_name), categoryName), Toast.LENGTH_SHORT).show();
+                    }
+                }).show();
     }
 
-    private CategoryModifierFragment getCategoryModifierFragment() {
-        Fragment fragment = getParentFragment();
-        if (fragment instanceof CategoryModifierFragment) {
-            return (CategoryModifierFragment) fragment;
-        }
-        return null;
-    }
 
     @Override
     public void onMoreClicked(Category category) {
-        CategoryModifierFragment fragment = getCategoryModifierFragment();
-        if (fragment != null) {
-            fragment.onMoreClicked(category);
-        }
+        mListener.onMoreClicked(category);
     }
 
     @Override
     public void onRSSSavedClick(Category category, String rssPath) {
-        CategoryModifierFragment fragment = getCategoryModifierFragment();
-        if (fragment != null) {
-            fragment.onRSSSavedClick(category, rssPath);
-        }
+        mListener.onRSSSavedClick(category, rssPath);
     }
 
     @Override
     public void onShowClicked(Category category) {
-        CategoryModifierFragment fragment = getCategoryModifierFragment();
-        if (fragment != null) {
-            fragment.onShowClicked(category);
-        }
+        mListener.onShowClicked(category);
     }
 
     @Override
     public void onRestore() {
-
+        mListener.onRestore();
     }
 
 
     @Override
     public void onColorClicked(final Category category) {
-        ColorPickerDialog colorCalendar = ColorPickerDialog.newInstance(
-                category.getName(),
-                ColorUtils.colorChoice(getActivity()), category.getPrimaryColor(), 4,
-                ColorUtils.isTablet(getActivity()) ? ColorPickerDialog.SIZE_LARGE : ColorPickerDialog.SIZE_SMALL, String.format("%s %s:", getString(R.string.color_picker_default_title), category.getName()));
-        colorCalendar.setOnColorSelectedListener(new OnColorSelectedListener() {
+        new ColorChooserDialog().show(getFragmentManager(), category.getPrimaryColor(), new ColorChooserDialog.Callback() {
             @Override
-            public void onColorSelected(int color) {
+            public void onColorSelection(int index, int color, int darker) {
                 category.setColorId(ColorManager.getInstance().getIdByColor(color));
                 DatabaseHandler.getInstance().updateCategory(category);
                 adapter.notifyDataSetChanged();
             }
         });
-        colorCalendar.show(getChildFragmentManager(), "dash");
     }
 
     private void selectColor(final String categoryName) {
-        ColorPickerDialog colorCalendar = ColorPickerDialog.newInstance(
-                getString(R.string.create_category_2_2),
-                ColorUtils.colorChoice(getActivity()), 0, 4,
-                ColorUtils.isTablet(getActivity()) ? ColorPickerDialog.SIZE_LARGE : ColorPickerDialog.SIZE_SMALL, getString(R.string.select_color_create_category));
-        colorCalendar.setOnColorSelectedListener(new OnColorSelectedListener() {
+        new ColorChooserDialog().show(getFragmentManager(), -1, new ColorChooserDialog.Callback() {
+
             @Override
-            public void onColorSelected(int color) {
+            public void onColorSelection(int index, int color, int darker) {
                 Category newCategory = new Category();
                 newCategory.setName(categoryName);
                 newCategory.setColorId(ColorManager.getInstance().getIdByColor(color));
 
                 DatabaseHandler.getInstance().addCategory(newCategory, true, true);
                 adapter.add(newCategory);
-                Crouton.makeText(getActivity(), R.string.category_created, Style.CONFIRM, topView).show();
             }
         });
-        colorCalendar.show(getChildFragmentManager(), "dash");
     }
 
     private void removeSelectedCategories(List<Category> selectedCategories) {
@@ -284,20 +258,6 @@ public class CategorySelectionFragment extends BaseFragment implements BaseNavig
             adapter.remove(category);
             DatabaseHandler.getInstance().removeCategory(category.getId(), false, false);
         }
-    }
-
-    @Override
-    public String getTitle() {
-        Context context = getActivity();
-        if (context != null) {
-            return context.getString(R.string.category_selection_fragment_title);
-        }
-        return "SimpleNews"; //default
-    }
-
-    @Override
-    public int getNavigationDrawerId() {
-        return NavigationDrawerFragment.CATEGORIES;
     }
 
     private Intent getShareIntent() {

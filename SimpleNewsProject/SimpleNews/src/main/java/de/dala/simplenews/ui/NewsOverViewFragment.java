@@ -2,38 +2,23 @@ package de.dala.simplenews.ui;
 
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
-import android.animation.ValueAnimator;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.TransitionDrawable;
-import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewConfiguration;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-
-import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
-import com.github.ksoichiro.android.observablescrollview.ScrollState;
-import com.github.ksoichiro.android.observablescrollview.ScrollUtils;
-import com.github.ksoichiro.android.observablescrollview.Scrollable;
-import com.github.ksoichiro.android.observablescrollview.TouchInterceptionFrameLayout;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -47,16 +32,15 @@ import circularmenu.SubActionButton;
 import de.dala.simplenews.R;
 import de.dala.simplenews.common.Category;
 import de.dala.simplenews.database.DatabaseHandler;
-import de.dala.simplenews.utilities.BaseNavigation;
 import de.dala.simplenews.utilities.PrefUtilities;
-import de.dala.simplenews.utilities.SlidingTabLayout;
 
-public class NewsOverViewFragment extends BaseFragment implements ViewPager.OnPageChangeListener, BaseNavigation, ObservableScrollViewCallbacks {
+public class NewsOverViewFragment extends BaseFragment implements ViewPager.OnPageChangeListener {
 
-    private SlidingTabLayout tabs;
+    private TabLayout tabs;
+    private ViewPager pager;
 
     private List<Category> categories;
-    private MainActivity mainActivity;
+    private NewsActivity newsActivity;
     private int entryType = ALL;
     private FloatingActionMenu newsTypeButton;
     private MenuItem columnsMenu;
@@ -70,52 +54,6 @@ public class NewsOverViewFragment extends BaseFragment implements ViewPager.OnPa
         return newsTypeButton;
     }
 
-    ViewPager pager;
-    MyPagerAdapter adapter;
-
-    private boolean mScrolled;
-    private ScrollState mLastScrollState;
-    private TouchInterceptionFrameLayout mInterceptionLayout;
-    private int mSlop;
-
-    @Override
-    public String getTitle() {
-        Context mContext = getActivity();
-        if (mContext != null) {
-            switch (entryType) {
-                case ALL:
-                    return mContext.getString(R.string.home_title);
-                case FAV:
-                    return mContext.getString(R.string.favorite_title);
-                case RECENT:
-                    return mContext.getString(R.string.recent_title);
-                case UNREAD:
-                    return mContext.getString(R.string.unread_title);
-            }
-        }
-        return "News";
-    }
-
-    @Override
-    public int getNavigationDrawerId() {
-        switch (entryType) {
-            case ALL:
-                return NavigationDrawerFragment.HOME;
-            case FAV:
-                return NavigationDrawerFragment.FAVORITE;
-            case RECENT:
-                return NavigationDrawerFragment.RECENT;
-            case UNREAD:
-                return NavigationDrawerFragment.UNREAD;
-        }
-        return NavigationDrawerFragment.HOME;
-    }
-
-    public void onBackStackChanged() {
-        categories = DatabaseHandler.getInstance().getCategories(null, null, true);
-        Collections.sort(categories);
-        orderChanged();
-    }
 
     private ArrayList<String> newsTypeTags;
 
@@ -133,10 +71,10 @@ public class NewsOverViewFragment extends BaseFragment implements ViewPager.OnPa
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getActivity() instanceof MainActivity) {
-            this.mainActivity = (MainActivity) getActivity();
+        if (getActivity() instanceof NewsActivity) {
+            this.newsActivity = (NewsActivity) getActivity();
         } else {
-            throw new ActivityNotFoundException("MainActivity not found");
+            throw new ActivityNotFoundException("NewsActivity not found");
         }
         entryType = getArguments().getInt("entryType", ALL);
     }
@@ -234,16 +172,14 @@ public class NewsOverViewFragment extends BaseFragment implements ViewPager.OnPa
         setHasOptionsMenu(true);
         View rootView = inflater.inflate(R.layout.news_overview, container, false);
         pager = (ViewPager) rootView.findViewById(R.id.pager);
-        tabs = (SlidingTabLayout) rootView.findViewById(R.id.tabs);
-        tabs.setCustomTabView(R.layout.tab_indicator, android.R.id.text1);
-        tabs.setSelectedIndicatorColors(getResources().getColor(android.R.color.white));
+        tabs = newsActivity.getTabLayout();
 
         if (!PrefUtilities.getInstance().xmlIsAlreadyLoaded()) {
             DatabaseHandler.getInstance().loadXmlIntoDatabase(R.raw.categories);
         }
 
-        if (mainActivity != null) {
-            ActionBar ab = mainActivity.getSupportActionBar();
+        if (newsActivity != null) {
+            ActionBar ab = newsActivity.getSupportActionBar();
             if (ab != null) {
                 ab.setHomeButtonEnabled(true);
             }
@@ -255,13 +191,6 @@ public class NewsOverViewFragment extends BaseFragment implements ViewPager.OnPa
             Serializable newsTypeTagsSerializable = savedInstanceState.getSerializable("newsTypeTags");
             if (newsTypeTagsSerializable != null && newsTypeTagsSerializable instanceof ArrayList<?>) {
                 newsTypeTags = (ArrayList<String>) newsTypeTagsSerializable;
-            }
-            if (savedInstanceState.containsKey("actionbar_color_primary") && savedInstanceState.containsKey("actionbar_color_secondary")) {
-                int primary = savedInstanceState.getInt("actionbar_color_primary");
-                int secondary = savedInstanceState.getInt("actionbar_color_secondary");
-                changeColor(primary, secondary);
-            } else {
-                changeColor(getResources().getColor(android.R.color.holo_blue_bright), getResources().getColor(android.R.color.holo_blue_dark));
             }
             entryType = savedInstanceState.getInt("entryType", ALL);
             newsTypeModeChanged();
@@ -277,70 +206,23 @@ public class NewsOverViewFragment extends BaseFragment implements ViewPager.OnPa
         if (categories != null && !categories.isEmpty()) {
             initAdapterAndPager();
         }
-
-        ViewConfiguration vc = ViewConfiguration.get(mainActivity);
-        mSlop = vc.getScaledTouchSlop();
-        mInterceptionLayout = (TouchInterceptionFrameLayout) rootView.findViewById(R.id.container);
-        mInterceptionLayout.setScrollInterceptionListener(mInterceptionListener);
-
         initNewsTypeIcon();
         return rootView;
     }
 
     private void initAdapterAndPager() {
-        adapter = new MyPagerAdapter(getChildFragmentManager());
+        MyPagerAdapter adapter = new MyPagerAdapter(getChildFragmentManager());
         pager.setAdapter(adapter);
-        tabs.setViewPager(pager);
-        tabs.setOnPageChangeListener(this);
-
-        final int pageMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4, getResources()
-                .getDisplayMetrics());
-        pager.setPageMargin(pageMargin);
+        pager.addOnPageChangeListener(this);
+        tabs.setupWithViewPager(pager);
         int page = PrefUtilities.getInstance().getCategoryIndex();
         pager.setCurrentItem(page);
         onPageSelected(page);
     }
 
 
-    private Drawable oldBackgroundActivity = null;
-    private Drawable oldBackgroundTabs = null;
-    private int lastColorPrimary;
-    private int lastColorSecondary;
-
     public void changeColor(int primaryColor, int secondaryColor) {
-        ColorDrawable colorDrawableActivity = new ColorDrawable(primaryColor);
-        ColorDrawable colorDrawableTabs = new ColorDrawable(primaryColor);
-        lastColorPrimary = primaryColor;
-        lastColorSecondary = secondaryColor;
-        if (mainActivity != null) {
-            ActionBar ab = mainActivity.getSupportActionBar();
-            if (ab != null) {
-                // http://stackoverflow.com/questions/11002691/actionbar-setbackgrounddrawable-nulling-background-from-thread-handler
-                ab.setDisplayShowTitleEnabled(false);
-                ab.setDisplayShowTitleEnabled(true);
-                if (oldBackgroundActivity == null) {
-                    ab.setBackgroundDrawable(colorDrawableActivity);
-                    tabs.setBackground(colorDrawableTabs);
-                } else {
-                    TransitionDrawable tdActivity = new TransitionDrawable(new Drawable[]{oldBackgroundActivity, colorDrawableActivity});
-                    TransitionDrawable tdTabs = new TransitionDrawable(new Drawable[]{oldBackgroundTabs, colorDrawableTabs});
-                    ab.setBackgroundDrawable(tdActivity);
-                    tabs.setBackground(tdTabs);
-                    tdActivity.startTransition(400);
-                    tdTabs.startTransition(400);
-                }
-            }
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                Window window = mainActivity.getWindow();
-                window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-                window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-                window.setStatusBarColor(secondaryColor);
-            }
-            mainActivity.changeDrawerColor(primaryColor);
-        }
-        oldBackgroundActivity = colorDrawableActivity;
-        oldBackgroundTabs = colorDrawableTabs;
+        newsActivity.changeColor(primaryColor, secondaryColor);
     }
 
 
@@ -447,7 +329,6 @@ public class NewsOverViewFragment extends BaseFragment implements ViewPager.OnPa
                 mainIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_recent));
                 break;
         }
-        mainActivity.updateNavigation(getNavigationDrawerId(), getTitle());
     }
 
     @Override
@@ -464,8 +345,6 @@ public class NewsOverViewFragment extends BaseFragment implements ViewPager.OnPa
     public void onSaveInstanceState(Bundle outState) {
         outState.putSerializable("newsTypeTags", newsTypeTags);
         outState.putInt("entryType", entryType);
-        outState.putInt("actionbar_color_primary", lastColorPrimary);
-        outState.putInt("actionbar_color_secondary", lastColorSecondary);
 
         super.onSaveInstanceState(outState);
     }
@@ -553,177 +432,5 @@ public class NewsOverViewFragment extends BaseFragment implements ViewPager.OnPa
 
     @Override
     public void onPageScrollStateChanged(int i) {
-    }
-
-    @Override
-    public void onScrollChanged(int i, boolean b, boolean b1) {
-    }
-
-    @Override
-    public void onDownMotionEvent() {
-    }
-
-    @Override
-    public void onUpOrCancelMotionEvent(ScrollState scrollState) {
-        if (!mScrolled) {
-            // This event can be used only when TouchInterceptionFrameLayout
-            // doesn't handle the consecutive events.
-            adjustToolbar(scrollState);
-        }
-    }
-
-    private TouchInterceptionFrameLayout.TouchInterceptionListener mInterceptionListener = new TouchInterceptionFrameLayout.TouchInterceptionListener() {
-        @Override
-        public boolean shouldInterceptTouchEvent(MotionEvent ev, boolean moving, float diffX, float diffY) {
-            if (!mScrolled && mSlop < Math.abs(diffX) && Math.abs(diffY) < Math.abs(diffX)) {
-                // Horizontal scroll is maybe handled by ViewPager
-                return false;
-            }
-
-            Scrollable scrollable = getCurrentScrollable();
-            if (scrollable == null) {
-                mScrolled = false;
-                return false;
-            }
-
-            // If interceptionLayout can move, it should intercept.
-            // And once it begins to move, horizontal scroll shouldn't work any longer.
-            View toolbarView = getActivity().findViewById(R.id.toolbar);
-            int toolbarHeight = toolbarView.getHeight();
-            int translationY = (int) mInterceptionLayout.getTranslationY();
-            boolean scrollingUp = 0 < diffY;
-            boolean scrollingDown = diffY < 0;
-            if (scrollingUp) {
-                if (translationY < 0) {
-                    mScrolled = true;
-                    mLastScrollState = ScrollState.UP;
-                    return true;
-                }
-            } else if (scrollingDown) {
-                if (-toolbarHeight < translationY) {
-                    mScrolled = true;
-                    mLastScrollState = ScrollState.DOWN;
-                    return true;
-                }
-            }
-            mScrolled = false;
-            return false;
-        }
-
-        @Override
-        public void onDownMotionEvent(MotionEvent ev) {
-        }
-
-        @Override
-        public void onMoveMotionEvent(MotionEvent ev, float diffX, float diffY) {
-            View toolbarView = getActivity().findViewById(R.id.toolbar);
-            float translationY = ScrollUtils.getFloat(mInterceptionLayout.getTranslationY() + diffY, -toolbarView.getHeight(), 0);
-            mInterceptionLayout.setTranslationY(translationY);
-            toolbarView.setTranslationY(translationY);
-            if (translationY < 0) {
-                FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) mInterceptionLayout.getLayoutParams();
-                lp.height = (int) (-translationY + getScreenHeight());
-                mInterceptionLayout.requestLayout();
-            }
-        }
-
-        @Override
-        public void onUpOrCancelMotionEvent(MotionEvent ev) {
-            mScrolled = false;
-            adjustToolbar(mLastScrollState);
-        }
-    };
-
-    private Scrollable getCurrentScrollable() {
-        Fragment fragment = getCurrentFragment();
-        if (fragment == null) {
-            return null;
-        }
-        View view = fragment.getView();
-        if (view == null) {
-            return null;
-        }
-        return (Scrollable) view.findViewById(R.id.scroll);
-    }
-
-    private void adjustToolbar(ScrollState scrollState) {
-        View toolbarView = getActivity().findViewById(R.id.toolbar);
-        int toolbarHeight = toolbarView.getHeight();
-        final Scrollable scrollable = getCurrentScrollable();
-        if (scrollable == null) {
-            return;
-        }
-        int scrollY = scrollable.getCurrentScrollY();
-        if (scrollState == ScrollState.DOWN) {
-            showToolbar();
-        } else if (scrollState == ScrollState.UP) {
-            if (toolbarHeight <= scrollY) {
-                hideToolbar();
-            } else {
-                showToolbar();
-            }
-        } else if (!toolbarIsShown() && !toolbarIsHidden()) {
-            // Toolbar is moving but doesn't know which to move:
-            // you can change this to hideToolbar()
-            showToolbar();
-        }
-    }
-
-    private Fragment getCurrentFragment() {
-        if (pager == null || adapter == null) {
-            return null;
-        }
-        return adapter.getItem(pager.getCurrentItem());
-    }
-
-    private boolean toolbarIsShown() {
-        return mInterceptionLayout.getTranslationY() == 0;
-    }
-
-    private boolean toolbarIsHidden() {
-        View view = getView();
-        if (view == null) {
-            return false;
-        }
-        View toolbarView = getActivity().findViewById(R.id.toolbar);
-        return mInterceptionLayout.getTranslationY() == -toolbarView.getHeight();
-    }
-
-    private void showToolbar() {
-        animateToolbar(0);
-    }
-
-    private void hideToolbar() {
-        View toolbarView = getActivity().findViewById(R.id.toolbar);
-        animateToolbar(-toolbarView.getHeight());
-    }
-
-    private void animateToolbar(final float toY) {
-        float layoutTranslationY = mInterceptionLayout.getTranslationY();
-        if (layoutTranslationY != toY) {
-            ValueAnimator animator = ValueAnimator.ofFloat(layoutTranslationY, toY).setDuration(200);
-            animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                @Override
-                public void onAnimationUpdate(ValueAnimator animation) {
-                    float translationY = (float) animation.getAnimatedValue();
-                    View toolbarView = getActivity().findViewById(R.id.toolbar);
-                    mInterceptionLayout.setTranslationY(translationY);
-                    toolbarView.setTranslationY(translationY);
-                    if (translationY < 0) {
-                        FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) mInterceptionLayout.getLayoutParams();
-                        lp.height = (int) (-translationY + getScreenHeight());
-                        mInterceptionLayout.requestLayout();
-                    }
-                }
-            });
-            animator.start();
-        }
-    }
-
-    protected int getScreenHeight() {
-        if (mainActivity == null) {
-            return 0;
-        }
-        return mainActivity.findViewById(android.R.id.content).getHeight();
     }
 }

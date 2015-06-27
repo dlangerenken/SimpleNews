@@ -2,7 +2,6 @@ package de.dala.simplenews.ui;
 
 import android.app.ActionBar;
 import android.app.Activity;
-import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -15,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.rometools.rome.feed.WireFeed;
 import com.rometools.rome.feed.opml.Opml;
@@ -28,13 +28,10 @@ import java.util.List;
 
 import de.dala.simplenews.R;
 import de.dala.simplenews.common.Feed;
-import de.dala.simplenews.utilities.BaseNavigation;
 import de.dala.simplenews.utilities.OpmlConverter;
 import de.dala.simplenews.utilities.Utilities;
-import de.keyboardsurfer.android.widget.crouton.Crouton;
-import de.keyboardsurfer.android.widget.crouton.Style;
 
-public class OpmlImportFragment extends BaseFragment implements BaseNavigation {
+public class OpmlImportFragment extends BaseFragment  {
 
     private OnFeedsLoaded parent;
     private Button importButton;
@@ -68,11 +65,13 @@ public class OpmlImportFragment extends BaseFragment implements BaseNavigation {
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        Fragment newsFragment = getParentFragment();
-        if (newsFragment != null && newsFragment instanceof OnFeedsLoaded) {
-            this.parent = (OnFeedsLoaded) newsFragment;
-        } else {
-            throw new ClassCastException("ParentFragment is not of type OnFeedsLoaded");
+        // This makes sure that the container activity has implemented
+        // the callback interface. If not, it throws an exception
+        try {
+            parent = (OnFeedsLoaded) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                    + " must implement OnHeadlineSelectedListener");
         }
     }
 
@@ -189,7 +188,7 @@ public class OpmlImportFragment extends BaseFragment implements BaseNavigation {
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
             if (s == null) {
-                Crouton.makeText(getActivity(), getActivity().getString(R.string.not_valid_url_nor_opml_file), Style.ALERT).show();
+                Toast.makeText(getActivity(), getActivity().getString(R.string.not_valid_url_nor_opml_file), Toast.LENGTH_SHORT).show();
             }
             enableProgressView(false);
         }
@@ -199,20 +198,6 @@ public class OpmlImportFragment extends BaseFragment implements BaseNavigation {
     private void enableProgressView(boolean progress) {
         importButton.setVisibility(progress ? View.INVISIBLE : View.VISIBLE);
         importProgres.setVisibility(progress ? View.VISIBLE : View.INVISIBLE);
-    }
-
-    @Override
-    public String getTitle() {
-        Context mContext = getActivity();
-        if (mContext != null) {
-            return mContext.getString(R.string.opml_import_fragment_title);
-        }
-        return "SimpleNews"; //should not be called
-    }
-
-    @Override
-    public int getNavigationDrawerId() {
-        return NavigationDrawerFragment.IMPORT;
     }
 
     public interface OnFeedsLoaded {

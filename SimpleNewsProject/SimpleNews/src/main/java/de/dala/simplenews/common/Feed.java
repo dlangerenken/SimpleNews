@@ -104,6 +104,9 @@ public class Feed implements Serializable, Comparable<Feed> {
         if (another == null){
             return 1;
         }
+        if (title == null){
+            return -1;
+        }
         return getTitle().compareTo(another.getTitle());
     }
 }

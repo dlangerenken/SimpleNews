@@ -1,0 +1,9 @@
+<preference-headers
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <header android:fragment="de.dala.simplenews.ui.PrefFragment"
+        android:icon="@android:drawable/ic_menu_preferences"
+        android:title="Title"
+        android:summary="Summary" />
+
+</preference-headers>

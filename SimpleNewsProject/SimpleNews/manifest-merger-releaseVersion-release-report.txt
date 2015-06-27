@@ -40,7 +40,7 @@ MERGED from com.android.support:support-v4:21.0.3:16:5
 		ADDED from AndroidManifest.xml:14:9
 	android:name
 		ADDED from AndroidManifest.xml:10:9
-activity#de.dala.simplenews.ui.MainActivity
+activity#de.dala.simplenews.ui.NewsActivity
 ADDED from AndroidManifest.xml:15:9
 	android:label
 		ADDED from AndroidManifest.xml:18:13

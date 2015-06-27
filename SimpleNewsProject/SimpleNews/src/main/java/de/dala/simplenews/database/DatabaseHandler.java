@@ -30,7 +30,7 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
     /**
      * Database Name and Version
      */
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 1;
     public static final String DATABASE_NAME = "simple_db";
 
     /**
@@ -69,7 +69,6 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
     public static final String ENTRY_VISIBLE = "visible";
     public static final String ENTRY_VISITED_DATE = "visited";
     public static final String ENTRY_FAVORITE_DATE = "favorite";
-    public static final String ENTRY_DOWNLOAD_DATE = "download";
     public static final String ENTRY_IS_EXPANDED = "expanded";
 
     private static SQLiteDatabase db;
@@ -164,7 +163,6 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
                 + ENTRY_VISIBLE + " INTEGER,"
                 + ENTRY_VISITED_DATE + " LONG,"
                 + ENTRY_FAVORITE_DATE + " LONG,"
-                + ENTRY_DOWNLOAD_DATE + " LONG,"
                 + ENTRY_IS_EXPANDED + " INTEGER" + ");";
         db.execSQL(createCategoryTable);
         db.execSQL(createFeedTable);

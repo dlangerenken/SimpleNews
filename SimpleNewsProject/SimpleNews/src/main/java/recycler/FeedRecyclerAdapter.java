@@ -1,16 +1,18 @@
 package recycler;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.GravityEnum;
+import com.afollestad.materialdialogs.MaterialDialog;
 
 import java.util.List;
 
@@ -18,10 +20,9 @@ import de.dala.simplenews.R;
 import de.dala.simplenews.common.Category;
 import de.dala.simplenews.common.Feed;
 import de.dala.simplenews.database.DatabaseHandler;
-import de.dala.simplenews.utilities.LightAlertDialog;
 import de.dala.simplenews.utilities.UpdatingFeedTask;
 
-public class FeedRecyclerAdapter extends ChoiceModeRecyclerAdapter<FeedRecyclerAdapter.FeedViewHolder, Feed> implements UpdatingFeedTask.UpdatingFeedListener {
+public class FeedRecyclerAdapter extends ChoiceModeRecyclerAdapter<FeedRecyclerAdapter.FeedViewHolder, Feed> {
 
     private Activity mContext;
     private Category mCategory;
@@ -111,34 +112,52 @@ public class FeedRecyclerAdapter extends ChoiceModeRecyclerAdapter<FeedRecyclerA
     }
 
     private void editClicked(final Feed feed) {
-        final View view = LayoutInflater.from(mContext).inflate(R.layout.check_valid_rss_dialog, null);
-        final ViewGroup inputLayout = (ViewGroup) view.findViewById(R.id.inputLayout);
-        final View progress = view.findViewById(R.id.m_progress);
-        final Button positive = (Button) inputLayout.findViewById(R.id.positive);
-        final Button negative = (Button) inputLayout.findViewById(R.id.negative);
-        final EditText input = (EditText) inputLayout.findViewById(R.id.input);
+        MaterialDialog dialog = new MaterialDialog.Builder(mContext)
+                .title(R.string.rename_feed)
+                .contentGravity(GravityEnum.CENTER)
+                .positiveText(R.string.ok)
+                .negativeText(R.string.cancel)
+                .input(R.string.hint_add_entry, 0, new MaterialDialog.InputCallback() {
 
-        final AlertDialog dialog = LightAlertDialog.Builder.create(mContext).setView(view).setTitle(R.string.rename_feed).create();
+                    @Override
+                    public void onInput(final MaterialDialog materialDialog, CharSequence charSequence) {
+                        final View positive = materialDialog.getActionButton(DialogAction.POSITIVE);
+                        final View negative = materialDialog.getActionButton(DialogAction.NEGATIVE);
+                        UpdatingFeedTask feedTask = new UpdatingFeedTask(mContext, mCategory, new UpdatingFeedTask.UpdatingFeedListener() {
+                            @Override
+                            public void success(Feed feed) {
+                                materialDialog.dismiss();
+                                positive.setEnabled(true);
+                                negative.setEnabled(true);
+                                add(feed);
+                            }
 
-        input.setText(feed.getXmlUrl());
-        View.OnClickListener dialogClickListener = new View.OnClickListener() {
+                            @Override
+                            public void loading() {
+                                positive.setEnabled(false);
+                                negative.setEnabled(false);
+                            }
 
-            @Override
-            public void onClick(View clickedView) {
-                switch (clickedView.getId()) {
-                    case R.id.positive:
-                        new UpdatingFeedTask(mContext, view, inputLayout, progress, dialog,
-                                feed.getId(), FeedRecyclerAdapter.this, mCategory).execute(input.getText().toString());
-                        break;
-                    case R.id.negative:
-                        dialog.dismiss();
-                        break;
-                }
-            }
-        };
-
-        positive.setOnClickListener(dialogClickListener);
-        negative.setOnClickListener(dialogClickListener);
+                            @Override
+                            public void fail() {
+                                positive.setEnabled(true);
+                                negative.setEnabled(true);
+                            }
+                        }, feed.getId());
+                        feedTask.execute(charSequence.toString());
+                    }
+                })
+                .callback(new MaterialDialog.ButtonCallback() {
+                    @Override
+                    public void onNegative(MaterialDialog dialog) {
+                        dialog.cancel();
+                    }
+                })
+                .autoDismiss(false).build();
+        EditText text = dialog.getInputEditText();
+        if (text != null) {
+            text.setText(feed.getXmlUrl());
+        }
         dialog.show();
     }
 
@@ -147,15 +166,5 @@ public class FeedRecyclerAdapter extends ChoiceModeRecyclerAdapter<FeedRecyclerA
         for (Feed feed : selectedFeeds) {
             DatabaseHandler.getInstance().removeFeeds(null, feed.getId(), false);
         }
-    }
-
-    @Override
-    public void onFeedLoaded(Feed feed) {
-        add(feed);
-    }
-
-    @Override
-    public void onFeedUpdated(Feed feed) {
-        update(feed);
     }
 }

@@ -77,9 +77,7 @@ public class XmlParser {
      * @throws Exception if categories.xml or custom file is not found or if there are errors on parsing
      */
     public News readDefaultNewsFile(int xml) throws XmlPullParserException, IOException {
-
         News news = null;
-
         try {
             InputStream is;
 
@@ -124,9 +122,7 @@ public class XmlParser {
      * @param news
      */
     protected void readNews(XmlPullParser parser, News news) throws XmlPullParserException, IOException {
-
         if (parser == null || news == null) return;
-
         // Parse changelog node
         parser.require(XmlPullParser.START_TAG, null, TAG_NEWS);
         Log.d(TAG, "Processing main tag=");
@@ -169,7 +165,7 @@ public class XmlParser {
         }catch (IllegalArgumentException e) {
             // Unknown color, try to parse it as integer
             try {
-                category.setColorId(ColorManager.getInstance().getColorById(Integer.parseInt(color)));
+                category.setColorId(Integer.parseInt(color));
             } catch (NumberFormatException ne) {
                 // not a number, set default value
                 category.setColorId(0);
