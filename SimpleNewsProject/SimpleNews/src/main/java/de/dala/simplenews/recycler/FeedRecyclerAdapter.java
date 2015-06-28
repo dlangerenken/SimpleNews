@@ -1,4 +1,4 @@
-package recycler;
+package de.dala.simplenews.recycler;
 
 import android.app.Activity;
 import android.support.v7.widget.RecyclerView;
@@ -47,7 +47,7 @@ public class FeedRecyclerAdapter extends ChoiceModeRecyclerAdapter<FeedRecyclerA
             @Override
             public boolean onLongClick(View v) {
                 toggle(feed);
-                return false;
+                return true;
             }
         });
         holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -56,9 +56,7 @@ public class FeedRecyclerAdapter extends ChoiceModeRecyclerAdapter<FeedRecyclerA
                 toggleIfActionMode(feed);
             }
         });
-        holder.itemView.setBackgroundResource(R.drawable.card_background_white);
-        int pad = mContext.getResources().getDimensionPixelSize(R.dimen.card_layout_padding);
-        holder.itemView.setPadding(pad, pad, pad, pad);
+        holder.itemView.setBackgroundResource(R.color.list_background);
     }
 
     @Override
@@ -70,7 +68,7 @@ public class FeedRecyclerAdapter extends ChoiceModeRecyclerAdapter<FeedRecyclerA
     @Override
     void onBindSelectedViewHolder(FeedViewHolder holder, int position) {
         onBindNormalViewHolder(holder, position);
-        holder.itemView.setBackgroundResource(R.drawable.card_background_blue);
+        holder.itemView.setBackgroundResource(R.color.list_background_selected);
     }
 
     class FeedViewHolder extends RecyclerView.ViewHolder {

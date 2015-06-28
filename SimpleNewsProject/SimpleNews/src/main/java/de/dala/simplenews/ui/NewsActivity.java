@@ -21,7 +21,6 @@ public class NewsActivity extends BaseActivity {
         if (actionBar != null) {
             actionBar.setHomeButtonEnabled(true);
             actionBar.setDisplayShowCustomEnabled(true);
-            actionBar.setTitle(getString(R.string.simple_news_title));
         }
 
         RateMyApp.appLaunched(this);

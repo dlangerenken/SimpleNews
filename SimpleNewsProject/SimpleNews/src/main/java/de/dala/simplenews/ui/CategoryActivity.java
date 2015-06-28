@@ -48,7 +48,6 @@ public class CategoryActivity extends BaseActivity implements CategorySelectionF
         t.replace(R.id.container, fragment).commit();
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(android.view.Menu menu) {
         getMenuInflater().inflate(R.menu.category, menu);

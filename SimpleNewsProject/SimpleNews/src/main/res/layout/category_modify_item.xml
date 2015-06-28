@@ -1,73 +1,94 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="5dp"
-    android:orientation="horizontal">
+    android:orientation="vertical"
+    tools:background="@android:color/white">
 
-    <de.dala.simplenews.utilities.GripView
-        android:id="@+id/drag"
-        android:layout_width="35dp"
-        android:layout_height="35dp"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:paddingBottom="4dp"
-        android:paddingLeft="8dp"
-        android:paddingRight="8dp"
-        android:paddingTop="4dp" />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingBottom="12dp"
+        android:paddingEnd="5dp"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        android:paddingStart="5dp"
+        android:paddingTop="12dp">
 
-    <ImageView
-        android:id="@+id/color"
-        android:layout_marginLeft="3dp"
-        android:layout_marginStart="3dp"
-        android:layout_width="25dp"
-        android:layout_height="25dp"
-        android:layout_centerInParent="true"
-        android:layout_toEndOf="@id/drag"
-        android:layout_toRightOf="@id/drag"
-        tools:background="@android:color/holo_red_light" />
+        <de.dala.simplenews.utilities.GripView
+            android:id="@+id/drag"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:paddingBottom="4dp"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:paddingTop="4dp" />
 
-    <TextView
-        android:id="@+id/name"
-        tools:text="International"
-        android:layout_width="wrap_content"
-        android:layout_height="35dp"
-        android:gravity="center_vertical"
-        android:layout_marginLeft="5dp"
-        android:layout_marginStart="5dp"
-        android:layout_toEndOf="@id/color"
-        android:layout_toRightOf="@id/color"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+        <ImageView
+            android:id="@+id/color"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_centerInParent="true"
+            android:layout_marginLeft="3dp"
+            android:layout_marginStart="3dp"
+            android:layout_toEndOf="@id/drag"
+            android:layout_toRightOf="@id/drag"
+            android:contentDescription="@null"
+            tools:background="@android:color/holo_red_light" />
 
-    <CheckBox
-        android:id="@+id/show"
-        android:layout_width="35dp"
-        android:layout_height="35dp"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:background="@drawable/checkbox_visible_drawable"
-        android:button="@null"
-        android:focusable="false" />
+        <TextView
+            android:id="@+id/name"
+            android:layout_width="wrap_content"
+            android:layout_height="35dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginStart="5dp"
+            android:layout_toEndOf="@id/color"
+            android:layout_toRightOf="@id/color"
+            android:gravity="center_vertical"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            tools:text="International" />
 
-    <ImageView
-        android:id="@+id/more"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:layout_gravity="center"
-        android:layout_marginLeft="5dp"
-        android:layout_marginRight="5dp"
-        android:layout_toLeftOf="@id/show"
-        android:layout_toStartOf="@id/show"
-        android:background="@drawable/ic_overflow" />
+        <CheckBox
+            android:id="@+id/show"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:focusable="false" />
+        <!--android:background="@drawable/checkbox_visible_drawable"
+        android:button="@null"-->
 
-    <ImageView
-        android:id="@+id/edit"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:layout_gravity="center"
-        android:layout_toLeftOf="@id/more"
-        android:layout_toStartOf="@id/more"
-        android:background="@drawable/ic_editing" />
-</RelativeLayout>
+        <ImageView
+            android:id="@+id/more"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_toLeftOf="@id/show"
+            android:layout_toStartOf="@id/show"
+            android:background="@drawable/ic_overflow"
+            android:contentDescription="@null" />
+
+        <ImageView
+            android:id="@+id/edit"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center"
+            android:layout_toLeftOf="@id/more"
+            android:layout_toStartOf="@id/more"
+            android:background="@drawable/ic_editing"
+            android:contentDescription="@null" />
+    </RelativeLayout>
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/holo_gray_light" />
+</LinearLayout>

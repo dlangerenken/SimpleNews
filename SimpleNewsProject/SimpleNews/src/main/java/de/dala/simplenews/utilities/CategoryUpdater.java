@@ -21,7 +21,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -40,7 +39,6 @@ public class CategoryUpdater {
 
     public static final int ERROR = -1;
     public static final int CANCEL = -2;
-    public static final int STATUS_CHANGED = 3;
     public static final int RESULT = 4;
     public static final int PART_RESULT = 5;
 
@@ -215,6 +213,8 @@ public class CategoryUpdater {
         protected void onPreExecute() {
             super.onPreExecute();
             startTime = new Date().getTime();
+            finishedUpdates = 0;
+            newEntries = 0;
         }
 
         @Override
@@ -223,12 +223,9 @@ public class CategoryUpdater {
                 sendMessage(null, CANCEL);
                 return null;
             }
-            finishedUpdates = 0;
-            newEntries = 0;
-            String msg = context != null ? context.getString(R.string.update_news) : "";
-            sendMessage(msg, STATUS_CHANGED);
             if (category.getFeeds().size() == 0) {
                 sendMessage(context.getString(R.string.no_feeds_found), ERROR);
+                return null;
             }
 
             List<Entry> entries = new ArrayList<>();
@@ -248,10 +245,7 @@ public class CategoryUpdater {
                     }
                     getNewItems(receivedEntries);
                 }
-            } catch (InterruptedException e) {
-                sendMessage(null, CANCEL);
-                return null;
-            } catch (ExecutionException e) {
+            } catch (Exception e) {
                 sendMessage(null, CANCEL);
                 return null;
             }

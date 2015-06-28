@@ -4,17 +4,17 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@android:color/white"
-    android:orientation="vertical"
-    android:padding="7dp">
+    android:orientation="vertical">
 
     <LinearLayout
-        android:id="@+id/card_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="vertical"
+        android:padding="7dp">
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:id="@+id/card_title"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
@@ -54,21 +54,14 @@
                 tools:textColor="@android:color/holo_red_light" />
         </LinearLayout>
 
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/card_content"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="3dp"
-        android:orientation="vertical"
-        android:visibility="gone"
-        tools:visibility="visible">
-
         <LinearLayout
+            android:id="@+id/card_content"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:layout_marginTop="3dp"
+            android:orientation="horizontal"
+            android:visibility="gone"
+            tools:visibility="visible">
 
             <View
                 android:id="@+id/color_border"
@@ -92,7 +85,11 @@
 
             </LinearLayout>
         </LinearLayout>
-
-
     </LinearLayout>
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/holo_gray_light" />
 </LinearLayout>

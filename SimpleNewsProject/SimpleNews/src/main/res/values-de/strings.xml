@@ -114,7 +114,8 @@
     <string name="pref_fragment_title">Einstellungen</string>
 
 
+    <string name="title_activity_opml">Opml</string>
     <string name="thanks">Vielen Dank!</string>
     <string name="exception">Oops! Da ist etwas schief gelaufen!</string>
-    <string name="menu_opml">Opml Import/Export</string>
+    <string name="menu_opml">OPML</string>
 </resources>

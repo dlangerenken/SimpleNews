@@ -1,4 +1,4 @@
-package recycler;
+package de.dala.simplenews.recycler;
 
 import android.support.v7.widget.RecyclerView;
 import android.support.v4.view.ViewCompat;

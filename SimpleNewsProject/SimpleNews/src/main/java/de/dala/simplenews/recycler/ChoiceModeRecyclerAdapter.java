@@ -1,4 +1,4 @@
-package recycler;
+package de.dala.simplenews.recycler;
 
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
@@ -51,9 +51,6 @@ public abstract class ChoiceModeRecyclerAdapter<VH extends RecyclerView.ViewHold
         for (int i = 0; i < mSelectedPositions.size(); i++) {
             if (mSelectedPositions.valueAt(i)) {
                 setSelectionMode(true);
-                if (mListener != null) {
-                    mListener.updateSelectionMode(mSelectedPositions.size());
-                }
                 return;
             }
         }
@@ -74,6 +71,19 @@ public abstract class ChoiceModeRecyclerAdapter<VH extends RecyclerView.ViewHold
             }
         }
         mInSelectionMode = selectionMode;
+        if (mListener != null) {
+            mListener.updateSelectionMode(getSelectedPositionsSize());
+        }
+    }
+
+    private int getSelectedPositionsSize() {
+        int sum = 0;
+        for (int i = 0; i < mSelectedPositions.size(); i++) {
+            if (mSelectedPositions.valueAt(i)) {
+                sum++;
+            }
+        }
+        return sum;
     }
 
     public boolean isInSelectionMode() {

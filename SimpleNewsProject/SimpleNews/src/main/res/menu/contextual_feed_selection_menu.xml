@@ -6,11 +6,11 @@
         android:id="@+id/menu_item_remove"
         android:icon="@android:drawable/ic_menu_delete"
         app:showAsAction="ifRoom"
-        android:title="@string/feed_selection_remove"></item>
+        android:title="@string/feed_selection_remove"/>
     <item
         android:id="@+id/menu_item_share"
         android:title="@string/selection_share"
-        app:actionProviderClass="android.widget.ShareActionProvider"
+        app:actionProviderClass="android.support.v7.widget.ShareActionProvider"
         app:showAsAction="ifRoom" />
 
 </menu>

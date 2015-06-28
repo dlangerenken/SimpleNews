@@ -18,8 +18,8 @@ import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.rometools.rome.feed.opml.Opml;
-import com.rometools.rome.io.impl.OPML20Generator;
 import com.rometools.rome.io.FeedException;
+import com.rometools.rome.io.impl.OPML20Generator;
 
 import org.jdom2.output.XMLOutputter;
 
@@ -30,25 +30,29 @@ import java.util.List;
 import de.dala.simplenews.R;
 import de.dala.simplenews.common.Category;
 import de.dala.simplenews.database.DatabaseHandler;
+import de.dala.simplenews.recycler.CategoryRecyclerAdapter;
+import de.dala.simplenews.recycler.ChoiceModeRecyclerAdapter;
 import de.dala.simplenews.utilities.ColorChooserDialog;
 import de.dala.simplenews.utilities.ColorManager;
 import de.dala.simplenews.utilities.EmptyObservableRecyclerView;
+import de.dala.simplenews.utilities.Movement;
 import de.dala.simplenews.utilities.OpmlConverter;
 import de.dala.simplenews.utilities.PrefUtilities;
-import recycler.CategoryRecyclerAdapter;
-import recycler.ChoiceModeRecyclerAdapter;
 
 public class CategorySelectionFragment extends BaseFragment implements CategoryRecyclerAdapter.OnCategoryClicked, ChoiceModeRecyclerAdapter.ChoiceModeListener {
 
     private static final String CATEGORIES_KEY = "categories";
     private static final String RSS_PATH_KEY = "path";
-    private ActionMode mActionMode;
+
     private List<Category> categories;
     private EmptyObservableRecyclerView recyclerView;
     private CategoryRecyclerAdapter adapter;
+
     private String rssPath;
+    private ActionMode mActionMode;
     private ShareActionProvider shareActionProvider;
     private OnCategorySelectionFragmentAction mListener;
+
 
     public interface OnCategorySelectionFragmentAction {
         void onMoreClicked(Category category);
@@ -75,8 +79,6 @@ public class CategorySelectionFragment extends BaseFragment implements CategoryR
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        // This makes sure that the container activity has implemented
-        // the callback interface. If not, it throws an exception
         try {
             mListener = (OnCategorySelectionFragmentAction) activity;
         } catch (ClassCastException e) {
@@ -95,6 +97,7 @@ public class CategorySelectionFragment extends BaseFragment implements CategoryR
         }
         recyclerView = (EmptyObservableRecyclerView) rootView.findViewById(R.id.listView);
         recyclerView.setLayoutManager(new LinearLayoutManager(inflater.getContext()));
+        recyclerView.setHasFixedSize(true);
         initAdapter();
         return rootView;
     }
@@ -166,6 +169,7 @@ public class CategorySelectionFragment extends BaseFragment implements CategoryR
         Collections.sort(categories);
         adapter = new CategoryRecyclerAdapter(getActivity(), categories, rssPath, this, this);
         recyclerView.setAdapter(adapter);
+        adapter.initTouch(recyclerView);
     }
 
     private void createCategoryClicked() {
@@ -197,13 +201,35 @@ public class CategorySelectionFragment extends BaseFragment implements CategoryR
                     public void onInput(MaterialDialog materialDialog, CharSequence charSequence) {
                         String categoryName = charSequence != null ? charSequence.toString() : "";
                         category.setName(categoryName);
-                        adapter.notifyDataSetChanged();
+                        adapter.update(category);
                         DatabaseHandler.getInstance().updateCategory(category);
                         Toast.makeText(getActivity(), String.format(getActivity().getString(R.string.new_name), categoryName), Toast.LENGTH_SHORT).show();
                     }
                 }).show();
     }
 
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        saveMovement(adapter.getMovements());
+    }
+
+    @Override
+    public void saveMovement(List<Movement> movements) {
+        if (movements != null) {
+            for (Movement movement : movements) {
+                Category from = adapter.get(movement.from);
+                Category to = adapter.get(movement.to);
+                from.setOrder(movement.from);
+                to.setOrder(movement.to);
+            }
+            for (Category category : adapter.getItems()) {
+                DatabaseHandler.getInstance().updateCategory(category);
+            }
+            movements.clear();
+        }
+    }
 
     @Override
     public void onMoreClicked(Category category) {
@@ -233,7 +259,7 @@ public class CategorySelectionFragment extends BaseFragment implements CategoryR
             public void onColorSelection(int index, int color, int darker) {
                 category.setColorId(ColorManager.getInstance().getIdByColor(color));
                 DatabaseHandler.getInstance().updateCategory(category);
-                adapter.notifyDataSetChanged();
+                adapter.update(category);
             }
         });
     }
@@ -321,7 +347,6 @@ public class CategorySelectionFragment extends BaseFragment implements CategoryR
         public void onDestroyActionMode(ActionMode mode) {
             adapter.clearSelections();
         }
-
-
     }
+
 }

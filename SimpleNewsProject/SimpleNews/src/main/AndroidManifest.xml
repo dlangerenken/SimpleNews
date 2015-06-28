@@ -12,7 +12,7 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".ui.NewsActivity"
-            android:label="@string/app_name">
+            android:label="@string/simple_news_title">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -59,10 +59,10 @@
             android:label="@string/title_activity_opml" />
         <activity
             android:name=".ui.CategoryActivity"
-            android:label="@string/title_activity_category" />
+            android:label="@string/categories" />
         <activity
             android:name=".ui.SettingsActivity"
-            android:label="@string/title_activity_settings" />
+            android:label="@string/pref_fragment_title" />
     </application>
 
 </manifest>

@@ -101,12 +101,28 @@ public class Feed implements Serializable, Comparable<Feed> {
 
     @Override
     public int compareTo(Feed another) {
-        if (another == null){
+        if (another == null) {
             return 1;
         }
-        if (title == null){
+        if (title == null) {
             return -1;
         }
         return getTitle().compareTo(another.getTitle());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Feed feed = (Feed) o;
+
+        return !(xmlUrl != null ? !xmlUrl.equals(feed.xmlUrl) : feed.xmlUrl != null);
+
+    }
+
+    @Override
+    public int hashCode() {
+        return xmlUrl != null ? xmlUrl.hashCode() : 0;
     }
 }

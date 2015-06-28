@@ -5,8 +5,6 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
 import android.os.Build;
-import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -15,7 +13,6 @@ import android.view.Window;
 import android.view.WindowManager;
 
 import de.dala.simplenews.R;
-import de.dala.simplenews.common.News;
 import de.dala.simplenews.utilities.ColorManager;
 import de.dala.simplenews.utilities.PrefUtilities;
 
@@ -30,12 +27,12 @@ public class BaseActivity extends AppCompatActivity {
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
         setLastColor();
 
-        if (!(this instanceof NewsActivity)) {
-            ActionBar actionBar = getSupportActionBar();
-            if (actionBar != null) {
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setTitle(getTitle());
+            if (!(this instanceof NewsActivity)) {
                 actionBar.setDisplayHomeAsUpEnabled(true);
                 actionBar.setDisplayShowCustomEnabled(true);
-                actionBar.setTitle(getString(R.string.simple_news_title));
             }
         }
     }
@@ -105,9 +102,6 @@ public class BaseActivity extends AppCompatActivity {
                 intent = new Intent(BaseActivity.this, SettingsActivity.class);
                 startActivity(intent);
                 return true;
-            case R.id.action_rate:
-                RateMyApp.showRateDialog(this);
-                break;
             case android.R.id.home:
                 onBackPressed();
                 break;

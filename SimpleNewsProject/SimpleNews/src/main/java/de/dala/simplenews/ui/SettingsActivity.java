@@ -16,5 +16,4 @@ public class SettingsActivity extends BaseActivity {
         t.replace(R.id.container, PrefFragment.getInstance());
         t.commit();
     }
-
 }

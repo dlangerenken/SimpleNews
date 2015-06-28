@@ -23,9 +23,9 @@ import de.dala.simplenews.common.Category;
 import de.dala.simplenews.common.Feed;
 import de.dala.simplenews.database.DatabaseHandler;
 import de.dala.simplenews.utilities.EmptyObservableRecyclerView;
-import recycler.CategoryAssignRecyclerAdapter;
-import recycler.ChoiceModeRecyclerAdapter;
-import recycler.OpmlRecyclerAdapter;
+import de.dala.simplenews.recycler.CategoryAssignRecyclerAdapter;
+import de.dala.simplenews.recycler.ChoiceModeRecyclerAdapter;
+import de.dala.simplenews.recycler.OpmlRecyclerAdapter;
 
 public class OpmlAssignFragment extends BaseFragment implements ChoiceModeRecyclerAdapter.ChoiceModeListener {
 

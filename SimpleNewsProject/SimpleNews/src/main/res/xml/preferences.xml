@@ -22,5 +22,6 @@
             android:key="deprecated_time"
             android:summary="@string/remove_old_entries_summary"
             android:title="@string/remove_old_entries_title" />
+
     </PreferenceCategory>
 </PreferenceScreen>

@@ -37,9 +37,9 @@ import de.dala.simplenews.database.DatabaseHandler;
 import de.dala.simplenews.utilities.CategoryUpdater;
 import de.dala.simplenews.utilities.EmptyObservableRecyclerView;
 import de.dala.simplenews.utilities.PrefUtilities;
-import recycler.ChoiceModeRecyclerAdapter;
-import recycler.ExpandableItemRecyclerAdapter;
-import recycler.FadeInUpAnimator;
+import de.dala.simplenews.recycler.ChoiceModeRecyclerAdapter;
+import de.dala.simplenews.recycler.ExpandableItemRecyclerAdapter;
+import de.dala.simplenews.recycler.FadeInUpAnimator;
 
 
 public class ExpandableNewsFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener, ExpandableItemRecyclerAdapter.ItemClickListener, ChoiceModeRecyclerAdapter.ChoiceModeListener {
@@ -194,12 +194,12 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
 
     private void initCardsAdapter() {
         mLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
-        if (mRecyclerView != null) {
-            mExpandableItemRecyclerAdapter = new ExpandableItemRecyclerAdapter(new ArrayList<Entry>(), category, getActivity(), this, mRecyclerView, this);
-            mRecyclerView.setLayoutManager(mLayoutManager);
-            mRecyclerView.setItemAnimator(new FadeInUpAnimator());
-            mRecyclerView.setAdapter(mExpandableItemRecyclerAdapter);
-        }
+        assert mRecyclerView != null;
+        mExpandableItemRecyclerAdapter = new ExpandableItemRecyclerAdapter(new ArrayList<Entry>(), category, getActivity(), this, mRecyclerView, this);
+        mRecyclerView.setLayoutManager(mLayoutManager);
+        mRecyclerView.setItemAnimator(new FadeInUpAnimator());
+        mRecyclerView.setAdapter(mExpandableItemRecyclerAdapter);
+        mRecyclerView.setHasFixedSize(true);
         updateColumnCount();
     }
 
@@ -379,8 +379,6 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
                         if (msg.obj != null) {
                             fragment.receivePartResult((List<Entry>) msg.obj);
                         }
-                        break;
-                    case CategoryUpdater.STATUS_CHANGED:
                         break;
                     case CategoryUpdater.ERROR:
                         fragment.updateFinished(false, null);

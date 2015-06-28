@@ -112,7 +112,8 @@
     <string name="pref_fragment_title">"Preferències"</string>
 
 
+    <string name="title_activity_opml">Opml</string>
     <string name="thanks">Thank you!</string>
     <string name="exception">Oops! Something went wrong!</string>
-    <string name="menu_opml">Opml Import/Export</string>
+    <string name="menu_opml">OPML</string>
 </resources>

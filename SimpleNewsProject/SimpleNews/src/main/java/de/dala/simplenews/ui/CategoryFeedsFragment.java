@@ -2,6 +2,7 @@ package de.dala.simplenews.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -13,7 +14,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ShareActionProvider;
+import android.support.v7.widget.ShareActionProvider;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.GravityEnum;
@@ -31,8 +32,8 @@ import de.dala.simplenews.common.Category;
 import de.dala.simplenews.common.Feed;
 import de.dala.simplenews.utilities.OpmlConverter;
 import de.dala.simplenews.utilities.UpdatingFeedTask;
-import recycler.ChoiceModeRecyclerAdapter;
-import recycler.FeedRecyclerAdapter;
+import de.dala.simplenews.recycler.ChoiceModeRecyclerAdapter;
+import de.dala.simplenews.recycler.FeedRecyclerAdapter;
 
 public class CategoryFeedsFragment extends BaseFragment implements ChoiceModeRecyclerAdapter.ChoiceModeListener {
 
@@ -221,18 +222,17 @@ public class CategoryFeedsFragment extends BaseFragment implements ChoiceModeRec
             mode.getMenuInflater().inflate(R.menu.contextual_feed_selection_menu, menu);
             MenuItem item = menu.findItem(R.id.menu_item_share);
             if (item != null) {
-                shareActionProvider = (ShareActionProvider) item.getActionProvider();
-                if (shareActionProvider != null) {
-                    String shareHistoryFileName = ShareActionProvider.DEFAULT_SHARE_HISTORY_FILE_NAME;
-                    shareActionProvider.setShareHistoryFileName(shareHistoryFileName);
-                    shareActionProvider.setShareIntent(getShareIntent());
-                    shareActionProvider.setOnShareTargetSelectedListener(new ShareActionProvider.OnShareTargetSelectedListener() {
-                        @Override
-                        public boolean onShareTargetSelected(ShareActionProvider shareActionProvider, Intent intent) {
-                            return false;
-                        }
-                    });
-                }
+                shareActionProvider = new ShareActionProvider(getActivity());
+                String shareHistoryFileName = ShareActionProvider.DEFAULT_SHARE_HISTORY_FILE_NAME;
+                shareActionProvider.setShareHistoryFileName(shareHistoryFileName);
+                shareActionProvider.setShareIntent(getShareIntent());
+                shareActionProvider.setOnShareTargetSelectedListener(new ShareActionProvider.OnShareTargetSelectedListener() {
+                    @Override
+                    public boolean onShareTargetSelected(ShareActionProvider shareActionProvider, Intent intent) {
+                        return false;
+                    }
+                });
+                MenuItemCompat.setActionProvider(item, shareActionProvider);
             }
             return true;
         }
@@ -254,8 +254,7 @@ public class CategoryFeedsFragment extends BaseFragment implements ChoiceModeRec
                     mRecyclerAdapter.removeFeeds(feeds);
                     break;
                 case R.id.menu_item_share:
-
-                    break;
+                    return false;
             }
             mode.finish();
             mRecyclerAdapter.clearSelections();

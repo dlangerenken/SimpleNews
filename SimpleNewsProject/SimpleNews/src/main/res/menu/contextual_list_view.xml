@@ -3,20 +3,20 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/menu_item_save"
-        android:icon="@drawable/ic_favorite_gray"
-        android:title="@string/selection_save"
-        app:showAsAction="ifRoom" />
-    <item
-        android:id="@+id/menu_item_read"
-        android:icon="@drawable/ic_read_gray"
-        android:title="@string/mark_read"
-        app:showAsAction="ifRoom" />
-    <item
         android:id="@+id/menu_item_share"
         android:title="@string/selection_share"
         app:actionProviderClass="android.widget.ShareActionProvider"
         app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/menu_item_save"
+        android:icon="@drawable/ic_favorite_gray"
+        android:title="@string/selection_save"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/menu_item_read"
+        android:icon="@drawable/ic_read_gray"
+        android:title="@string/mark_read"
+        app:showAsAction="never" />
     <item
         android:id="@+id/menu_item_select_all"
         android:title="@string/select_all_context_list"

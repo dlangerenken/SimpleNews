@@ -1,4 +1,4 @@
-package recycler;
+package de.dala.simplenews.recycler;
 
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
@@ -20,16 +20,22 @@ import android.view.View;
  * limitations under the License.
  */
 
-public class SlideInBottomAnimationAdapter extends AnimationAdapter {
+public class AlphaAnimationAdapter extends AnimationAdapter {
 
-    public SlideInBottomAnimationAdapter(RecyclerView.Adapter adapter) {
+    private static final float DEFAULT_ALPHA_FROM = 0f;
+    private final float mFrom;
+
+    public AlphaAnimationAdapter(RecyclerView.Adapter adapter) {
+        this(adapter, DEFAULT_ALPHA_FROM);
+    }
+
+    public AlphaAnimationAdapter(RecyclerView.Adapter adapter, float from) {
         super(adapter);
+        mFrom = from;
     }
 
     @Override
     protected Animator[] getAnimators(View view) {
-        return new Animator[]{
-                ObjectAnimator.ofFloat(view, "translationY", view.getMeasuredHeight(), 0)
-        };
+        return new Animator[]{ObjectAnimator.ofFloat(view, "alpha", mFrom, 1f)};
     }
 }

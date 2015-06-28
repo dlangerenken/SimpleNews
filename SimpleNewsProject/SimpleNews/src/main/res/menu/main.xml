@@ -22,10 +22,4 @@
         app:showAsAction="never" />
 
 
-    <item
-        android:id="@+id/action_rate"
-        android:orderInCategory="100"
-        android:title="@string/rate_my_app_now"
-        app:showAsAction="never" />
-
 </menu>
