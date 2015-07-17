@@ -6,9 +6,14 @@ So this is a News-Feed-Reader based on the current State of the Art in User-Inte
 
 The app is available in the [Google PlayStore](https://play.google.com/store/apps/details?id=de.dala.simplenews)
 
-Recent implementead features:
+Implementead features:
 * hide/show categories and entries
+* order and modify categories
+* set different colors for each category
 * recent viewed articles, favorite articles
+* OPML import and export
+* import RSS directly out of the browser
+* multiple columns view
 
 Some screenshots of the application:
 
