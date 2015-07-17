@@ -135,15 +135,17 @@ public class OpmlAssignFragment extends BaseFragment implements ChoiceModeRecycl
     private void openAssign(final List<Feed> feedsToAssign) {
         final MaterialDialog dialog = new MaterialDialog.Builder(getActivity())
                 .title(R.string.choose_category_for_feeds)
-                .customView(R.layout.assign_category_list, true).build();
+                .customView(R.layout.assign_category_list, false).build();
         View customView = dialog.getCustomView();
         if (customView != null) {
             EmptyObservableRecyclerView assignCategoryView = (EmptyObservableRecyclerView) customView;
+            assignCategoryView.setLayoutManager(new LinearLayoutManager(getActivity()));
             List<Category> categories = DatabaseHandler.getInstance().getCategories(true, true, null);
             CategoryAssignRecyclerAdapter adapter = new CategoryAssignRecyclerAdapter(getActivity(), categories, new CategoryAssignRecyclerAdapter.OnClickListener() {
                 @Override
                 public void onClick(Category category) {
                     assignSelectedEntries(category, feedsToAssign);
+                    mAdapter.remove(feedsToAssign);
                     dialog.dismiss();
                 }
             });

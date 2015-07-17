@@ -27,7 +27,6 @@
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@drawable/ic_colorpicker_swatch_selected"
                 android:layout_gravity="center" />
 
         </FrameLayout>
@@ -41,7 +40,6 @@
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@drawable/ic_colorpicker_swatch_selected"
                 android:layout_gravity="center" />
 
         </FrameLayout>
@@ -55,7 +53,6 @@
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@drawable/ic_colorpicker_swatch_selected"
                 android:layout_gravity="center" />
 
         </FrameLayout>
@@ -69,7 +66,6 @@
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@drawable/ic_colorpicker_swatch_selected"
                 android:layout_gravity="center" />
 
         </FrameLayout>
@@ -83,7 +79,6 @@
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@drawable/ic_colorpicker_swatch_selected"
                 android:layout_gravity="center" />
 
         </FrameLayout>
@@ -97,7 +92,6 @@
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@drawable/ic_colorpicker_swatch_selected"
                 android:layout_gravity="center" />
 
         </FrameLayout>
@@ -111,7 +105,6 @@
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@drawable/ic_colorpicker_swatch_selected"
                 android:layout_gravity="center" />
 
         </FrameLayout>
@@ -125,7 +118,6 @@
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@drawable/ic_colorpicker_swatch_selected"
                 android:layout_gravity="center" />
 
         </FrameLayout>
@@ -139,7 +131,6 @@
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@drawable/ic_colorpicker_swatch_selected"
                 android:layout_gravity="center" />
 
         </FrameLayout>
@@ -153,7 +144,6 @@
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@drawable/ic_colorpicker_swatch_selected"
                 android:layout_gravity="center" />
 
         </FrameLayout>
@@ -167,7 +157,6 @@
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@drawable/ic_colorpicker_swatch_selected"
                 android:layout_gravity="center" />
 
         </FrameLayout>
@@ -181,7 +170,6 @@
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@drawable/ic_colorpicker_swatch_selected"
                 android:layout_gravity="center" />
 
         </FrameLayout>
@@ -195,7 +183,6 @@
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@drawable/ic_colorpicker_swatch_selected"
                 android:layout_gravity="center" />
 
         </FrameLayout>
@@ -209,7 +196,6 @@
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@drawable/ic_colorpicker_swatch_selected"
                 android:layout_gravity="center" />
 
         </FrameLayout>
@@ -223,7 +209,6 @@
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@drawable/ic_colorpicker_swatch_selected"
                 android:layout_gravity="center" />
 
         </FrameLayout>
@@ -237,7 +222,6 @@
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@drawable/ic_colorpicker_swatch_selected"
                 android:layout_gravity="center" />
 
         </FrameLayout>
@@ -251,7 +235,6 @@
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@drawable/ic_colorpicker_swatch_selected"
                 android:layout_gravity="center" />
 
         </FrameLayout>
@@ -265,7 +248,6 @@
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@drawable/ic_colorpicker_swatch_selected"
                 android:layout_gravity="center" />
 
         </FrameLayout>
@@ -279,7 +261,6 @@
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@drawable/ic_colorpicker_swatch_selected"
                 android:layout_gravity="center" />
 
         </FrameLayout>
@@ -293,7 +274,6 @@
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@drawable/ic_colorpicker_swatch_selected"
                 android:layout_gravity="center" />
 
         </FrameLayout>

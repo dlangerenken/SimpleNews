@@ -1,6 +1,7 @@
 package de.dala.simplenews.recycler;
 
 import android.app.Activity;
+import android.os.Build;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,17 +21,24 @@ import de.dala.simplenews.R;
 import de.dala.simplenews.common.Category;
 import de.dala.simplenews.common.Feed;
 import de.dala.simplenews.database.DatabaseHandler;
+import de.dala.simplenews.utilities.PrefUtilities;
 import de.dala.simplenews.utilities.UpdatingFeedTask;
+import de.dala.simplenews.utilities.Utilities;
 
 public class FeedRecyclerAdapter extends ChoiceModeRecyclerAdapter<FeedRecyclerAdapter.FeedViewHolder, Feed> {
 
     private Activity mContext;
     private Category mCategory;
+    private CategoryFeedsListener mListener;
 
-    public FeedRecyclerAdapter(Activity context, Category category, ChoiceModeListener listener) {
-        super(category.getFeeds(), listener);
+    public interface CategoryFeedsListener {
+        void onLongClick(Feed feed);
+    }
+    public FeedRecyclerAdapter(Activity context, Category category, CategoryFeedsListener cFListener) {
+        super(category.getFeeds(), null);
         mContext = context;
         mCategory = category;
+        mListener = cFListener;
     }
 
 
@@ -46,7 +54,8 @@ public class FeedRecyclerAdapter extends ChoiceModeRecyclerAdapter<FeedRecyclerA
         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                toggle(feed);
+                //toggle(feed);
+                mListener.onLongClick(feed);
                 return true;
             }
         });
@@ -56,7 +65,11 @@ public class FeedRecyclerAdapter extends ChoiceModeRecyclerAdapter<FeedRecyclerA
                 toggleIfActionMode(feed);
             }
         });
-        holder.itemView.setBackgroundResource(R.color.list_background);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            holder.itemView.setBackground(Utilities.getPressedColorRippleDrawable(mContext.getResources().getColor(R.color.list_background), PrefUtilities.getInstance().getCurrentColor()));
+        } else {
+            holder.itemView.setBackgroundResource(mContext.getResources().getColor(R.color.list_background));
+        }
     }
 
     @Override

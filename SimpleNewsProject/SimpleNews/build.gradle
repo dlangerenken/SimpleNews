@@ -19,12 +19,14 @@ repositories {
 
 android {
     compileSdkVersion 22
-    buildToolsVersion '21.1.2'
+    buildToolsVersion '22.0.1'
     defaultConfig {
         minSdkVersion 16
         targetSdkVersion 22
         applicationId "de.dala.simplenews"
-        versionCode 1
+        testApplicationId  "de.dala.simplenews.test"
+        testInstrumentationRunner "android.test.InstrumentationTestRunner"
+        versionCode 2
         versionName "1.0"
     }
     lintOptions {
@@ -56,10 +58,12 @@ android {
     packagingOptions {
         exclude 'META-INF/LICENSE.txt'
     }
+
 }
 
 dependencies {
     compile project(':feeds')
+    testCompile 'junit:junit:4.12'
     compile 'com.android.support:recyclerview-v7:22.2.0'
     compile 'com.android.support:cardview-v7:22.2.0'
     compile 'com.android.support:gridlayout-v7:22.2.0'
@@ -68,4 +72,5 @@ dependencies {
     compile 'com.ocpsoft:ocpsoft-pretty-time:1.0.7'
     compile 'com.squareup.okhttp:okhttp:2.4.0'
     compile 'com.afollestad:material-dialogs:0.7.6.0'
+    compile 'com.github.clans:fab:1.5.3'
 }

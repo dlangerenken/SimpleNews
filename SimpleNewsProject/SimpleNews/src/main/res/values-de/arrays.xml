@@ -1,16 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Nav Drawer Menu Items -->
-    <string-array name="nav_drawer_items">
-        <item>Nachrichten</item>
-        <item>Gesehene</item>
-        <item>Favoriten</item>
-        <item>Ungelesene</item>
-        <item>Kategorien</item>
-        <item>Einstellungen</item>
-        <item>Bewerte SimpleNews!</item>
-        <item>Feeds importieren</item>
-    </string-array>
 
     <string-array name="listOptions">
         <item>Jede 5 Minuten</item>

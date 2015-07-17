@@ -3,14 +3,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/menu_item_remove"
-        android:icon="@android:drawable/ic_menu_delete"
-        app:showAsAction="never"
-        android:title="@string/feed_selection_remove"/>
-
-    <item
         android:id="@+id/menu_item_assign"
-        android:icon="@drawable/ic_action_merge"
-        app:showAsAction="always"
-        android:title="Assign"/>
+        android:title="@string/assign_menu_title"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/menu_item_remove"
+        android:title="@string/feed_selection_remove"
+        app:showAsAction="ifRoom" />
 </menu>

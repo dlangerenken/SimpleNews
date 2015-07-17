@@ -33,7 +33,6 @@
             android:id="@+id/color"
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:layout_centerInParent="true"
             android:layout_marginLeft="3dp"
             android:layout_marginStart="3dp"
             android:layout_toEndOf="@id/drag"

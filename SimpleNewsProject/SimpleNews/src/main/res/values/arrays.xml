@@ -1,52 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string-array name="entry_options" translatable="false">
+        <item>@string/selection_share</item>
+        <item>@string/selection_save</item>
+        <item>@string/mark_read</item>
+        <item>@string/menu_delete_entry</item>
+    </string-array>
+    <string-array name="category_options" translatable="false">
+        <item>@string/selection_share</item>
+        <item>@string/menu_delete_entry</item>
+    </string-array>
+    <string-array name="feed_options" translatable="false">
+        <item>@string/selection_share</item>
+        <item>@string/menu_delete_entry</item>
+    </string-array>
 
     <array name="colors">
-        <item>#3F51B5</item>
-        <item>#9E9E9E</item>
-        <item>#424242</item>
-        <item>#1F1F1F</item>
-        <item>#607D8B</item>
-        <item>#795548</item>
-        <item>#D32F2F</item>
-        <item>#E91E63</item>
-        <item>#9C27B0</item>
-        <item>#5E35B1</item>
-        <item>#1E88E5</item>
-        <item>#03A9F4</item>
         <item>#00BCD4</item>
-        <item>#009688</item>
-        <item>#4CAF50</item>
+        <item>#03A9F4</item>
+        <item>#1E88E5</item>
+        <item>#3F51B5</item>
+        <item>#5E35B1</item>
+        <item>#9C27B0</item>
         <item>#8BC34A</item>
+        <item>#4CAF50</item>
+        <item>#009688</item>
         <item>#CDDC39</item>
         <item>#FFEB3B</item>
         <item>#FFC107</item>
         <item>#FF9800</item>
         <item>#FF5722</item>
-    </array>
-
-    <!-- Nav Drawer Menu Items -->
-    <string-array name="nav_drawer_items">
-        <item>Home</item>
-        <item>Recent</item>
-        <item>Favorite</item>
-        <item>Unread</item>
-        <item>Categories</item>
-        <item>Settings</item>
-        <item>Rate SimpleNews!</item>
-        <item>Import Feeds</item>
-    </string-array>
-
-    <!-- Nav Drawer List Item Icons -->
-    <array name="nav_drawer_icons" translatable="false">
-        <item>@drawable/ic_home</item>
-        <item>@drawable/ic_recent</item>
-        <item>@drawable/ic_favorite</item>
-        <item>@drawable/ic_unread</item>
-        <item>@drawable/ic_nav_categories</item>
-        <item>@android:drawable/ic_menu_preferences</item>
-        <item>@drawable/ic_rating</item>
-        <item>@android:drawable/ic_menu_upload</item>
+        <item>#D32F2F</item>
+        <item>#E91E63</item>
+        <item>#9E9E9E</item>
+        <item>#607D8B</item>
+        <item>#795548</item>
+        <item>#424242</item>
+        <item>#1F1F1F</item>
     </array>
 
     <string-array name="listOptions">

@@ -2,9 +2,12 @@ package de.dala.simplenews.recycler;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.RippleDrawable;
+import android.os.Build;
 import android.support.v7.widget.RecyclerView;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -35,9 +38,10 @@ public class ExpandableItemRecyclerAdapter extends ChoiceModeRecyclerAdapter<Exp
     private Set<Entry> mExpandedItemIds;
 
     public interface ItemClickListener {
-        void onSaveClick(Entry entry);
 
         void onOpenClick(Entry entry);
+
+        void onLongClick(Entry entry);
     }
 
     public ExpandableItemRecyclerAdapter(List<Entry> entries, Category category, Context context, ItemClickListener itemClickListener, RecyclerView recyclerView, ChoiceModeListener listener) {
@@ -52,7 +56,6 @@ public class ExpandableItemRecyclerAdapter extends ChoiceModeRecyclerAdapter<Exp
     @Override
     void onBindSelectedViewHolder(EntryViewHolder holder, int position) {
         onBindNormalViewHolder(holder, position);
-        holder.itemView.setBackgroundResource(R.color.list_background_selected);
     }
 
     @Override
@@ -74,13 +77,14 @@ public class ExpandableItemRecyclerAdapter extends ChoiceModeRecyclerAdapter<Exp
         holder.colorBorderView.setBackgroundColor(secondaryColor);
         UIUtils.setTextMaybeHtml(holder.descriptionTextView, currentEntry.getDescription());
 
-        holder.itemView.setBackgroundResource(R.color.list_background);
-
         /* click listener */
         holder.clickListener = new EntryViewHolder.ClickListener() {
             @Override
             public void onSelectItem() {
-                toggle(currentEntry);
+                //toggle(currentEntry);
+                if (mItemClickListener != null) {
+                    mItemClickListener.onLongClick(currentEntry);
+                }
             }
 
             @Override
@@ -95,24 +99,25 @@ public class ExpandableItemRecyclerAdapter extends ChoiceModeRecyclerAdapter<Exp
             @Override
             public void onDescriptionClick() {
                 if (!isInSelectionMode()) {
-                    mItemClickListener.onOpenClick(currentEntry);
+                    if (mItemClickListener != null) {
+                        mItemClickListener.onOpenClick(currentEntry);
+                    }
                 } else {
                     toggleIfActionMode(currentEntry);
                 }
             }
-
-
-            @Override
-            public void onSaveClick() {
-                if (!isInSelectionMode()) {
-                    mItemClickListener.onSaveClick(currentEntry);
-                }
-            }
         };
         if (mExpandedItemIds.contains(currentEntry)) {
-            expand(currentEntry, holder.contentLayout);
+            expand(currentEntry, holder.contentLayout, false);
         } else {
-            collapse(currentEntry, holder.contentLayout);
+            collapse(currentEntry, holder.contentLayout, false);
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            holder.itemView.setClickable(true);
+            RippleDrawable drawable = Utilities.getPressedColorRippleDrawable(mContext.getResources().getColor(R.color.list_background), mCategory.getPrimaryColor());
+            holder.itemView.setBackground(drawable);
+        } else {
+            holder.itemView.setBackgroundResource(mContext.getResources().getColor(R.color.list_background));
         }
     }
 
@@ -123,9 +128,9 @@ public class ExpandableItemRecyclerAdapter extends ChoiceModeRecyclerAdapter<Exp
     }
 
     static class EntryViewHolder extends RecyclerView.ViewHolder {
-
         public LinearLayout titleLayout;
         public LinearLayout contentLayout;
+        public View mainContent;
 
         /* Content */
         public View colorBorderView;
@@ -142,8 +147,6 @@ public class ExpandableItemRecyclerAdapter extends ChoiceModeRecyclerAdapter<Exp
             void onTitleClick();
 
             void onDescriptionClick();
-
-            void onSaveClick();
         }
 
         public ClickListener clickListener;
@@ -151,9 +154,9 @@ public class ExpandableItemRecyclerAdapter extends ChoiceModeRecyclerAdapter<Exp
 
         public EntryViewHolder(View itemView) {
             super(itemView);
-
             titleLayout = (LinearLayout) itemView.findViewById(R.id.card_title);
             contentLayout = (LinearLayout) itemView.findViewById(R.id.card_content);
+            mainContent = itemView.findViewById(R.id.main_content);
 
             imageView = (ImageView) titleLayout.findViewById(R.id.image);
             titleTextView = (TextView) titleLayout.findViewById(R.id.title);
@@ -191,6 +194,7 @@ public class ExpandableItemRecyclerAdapter extends ChoiceModeRecyclerAdapter<Exp
                     }
                 }
             });
+            contentLayout.setOnTouchListener(new OnTouch());
             titleLayout.setOnClickListener(
                     new View.OnClickListener() {
                         @Override
@@ -199,18 +203,48 @@ public class ExpandableItemRecyclerAdapter extends ChoiceModeRecyclerAdapter<Exp
                                 clickListener.onTitleClick();
                             }
                         }
-                    }
+                    });
+            titleLayout.setOnTouchListener(new OnTouch());
 
-            );
+        }
+
+        private class OnTouch implements View.OnTouchListener {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                // Convert to card view coordinates. Assumes the host view is
+                // a direct child and the card view is not scrollable.
+                float x = event.getX() + v.getLeft();
+                float y = event.getY() + v.getTop();
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    // Simulate motion on the card view.
+                    //itemView.onTouchEvent(event);
+                    itemView.drawableHotspotChanged(x, y);
+                }
+
+                // Simulate pressed state on the card view.
+                switch (event.getActionMasked()) {
+                    case MotionEvent.ACTION_DOWN:
+                        itemView.setPressed(true);
+                        break;
+                    case MotionEvent.ACTION_UP:
+                    case MotionEvent.ACTION_CANCEL:
+                        itemView.setPressed(false);
+                        break;
+                }
+
+                // Pass all events through to the host view.
+                return false;
+            }
         }
     }
 
     private void setImageDrawable(ImageView entryType, Entry entry) {
         Drawable drawable = null;
         if (entry.getFavoriteDate() != null && entry.getFavoriteDate() > 0) {
-            drawable = mContext.getResources().getDrawable(R.drawable.ic_favorite);
+            drawable = mContext.getResources().getDrawable(R.drawable.ic_fav_color);
         } else if (entry.getVisitedDate() != null && entry.getVisitedDate() > 0) {
-            drawable = mContext.getResources().getDrawable(R.drawable.ic_recent);
+            drawable = mContext.getResources().getDrawable(R.drawable.ic_seen_color);
         }
         entryType.setImageDrawable(drawable);
     }
@@ -219,20 +253,20 @@ public class ExpandableItemRecyclerAdapter extends ChoiceModeRecyclerAdapter<Exp
         if (mRecyclerView != null) {
             boolean isVisible = contentParent.getVisibility() == View.VISIBLE;
             if (isVisible) {
-                collapse(entry, contentParent);
+                collapse(entry, contentParent, true);
             } else {
-                expand(entry, contentParent);
+                expand(entry, contentParent, true);
             }
         }
     }
 
-    private void expand(Entry entry, final View contentParent) {
-        ExpandCollapseHelper.animateExpanding(contentParent, mRecyclerView);
+    private void expand(Entry entry, final View contentParent, boolean animated) {
+        ExpandCollapseHelper.animateExpanding(contentParent, mRecyclerView, animated);
         mExpandedItemIds.add(entry);
     }
 
-    private void collapse(Entry entry, final View contentParent) {
-        ExpandCollapseHelper.animateCollapsing(contentParent);
+    private void collapse(Entry entry, final View contentParent, boolean animated) {
+        ExpandCollapseHelper.animateCollapsing(contentParent, animated);
         mExpandedItemIds.remove(entry);
     }
 

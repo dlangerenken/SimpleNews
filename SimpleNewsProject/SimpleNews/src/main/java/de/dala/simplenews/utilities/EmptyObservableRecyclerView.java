@@ -37,10 +37,12 @@ public class EmptyObservableRecyclerView extends RecyclerView {
     }
 
     void checkIfEmpty() {
-        if (emptyView != null && getAdapter() != null) {
-            final boolean emptyViewVisible = getAdapter().getItemCount() == 0;
-            emptyView.setVisibility(emptyViewVisible ? VISIBLE : GONE);
-            setVisibility(emptyViewVisible ? GONE : VISIBLE);
+        if (emptyView != null) {
+            if (getAdapter().getItemCount() == 0) {
+                emptyView.animate().alpha(1).setDuration(500).start();
+            } else {
+                emptyView.animate().alpha(0).setDuration(100).start();
+            }
         }
     }
 
@@ -54,12 +56,9 @@ public class EmptyObservableRecyclerView extends RecyclerView {
         if (adapter != null) {
             adapter.registerAdapterDataObserver(observer);
         }
-
-        checkIfEmpty();
     }
 
     public void setEmptyView(View emptyView) {
         this.emptyView = emptyView;
-        checkIfEmpty();
     }
 }

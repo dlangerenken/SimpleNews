@@ -37,6 +37,7 @@ import de.dala.simplenews.network.StringCallback;
 
 public class CategoryUpdater {
 
+    public static final int EMPTY = 0;
     public static final int ERROR = -1;
     public static final int CANCEL = -2;
     public static final int RESULT = 4;
@@ -200,11 +201,13 @@ public class CategoryUpdater {
     }
 
     public void cancel() {
-        isRunning = false;
-        if (task != null) {
-            task.cancel(true);
+        if (isRunning) {
+            isRunning = false;
+            if (task != null) {
+                task.cancel(true);
+            }
+            sendMessage(null, CANCEL);
         }
-        sendMessage(null, CANCEL);
     }
 
     private class UpdatingTask extends AsyncTask<Void, Void, Void> {
@@ -220,7 +223,7 @@ public class CategoryUpdater {
         @Override
         protected Void doInBackground(Void... params) {
             if (category == null || category.getFeeds() == null) {
-                sendMessage(null, CANCEL);
+                sendMessage(null, ERROR);
                 return null;
             }
             if (category.getFeeds().size() == 0) {
@@ -239,6 +242,10 @@ public class CategoryUpdater {
                 for (Future<List<Entry>> future : results) {
                     List<Entry> receivedEntries = null;
                     try {
+                        if (isCancelled()) {
+                            sendMessage(null, CANCEL);
+                            return null;
+                        }
                         receivedEntries = future.get();
                         entries.addAll(receivedEntries);
                     } catch (CancellationException e) {
@@ -246,7 +253,12 @@ public class CategoryUpdater {
                     getNewItems(receivedEntries);
                 }
             } catch (Exception e) {
-                sendMessage(null, CANCEL);
+                sendMessage(null, ERROR);
+                return null;
+            }
+
+            if (entries.isEmpty()) {
+                sendMessage(null, EMPTY);
                 return null;
             }
 

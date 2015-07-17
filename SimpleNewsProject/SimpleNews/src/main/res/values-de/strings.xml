@@ -118,4 +118,6 @@
     <string name="thanks">Vielen Dank!</string>
     <string name="exception">Oops! Da ist etwas schief gelaufen!</string>
     <string name="menu_opml">OPML</string>
+    <string name="assign_menu_title">Zuweisen</string>
+    <string name="error_feed_loading">Couldn\'t load feed.</string>
 </resources>

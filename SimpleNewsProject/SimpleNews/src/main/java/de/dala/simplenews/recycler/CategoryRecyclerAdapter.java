@@ -2,6 +2,8 @@ package de.dala.simplenews.recycler;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.drawable.RippleDrawable;
+import android.os.Build;
 import android.support.v4.view.MotionEventCompat;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
@@ -18,12 +20,16 @@ import java.util.List;
 
 import de.dala.simplenews.R;
 import de.dala.simplenews.common.Category;
+import de.dala.simplenews.common.Feed;
+import de.dala.simplenews.utilities.ColorManager;
 import de.dala.simplenews.utilities.EmptyObservableRecyclerView;
 import de.dala.simplenews.utilities.GripView;
 import de.dala.simplenews.utilities.ItemTouchHelperAdapter;
 import de.dala.simplenews.utilities.ItemTouchHelperCallback;
 import de.dala.simplenews.utilities.ItemTouchHelperViewHolder;
 import de.dala.simplenews.utilities.Movement;
+import de.dala.simplenews.utilities.PrefUtilities;
+import de.dala.simplenews.utilities.Utilities;
 
 public class CategoryRecyclerAdapter extends ChoiceModeRecyclerAdapter<CategoryRecyclerAdapter.CategoryViewHolder, Category> implements ItemTouchHelperAdapter {
     private Context mContext;
@@ -35,7 +41,6 @@ public class CategoryRecyclerAdapter extends ChoiceModeRecyclerAdapter<CategoryR
     @Override
     public void onItemMove(int fromPosition, int toPosition) {
         Category category = getItems().remove(fromPosition);
-       // getItems().add(toPosition > fromPosition ? toPosition - 1 : toPosition, category);
         getItems().add(toPosition, category);
         notifyItemMoved(fromPosition, toPosition);
         if (movements == null) {
@@ -74,10 +79,12 @@ public class CategoryRecyclerAdapter extends ChoiceModeRecyclerAdapter<CategoryR
         void editClicked(Category category);
 
         void saveMovement(List<Movement> movements);
+
+        void onLongClick(Category category);
     }
 
-    public CategoryRecyclerAdapter(Context context, List<Category> categories, String rssPath, ChoiceModeListener listener, OnCategoryClicked categoryClicked) {
-        super(categories, listener);
+    public CategoryRecyclerAdapter(Context context, List<Category> categories, String rssPath, OnCategoryClicked categoryClicked) {
+        super(categories, null);
         mContext = context;
         mRssPath = rssPath;
         mListener = categoryClicked;
@@ -87,7 +94,6 @@ public class CategoryRecyclerAdapter extends ChoiceModeRecyclerAdapter<CategoryR
     @Override
     void onBindSelectedViewHolder(CategoryViewHolder holder, int position) {
         onBindNormalViewHolder(holder, position);
-        holder.itemView.setBackgroundColor(mContext.getResources().getColor(android.R.color.holo_blue_light));
     }
 
     @Override
@@ -116,9 +122,17 @@ public class CategoryRecyclerAdapter extends ChoiceModeRecyclerAdapter<CategoryR
             holder.show.setVisibility(View.GONE);
             holder.more.setVisibility(View.GONE);
         }
-        holder.itemView.setBackgroundColor(Color.WHITE);
         holder.itemView.setOnLongClickListener(new CategoryItemLongClickListener(category));
         holder.itemView.setOnClickListener(new CategoryItemRSSClickListener(category));
+        setBackground(holder.itemView);
+    }
+
+    private void setBackground(View view){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            view.setBackground(Utilities.getPressedColorRippleDrawable(mContext.getResources().getColor(R.color.list_background), PrefUtilities.getInstance().getCurrentColor()));
+        } else {
+            view.setBackgroundResource(mContext.getResources().getColor(R.color.list_background));
+        }
     }
 
     @Override
@@ -153,7 +167,8 @@ public class CategoryRecyclerAdapter extends ChoiceModeRecyclerAdapter<CategoryR
 
         @Override
         public boolean onLongClick(View v) {
-            toggle(category);
+            //toggle(category);
+            mListener.onLongClick(category);
             return true;
         }
     }
@@ -208,12 +223,12 @@ public class CategoryRecyclerAdapter extends ChoiceModeRecyclerAdapter<CategoryR
 
         @Override
         public void onItemSelected() {
-            itemView.setBackgroundColor(Color.LTGRAY);
+            itemView.setBackgroundColor(ColorManager.moreAlpha(PrefUtilities.getInstance().getCurrentColor(), 90));
         }
 
         @Override
         public void onItemClear() {
-            itemView.setBackgroundColor(Color.WHITE);
+            setBackground(itemView);
         }
     }
 }

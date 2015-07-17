@@ -79,13 +79,14 @@ public class CategoryActivity extends BaseActivity implements CategorySelectionF
         feed.setXmlUrl(rssPath);
         feed.setCategoryId(category.getId());
         DatabaseHandler.getInstance().addFeed(category.getId(), feed, true);
-        finish();
+        startNewsActivity();
     }
 
     @Override
     public void onRestore() {
         DatabaseHandler.getInstance().removeAllCategories();
         DatabaseHandler.getInstance().loadXmlIntoDatabase(R.raw.categories);
+        startNewsActivity();
     }
 
     @Override
@@ -113,11 +114,15 @@ public class CategoryActivity extends BaseActivity implements CategorySelectionF
     @Override
     public void onBackPressed() {
         if (!getSupportFragmentManager().popBackStackImmediate()) {
-            Intent intent = new Intent(CategoryActivity.this, NewsActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(intent);
-            finish();
+            startNewsActivity();
         }
+    }
+
+    private void startNewsActivity() {
+        Intent intent = new Intent(CategoryActivity.this, NewsActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+        finish();
     }
 
 }

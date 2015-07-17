@@ -121,7 +121,7 @@ public class XmlParser {
      * @param parser
      * @param news
      */
-    protected void readNews(XmlPullParser parser, News news) throws XmlPullParserException, IOException {
+    public void readNews(XmlPullParser parser, News news) throws XmlPullParserException, IOException {
         if (parser == null || news == null) return;
         // Parse changelog node
         parser.require(XmlPullParser.START_TAG, null, TAG_NEWS);

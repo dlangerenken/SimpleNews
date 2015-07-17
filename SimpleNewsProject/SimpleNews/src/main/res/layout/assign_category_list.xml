@@ -1,15 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<de.dala.simplenews.utilities.EmptyObservableRecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/listView"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-    <de.dala.simplenews.utilities.EmptyObservableRecyclerView
-        android:id="@+id/listView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignParentTop="true"
-        android:dividerHeight="1dp"
-        android:divider="@android:color/darker_gray"
-        android:stretchMode="columnWidth" />
-
-</RelativeLayout>
+    android:layout_height="match_parent"
+    android:layout_alignParentTop="true"
+    android:divider="@android:color/darker_gray"
+    android:dividerHeight="1dp"
+    android:stretchMode="columnWidth" />

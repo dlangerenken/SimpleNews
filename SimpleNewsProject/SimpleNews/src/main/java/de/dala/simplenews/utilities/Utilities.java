@@ -1,6 +1,12 @@
 package de.dala.simplenews.utilities;
 
+import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.res.ColorStateList;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.RippleDrawable;
+import android.os.Build;
 import android.os.Environment;
 
 import com.squareup.okhttp.OkHttpClient;
@@ -53,5 +59,35 @@ public class Utilities {
             }
         }
         return list;
+    }
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    public static RippleDrawable getPressedColorRippleDrawable(int normalColor, int pressedColor) {
+        RippleDrawable drawable = new RippleDrawable(getPressedColorSelector(normalColor, pressedColor), getColorDrawableFromColor(normalColor), null);
+        drawable.setAlpha(70);
+        return drawable;
+    }
+
+    public static ColorStateList getPressedColorSelector(int normalColor, int pressedColor) {
+        return new ColorStateList(
+                new int[][]
+                        {
+                                new int[]{android.R.attr.state_pressed},
+                                new int[]{android.R.attr.state_focused},
+                                new int[]{android.R.attr.state_activated},
+                                new int[]{}
+                        },
+                new int[]
+                        {
+                                pressedColor,
+                                pressedColor,
+                                pressedColor,
+                                normalColor
+                        }
+        );
+    }
+
+    public static ColorDrawable getColorDrawableFromColor(int color) {
+        return new ColorDrawable(color);
     }
 }

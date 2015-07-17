@@ -124,4 +124,6 @@
     <string name="title_activity_category">CategoryActivity</string>
     <string name="title_activity_settings">SettingActivity</string>
     <string name="menu_opml">OPML</string>
+    <string name="assign_menu_title">Assign</string>
+    <string name="error_feed_loading">Couldn\'t load feed.</string>
 </resources>

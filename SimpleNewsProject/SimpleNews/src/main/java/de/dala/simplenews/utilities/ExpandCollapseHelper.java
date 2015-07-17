@@ -8,7 +8,10 @@ import android.view.View;
 import android.view.ViewGroup;
 
 public class ExpandCollapseHelper {
-    public static void animateCollapsing(final View view) {
+    public static void animateCollapsing(final View view, boolean animated) {
+        if (!animated){
+            view.setVisibility(View.GONE);
+        }
         if (view.getVisibility() == View.GONE) {
             return;
         }
@@ -25,7 +28,7 @@ public class ExpandCollapseHelper {
         animator.start();
     }
 
-    public static void animateExpanding(final View view, final RecyclerView listViewWrapper) {
+    public static void animateExpanding(final View view, final RecyclerView listViewWrapper, boolean animated) {
         if (view.getVisibility() == View.VISIBLE) {
             return;
         }
@@ -35,6 +38,14 @@ public class ExpandCollapseHelper {
         final int widthSpec = View.MeasureSpec.makeMeasureSpec(parent.getMeasuredWidth() - parent.getPaddingLeft() - parent.getPaddingRight(), View.MeasureSpec.AT_MOST);
         final int heightSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
         view.measure(widthSpec, heightSpec);
+
+        if (!animated){
+            view.setVisibility(View.VISIBLE);
+            ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
+            layoutParams.height = view.getMeasuredHeight();
+            view.setLayoutParams(layoutParams);
+            return;
+        }
 
         ValueAnimator animator = createHeightAnimator(view, 0, view.getMeasuredHeight());
         animator.addUpdateListener(

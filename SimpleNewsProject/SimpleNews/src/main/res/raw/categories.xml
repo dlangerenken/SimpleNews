@@ -30,7 +30,7 @@
         <feed>http://rss.nytimes.com/services/xml/rss/nyt/RealEstate.xml</feed>
     </category>
     <category name="Top Stories" color="6" visible="true">
-        <feed>http://edition.cnn.com/services/rss/</feed>
+        <feed>http://rss.cnn.com/rss/edition.rss</feed>
         <feed>http://feeds.abcnews.com/abcnews/topstories</feed>
         <feed>http://www.cbsnews.com/latest/rss/main</feed>
     </category>

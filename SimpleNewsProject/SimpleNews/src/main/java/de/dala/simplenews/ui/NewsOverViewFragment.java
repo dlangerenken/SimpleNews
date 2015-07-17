@@ -1,9 +1,8 @@
 package de.dala.simplenews.ui;
 
-import android.animation.AnimatorSet;
-import android.animation.ObjectAnimator;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -17,8 +16,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
+
+import com.github.clans.fab.FloatingActionButton;
+import com.github.clans.fab.FloatingActionMenu;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -26,34 +26,27 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import circularmenu.FloatingActionButton;
-import circularmenu.FloatingActionMenu;
-import circularmenu.SubActionButton;
 import de.dala.simplenews.R;
 import de.dala.simplenews.common.Category;
 import de.dala.simplenews.database.DatabaseHandler;
 import de.dala.simplenews.utilities.PrefUtilities;
 
 public class NewsOverViewFragment extends BaseFragment implements ViewPager.OnPageChangeListener {
-
     private TabLayout tabs;
     private ViewPager pager;
 
     private List<Category> categories;
     private NewsActivity newsActivity;
     private int entryType = ALL;
-    private FloatingActionMenu newsTypeButton;
     private MenuItem columnsMenu;
 
-    public static final int ALL = 1;
-    public static final int FAV = 2;
-    public static final int RECENT = 3;
-    public static final int UNREAD = 4;
+    public static final int ALL = 0;
+    public static final int FAV = 1;
+    public static final int RECENT = 2;
 
-    public FloatingActionMenu getNewsTypeButton() {
-        return newsTypeButton;
-    }
-
+    private FloatingActionMenu newsTypeButton;
+    private FloatingActionButton subactionButton1;
+    private FloatingActionButton subactionButton2;
 
     private ArrayList<String> newsTypeTags;
 
@@ -185,6 +178,9 @@ public class NewsOverViewFragment extends BaseFragment implements ViewPager.OnPa
             }
         }
         categories = DatabaseHandler.getInstance().getCategories(null, null, true);
+        if (categories.isEmpty()) {
+            categories.add(new Category());
+        }
         Collections.sort(categories);
         if (savedInstanceState != null) {
             //probably orientation change
@@ -197,7 +193,7 @@ public class NewsOverViewFragment extends BaseFragment implements ViewPager.OnPa
             orderChanged();
         } else {
             if (newsTypeTags != null) {
-                //returning from backstack, data is fine, do nothing
+                // returning from backstack, data is fine, do nothing
             } else {
                 newsTypeTags = new ArrayList<>();
             }
@@ -223,119 +219,56 @@ public class NewsOverViewFragment extends BaseFragment implements ViewPager.OnPa
 
     public void changeColor(int primaryColor, int secondaryColor) {
         newsActivity.changeColor(primaryColor, secondaryColor);
+        initNewsTypeIcon();
+        setColor(subactionButton1, primaryColor, secondaryColor);
+        setColor(subactionButton2, primaryColor, secondaryColor);
+        setColor(newsTypeButton, primaryColor, secondaryColor);
     }
 
+    private void setColor(FloatingActionButton button, int primaryColor, int secondaryColor) {
+        button.setColorNormal(primaryColor);
+        button.setColorPressed(secondaryColor);
+        button.setColorRipple(secondaryColor);
+    }
 
-    private SubActionButton subactionButton1;
-    private SubActionButton subactionButton2;
-    private SubActionButton subactionButton3;
-    private ImageView mainIcon;
-    private FloatingActionButton button;
+    private void setColor(FloatingActionMenu menu, int primaryColor, int secondaryColor) {
+        menu.setMenuButtonColorNormal(primaryColor);
+        menu.setMenuButtonColorPressed(secondaryColor);
+        menu.setMenuButtonColorRipple(secondaryColor);
+    }
+
+    private int[] actionButtonIds;
+    private boolean isInitialized;
 
     private void initNewsTypeIcon() {
-        mainIcon = new ImageView(getActivity());
-        button = new FloatingActionButton.Builder(getActivity())
-                .setContentView(mainIcon)
-                .build();
+        if (isInitialized) {
+            return;
+        }
+        newsTypeButton = (FloatingActionMenu) getActivity().findViewById(R.id.floating_action_menu);
+        subactionButton1 = (FloatingActionButton) getActivity().findViewById(R.id.menu_item_1);
+        subactionButton2 = (FloatingActionButton) getActivity().findViewById(R.id.menu_item_2);
 
-        int subButtonSize = getResources().getDimensionPixelSize(R.dimen.sub_action_button_size_medium);
-        int actionMenuRadius = getResources().getDimensionPixelSize(R.dimen.action_menu_radius);
-        SubActionButton.Builder rLSubBuilder = new SubActionButton.Builder(getActivity()).setLayoutParams(new FrameLayout.LayoutParams(subButtonSize, subButtonSize));
-        ImageView icon1 = new ImageView(getActivity());
-        ImageView icon2 = new ImageView(getActivity());
-        ImageView icon3 = new ImageView(getActivity());
-
-        subactionButton1 = rLSubBuilder.setContentView(icon1).build();
-        subactionButton2 = rLSubBuilder.setContentView(icon2).build();
-        subactionButton3 = rLSubBuilder.setContentView(icon3).build();
         subactionButton1.setOnClickListener(new OnSubActionButtonClickListener());
         subactionButton2.setOnClickListener(new OnSubActionButtonClickListener());
-        subactionButton3.setOnClickListener(new OnSubActionButtonClickListener());
 
-        // Build the menu with default options: light theme, 90 degrees, 72dp radius.
-        // Set 4 default SubActionButtons
-        newsTypeButton = new FloatingActionMenu.Builder(getActivity())
-                .addSubActionView(subactionButton1)
-                .addSubActionView(subactionButton2)
-                .addSubActionView(subactionButton3)
-                .setRadius(actionMenuRadius)
-                .attachTo(button)
-                .build();
-        button.setScaleX(0);
-        button.setScaleY(0);
-
-        subactionButton1.setAlpha(0);
-        subactionButton2.setAlpha(0);
-        subactionButton3.setAlpha(0);
-
-        AnimatorSet set = new AnimatorSet();
-        set.playTogether(
-                ObjectAnimator.ofFloat(button, "scaleX", 1),
-                ObjectAnimator.ofFloat(button, "scaleY", 1)
-        );
-        set.setDuration(500);
-        set.setStartDelay(1200);
-        set.start();
-
-        set = new AnimatorSet();
-        set.playTogether(
-                ObjectAnimator.ofFloat(subactionButton1, "alpha", 1),
-                ObjectAnimator.ofFloat(subactionButton2, "alpha", 1),
-                ObjectAnimator.ofFloat(subactionButton3, "alpha", 1)
-        );
-        set.setDuration(0);
-        set.setStartDelay(1200);
-        set.start();
-
+        actionButtonIds = new int[]{R.drawable.ic_home, R.drawable.ic_fav, R.drawable.ic_seen};
+        isInitialized = true;
         updateNewsIcon();
     }
 
     private void updateNewsIcon() {
-        switch (entryType) {
-            case ALL:
-                subactionButton1.setTag(UNREAD);
-                subactionButton2.setTag(FAV);
-                subactionButton3.setTag(RECENT);
-                ((ImageView) subactionButton1.getContentView()).setImageDrawable(getResources().getDrawable(R.drawable.ic_unread));
-                ((ImageView) subactionButton2.getContentView()).setImageDrawable(getResources().getDrawable(R.drawable.ic_favorite));
-                ((ImageView) subactionButton3.getContentView()).setImageDrawable(getResources().getDrawable(R.drawable.ic_recent));
-                mainIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_home));
-                break;
-            case UNREAD:
-                subactionButton1.setTag(ALL);
-                subactionButton2.setTag(FAV);
-                subactionButton3.setTag(RECENT);
-                ((ImageView) subactionButton1.getContentView()).setImageDrawable(getResources().getDrawable(R.drawable.ic_home));
-                ((ImageView) subactionButton2.getContentView()).setImageDrawable(getResources().getDrawable(R.drawable.ic_favorite));
-                ((ImageView) subactionButton3.getContentView()).setImageDrawable(getResources().getDrawable(R.drawable.ic_recent));
-                mainIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_unread));
-                break;
-            case FAV:
-                subactionButton1.setTag(UNREAD);
-                subactionButton2.setTag(ALL);
-                subactionButton3.setTag(RECENT);
-                ((ImageView) subactionButton1.getContentView()).setImageDrawable(getResources().getDrawable(R.drawable.ic_unread));
-                ((ImageView) subactionButton2.getContentView()).setImageDrawable(getResources().getDrawable(R.drawable.ic_home));
-                ((ImageView) subactionButton3.getContentView()).setImageDrawable(getResources().getDrawable(R.drawable.ic_recent));
-                mainIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_favorite));
-                break;
-            case RECENT:
-                subactionButton1.setTag(UNREAD);
-                subactionButton2.setTag(FAV);
-                subactionButton3.setTag(ALL);
-                ((ImageView) subactionButton1.getContentView()).setImageDrawable(getResources().getDrawable(R.drawable.ic_unread));
-                ((ImageView) subactionButton2.getContentView()).setImageDrawable(getResources().getDrawable(R.drawable.ic_favorite));
-                ((ImageView) subactionButton3.getContentView()).setImageDrawable(getResources().getDrawable(R.drawable.ic_home));
-                mainIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_recent));
-                break;
-        }
+        newsTypeButton.getMenuIconView().setImageDrawable(getResources().getDrawable(actionButtonIds[entryType % 3]));
+        subactionButton1.setImageDrawable(getResources().getDrawable(actionButtonIds[(entryType + 1) % 3]));
+        subactionButton2.setImageDrawable(getResources().getDrawable(actionButtonIds[(entryType + 2) % 3]));
+        newsTypeButton.setTag((entryType));
+        subactionButton1.setTag((entryType + 1) % 3);
+        subactionButton2.setTag((entryType + 2) % 3);
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
         newsTypeButton.close(false);
-        button.detach();
         if (pager != null) {
             PrefUtilities.getInstance().setCategoryIndex(pager.getCurrentItem());
         }
@@ -433,4 +366,5 @@ public class NewsOverViewFragment extends BaseFragment implements ViewPager.OnPa
     @Override
     public void onPageScrollStateChanged(int i) {
     }
+
 }

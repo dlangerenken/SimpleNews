@@ -5,14 +5,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.text.InputType;
-import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ShareActionProvider;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,7 +29,6 @@ import de.dala.simplenews.R;
 import de.dala.simplenews.common.Category;
 import de.dala.simplenews.database.DatabaseHandler;
 import de.dala.simplenews.recycler.CategoryRecyclerAdapter;
-import de.dala.simplenews.recycler.ChoiceModeRecyclerAdapter;
 import de.dala.simplenews.utilities.ColorChooserDialog;
 import de.dala.simplenews.utilities.ColorManager;
 import de.dala.simplenews.utilities.EmptyObservableRecyclerView;
@@ -39,7 +36,7 @@ import de.dala.simplenews.utilities.Movement;
 import de.dala.simplenews.utilities.OpmlConverter;
 import de.dala.simplenews.utilities.PrefUtilities;
 
-public class CategorySelectionFragment extends BaseFragment implements CategoryRecyclerAdapter.OnCategoryClicked, ChoiceModeRecyclerAdapter.ChoiceModeListener {
+public class CategorySelectionFragment extends BaseFragment implements CategoryRecyclerAdapter.OnCategoryClicked {
 
     private static final String CATEGORIES_KEY = "categories";
     private static final String RSS_PATH_KEY = "path";
@@ -49,8 +46,6 @@ public class CategorySelectionFragment extends BaseFragment implements CategoryR
     private CategoryRecyclerAdapter adapter;
 
     private String rssPath;
-    private ActionMode mActionMode;
-    private ShareActionProvider shareActionProvider;
     private OnCategorySelectionFragmentAction mListener;
 
 
@@ -102,30 +97,6 @@ public class CategorySelectionFragment extends BaseFragment implements CategoryR
         return rootView;
     }
 
-
-    @Override
-    public void startSelectionMode() {
-        mActionMode = getActivity().startActionMode(new ActionModeCallBack());
-    }
-
-    @Override
-    public void updateSelectionMode(int numberOfElements) {
-        if (mActionMode != null) {
-            mActionMode.setTitle(String.valueOf(numberOfElements));
-        }
-        if (shareActionProvider != null) {
-            shareActionProvider.setShareIntent(getShareIntent());
-        }
-    }
-
-    @Override
-    public void finishSelectionMode() {
-        if (mActionMode != null) {
-            mActionMode.finish();
-        }
-        shareActionProvider = null;
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -167,7 +138,7 @@ public class CategorySelectionFragment extends BaseFragment implements CategoryR
 
     private void initAdapter() {
         Collections.sort(categories);
-        adapter = new CategoryRecyclerAdapter(getActivity(), categories, rssPath, this, this);
+        adapter = new CategoryRecyclerAdapter(getActivity(), categories, rssPath, this);
         recyclerView.setAdapter(adapter);
         adapter.initTouch(recyclerView);
     }
@@ -286,67 +257,35 @@ public class CategorySelectionFragment extends BaseFragment implements CategoryR
         }
     }
 
-    private Intent getShareIntent() {
-        List<Category> categories = adapter.getItems();
-        Opml opml = OpmlConverter.convertCategoriesToOpml(categories);
-        String finalMessage = "";
-        try {
-            finalMessage = new XMLOutputter().outputString(new OPML20Generator().generate(opml));
-        } catch (FeedException e) {
-            e.printStackTrace();
-        }
-        Intent shareIntent = new Intent(Intent.ACTION_SEND);
-        shareIntent.setType("text/xml");
-        shareIntent.putExtra(Intent.EXTRA_TEXT,
-                finalMessage);
-        return shareIntent;
-    }
-
-    private class ActionModeCallBack implements ActionMode.Callback {
-
-        @Override
-        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-            mode.getMenuInflater().inflate(R.menu.contextual_category_selection_menu, menu);
-            MenuItem item = menu.findItem(R.id.menu_item_share);
-            if (item != null) {
-                shareActionProvider = (ShareActionProvider) item.getActionProvider();
-                if (shareActionProvider != null) {
-                    String shareHistoryFileName = ShareActionProvider.DEFAULT_SHARE_HISTORY_FILE_NAME;
-                    shareActionProvider.setShareHistoryFileName(shareHistoryFileName);
-                    shareActionProvider.setShareIntent(getShareIntent());
-                    shareActionProvider.setOnShareTargetSelectedListener(new ShareActionProvider.OnShareTargetSelectedListener() {
-                        @Override
-                        public boolean onShareTargetSelected(ShareActionProvider shareActionProvider, Intent intent) {
-                            return false;
+    @Override
+    public void onLongClick(Category category) {
+        final List<Category> categories = new ArrayList<>();
+        categories.add(category);
+        new MaterialDialog.Builder(getActivity())
+                .items(R.array.category_options)
+                .itemsCallback(new MaterialDialog.ListCallback() {
+                    @Override
+                    public void onSelection(MaterialDialog materialDialog, View view, int which, CharSequence charSequence) {
+                        switch (which) {
+                            case 0: //Share
+                                Opml opml = OpmlConverter.convertCategoriesToOpml(categories);
+                                String finalMessage = "";
+                                try {
+                                    finalMessage = new XMLOutputter().outputString(new OPML20Generator().generate(opml));
+                                } catch (FeedException e) {
+                                    e.printStackTrace();
+                                }
+                                Intent shareIntent = new Intent(Intent.ACTION_SEND);
+                                shareIntent.setType("text/xml");
+                                shareIntent.putExtra(Intent.EXTRA_TEXT,
+                                        finalMessage);
+                                startActivity(shareIntent);
+                                break;
+                            case 1: // Delete
+                                removeSelectedCategories(categories);
+                                break;
                         }
-                    });
-                }
-            }
-            return true;
-        }
-
-        @Override
-        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-            return false;
-        }
-
-        @Override
-        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-            List<Category> selectedCategories = adapter.getSelectedItems();
-            // close action mode
-            switch (item.getItemId()) {
-                case R.id.menu_item_remove:
-                    removeSelectedCategories(selectedCategories);
-                    break;
-            }
-            adapter.clearSelections();
-            return true;
-        }
-
-        @Override
-        public void onDestroyActionMode(ActionMode mode) {
-            adapter.clearSelections();
-        }
+                    }
+                }).show();
     }
-
 }

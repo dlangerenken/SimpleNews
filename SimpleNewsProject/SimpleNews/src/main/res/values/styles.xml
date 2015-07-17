@@ -1,18 +1,25 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="windowActionBar">false</item>
-        <item name="android:windowActionModeOverlay">true</item>
         <item name="windowActionModeOverlay">true</item>
-        <!--  <item name="colorPrimary">@color/primary</item>
-          <item name="colorPrimaryDark">@color/primaryDark</item>
-          <item name="colorAccent">@color/accent</item> -->
-    </style>
-
-    <style name="Toolbar" parent="Theme.AppCompat">
-       <!-- <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryDark">@color/primaryDark</item>
-        <item name="colorAccent">@color/accent</item> -->
+        <item name="colorAccent">@color/accent</item>
+        -->
     </style>
 
+    <style name="Toolbar" parent="Base.ThemeOverlay.AppCompat.Dark">
+        <item name="android:actionModeStyle">@style/Toolbar.ActionMode</item>
+    </style>
+
+    <style name="Toolbar.ActionMode">
+        <item name="android:actionModeBackground" tools:targetApi="21">@color/primaryDark</item>
+        <item name="android:actionModeShareDrawable" tools:targetApi="21">@drawable/ic_share_white
+        </item>
+        <item name="actionModeBackground">@color/primaryDark</item>
+        <item name="actionBarPopupTheme">@style/ThemeOverlay.AppCompat.Light</item>
+        <item name="backgroundSplit">@android:color/white</item>
+        <item name="actionModeShareDrawable">@drawable/ic_share_white</item>
+    </style>
 </resources>

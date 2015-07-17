@@ -59,11 +59,11 @@ public class Category implements Serializable, Parcelable, Comparable<Category> 
         this.name = name;
     }
 
-    public int getPrimaryColor(){
+    public int getPrimaryColor() {
         return ColorManager.getInstance().getColorByCategory(this);
     }
 
-    public int getSecondaryColor(){
+    public int getSecondaryColor() {
         return ColorManager.getInstance().getDarkColorByCategory(this);
     }
 
@@ -114,8 +114,8 @@ public class Category implements Serializable, Parcelable, Comparable<Category> 
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(name);
-        dest.writeLong(id);
+        dest.writeString(name == null ? "" : name);
+        dest.writeLong(id == null ? -1 : id);
         dest.writeInt(colorId);
         dest.writeInt(order == null ? -1 : order);
         dest.writeInt(isVisible ? 1 : 0);
@@ -123,10 +123,10 @@ public class Category implements Serializable, Parcelable, Comparable<Category> 
 
     @Override
     public int compareTo(Category another) {
-        if (another == null || another.order == null){
+        if (another == null || another.order == null) {
             return 1;
         }
-        if (order == null){
+        if (order == null) {
             return -1;
         }
         return order.compareTo(another.order);

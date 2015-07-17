@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 
+import javax.crypto.Cipher;
+
 import de.dala.simplenews.R;
 import de.dala.simplenews.common.Category;
 
@@ -79,4 +81,10 @@ public class ColorManager {
         return _instance;
     }
 
+    public static int moreAlpha(int currentColor, int alpha) {
+        int red = Color.red(currentColor);
+        int green = Color.green(currentColor);
+        int blue = Color.blue(currentColor);
+        return Color.argb(alpha, red, green, blue);
+    }
 }
