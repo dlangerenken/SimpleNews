@@ -43,12 +43,12 @@ public class CategoryUpdater {
     public static final int RESULT = 4;
     public static final int PART_RESULT = 5;
 
-    private Handler handler;
-    private Category category;
-    private IDatabaseHandler databaseHandler;
-    private boolean updateDatabase;
+    private final Handler handler;
+    private final Category category;
+    private final IDatabaseHandler databaseHandler;
+    private final boolean updateDatabase;
     private boolean isRunning = false;
-    private Context context;
+    private final Context context;
     private int finishedUpdates = 0;
     private int newEntries = 0;
     private UpdatingTask task;
@@ -62,14 +62,13 @@ public class CategoryUpdater {
         this.updateDatabase = updateDatabase;
     }
 
-    public boolean start() {
+    public void start() {
         if (isRunning) {
-            return false;
+            return;
         }
         isRunning = true;
         task = new UpdatingTask();
         task.execute();
-        return true;
     }
 
     private void dropCategory() {
@@ -248,7 +247,7 @@ public class CategoryUpdater {
                         }
                         receivedEntries = future.get();
                         entries.addAll(receivedEntries);
-                    } catch (CancellationException e) {
+                    } catch (CancellationException ignored) {
                     }
                     getNewItems(receivedEntries);
                 }
@@ -271,8 +270,8 @@ public class CategoryUpdater {
     }
 
     private class FeedFutureTask implements Callable<List<Entry>> {
-        SyndFeedInput input = new SyndFeedInput();
-        Feed mFeed;
+        final SyndFeedInput input = new SyndFeedInput();
+        final Feed mFeed;
 
         public FeedFutureTask(Feed feed) {
             mFeed = feed;

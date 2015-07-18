@@ -1,6 +1,5 @@
 package de.dala.simplenews.test;
 
-import android.os.Environment;
 import android.test.InstrumentationTestCase;
 
 import com.rometools.rome.feed.synd.SyndContent;
@@ -34,13 +33,6 @@ public class FeedTests extends InstrumentationTestCase {
     protected void setUp() throws Exception {
         super.setUp();
         XmlParser.Init(getInstrumentation().getContext());
-    }
-
-    /* (non-Javadoc)
-     * @see junit.framework.TestCase#tearDown()
-     */
-    protected void tearDown() throws Exception {
-        super.tearDown();
     }
 
 

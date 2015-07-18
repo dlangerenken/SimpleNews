@@ -1,7 +1,5 @@
 package de.dala.simplenews.database;
 
-import android.database.sqlite.SQLiteDatabase;
-
 import static de.dala.simplenews.database.DatabaseHandler.ENTRY_VISITED_DATE;
 import static de.dala.simplenews.database.DatabaseHandler.concatenateQueries;
 

@@ -14,7 +14,6 @@ import java.io.InputStream;
 import de.dala.simplenews.common.Category;
 import de.dala.simplenews.common.Feed;
 import de.dala.simplenews.common.News;
-import de.dala.simplenews.utilities.ColorManager;
 
 /**
  * Created by Daniel on 23.12.13.
@@ -34,7 +33,7 @@ public class XmlParser {
     /**
      * TAG for logging *
      */
-    private static String TAG = "XmlParser";
+    private static final String TAG = "XmlParser";
     private static XmlParser _instance;
 
     //--------------------------------------------------------------------------------
@@ -45,7 +44,7 @@ public class XmlParser {
      *
      * @param context  current Context
      */
-    private Context context;
+    private final Context context;
 
 
     /**
@@ -55,7 +54,7 @@ public class XmlParser {
      *
      * @param context                current Context
      */
-    public XmlParser(Context context) {
+    private XmlParser(Context context) {
         this.context = context;
     }
 
@@ -121,7 +120,7 @@ public class XmlParser {
      * @param parser
      * @param news
      */
-    public void readNews(XmlPullParser parser, News news) throws XmlPullParserException, IOException {
+    private void readNews(XmlPullParser parser, News news) throws XmlPullParserException, IOException {
         if (parser == null || news == null) return;
         // Parse changelog node
         parser.require(XmlPullParser.START_TAG, null, TAG_NEWS);
@@ -149,7 +148,7 @@ public class XmlParser {
      * @param news
      * @throws Exception
      */
-    protected void readCategory(XmlPullParser parser, News news) throws XmlPullParserException, IOException {
+    private void readCategory(XmlPullParser parser, News news) throws XmlPullParserException, IOException {
 
         if (parser == null) return;
 

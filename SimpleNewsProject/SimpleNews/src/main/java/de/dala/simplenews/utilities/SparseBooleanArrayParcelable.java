@@ -33,7 +33,7 @@ public class SparseBooleanArrayParcelable extends SparseBooleanArray implements 
         }
     };
 
-    public SparseBooleanArrayParcelable() {
+    private SparseBooleanArrayParcelable() {
 
     }
 

@@ -11,11 +11,11 @@ import java.util.List;
 public abstract class ChoiceModeRecyclerAdapter<VH extends RecyclerView.ViewHolder, Item extends Comparable> extends RecyclerView.Adapter<VH> {
 
     private List<Item> mItems;
-    private SparseBooleanArray mSelectedPositions = new SparseBooleanArray();
+    private final SparseBooleanArray mSelectedPositions = new SparseBooleanArray();
     private boolean mInSelectionMode = false;
     private static final String SELECTED_POSITIONS = "positions";
     private static final String SELECTING_MODE = "inSelectionMode";
-    private ChoiceModeListener mListener;
+    private final ChoiceModeListener mListener;
 
     public interface ChoiceModeListener {
         void startSelectionMode();
@@ -25,23 +25,24 @@ public abstract class ChoiceModeRecyclerAdapter<VH extends RecyclerView.ViewHold
         void finishSelectionMode();
     }
 
-    public ChoiceModeRecyclerAdapter(List<Item> items, ChoiceModeListener listener) {
+    ChoiceModeRecyclerAdapter(List<Item> items, ChoiceModeListener listener) {
+        super();
         mItems = items;
         mListener = listener;
     }
 
-    public void setItemChecked(int position, boolean isChecked) {
+    private void setItemChecked(int position, boolean isChecked) {
         mSelectedPositions.put(position, isChecked);
         notifyItemChanged(position);
         updateSelection();
     }
 
-    public void toggle(Item item) {
+    void toggle(Item item) {
         int index = indexOf(item);
         setItemChecked(index, !isItemChecked(index));
     }
 
-    public void toggleIfActionMode(Item item) {
+    void toggleIfActionMode(Item item) {
         if (isInSelectionMode()) {
             toggle(item);
         }
@@ -57,11 +58,11 @@ public abstract class ChoiceModeRecyclerAdapter<VH extends RecyclerView.ViewHold
         setSelectionMode(false);
     }
 
-    public boolean isItemChecked(int key) {
+    boolean isItemChecked(int key) {
         return mSelectedPositions.get(key);
     }
 
-    public void setSelectionMode(boolean selectionMode) {
+    private void setSelectionMode(boolean selectionMode) {
         if (mListener != null) {
             if (selectionMode && !mInSelectionMode) {
                 mListener.startSelectionMode();
@@ -86,11 +87,11 @@ public abstract class ChoiceModeRecyclerAdapter<VH extends RecyclerView.ViewHold
         return sum;
     }
 
-    public boolean isInSelectionMode() {
+    boolean isInSelectionMode() {
         return mInSelectionMode;
     }
 
-    public List<Integer> getSelectedPositions() {
+    private List<Integer> getSelectedPositions() {
         List<Integer> positions = new ArrayList<>();
         for (int i = 0; i < mSelectedPositions.size(); i++) {
             if (mSelectedPositions.valueAt(i)) {
@@ -130,7 +131,7 @@ public abstract class ChoiceModeRecyclerAdapter<VH extends RecyclerView.ViewHold
         return getItems().get(index);
     }
 
-    public int indexOf(Item item) {
+    private int indexOf(Item item) {
         return getItems().indexOf(item);
     }
 

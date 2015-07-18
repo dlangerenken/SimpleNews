@@ -200,12 +200,11 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
     }
 
     @Override
-    public long addCategory(Category category, Boolean excludeFeeds, Boolean excludeEntries) {
+    public void addCategory(Category category, Boolean excludeFeeds, Boolean excludeEntries) {
         IPersistableObject<Category> persistence = new PersistableCategories(null, excludeFeeds, excludeEntries, null);
-        List<Category> result = new ArrayList<Category>();
+        List<Category> result = new ArrayList<>();
         result.add(category);
         persistence.store(result);
-        return category.getId();
     }
 
     @Override
@@ -215,10 +214,9 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
     }
 
     @Override
-    public int removeCategory(long categoryId, Boolean excludeFeeds, Boolean excludeEntries) {
+    public void removeCategory(long categoryId, Boolean excludeFeeds, Boolean excludeEntries) {
         IPersistableObject<Category> persistence = new PersistableCategories(categoryId, excludeFeeds, excludeEntries, null);
         persistence.delete();
-        return 0;
     }
 
     @Override
@@ -240,7 +238,7 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
     @Override
     public long addFeed(long categoryId, Feed feed, Boolean excludeEntries) {
         IPersistableObject<Feed> persistence = new PersistableFeeds(categoryId, null, excludeEntries, null);
-        List<Feed> result = new ArrayList<Feed>();
+        List<Feed> result = new ArrayList<>();
         result.add(feed);
         persistence.store(result);
         return feed.getId();
@@ -253,10 +251,9 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
     }
 
     @Override
-    public int removeFeeds(Long categoryId, Long feedId, Boolean excludeEntries) {
+    public void removeFeeds(Long categoryId, Long feedId, Boolean excludeEntries) {
         IPersistableObject<Feed> persistence = new PersistableFeeds(categoryId, feedId, excludeEntries, null);
         persistence.delete();
-        return 0;
     }
 
     @Override
@@ -276,16 +273,11 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
     }
 
     @Override
-    public long addEntry(long categoryId, long feedId, Entry entry) {
+    public void addEntry(long categoryId, long feedId, Entry entry) {
         IPersistableObject<Entry> persistence = new PersistableEntries(categoryId, feedId, null, null);
         List<Entry> result = new ArrayList<>();
         result.add(entry);
         persistence.store(result);
-        if (entry.getId() == null) {
-            //already added to database
-            return -1;
-        }
-        return entry.getId();
     }
 
     @Override
@@ -295,17 +287,15 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
     }
 
     @Override
-    public int updateEntry(Entry entry) {
+    public void updateEntry(Entry entry) {
         IPersistableObject<Entry> persistence = new PersistableEntries(entry.getCategoryId(), entry.getFeedId(), entry.getId(), null);
         long[] ids = update(persistence, entry);
-        return ids == null ? 0 : ids.length;
     }
 
     @Override
-    public int removeEntries(Long categoryId, Long feedId, Long entryId) {
+    public void removeEntries(Long categoryId, Long feedId, Long entryId) {
         IPersistableObject<Entry> persistence = new PersistableEntries(categoryId, feedId, entryId, null);
         persistence.delete();
-        return 0;
     }
 
     @Override
@@ -386,28 +376,26 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
     }
 
     @Override
-    public int updateCategory(Category category) {
+    public void updateCategory(Category category) {
         IPersistableObject<Category> persistence = new PersistableCategories(category.getId(), null, null, null);
         long[] ids = update(persistence, category);
-        return ids == null ? 0 : ids.length;
     }
 
     @Override
-    public int updateFeed(Feed feed) {
+    public void updateFeed(Feed feed) {
         IPersistableObject<Feed> persistence = new PersistableFeeds(feed.getCategoryId(), feed.getId(), null, null);
         long[] ids = update(persistence, feed);
-        return ids == null ? 0 : ids.length;
     }
 
     private <E> long[] update(final IPersistableObject<E> persistableResource, E resource) {
-        List<E> result = new ArrayList<E>();
+        List<E> result = new ArrayList<>();
         result.add(resource);
         return persistableResource.store(result);
     }
 
     private <E> List<E> load(final IPersistableObject<E> persistableResource) {
         Cursor cursor = persistableResource.getCursor();
-        List<E> cached = new ArrayList<E>();
+        List<E> cached = new ArrayList<>();
         try {
             if (!cursor.moveToFirst()) {
                 return cached;
@@ -427,10 +415,8 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
             News news = XmlParser.getInstance().readDefaultNewsFile(xml);
             addCategories(news.getCategories(), false, false);
             PrefUtilities.getInstance().saveLoading(true);
-        } catch (XmlPullParserException e) {
+        } catch (XmlPullParserException | IOException e) {
             e.printStackTrace();
-        } catch (IOException io) {
-            io.printStackTrace();
         }
     }
 }

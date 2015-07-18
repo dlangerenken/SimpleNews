@@ -18,9 +18,9 @@ import de.dala.simplenews.utilities.PrefUtilities;
 import de.dala.simplenews.utilities.Utilities;
 
 public class CategoryAssignRecyclerAdapter extends RecyclerView.Adapter<CategoryAssignRecyclerAdapter.CategoryViewHolder> {
-    private Context mContext;
-    private OnClickListener mListener;
-    private List<Category> mCategories;
+    private final Context mContext;
+    private final OnClickListener mListener;
+    private final List<Category> mCategories;
 
     public interface OnClickListener {
         void onClick(Category category);
@@ -55,11 +55,7 @@ public class CategoryAssignRecyclerAdapter extends RecyclerView.Adapter<Category
         });
         int pad = mContext.getResources().getDimensionPixelSize(R.dimen.card_layout_padding);
         holder.itemView.setPadding(pad, pad, pad, pad);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            holder.itemView.setBackground(Utilities.getPressedColorRippleDrawable(mContext.getResources().getColor(R.color.list_background), PrefUtilities.getInstance().getCurrentColor()));
-        } else {
-            holder.itemView.setBackgroundResource(mContext.getResources().getColor(R.color.list_background));
-        }
+        Utilities.setPressedColorRippleDrawable(mContext.getResources().getColor(R.color.list_background), PrefUtilities.getInstance().getCurrentColor(), holder.itemView);
     }
 
     @Override
@@ -69,8 +65,8 @@ public class CategoryAssignRecyclerAdapter extends RecyclerView.Adapter<Category
     }
 
     class CategoryViewHolder extends RecyclerView.ViewHolder {
-        public TextView name;
-        public ImageView image;
+        public final TextView name;
+        public final ImageView image;
 
         public CategoryViewHolder(View itemView) {
             super(itemView);

@@ -36,7 +36,7 @@ public class EmptyObservableRecyclerView extends RecyclerView {
         super(context, attrs, defStyle);
     }
 
-    void checkIfEmpty() {
+    private void checkIfEmpty() {
         if (emptyView != null) {
             if (getAdapter().getItemCount() == 0) {
                 emptyView.animate().alpha(1).setDuration(500).start();

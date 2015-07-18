@@ -2,8 +2,8 @@ package de.dala.simplenews.recycler;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.RippleDrawable;
 import android.os.Build;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -25,17 +25,18 @@ import de.dala.simplenews.R;
 import de.dala.simplenews.common.Category;
 import de.dala.simplenews.common.Entry;
 import de.dala.simplenews.utilities.ExpandCollapseHelper;
+import de.dala.simplenews.utilities.PrefUtilities;
 import de.dala.simplenews.utilities.UIUtils;
 import de.dala.simplenews.utilities.Utilities;
 
 
 public class ExpandableItemRecyclerAdapter extends ChoiceModeRecyclerAdapter<ExpandableItemRecyclerAdapter.EntryViewHolder, Entry> {
-    private Category mCategory;
-    private Context mContext;
-    private RecyclerView mRecyclerView;
+    private final Category mCategory;
+    private final Context mContext;
+    private final RecyclerView mRecyclerView;
 
-    private ItemClickListener mItemClickListener;
-    private Set<Entry> mExpandedItemIds;
+    private final ItemClickListener mItemClickListener;
+    private final Set<Entry> mExpandedItemIds;
 
     public interface ItemClickListener {
 
@@ -112,34 +113,27 @@ public class ExpandableItemRecyclerAdapter extends ChoiceModeRecyclerAdapter<Exp
         } else {
             collapse(currentEntry, holder.contentLayout, false);
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            holder.itemView.setClickable(true);
-            RippleDrawable drawable = Utilities.getPressedColorRippleDrawable(mContext.getResources().getColor(R.color.list_background), mCategory.getPrimaryColor());
-            holder.itemView.setBackground(drawable);
-        } else {
-            holder.itemView.setBackgroundResource(mContext.getResources().getColor(R.color.list_background));
-        }
+        Utilities.setPressedColorRippleDrawable(mContext.getResources().getColor(R.color.list_background), PrefUtilities.getInstance().getCurrentColor(), holder.itemView);
     }
 
     @Override
     public EntryViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.news_card_layout, parent, false);
-        return new EntryViewHolder(itemView);
+        return new EntryViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.news_card_layout, parent, false));
     }
 
-    static class EntryViewHolder extends RecyclerView.ViewHolder {
-        public LinearLayout titleLayout;
-        public LinearLayout contentLayout;
-        public View mainContent;
+    public static class EntryViewHolder extends RecyclerView.ViewHolder {
+        public final LinearLayout titleLayout;
+        public final LinearLayout contentLayout;
+        public final View mainContent;
 
         /* Content */
-        public View colorBorderView;
-        public TextView descriptionTextView;
+        public final View colorBorderView;
+        public final TextView descriptionTextView;
 
         /* Title */
-        public ImageView imageView;
-        public TextView titleTextView;
-        public TextView infoTextView;
+        public final ImageView imageView;
+        public final TextView titleTextView;
+        public final TextView infoTextView;
 
         interface ClickListener {
             void onSelectItem();
@@ -242,9 +236,9 @@ public class ExpandableItemRecyclerAdapter extends ChoiceModeRecyclerAdapter<Exp
     private void setImageDrawable(ImageView entryType, Entry entry) {
         Drawable drawable = null;
         if (entry.getFavoriteDate() != null && entry.getFavoriteDate() > 0) {
-            drawable = mContext.getResources().getDrawable(R.drawable.ic_fav_color);
+            drawable = ContextCompat.getDrawable(mContext, R.drawable.ic_fav_color);
         } else if (entry.getVisitedDate() != null && entry.getVisitedDate() > 0) {
-            drawable = mContext.getResources().getDrawable(R.drawable.ic_seen_color);
+            drawable = ContextCompat.getDrawable(mContext, R.drawable.ic_seen_color);
         }
         entryType.setImageDrawable(drawable);
     }

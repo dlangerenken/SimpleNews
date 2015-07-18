@@ -2,12 +2,12 @@ package de.dala.simplenews.ui;
 
 import android.content.ActivityNotFoundException;
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.view.LayoutInflater;
@@ -50,15 +50,8 @@ public class NewsOverViewFragment extends BaseFragment implements ViewPager.OnPa
 
     private ArrayList<String> newsTypeTags;
 
-    public NewsOverViewFragment() {
-    }
 
-    public static Fragment getInstance(int entryType) {
-        Fragment fragment = new NewsOverViewFragment();
-        Bundle bundle = new Bundle();
-        bundle.putInt("entryType", entryType);
-        fragment.setArguments(bundle);
-        return fragment;
+    public NewsOverViewFragment() {
     }
 
     @Override
@@ -70,6 +63,14 @@ public class NewsOverViewFragment extends BaseFragment implements ViewPager.OnPa
             throw new ActivityNotFoundException("NewsActivity not found");
         }
         entryType = getArguments().getInt("entryType", ALL);
+    }
+
+    public static Fragment getInstance(int entryType) {
+        Fragment fragment = new NewsOverViewFragment();
+        Bundle bundle = new Bundle();
+        bundle.putInt("entryType", entryType);
+        fragment.setArguments(bundle);
+        return fragment;
     }
 
     @Override
@@ -160,6 +161,8 @@ public class NewsOverViewFragment extends BaseFragment implements ViewPager.OnPa
         return fragments;
     }
 
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         setHasOptionsMenu(true);
@@ -217,7 +220,7 @@ public class NewsOverViewFragment extends BaseFragment implements ViewPager.OnPa
     }
 
 
-    public void changeColor(int primaryColor, int secondaryColor) {
+    private void changeColor(int primaryColor, int secondaryColor) {
         newsActivity.changeColor(primaryColor, secondaryColor);
         initNewsTypeIcon();
         setColor(subactionButton1, primaryColor, secondaryColor);
@@ -257,9 +260,9 @@ public class NewsOverViewFragment extends BaseFragment implements ViewPager.OnPa
     }
 
     private void updateNewsIcon() {
-        newsTypeButton.getMenuIconView().setImageDrawable(getResources().getDrawable(actionButtonIds[entryType % 3]));
-        subactionButton1.setImageDrawable(getResources().getDrawable(actionButtonIds[(entryType + 1) % 3]));
-        subactionButton2.setImageDrawable(getResources().getDrawable(actionButtonIds[(entryType + 2) % 3]));
+        newsTypeButton.getMenuIconView().setImageDrawable(ContextCompat.getDrawable(getActivity(),actionButtonIds[entryType % 3]));
+        subactionButton1.setImageDrawable(ContextCompat.getDrawable(getActivity(), actionButtonIds[(entryType + 1) % 3]));
+        subactionButton2.setImageDrawable(ContextCompat.getDrawable(getActivity(), actionButtonIds[(entryType + 2) % 3]));
         newsTypeButton.setTag((entryType));
         subactionButton1.setTag((entryType + 1) % 3);
         subactionButton2.setTag((entryType + 2) % 3);
@@ -296,7 +299,7 @@ public class NewsOverViewFragment extends BaseFragment implements ViewPager.OnPa
 
     public class MyPagerAdapter extends FragmentPagerAdapter {
 
-        private FragmentManager mFragmentManager;
+        private final FragmentManager mFragmentManager;
 
         public MyPagerAdapter(FragmentManager fm) {
             super(fm);

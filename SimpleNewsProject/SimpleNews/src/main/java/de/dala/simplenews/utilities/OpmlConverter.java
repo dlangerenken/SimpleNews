@@ -18,15 +18,15 @@ import de.dala.simplenews.common.Feed;
     public class OpmlConverter {
 
     public static List<Feed> convertOpmlListToFeedList(Opml opml) {
-        List<Feed> feeds = new ArrayList<Feed>();
+        List<Feed> feeds = new ArrayList<>();
         for (Outline element : opml.getOutlines()) {
             feeds.addAll(convertOutlineToFeedList(element));
         }
         return feeds;
     }
 
-    public static List<Feed> convertOutlineToFeedList(Outline outline) {
-        List<Feed> feeds = new ArrayList<Feed>();
+    private static List<Feed> convertOutlineToFeedList(Outline outline) {
+        List<Feed> feeds = new ArrayList<>();
         if (outline != null && outline.getChildren() != null && outline.getChildren().size() > 0) {
             for (Outline childrenOutline : outline.getChildren()) {
                 feeds.addAll(convertOutlineToFeedList(childrenOutline));
@@ -37,7 +37,7 @@ import de.dala.simplenews.common.Feed;
         return feeds;
     }
 
-    public static Feed convertOutlineToFeed(Outline element) {
+    private static Feed convertOutlineToFeed(Outline element) {
         Feed feed = new Feed();
         feed.setDescription(element.getText());
         feed.setTitle(element.getTitle());
@@ -51,10 +51,10 @@ import de.dala.simplenews.common.Feed;
         return feed;
     }
 
-    public static Outline convertFeedsToOutline(String name, List<Feed> feeds) {
+    private static Outline convertFeedsToOutline(String name, List<Feed> feeds) {
         Outline outline = new Outline();
         outline.setTitle(name);
-        List<Outline> children = new ArrayList<Outline>();
+        List<Outline> children = new ArrayList<>();
         for (Feed feed : feeds) {
             Outline childOutline;
             URL htmlUrl = null;
@@ -85,7 +85,7 @@ import de.dala.simplenews.common.Feed;
 
 
     public static Opml convertCategoriesToOpml(List<Category> categories) {
-        List<Outline> children = new ArrayList<Outline>();
+        List<Outline> children = new ArrayList<>();
         for (Category category : categories){
             children.add(convertFeedsToOutline(category.getName(), category.getFeeds()));
         }

@@ -31,10 +31,10 @@ public class Category implements Serializable, Parcelable, Comparable<Category> 
     private Long lastUpdateTime;
 
     public Category() {
-        feeds = new ArrayList<Feed>();
+        feeds = new ArrayList<>();
     }
 
-    public Category(Parcel in) {
+    private Category(Parcel in) {
         this.name = in.readString();
         this.id = in.readLong();
         this.colorId = in.readInt();

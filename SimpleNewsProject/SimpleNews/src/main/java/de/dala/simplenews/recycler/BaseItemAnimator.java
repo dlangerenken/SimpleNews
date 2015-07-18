@@ -14,25 +14,28 @@ public abstract class BaseItemAnimator extends RecyclerView.ItemAnimator {
 
     private static final boolean DEBUG = false;
 
-    private ArrayList<ViewHolder> mPendingRemovals = new ArrayList<>();
-    private ArrayList<ViewHolder> mPendingAdditions = new ArrayList<>();
-    private ArrayList<MoveInfo> mPendingMoves = new ArrayList<>();
-    private ArrayList<ChangeInfo> mPendingChanges = new ArrayList<>();
+    private final ArrayList<ViewHolder> mPendingRemovals = new ArrayList<>();
+    private final ArrayList<ViewHolder> mPendingAdditions = new ArrayList<>();
+    private final ArrayList<MoveInfo> mPendingMoves = new ArrayList<>();
+    private final ArrayList<ChangeInfo> mPendingChanges = new ArrayList<>();
 
-    private ArrayList<ArrayList<ViewHolder>> mAdditionsList =
+    private final ArrayList<ArrayList<ViewHolder>> mAdditionsList =
             new ArrayList<>();
-    private ArrayList<ArrayList<MoveInfo>> mMovesList = new ArrayList<>();
-    private ArrayList<ArrayList<ChangeInfo>> mChangesList = new ArrayList<>();
+    private final ArrayList<ArrayList<MoveInfo>> mMovesList = new ArrayList<>();
+    private final ArrayList<ArrayList<ChangeInfo>> mChangesList = new ArrayList<>();
 
-    protected ArrayList<ViewHolder> mAddAnimations = new ArrayList<>();
-    private ArrayList<ViewHolder> mMoveAnimations = new ArrayList<>();
-    protected ArrayList<ViewHolder> mRemoveAnimations = new ArrayList<>();
-    private ArrayList<ViewHolder> mChangeAnimations = new ArrayList<>();
+    final ArrayList<ViewHolder> mAddAnimations = new ArrayList<>();
+    private final ArrayList<ViewHolder> mMoveAnimations = new ArrayList<>();
+    final ArrayList<ViewHolder> mRemoveAnimations = new ArrayList<>();
+    private final ArrayList<ViewHolder> mChangeAnimations = new ArrayList<>();
 
     private static class MoveInfo {
 
-        public ViewHolder holder;
-        public int fromX, fromY, toX, toY;
+        public final ViewHolder holder;
+        public final int fromX;
+        public final int fromY;
+        public final int toX;
+        public final int toY;
 
         private MoveInfo(ViewHolder holder, int fromX, int fromY, int toX, int toY) {
             this.holder = holder;
@@ -92,7 +95,7 @@ public abstract class BaseItemAnimator extends RecyclerView.ItemAnimator {
         mPendingRemovals.clear();
         // Next, move stuff
         if (movesPending) {
-            final ArrayList<MoveInfo> moves = new ArrayList<MoveInfo>();
+            final ArrayList<MoveInfo> moves = new ArrayList<>();
             moves.addAll(mPendingMoves);
             mMovesList.add(moves);
             mPendingMoves.clear();
@@ -116,7 +119,7 @@ public abstract class BaseItemAnimator extends RecyclerView.ItemAnimator {
         }
         // Next, change stuff, to run in parallel with move animations
         if (changesPending) {
-            final ArrayList<ChangeInfo> changes = new ArrayList<ChangeInfo>();
+            final ArrayList<ChangeInfo> changes = new ArrayList<>();
             changes.addAll(mPendingChanges);
             mChangesList.add(changes);
             mPendingChanges.clear();
@@ -139,7 +142,7 @@ public abstract class BaseItemAnimator extends RecyclerView.ItemAnimator {
         }
         // Next, add stuff
         if (additionsPending) {
-            final ArrayList<ViewHolder> additions = new ArrayList<ViewHolder>();
+            final ArrayList<ViewHolder> additions = new ArrayList<>();
             additions.addAll(mPendingAdditions);
             mAdditionsList.add(additions);
             mPendingAdditions.clear();
@@ -169,10 +172,7 @@ public abstract class BaseItemAnimator extends RecyclerView.ItemAnimator {
 
     protected abstract void animateAddImpl(final RecyclerView.ViewHolder holder);
 
-    protected void preAnimateRemove(final RecyclerView.ViewHolder holder) {
-    }
-
-    protected void preAnimateAdd(final RecyclerView.ViewHolder holder) {
+    void preAnimateAdd(final RecyclerView.ViewHolder holder) {
     }
 
     @Override
@@ -253,6 +253,8 @@ public abstract class BaseItemAnimator extends RecyclerView.ItemAnimator {
                 dispatchFinishedWhenDone();
             }
         }).start();
+    }
+    protected void preAnimateRemove(final RecyclerView.ViewHolder holder) {
     }
 
     @Override
@@ -563,13 +565,13 @@ public abstract class BaseItemAnimator extends RecyclerView.ItemAnimator {
         dispatchAnimationsFinished();
     }
 
-    void cancelAll(List<ViewHolder> viewHolders) {
+    private void cancelAll(List<ViewHolder> viewHolders) {
         for (int i = viewHolders.size() - 1; i >= 0; i--) {
             ViewCompat.animate(viewHolders.get(i).itemView).cancel();
         }
     }
 
-    void reset(View v) {
+    private void reset(View v) {
         ViewCompat.setAlpha(v, 1);
         ViewCompat.setScaleY(v, 1);
         ViewCompat.setScaleX(v, 1);
@@ -600,7 +602,7 @@ public abstract class BaseItemAnimator extends RecyclerView.ItemAnimator {
 
     protected class DefaultAddVpaListener extends VpaListenerAdapter {
 
-        RecyclerView.ViewHolder mViewHolder;
+        final RecyclerView.ViewHolder mViewHolder;
 
         public DefaultAddVpaListener(final RecyclerView.ViewHolder holder) {
             mViewHolder = holder;
@@ -627,7 +629,7 @@ public abstract class BaseItemAnimator extends RecyclerView.ItemAnimator {
 
     protected class DefaultRemoveVpaListener extends VpaListenerAdapter {
 
-        RecyclerView.ViewHolder mViewHolder;
+        final RecyclerView.ViewHolder mViewHolder;
 
         public DefaultRemoveVpaListener(final RecyclerView.ViewHolder holder) {
             mViewHolder = holder;

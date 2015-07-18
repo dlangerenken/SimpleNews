@@ -1,4 +1,5 @@
 package de.dala.simplenews.ui;
+
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -57,7 +58,7 @@ public class BaseFragment extends Fragment {
         } catch (NoSuchFieldException e) {
             e.printStackTrace();
             return defValue;
-        } catch (Resources.NotFoundException e){
+        } catch (Resources.NotFoundException e) {
             e.printStackTrace();
             return defValue;
         }

@@ -4,7 +4,6 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -31,19 +30,19 @@ import de.dala.simplenews.common.Feed;
 import de.dala.simplenews.utilities.OpmlConverter;
 import de.dala.simplenews.utilities.Utilities;
 
-public class OpmlImportFragment extends BaseFragment  {
+public class OpmlImportFragment extends BaseFragment {
 
     private OnFeedsLoaded parent;
     private Button importButton;
     private ProgressBar importProgres;
     private ImportAsyncTask task;
 
+    public OpmlImportFragment() {
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-    }
-
-    public OpmlImportFragment() {
     }
 
     @Override

@@ -13,17 +13,17 @@ import java.util.Date;
 
 @SuppressLint("CommitPrefEdits")
 public class PrefUtilities {
-    public static final String XML_LOADED = "xmlLoaded";
-    public static final String ASK_FOR_RATING = "ask_for_rating";
-    public static final String LAUNCH_COUNT = "launch_count";
-    public static final String FIRST_DAY_OF_LAUNCH = "first_launch_time";
-    public static final String TIME_FOR_REFRESH = "time_for_refresh";
-    public static final String DEPRECATED_TIME = "deprecated_time";
-    public static final String SHORTEN_LINKS = "shorten_links";
-    public static final String MULTIPLE_COLUMNS_PORTRAIT = "multiple_columns_portrait";
-    public static final String MULTIPLE_COLUMNS_LANDSCAPE = "multiple_columns_landscape";
-    public static final String CATEGORY_INDEX = "category_index";
-    public static final String CURRENT_COLOR = "current_color";
+    private static final String XML_LOADED = "xmlLoaded";
+    private static final String ASK_FOR_RATING = "ask_for_rating";
+    private static final String LAUNCH_COUNT = "launch_count";
+    private static final String FIRST_DAY_OF_LAUNCH = "first_launch_time";
+    private static final String TIME_FOR_REFRESH = "time_for_refresh";
+    private static final String DEPRECATED_TIME = "deprecated_time";
+    private static final String SHORTEN_LINKS = "shorten_links";
+    private static final String MULTIPLE_COLUMNS_PORTRAIT = "multiple_columns_portrait";
+    private static final String MULTIPLE_COLUMNS_LANDSCAPE = "multiple_columns_landscape";
+    private static final String CATEGORY_INDEX = "category_index";
+    private static final String CURRENT_COLOR = "current_color";
 
     /**
      * Per the design guidelines, you should show the drawer on launch until the user manually
@@ -31,10 +31,10 @@ public class PrefUtilities {
      */
     private static final String PREF_USER_LEARNED_DRAWER = "navigation_drawer_learned";
     private static PrefUtilities _instance;
-    private static long DEFAULT_TIME_FOR_REFRESH = 1000 * 60 * 60; //one hour
-    private static long DEFAULT_DEPRECATED_TIME = 1000 * 60 * 60 * 24 * 3; // three days
+    private static final long DEFAULT_TIME_FOR_REFRESH = 1000 * 60 * 60; //one hour
+    private static final long DEFAULT_DEPRECATED_TIME = 1000 * 60 * 60 * 24 * 3; // three days
 
-    private SharedPreferences preferences;
+    private final SharedPreferences preferences;
 
     private PrefUtilities(Context context) {
         preferences = PreferenceManager
@@ -153,7 +153,7 @@ public class PrefUtilities {
      *
      * @param editor
      */
-    public static void save(final SharedPreferences.Editor editor) {
+    private static void save(final SharedPreferences.Editor editor) {
         if (isEditorApplyAvailable()) {
             editor.apply();
         } else {

@@ -18,9 +18,9 @@ import android.view.View;
 @SuppressWarnings("UnnecessaryFullyQualifiedName")
 public class GripView extends View {
 
-    public static final int DEFAULT_DOT_COLOR = android.R.color.darker_gray;
-    public static final float DEFAULT_DOT_SIZE_RADIUS_DP = 2;
-    public static final int DEFAULT_COLUMN_COUNT = 2;
+    private static final int DEFAULT_DOT_COLOR = android.R.color.darker_gray;
+    private static final float DEFAULT_DOT_SIZE_RADIUS_DP = 2;
+    private static final int DEFAULT_COLUMN_COUNT = 2;
 
     private static final int[] ATTRS = {android.R.attr.color};
 

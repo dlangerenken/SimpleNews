@@ -33,11 +33,11 @@ import static de.dala.simplenews.database.DatabaseHandler.concatenateQueries;
 
 public class PersistableEntries implements IPersistableObject<Entry> {
 
-    private Long mCategoryId;
-    private Long mFeedId;
-    private Long mEntryId;
-    private Boolean mOnlyVisible;
-    private SQLiteDatabase db;
+    private final Long mCategoryId;
+    private final Long mFeedId;
+    private final Long mEntryId;
+    private final Boolean mOnlyVisible;
+    private final SQLiteDatabase db;
 
     private static final String entryTableShortName = "entryTable";
     private static final String feedTableShortName = "cursorTable";
@@ -51,10 +51,10 @@ public class PersistableEntries implements IPersistableObject<Entry> {
         db = DatabaseHandler.getDbInstance();
     }
 
-    protected String getQuery() {
+    String getQuery() {
         String query = null;
         if (mCategoryId != null) {
-            query = concatenateQueries(query, entryTableShortName + "." + ENTRY_CATEGORY_ID + "=" + mCategoryId);
+            query = concatenateQueries(null, entryTableShortName + "." + ENTRY_CATEGORY_ID + "=" + mCategoryId);
         }
         if (mFeedId != null) {
             query = concatenateQueries(query, entryTableShortName + "." + ENTRY_FEED_ID + "=" + mFeedId);
@@ -88,7 +88,7 @@ public class PersistableEntries implements IPersistableObject<Entry> {
         return loadFromCursor(cursor);
     }
 
-    public static Entry loadFromCursor(Cursor cursor) {
+    private static Entry loadFromCursor(Cursor cursor) {
         Entry entry = new Entry();
         try {
             entry.setId(cursor.getLong(0));
@@ -166,7 +166,7 @@ public class PersistableEntries implements IPersistableObject<Entry> {
     public void delete() {
         String query = null;
         if (mCategoryId != null) {
-            query = concatenateQueries(query, ENTRY_CATEGORY_ID + "=" + mCategoryId);
+            query = concatenateQueries(null, ENTRY_CATEGORY_ID + "=" + mCategoryId);
         }
         if (mFeedId != null) {
             query = concatenateQueries(query, ENTRY_FEED_ID + "=" + mFeedId);
@@ -179,7 +179,7 @@ public class PersistableEntries implements IPersistableObject<Entry> {
         db.delete(TABLE_ENTRY, query, null);
     }
 
-    public List<Entry> getSimilarEntries(Entry oldEntry) {
+    private List<Entry> getSimilarEntries(Entry oldEntry) {
         List<Entry> entries = new ArrayList<>();
         if (oldEntry != null) {
             String desc = oldEntry.getLink() == null ? "" : oldEntry.getLink();

@@ -11,7 +11,6 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
-import android.view.ViewAnimationUtils;
 import android.view.Window;
 import android.view.WindowManager;
 
@@ -22,7 +21,7 @@ import de.dala.simplenews.utilities.PrefUtilities;
 
 public class BaseActivity extends AppCompatActivity {
 
-    public static final int DURATION = 400;
+    private static final int DURATION = 400;
     private Drawable oldBackgroundActivity = null;
     private Drawable oldBackgroundTabs = null;
     private Integer oldStatusBarColor = null;
@@ -49,7 +48,7 @@ public class BaseActivity extends AppCompatActivity {
         changeColor(primaryColor, secondaryColor);
     }
 
-    protected void changeTabColor(Drawable drawable) {
+    void changeTabColor(Drawable drawable) {
     }
 
     public void changeColor(int primaryColor, int secondaryColor) {
@@ -118,7 +117,7 @@ public class BaseActivity extends AppCompatActivity {
         return Color.rgb((int) r, (int) g, (int) b);
     }
 
-    protected void startCategory(String path) {
+    void startCategory(String path) {
         Intent intent = new Intent(BaseActivity.this, CategoryActivity.class);
         if (path != null) {
             intent.putExtra(CategoryActivity.PATH, path);

@@ -8,9 +8,9 @@ import com.squareup.okhttp.Request;
 
 public class NetworkCommunication {
 
-    static OkHttpClient client = new OkHttpClient();
+    private static final OkHttpClient client = new OkHttpClient();
 
-	public static void addRequest(String url, Callback callback) {
+	private static void addRequest(String url, Callback callback) {
         Request request = new Request.Builder()
                 .url(url)
                 .build();

@@ -4,18 +4,16 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 
-import javax.crypto.Cipher;
-
 import de.dala.simplenews.R;
 import de.dala.simplenews.common.Category;
 
 public class ColorManager {
 
-    private int[] colors;
-    private int[] darkColors;
+    private final int[] colors;
+    private final int[] darkColors;
     private static ColorManager _instance;
 
-    public ColorManager(Context context) {
+    private ColorManager(Context context) {
         final TypedArray typedArrayDefault = context.getResources().obtainTypedArray(R.array.colors);
         colors = new int[typedArrayDefault.length()];
         darkColors = new int[typedArrayDefault.length()];
@@ -50,14 +48,14 @@ public class ColorManager {
         return getDarkColorById(category.getColorId());
     }
 
-    public int getColorById(int id) {
+    private int getColorById(int id) {
         if (id < colors.length && id >= 0) {
             return colors[id];
         }
         return id;
     }
 
-    public int getDarkColorById(int id) {
+    private int getDarkColorById(int id) {
         if (id < darkColors.length && id >= 0) {
             return darkColors[id];
         }

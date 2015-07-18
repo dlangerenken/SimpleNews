@@ -27,13 +27,14 @@ import de.dala.simplenews.utilities.Utilities;
 
 public class FeedRecyclerAdapter extends ChoiceModeRecyclerAdapter<FeedRecyclerAdapter.FeedViewHolder, Feed> {
 
-    private Activity mContext;
-    private Category mCategory;
-    private CategoryFeedsListener mListener;
+    private final Activity mContext;
+    private final Category mCategory;
+    private final CategoryFeedsListener mListener;
 
     public interface CategoryFeedsListener {
         void onLongClick(Feed feed);
     }
+
     public FeedRecyclerAdapter(Activity context, Category category, CategoryFeedsListener cFListener) {
         super(category.getFeeds(), null);
         mContext = context;
@@ -65,11 +66,7 @@ public class FeedRecyclerAdapter extends ChoiceModeRecyclerAdapter<FeedRecyclerA
                 toggleIfActionMode(feed);
             }
         });
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            holder.itemView.setBackground(Utilities.getPressedColorRippleDrawable(mContext.getResources().getColor(R.color.list_background), PrefUtilities.getInstance().getCurrentColor()));
-        } else {
-            holder.itemView.setBackgroundResource(mContext.getResources().getColor(R.color.list_background));
-        }
+        Utilities.setPressedColorRippleDrawable(mContext.getResources().getColor(R.color.list_background), PrefUtilities.getInstance().getCurrentColor(), holder.itemView);
     }
 
     @Override
@@ -85,10 +82,10 @@ public class FeedRecyclerAdapter extends ChoiceModeRecyclerAdapter<FeedRecyclerA
     }
 
     class FeedViewHolder extends RecyclerView.ViewHolder {
-        TextView name;
-        TextView link;
-        CheckBox show;
-        ImageView edit;
+        final TextView name;
+        final TextView link;
+        final CheckBox show;
+        final ImageView edit;
 
         public FeedViewHolder(View itemView) {
             super(itemView);
@@ -101,7 +98,7 @@ public class FeedRecyclerAdapter extends ChoiceModeRecyclerAdapter<FeedRecyclerA
     }
 
     class FeedItemClickListener implements View.OnClickListener {
-        private Feed feed;
+        private final Feed feed;
 
         public FeedItemClickListener(Feed feed) {
             this.feed = feed;

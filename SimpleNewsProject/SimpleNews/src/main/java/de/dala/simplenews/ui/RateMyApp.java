@@ -15,7 +15,7 @@ import de.dala.simplenews.utilities.PrefUtilities;
  * Created by Daniel on 20.01.14.
  * based on http://blog.zeezonline.com/2012/07/android-rate-my-app-dialog/
  */
-public class RateMyApp {
+class RateMyApp {
     private final static String APP_TITLE = "SimpleNews - Feed Reader (Pro)";
     private final static String APP_PACKAGE_NAME = "de.dala.simplenews.smarties";
     private final static int DAYS_UNTIL_PROMPT = 5;
@@ -44,7 +44,7 @@ public class RateMyApp {
         }
     }
 
-    public static void showRateDialog(final Context mContext) {
+    private static void showRateDialog(final Context mContext) {
         new MaterialDialog.Builder(mContext)
                 .content(String.format(mContext.getString(R.string.rate_my_app_desc), APP_TITLE))
                 .title(String.format(mContext.getString(R.string.rate_my_app_title), APP_TITLE))

@@ -14,10 +14,10 @@ import de.dala.simplenews.common.Feed;
 import de.dala.simplenews.database.DatabaseHandler;
 
 public class UpdatingFeedTask extends AsyncTask<String, String, Feed> {
-    private Category mCategory;
-    private UpdatingFeedListener mListener;
-    private Context mContext;
-    private Long mFeedId;
+    private final Category mCategory;
+    private final UpdatingFeedListener mListener;
+    private final Context mContext;
+    private final Long mFeedId;
 
     public interface UpdatingFeedListener {
         void success(Feed feed);

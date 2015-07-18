@@ -20,14 +20,14 @@ import android.view.ViewGroup;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-public abstract class AnimationAdapter
+abstract class AnimationAdapter
         extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private RecyclerView.Adapter mAdapter;
+    private final RecyclerView.Adapter<RecyclerView.ViewHolder> mAdapter;
     private int mDuration = 300;
     private int mLastPosition = -1;
 
-    public AnimationAdapter(RecyclerView.Adapter adapter) {
+    AnimationAdapter(RecyclerView.Adapter<RecyclerView.ViewHolder> adapter) {
         mAdapter = adapter;
     }
 
@@ -65,7 +65,7 @@ public abstract class AnimationAdapter
 
     protected abstract Animator[] getAnimators(View view);
 
-    public static void clear(View v) {
+    private static void clear(View v) {
         v.setAlpha(1f);
         v.setRotation(0f);
         v.setRotationX(0f);

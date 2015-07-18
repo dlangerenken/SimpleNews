@@ -81,19 +81,19 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        this.category = getArguments().getParcelable(ARG_CATEGORY);
-        this.newsTypeMode = getArguments().getInt(ARG_ENTRY_TYPE);
-        this.position = getArguments().getInt(ARG_POSITION);
-    }
-
-    @Override
     public void setMenuVisibility(final boolean visible) {
         super.setMenuVisibility(visible);
         if (visible) {
             setRefresh(isRefreshing);
         }
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        this.category = getArguments().getParcelable(ARG_CATEGORY);
+        this.newsTypeMode = getArguments().getInt(ARG_ENTRY_TYPE);
+        this.position = getArguments().getInt(ARG_POSITION);
     }
 
     @Override
@@ -180,7 +180,7 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
         updateColumnCount();
     }
 
-    public void refreshFeeds() {
+    private void refreshFeeds() {
         if (updater == null) {
             updater = new CategoryUpdater(new CategoryUpdateHandler(this), category, true, getActivity());
         }
@@ -334,7 +334,7 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
     }
 
     private static class CategoryUpdateHandler extends Handler {
-        WeakReference<ExpandableNewsFragment> mFragment;
+        final WeakReference<ExpandableNewsFragment> mFragment;
 
         public CategoryUpdateHandler(ExpandableNewsFragment fragment) {
             mFragment = new WeakReference<>(fragment);

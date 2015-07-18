@@ -29,6 +29,7 @@ import android.text.method.LinkMovementMethod;
 import android.view.View;
 import android.webkit.URLUtil;
 import android.widget.TextView;
+
 import java.util.regex.Pattern;
 
 public class UIUtils {
@@ -41,18 +42,10 @@ public class UIUtils {
      */
     private static final Pattern REGEX_HTML_ESCAPE = Pattern.compile(".*&\\S;.*");
 
-        public static boolean isValideUrl(String url) {
+    public static boolean isValideUrl(String url) {
         return URLUtil.isValidUrl(url);
     }
 
-    public static void setBackground(View view, Drawable drawable) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            view.setBackground(drawable);
-        }
-        else {
-            view.setBackgroundDrawable(drawable);
-        }
-    }
     /**
      * Populate the given {@link TextView} with the requested text, formatting
      * through {@link Html#fromHtml(String)} when applicable. Also sets

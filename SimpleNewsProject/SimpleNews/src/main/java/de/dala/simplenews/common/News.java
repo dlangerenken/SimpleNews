@@ -12,7 +12,7 @@ public class News implements Serializable {
     }
 
     public News() {
-        this.categories = new ArrayList<Category>();
+        this.categories = new ArrayList<>();
     }
 
     public List<Category> getCategories() {

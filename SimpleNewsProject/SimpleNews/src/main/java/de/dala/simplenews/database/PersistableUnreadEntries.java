@@ -15,7 +15,6 @@ public class PersistableUnreadEntries extends PersistableEntries{
 
     @Override
     protected String getQuery() {
-        String query =  concatenateQueries(super.getQuery(), ENTRY_VISITED_DATE + " IS NULL");
-        return query;
+        return concatenateQueries(super.getQuery(), ENTRY_VISITED_DATE + " IS NULL");
     }
 }

@@ -20,7 +20,7 @@ import de.dala.simplenews.utilities.Utilities;
 
 public class OpmlRecyclerAdapter extends ChoiceModeRecyclerAdapter<OpmlRecyclerAdapter.OpmlViewHolder, Feed> {
 
-    private Context mContext;
+    private final Context mContext;
 
     public OpmlRecyclerAdapter(Context context, List<Feed> feeds, ChoiceModeListener listener) {
         super(feeds, listener);
@@ -64,11 +64,7 @@ public class OpmlRecyclerAdapter extends ChoiceModeRecyclerAdapter<OpmlRecyclerA
         });
         int pad = mContext.getResources().getDimensionPixelSize(R.dimen.card_layout_padding);
         holder.itemView.setPadding(pad, pad, pad, pad);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            holder.itemView.setBackground(Utilities.getPressedColorRippleDrawable(mContext.getResources().getColor(R.color.list_background), PrefUtilities.getInstance().getCurrentColor()));
-        } else {
-            holder.itemView.setBackgroundResource(mContext.getResources().getColor(R.color.list_background));
-        }
+        Utilities.setPressedColorRippleDrawable(mContext.getResources().getColor(R.color.list_background), PrefUtilities.getInstance().getCurrentColor(), holder.itemView);
     }
 
     @Override
@@ -78,9 +74,9 @@ public class OpmlRecyclerAdapter extends ChoiceModeRecyclerAdapter<OpmlRecyclerA
     }
 
     class OpmlViewHolder extends RecyclerView.ViewHolder {
-        TextView name;
-        TextView link;
-        CheckBox checkBox;
+        final TextView name;
+        final TextView link;
+        final CheckBox checkBox;
 
         public OpmlViewHolder(View itemView) {
             super(itemView);

@@ -17,12 +17,12 @@ import de.dala.simplenews.common.Feed;
  */
 public class PersistableFeeds implements IPersistableObject<Feed>{
 
-    private Boolean mExcludeEntries;
-    private Long mCategoryId;
-    private Long mFeedId;
-    private Boolean mOnlyVisible;
+    private final Boolean mExcludeEntries;
+    private final Long mCategoryId;
+    private final Long mFeedId;
+    private final Boolean mOnlyVisible;
 
-    private SQLiteDatabase db;
+    private final SQLiteDatabase db;
 
     public PersistableFeeds(Long categoryId, Long feedId, Boolean excludeEntries, Boolean onlyVisible){
         mCategoryId = categoryId;
@@ -36,7 +36,7 @@ public class PersistableFeeds implements IPersistableObject<Feed>{
     public Cursor getCursor() {
         String query = null;
         if (mCategoryId != null){
-            query = concatenateQueries(query, FEED_CATEGORY_ID + " = " + mCategoryId);
+            query = concatenateQueries(null, FEED_CATEGORY_ID + " = " + mCategoryId);
         }
         if (mFeedId != null){
             query = concatenateQueries(query, FEED_ID + " = " + mFeedId);
@@ -65,7 +65,7 @@ public class PersistableFeeds implements IPersistableObject<Feed>{
             Cursor entryCursor = mPersistableEntries.getCursor();
             try {
                 if (entryCursor.moveToFirst()){
-                    List<Entry> cached = new ArrayList<Entry>();
+                    List<Entry> cached = new ArrayList<>();
                     do {
                         cached.add(mPersistableEntries.loadFrom(entryCursor));
                     }
@@ -119,7 +119,7 @@ public class PersistableFeeds implements IPersistableObject<Feed>{
     public void delete() {
         String query = null;
         if (mCategoryId != null) {
-            query = concatenateQueries(query, FEED_CATEGORY_ID + "=" + mCategoryId);
+            query = concatenateQueries(null, FEED_CATEGORY_ID + "=" + mCategoryId);
         }
         if (mFeedId != null) {
             query = concatenateQueries(query, FEED_ID + "=" + mFeedId);

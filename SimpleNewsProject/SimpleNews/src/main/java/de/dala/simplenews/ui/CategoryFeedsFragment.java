@@ -7,8 +7,6 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -21,7 +19,6 @@ import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.GravityEnum;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.rometools.rome.feed.opml.Opml;
-import com.rometools.rome.feed.rss.TextInput;
 import com.rometools.rome.io.FeedException;
 import com.rometools.rome.io.impl.OPML20Generator;
 
@@ -116,6 +113,7 @@ public class CategoryFeedsFragment extends BaseFragment implements FeedRecyclerA
                 .negativeText(R.string.cancel)
                 .autoDismiss(false).build();
         final TextInputLayout layout = (TextInputLayout) dialog.getCustomView();
+        assert layout != null;
         final EditText editText = (EditText) layout.findViewById(R.id.edit_text);
         dialog.getActionButton(DialogAction.NEGATIVE).setOnClickListener(new View.OnClickListener() {
             @Override

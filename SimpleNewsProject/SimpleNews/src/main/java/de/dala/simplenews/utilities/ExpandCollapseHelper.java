@@ -79,7 +79,7 @@ public class ExpandCollapseHelper {
         return result;
     }
 
-    public static ValueAnimator createHeightAnimator(final View view, final int start, final int end) {
+    private static ValueAnimator createHeightAnimator(final View view, final int start, final int end) {
         ValueAnimator animator = ValueAnimator.ofInt(start, end);
         animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
 

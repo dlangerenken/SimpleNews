@@ -26,7 +26,7 @@ android {
         applicationId "de.dala.simplenews"
         testApplicationId  "de.dala.simplenews.test"
         testInstrumentationRunner "android.test.InstrumentationTestRunner"
-        versionCode 2
+        versionCode 3
         versionName "1.0"
     }
     lintOptions {
@@ -72,5 +72,5 @@ dependencies {
     compile 'com.ocpsoft:ocpsoft-pretty-time:1.0.7'
     compile 'com.squareup.okhttp:okhttp:2.4.0'
     compile 'com.afollestad:material-dialogs:0.7.6.0'
-    compile 'com.github.clans:fab:1.5.3'
+    compile 'com.github.clans:fab:1.5.4'
 }

@@ -83,6 +83,14 @@ public class CategorySelectionFragment extends BaseFragment implements CategoryR
     }
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+        this.categories = getArguments().getParcelableArrayList(CATEGORIES_KEY);
+        this.rssPath = getArguments().getString(RSS_PATH_KEY);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.category_selection, container, false);
         if (rssPath != null) {
@@ -95,14 +103,6 @@ public class CategorySelectionFragment extends BaseFragment implements CategoryR
         recyclerView.setHasFixedSize(true);
         initAdapter();
         return rootView;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
-        this.categories = getArguments().getParcelableArrayList(CATEGORIES_KEY);
-        this.rssPath = getArguments().getString(RSS_PATH_KEY);
     }
 
     @Override

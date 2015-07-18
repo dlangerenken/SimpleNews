@@ -17,11 +17,11 @@ import static de.dala.simplenews.database.DatabaseHandler.*;
  */
 public class PersistableCategories implements IPersistableObject<Category> {
 
-    private Long mCategoryId;
-    private Boolean mExcludeFeeds;
-    private Boolean mExcludeEntries;
-    private Boolean mOnlyVisible;
-    private SQLiteDatabase db;
+    private final Long mCategoryId;
+    private final Boolean mExcludeFeeds;
+    private final Boolean mExcludeEntries;
+    private final Boolean mOnlyVisible;
+    private final SQLiteDatabase db;
 
     public PersistableCategories(Long categoryId, Boolean excludeFeeds, Boolean excludeEntries, Boolean onlyVisible){
         mExcludeFeeds = excludeFeeds;
@@ -35,7 +35,7 @@ public class PersistableCategories implements IPersistableObject<Category> {
     public Cursor getCursor() {
         String query = null;
         if (mCategoryId != null){
-            query = concatenateQueries(query, CATEGORY_ID + " = " + mCategoryId);
+            query = concatenateQueries(null, CATEGORY_ID + " = " + mCategoryId);
         }
         if (mOnlyVisible != null){
             query = concatenateQueries(query, CATEGORY_VISIBLE + "=" + (mOnlyVisible ? "1" : "0"));
@@ -58,7 +58,7 @@ public class PersistableCategories implements IPersistableObject<Category> {
             Cursor feedCursor = mPersistableFeeds.getCursor();
             try {
                 if (feedCursor.moveToFirst()){
-                    List<Feed> cached = new ArrayList<Feed>();
+                    List<Feed> cached = new ArrayList<>();
                     do {
                         cached.add(mPersistableFeeds.loadFrom(feedCursor));
                     }
@@ -115,7 +115,7 @@ public class PersistableCategories implements IPersistableObject<Category> {
     public void delete() {
         String query = null;
         if (mCategoryId != null) {
-            query = concatenateQueries(query, CATEGORY_ID + "=" + mCategoryId);
+            query = concatenateQueries(null, CATEGORY_ID + "=" + mCategoryId);
         }
         db.delete(TABLE_CATEGORY, query, null);
 

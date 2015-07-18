@@ -17,24 +17,24 @@ public interface IDatabaseHandler {
     List<Category> getCategories(Boolean excludeFeeds, Boolean excludeEntries, Boolean onlyVisible);
     Category getCategory(Long categoryId, Boolean excludeFeeds, Boolean excludeEntries);
     long[] addCategories(List<Category> categories, Boolean excludeFeeds, Boolean excludeEntries);
-    long addCategory(Category category, Boolean excludeFeeds, Boolean excludeEntries);
-    int removeCategory(long categoryId, Boolean excludeFeeds, Boolean excludeEntries);
-    int updateCategory(Category category);
+    void addCategory(Category category, Boolean excludeFeeds, Boolean excludeEntries);
+    void removeCategory(long categoryId, Boolean excludeFeeds, Boolean excludeEntries);
+    void updateCategory(Category category);
     void removeAllCategories();
 
     List<Feed> getFeeds(Long categoryId, Boolean excludeEntries);
     Feed getFeed(long feedId, Boolean excludeEntries);
     long addFeed(long categoryId, Feed feed, Boolean excludeEntries);
     long[] addFeeds(long categoryId, List<Feed> feeds, Boolean excludeEntries);
-    int removeFeeds(Long categoryId, Long feedId, Boolean excludeEntries);
-    int updateFeed(Feed feed);
+    void removeFeeds(Long categoryId, Long feedId, Boolean excludeEntries);
+    void updateFeed(Feed feed);
 
     List<Entry> getEntries(Long categoryId, Long feedId, Boolean onlyVisible);
     Entry getEntry(long entryId);
-    long addEntry(long categoryId, long feedId, Entry entry);
+    void addEntry(long categoryId, long feedId, Entry entry);
     long[] addEntries(Long categoryId, Long feedId, List<Entry> entries);
-    int updateEntry(Entry entry);
-    int removeEntries(Long categoryId, Long feedId, Long entryId);
+    void updateEntry(Entry entry);
+    void removeEntries(Long categoryId, Long feedId, Long entryId);
     List<Entry> getFavoriteEntries(long categoryId);
     List<Entry> getVisitedEntries(long categoryId);
 

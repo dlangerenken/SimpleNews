@@ -6,6 +6,6 @@ public class Movement {
         this.to = to;
     }
 
-    public int from;
-    public int to;
+    public final int from;
+    public final int to;
 }
