@@ -123,17 +123,14 @@ public class PersistableEntries implements IPersistableObject<Entry> {
 
             // check if item not already added, if so, only continue if id is equal
             if (similarEntries != null && !similarEntries.isEmpty()) {
-                boolean shouldUpdate = false;
-                for (Entry sEntry : similarEntries) {
-                    if (sEntry.getId().equals(entry.getId())) {
-                        shouldUpdate = true;
-                        break;
-                    }
-                }
-                if (!shouldUpdate) {
-                    return null;
-                }
+                Entry similar = similarEntries.get(0);
+                entry.setId(similar.getId());
+                entry.setVisitedDate(similar.getVisitedDate());
+                entry.setFavoriteDate(similar.getFavoriteDate());
+                entry.setShortenedLink(similar.getShortenedLink());
+                entry.setExpanded(similar.isExpanded());
             }
+
             ContentValues values = new ContentValues();
             values.put(ENTRY_ID, entry.getId());
             Long categoryId = entry.getCategoryId() != null ? entry.getCategoryId() : mCategoryId;

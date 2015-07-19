@@ -1,7 +1,9 @@
 package de.dala.simplenews.ui;
 
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -31,6 +33,7 @@ import de.dala.simplenews.R;
 import de.dala.simplenews.common.Category;
 import de.dala.simplenews.common.Feed;
 import de.dala.simplenews.utilities.OpmlConverter;
+import de.dala.simplenews.utilities.PrefUtilities;
 import de.dala.simplenews.utilities.UpdatingFeedTask;
 import de.dala.simplenews.recycler.FeedRecyclerAdapter;
 
@@ -59,6 +62,15 @@ public class CategoryFeedsFragment extends BaseFragment implements FeedRecyclerA
         View rootView = inflater.inflate(R.layout.feed_selection, container, false);
         feedListView = (RecyclerView) rootView.findViewById(R.id.recyclerView);
         feedListView.setLayoutManager(new LinearLayoutManager(inflater.getContext()));
+        FloatingActionButton button = (FloatingActionButton) rootView.findViewById(R.id.add_button);
+        button.setBackgroundTintList(new ColorStateList(new int[][]{new int[]{0}}, new int[]{PrefUtilities.getInstance().getCurrentColor()}));
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                createFeedClicked();
+            }
+        });
+
         initAdapter();
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         if (activity != null) {
@@ -73,6 +85,7 @@ public class CategoryFeedsFragment extends BaseFragment implements FeedRecyclerA
                 mRecyclerAdapter.restoreSelectionStates(actionModeBundle);
             }
         }
+
         return rootView;
     }
 
@@ -92,8 +105,8 @@ public class CategoryFeedsFragment extends BaseFragment implements FeedRecyclerA
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.new_feed:
-                createFeedClicked();
+            case R.id.share_feeds:
+                shareCategory();
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -182,18 +195,7 @@ public class CategoryFeedsFragment extends BaseFragment implements FeedRecyclerA
                     public void onSelection(MaterialDialog materialDialog, View view, int which, CharSequence charSequence) {
                         switch (which) {
                             case 0: //Share
-                                Opml opml = OpmlConverter.convertFeedsToOpml("SimpleNews - OPML", feeds);
-                                String finalMessage = null;
-                                try {
-                                    finalMessage = new XMLOutputter().outputString(new OPML20Generator().generate(opml));
-                                } catch (FeedException e) {
-                                    e.printStackTrace();
-                                }
-                                Intent shareIntent = new Intent(Intent.ACTION_SEND);
-                                shareIntent.setType("text/xml");
-                                shareIntent.putExtra(Intent.EXTRA_TEXT,
-                                        finalMessage);
-                                startActivity(shareIntent);
+                                shareFeeds(feeds);
                                 break;
                             case 1: // Delete
                                 mRecyclerAdapter.removeFeeds(feeds);
@@ -201,6 +203,33 @@ public class CategoryFeedsFragment extends BaseFragment implements FeedRecyclerA
                         }
                     }
                 }).show();
+    }
+
+    private void shareCategory() {
+        List<Category> categories = new ArrayList<>();
+        categories.add(mCategory);
+        Opml opml = OpmlConverter.convertCategoriesToOpml(categories);
+        shareOpml(opml);
+
+    }
+
+    private void shareOpml(Opml opml) {
+        String finalMessage = null;
+        try {
+            finalMessage = new XMLOutputter().outputString(new OPML20Generator().generate(opml));
+        } catch (FeedException e) {
+            e.printStackTrace();
+        }
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.setType("text/xml");
+        shareIntent.putExtra(Intent.EXTRA_TEXT,
+                finalMessage);
+        startActivity(shareIntent);
+    }
+
+    private void shareFeeds(List<Feed> feeds) {
+        Opml opml = OpmlConverter.convertFeedsToOpml("SimpleNews - OPML", feeds);
+        shareOpml(opml);
     }
 
 

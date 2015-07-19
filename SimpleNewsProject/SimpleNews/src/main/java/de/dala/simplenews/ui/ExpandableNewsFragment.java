@@ -3,6 +3,7 @@ package de.dala.simplenews.ui;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -11,7 +12,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.StaggeredGridLayoutManager;
-import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -38,6 +38,7 @@ import de.dala.simplenews.utilities.EmptyObservableRecyclerView;
 import de.dala.simplenews.utilities.PrefUtilities;
 import de.dala.simplenews.recycler.ExpandableItemRecyclerAdapter;
 import de.dala.simplenews.recycler.FadeInUpAnimator;
+import de.dala.simplenews.utilities.Utilities;
 
 
 public class ExpandableNewsFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener, ExpandableItemRecyclerAdapter.ItemClickListener {
@@ -94,6 +95,31 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
         this.category = getArguments().getParcelable(ARG_CATEGORY);
         this.newsTypeMode = getArguments().getInt(ARG_ENTRY_TYPE);
         this.position = getArguments().getInt(ARG_POSITION);
+        addListener();
+    }
+
+    private SharedPreferences.OnSharedPreferenceChangeListener listener;
+
+    private void addListener() {
+        if (listener == null) {
+            listener = new SharedPreferences.OnSharedPreferenceChangeListener() {
+                @Override
+                public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+                    switch (key) {
+                        case PrefUtilities.CURRENT_NEWS_TYPE_MODE:
+                            newsTypeModeChanged(PrefUtilities.getInstance().getNewsTypeMode());
+                            break;
+                        case PrefUtilities.MULTIPLE_COLUMNS_LANDSCAPE:
+                            gridSettingsChanged();
+                            break;
+                        case PrefUtilities.MULTIPLE_COLUMNS_PORTRAIT:
+                            gridSettingsChanged();
+                            break;
+                    }
+                }
+            };
+            PrefUtilities.getInstance().addListener(listener);
+        }
     }
 
     @Override
@@ -127,7 +153,7 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
     }
 
     private void updateColumnCount() {
-        if (mLayoutManager != null) {
+        if (mLayoutManager != null && isAdded()) {
             switch (getResources().getConfiguration().orientation) {
                 case Configuration.ORIENTATION_LANDSCAPE:
                     boolean useMultipleLandscape = PrefUtilities.getInstance().useMultipleColumnsLandscape();
@@ -182,7 +208,7 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
 
     private void refreshFeeds() {
         if (updater == null) {
-            updater = new CategoryUpdater(new CategoryUpdateHandler(this), category, true, getActivity());
+            updater = new CategoryUpdater(new CategoryUpdateHandler(this), category, getActivity());
         }
         setRefresh(true);
         updater.start();
@@ -277,20 +303,13 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
         updateColumnCount();
     }
 
-    public void updateCategory(Category category) {
-        this.category = category;
-        if (getView() != null) {
-            init();
-        }
-    }
-
     @Override
     public void onOpenClick(Entry entry) {
         markEntryAsRead(entry);
 
         Intent browserIntent = new Intent(Intent.ACTION_VIEW);
-        String link = entry.getShortenedLink() != null ? entry.getShortenedLink() : entry.getLink();
-        browserIntent.setData(Uri.parse(link));
+        //String link = entry.getShortenedLink() != null ? entry.getShortenedLink() : entry.getLink();
+        browserIntent.setData(Uri.parse(entry.getLink()));
         try {
             startActivity(browserIntent);
         } catch (ActivityNotFoundException e) {
@@ -312,12 +331,7 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
                     public void onSelection(MaterialDialog materialDialog, View view, int which, CharSequence charSequence) {
                         switch (which) {
                             case 0: //Share
-                                String finalMessage = TextUtils.join("\n", entries) + " - by SimpleNews";
-                                Intent shareIntent = new Intent(Intent.ACTION_SEND);
-                                shareIntent.setType("text/plain");
-                                shareIntent.putExtra(Intent.EXTRA_TEXT,
-                                        finalMessage);
-                                startActivity(shareIntent);
+                                share(entries);
                                 break;
                             case 1: // Save
                                 saveSelectedEntries(entries);
@@ -333,6 +347,15 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
                 }).show();
     }
 
+    private void share(List<Entry> entries) {
+        String finalMessage = Utilities.join("\n", entries, PrefUtilities.getInstance().shouldShortenLinks()) + " - by SimpleNews";
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.setType("text/plain");
+        shareIntent.putExtra(Intent.EXTRA_TEXT,
+                finalMessage);
+        startActivity(shareIntent);
+    }
+
     private static class CategoryUpdateHandler extends Handler {
         final WeakReference<ExpandableNewsFragment> mFragment;
 
@@ -343,7 +366,7 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
         @Override
         public void handleMessage(Message msg) {
             ExpandableNewsFragment fragment = mFragment.get();
-            if (mFragment != null) {
+            if (fragment != null) {
                 switch (msg.what) {
                     case CategoryUpdater.RESULT:
                         fragment.updateFinished(true, (List<Entry>) msg.obj);
@@ -366,6 +389,7 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
             }
         }
     }
+
 
     @Override
     public void onPause() {

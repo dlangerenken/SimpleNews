@@ -126,4 +126,6 @@
     <string name="menu_opml">OPML</string>
     <string name="assign_menu_title">Assign</string>
     <string name="error_feed_loading">Couldn\'t load feed.</string>
+    <string name="share_categories">Share categories</string>
+    <string name="share_feeds">Share feeds</string>
 </resources>

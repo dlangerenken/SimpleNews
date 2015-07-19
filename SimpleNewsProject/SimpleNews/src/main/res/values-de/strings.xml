@@ -120,4 +120,6 @@
     <string name="menu_opml">OPML</string>
     <string name="assign_menu_title">Zuweisen</string>
     <string name="error_feed_loading">Couldn\'t load feed.</string>
+    <string name="share_categories">Kategorien teilen</string>
+    <string name="share_feeds">Feeds teilen</string>
 </resources>

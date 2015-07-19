@@ -1,5 +1,7 @@
 package de.dala.simplenews.common;
 
+import android.support.annotation.NonNull;
+
 import java.io.Serializable;
 
 import de.dala.simplenews.utilities.Utilities;
@@ -138,8 +140,8 @@ public class Entry implements Comparable<Entry>, Serializable {
     }
 
     @Override
-    public int compareTo(Entry another) {
-        if (another == null) {
+    public int compareTo(@NonNull Entry another) {
+        if (another.getDate() == null) {
             return 1;
         }
         return another.getDate().compareTo(getDate());
@@ -192,5 +194,12 @@ public class Entry implements Comparable<Entry>, Serializable {
         result = 31 * result + (description != null ? description.hashCode() : 0);
         result = 31 * result + (srcName != null ? srcName.hashCode() : 0);
         return result;
+    }
+
+    public String toString(boolean shorten) {
+        if (shorten){
+            return toString();
+        }
+        return String.format("%s - %s", title, link);
     }
 }

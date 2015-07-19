@@ -4,9 +4,9 @@
     xmlns:compat="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/new_feed"
-        android:icon="@drawable/ic_new"
+        android:id="@+id/share_feeds"
+        android:icon="@drawable/ic_share_white"
         android:orderInCategory="101"
-        compat:showAsAction="always"
-        android:title="@string/feed_selection_add" />
+        compat:showAsAction="ifRoom"
+        android:title="@string/share_feeds" />
 </menu>

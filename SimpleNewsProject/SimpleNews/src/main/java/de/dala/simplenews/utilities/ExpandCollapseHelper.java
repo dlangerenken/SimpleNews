@@ -3,13 +3,14 @@ package de.dala.simplenews.utilities;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
+import android.content.res.TypedArray;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 
 public class ExpandCollapseHelper {
     public static void animateCollapsing(final View view, boolean animated) {
-        if (!animated){
+        if (!animated) {
             view.setVisibility(View.GONE);
         }
         if (view.getVisibility() == View.GONE) {
@@ -39,7 +40,7 @@ public class ExpandCollapseHelper {
         final int heightSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
         view.measure(widthSpec, heightSpec);
 
-        if (!animated){
+        if (!animated) {
             view.setVisibility(View.VISIBLE);
             ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
             layoutParams.height = view.getMeasuredHeight();
@@ -47,10 +48,15 @@ public class ExpandCollapseHelper {
             return;
         }
 
+        final TypedArray styledAttributes = view.getContext().getTheme().obtainStyledAttributes(
+                new int[]{android.R.attr.actionBarSize});
+        int mActionBarSize = (int) styledAttributes.getDimension(0, 0);
+        styledAttributes.recycle();
+        final int listViewHeight = listViewWrapper.getHeight() - mActionBarSize;
+
         ValueAnimator animator = createHeightAnimator(view, 0, view.getMeasuredHeight());
         animator.addUpdateListener(
                 new ValueAnimator.AnimatorUpdateListener() {
-                    final int listViewHeight = listViewWrapper.getHeight();
                     final int listViewBottomPadding = listViewWrapper.getPaddingBottom();
                     final View v = findDirectChild(view, listViewWrapper);
 
@@ -60,7 +66,7 @@ public class ExpandCollapseHelper {
                         if (bottom > listViewHeight) {
                             final int top = v.getTop();
                             if (top > 0) {
-                                listViewWrapper.smoothScrollBy(Math.min(bottom - listViewHeight + listViewBottomPadding, top), 0);
+                                listViewWrapper.smoothScrollBy(0, Math.min(bottom - listViewHeight + listViewBottomPadding, top));
                             }
                         }
                     }

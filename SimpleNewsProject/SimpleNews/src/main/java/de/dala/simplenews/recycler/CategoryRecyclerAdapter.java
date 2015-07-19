@@ -36,6 +36,9 @@ public class CategoryRecyclerAdapter extends ChoiceModeRecyclerAdapter<CategoryR
 
     @Override
     public void onItemMove(int fromPosition, int toPosition) {
+        if (toPosition >= getItems().size()){
+            return;
+        }
         Category category = getItems().remove(fromPosition);
         getItems().add(toPosition, category);
         notifyItemMoved(fromPosition, toPosition);
@@ -94,6 +97,12 @@ public class CategoryRecyclerAdapter extends ChoiceModeRecyclerAdapter<CategoryR
 
     @Override
     void onBindNormalViewHolder(final CategoryViewHolder holder, int position) {
+        if (position >= getItems().size()) {
+            holder.itemView.setVisibility(View.INVISIBLE);
+            return;
+        } else {
+            holder.itemView.setVisibility(View.VISIBLE);
+        }
         Category category = get(position);
         holder.name.setText(category.getName());
         holder.color.setBackgroundColor(category.getPrimaryColor());
@@ -123,7 +132,7 @@ public class CategoryRecyclerAdapter extends ChoiceModeRecyclerAdapter<CategoryR
         setBackground(holder.itemView);
     }
 
-    private void setBackground(View view){
+    private void setBackground(View view) {
         Utilities.setPressedColorRippleDrawable(mContext.getResources().getColor(R.color.list_background), PrefUtilities.getInstance().getCurrentColor(), view);
     }
 
@@ -222,5 +231,10 @@ public class CategoryRecyclerAdapter extends ChoiceModeRecyclerAdapter<CategoryR
         public void onItemClear() {
             setBackground(itemView);
         }
+    }
+
+    @Override
+    public int getItemCount() {
+        return super.getItemCount() + 2;
     }
 }

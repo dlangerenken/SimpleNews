@@ -51,4 +51,6 @@ public interface IDatabaseHandler {
     void deleteDeprecatedEntries(Long deprecatedTime);
 
     void loadXmlIntoDatabase(int xml);
+
+    void dropCategory(Long id);
 }

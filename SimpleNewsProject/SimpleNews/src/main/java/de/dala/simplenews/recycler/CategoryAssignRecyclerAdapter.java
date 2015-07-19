@@ -40,6 +40,12 @@ public class CategoryAssignRecyclerAdapter extends RecyclerView.Adapter<Category
 
     @Override
     public void onBindViewHolder(CategoryViewHolder holder, int position) {
+        if (position >= mCategories.size()) {
+            holder.itemView.setVisibility(View.INVISIBLE);
+            return;
+        } else {
+            holder.itemView.setVisibility(View.VISIBLE);
+        }
         final Category category = mCategories.get(position);
         holder.name.setText(category.getName());
         holder.image.setBackgroundColor(category.getPrimaryColor());
@@ -61,7 +67,7 @@ public class CategoryAssignRecyclerAdapter extends RecyclerView.Adapter<Category
     @Override
     public int getItemCount() {
         return mCategories
-                .size();
+                .size() + 2;
     }
 
     class CategoryViewHolder extends RecyclerView.ViewHolder {

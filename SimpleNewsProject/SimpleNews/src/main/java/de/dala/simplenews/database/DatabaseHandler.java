@@ -377,7 +377,7 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
 
     @Override
     public void updateCategory(Category category) {
-        IPersistableObject<Category> persistence = new PersistableCategories(category.getId(), null, null, null);
+        IPersistableObject<Category> persistence = new PersistableCategories(category.getId(), true, true, null);
         long[] ids = update(persistence, category);
     }
 
@@ -418,5 +418,10 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
         } catch (XmlPullParserException | IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void dropCategory(Long id) {
+        removeEntries(id, null, null);
     }
 }

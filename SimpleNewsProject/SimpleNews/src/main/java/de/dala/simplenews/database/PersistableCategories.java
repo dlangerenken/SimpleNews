@@ -12,9 +12,6 @@ import de.dala.simplenews.common.Feed;
 
 import static de.dala.simplenews.database.DatabaseHandler.*;
 
-/**
- * Created by Daniel on 01.08.2014.
- */
 public class PersistableCategories implements IPersistableObject<Category> {
 
     private final Long mCategoryId;
@@ -23,7 +20,7 @@ public class PersistableCategories implements IPersistableObject<Category> {
     private final Boolean mOnlyVisible;
     private final SQLiteDatabase db;
 
-    public PersistableCategories(Long categoryId, Boolean excludeFeeds, Boolean excludeEntries, Boolean onlyVisible){
+    public PersistableCategories(Long categoryId, Boolean excludeFeeds, Boolean excludeEntries, Boolean onlyVisible) {
         mExcludeFeeds = excludeFeeds;
         mExcludeEntries = excludeEntries;
         mCategoryId = categoryId;
@@ -34,10 +31,10 @@ public class PersistableCategories implements IPersistableObject<Category> {
     @Override
     public Cursor getCursor() {
         String query = null;
-        if (mCategoryId != null){
+        if (mCategoryId != null) {
             query = concatenateQueries(null, CATEGORY_ID + " = " + mCategoryId);
         }
-        if (mOnlyVisible != null){
+        if (mOnlyVisible != null) {
             query = concatenateQueries(query, CATEGORY_VISIBLE + "=" + (mOnlyVisible ? "1" : "0"));
         }
         return db.query(TABLE_CATEGORY, null, query, null, null, null, null);
@@ -57,7 +54,7 @@ public class PersistableCategories implements IPersistableObject<Category> {
             PersistableFeeds mPersistableFeeds = getPersistableFeeds(category.getId());
             Cursor feedCursor = mPersistableFeeds.getCursor();
             try {
-                if (feedCursor.moveToFirst()){
+                if (feedCursor.moveToFirst()) {
                     List<Feed> cached = new ArrayList<>();
                     do {
                         cached.add(mPersistableFeeds.loadFrom(feedCursor));
@@ -78,12 +75,12 @@ public class PersistableCategories implements IPersistableObject<Category> {
 
     @Override
     public long[] store(List<Category> items) {
-        if (items == null){
+        if (items == null) {
             return null;
         }
         long[] ids = new long[items.size()];
         int current = 0;
-        for(Category category : items){
+        for (Category category : items) {
             ContentValues values = new ContentValues();
             values.put(CATEGORY_ID, category.getId());
             values.put(CATEGORY_COLOR, category.getColorId());
@@ -102,6 +99,7 @@ public class PersistableCategories implements IPersistableObject<Category> {
                 values = new ContentValues();
                 values.put(CATEGORY_ORDER, categoryId);
                 db.update(TABLE_CATEGORY, values, CATEGORY_ID + " = " + categoryId, null);
+                category.setOrder(categoryId.intValue());
             }
             if (mExcludeFeeds == null || !mExcludeFeeds) {
                 PersistableFeeds mPersistableFeeds = getPersistableFeeds(categoryId);

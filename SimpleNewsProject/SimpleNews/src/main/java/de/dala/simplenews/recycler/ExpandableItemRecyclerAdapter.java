@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import com.ocpsoft.pretty.time.PrettyTime;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -24,6 +25,7 @@ import java.util.Set;
 import de.dala.simplenews.R;
 import de.dala.simplenews.common.Category;
 import de.dala.simplenews.common.Entry;
+import de.dala.simplenews.ui.NewsOverViewFragment;
 import de.dala.simplenews.utilities.ExpandCollapseHelper;
 import de.dala.simplenews.utilities.PrefUtilities;
 import de.dala.simplenews.utilities.UIUtils;
@@ -63,8 +65,11 @@ public class ExpandableItemRecyclerAdapter extends ChoiceModeRecyclerAdapter<Exp
     void onBindNormalViewHolder(final EntryViewHolder holder, final int position) {
         final Entry currentEntry = get(position);
 
-        long current = Math.min(new Date().getTime(), currentEntry.getDate());
-        String formattedDate = new PrettyTime().format(new Date(current));
+        String formattedDate = "";
+        if (currentEntry.getDate() != null) {
+            long current = Math.min(new Date().getTime(), currentEntry.getDate());
+            formattedDate = new PrettyTime().format(new Date(current));
+        }
 
         /* title */
         holder.infoTextView.setText(String.format("%s - %s", currentEntry.getSrcName(), formattedDate));
@@ -268,6 +273,7 @@ public class ExpandableItemRecyclerAdapter extends ChoiceModeRecyclerAdapter<Exp
     public void removeOldEntries(List<Entry> newEntries) {
         remove(Utilities.nonIntersection(getItems(), newEntries));
     }
+
 
     public void addNewEntriesAndRemoveOld(List<Entry> entries) {
         add(entries);

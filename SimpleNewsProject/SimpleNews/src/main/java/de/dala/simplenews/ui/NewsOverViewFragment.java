@@ -6,7 +6,7 @@ import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
@@ -20,10 +20,7 @@ import android.view.ViewGroup;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
 
-import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 import de.dala.simplenews.R;
@@ -48,9 +45,6 @@ public class NewsOverViewFragment extends BaseFragment implements ViewPager.OnPa
     private FloatingActionButton subactionButton1;
     private FloatingActionButton subactionButton2;
 
-    private ArrayList<String> newsTypeTags;
-
-
     public NewsOverViewFragment() {
     }
 
@@ -62,7 +56,7 @@ public class NewsOverViewFragment extends BaseFragment implements ViewPager.OnPa
         } else {
             throw new ActivityNotFoundException("NewsActivity not found");
         }
-        entryType = getArguments().getInt("entryType", ALL);
+        entryType = PrefUtilities.getInstance().getNewsTypeMode();
     }
 
     public static Fragment getInstance(int entryType) {
@@ -133,35 +127,10 @@ public class NewsOverViewFragment extends BaseFragment implements ViewPager.OnPa
                 }
 
                 updateMenu();
-                updateColumnCount();
                 break;
         }
         return super.onOptionsItemSelected(item);
     }
-
-    private void updateColumnCount() {
-        for (ExpandableNewsFragment newsTypeButton : getActiveINewsTypeFragments()) {
-            newsTypeButton.gridSettingsChanged();
-        }
-    }
-
-    private List<ExpandableNewsFragment> getActiveINewsTypeFragments() {
-        List<ExpandableNewsFragment> fragments = new ArrayList<>();
-        if (newsTypeTags != null) {
-            for (Iterator<String> iterator = newsTypeTags.iterator();
-                 iterator.hasNext(); ) {
-                Fragment fragment = getChildFragmentManager().findFragmentByTag(iterator.next());
-                if (fragment != null && fragment instanceof ExpandableNewsFragment) {
-                    fragments.add((ExpandableNewsFragment) fragment);
-                } else {
-                    iterator.remove();
-                }
-            }
-        }
-        return fragments;
-    }
-
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -186,20 +155,8 @@ public class NewsOverViewFragment extends BaseFragment implements ViewPager.OnPa
         }
         Collections.sort(categories);
         if (savedInstanceState != null) {
-            //probably orientation change
-            Serializable newsTypeTagsSerializable = savedInstanceState.getSerializable("newsTypeTags");
-            if (newsTypeTagsSerializable != null && newsTypeTagsSerializable instanceof ArrayList<?>) {
-                newsTypeTags = (ArrayList<String>) newsTypeTagsSerializable;
-            }
             entryType = savedInstanceState.getInt("entryType", ALL);
             newsTypeModeChanged();
-            orderChanged();
-        } else {
-            if (newsTypeTags != null) {
-                // returning from backstack, data is fine, do nothing
-            } else {
-                newsTypeTags = new ArrayList<>();
-            }
         }
 
         if (categories != null && !categories.isEmpty()) {
@@ -260,7 +217,7 @@ public class NewsOverViewFragment extends BaseFragment implements ViewPager.OnPa
     }
 
     private void updateNewsIcon() {
-        newsTypeButton.getMenuIconView().setImageDrawable(ContextCompat.getDrawable(getActivity(),actionButtonIds[entryType % 3]));
+        newsTypeButton.getMenuIconView().setImageDrawable(ContextCompat.getDrawable(getActivity(), actionButtonIds[entryType % 3]));
         subactionButton1.setImageDrawable(ContextCompat.getDrawable(getActivity(), actionButtonIds[(entryType + 1) % 3]));
         subactionButton2.setImageDrawable(ContextCompat.getDrawable(getActivity(), actionButtonIds[(entryType + 2) % 3]));
         newsTypeButton.setTag((entryType));
@@ -279,7 +236,6 @@ public class NewsOverViewFragment extends BaseFragment implements ViewPager.OnPa
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        outState.putSerializable("newsTypeTags", newsTypeTags);
         outState.putInt("entryType", entryType);
 
         super.onSaveInstanceState(outState);
@@ -297,13 +253,10 @@ public class NewsOverViewFragment extends BaseFragment implements ViewPager.OnPa
         }
     }
 
-    public class MyPagerAdapter extends FragmentPagerAdapter {
-
-        private final FragmentManager mFragmentManager;
+    public class MyPagerAdapter extends FragmentStatePagerAdapter {
 
         public MyPagerAdapter(FragmentManager fm) {
             super(fm);
-            mFragmentManager = fm;
         }
 
         @Override
@@ -320,14 +273,7 @@ public class NewsOverViewFragment extends BaseFragment implements ViewPager.OnPa
         public Fragment getItem(int position) {
             // Check if this Fragment already exists.
             String name = makeFragmentName(R.id.pager, position);
-            if (newsTypeTags == null) {
-                newsTypeTags = new ArrayList<>();
-            }
-            if (!newsTypeTags.contains(name)) {
-                newsTypeTags.add(name);
-            }
-
-            Fragment fragment = mFragmentManager.findFragmentByTag(name);
+            Fragment fragment = getFragmentManager().findFragmentByTag(name);
             Category category = categories.get(position);
             if (fragment == null) {
                 fragment = ExpandableNewsFragment.newInstance(category, entryType, position);
@@ -352,18 +298,7 @@ public class NewsOverViewFragment extends BaseFragment implements ViewPager.OnPa
     }
 
     private void newsTypeModeChanged() {
-        for (ExpandableNewsFragment newsTypeButton : getActiveINewsTypeFragments()) {
-            newsTypeButton.newsTypeModeChanged(entryType);
-        }
-    }
-
-    private void orderChanged() {
-        for (ExpandableNewsFragment newsTypeButton : getActiveINewsTypeFragments()) {
-            int newsTypeButtonPosition = newsTypeButton.getPosition();
-            if (categories.size() > newsTypeButtonPosition) {
-                newsTypeButton.updateCategory(categories.get(newsTypeButtonPosition));
-            }
-        }
+        PrefUtilities.getInstance().setNewsTypeMode(entryType);
     }
 
     @Override

@@ -2,7 +2,9 @@ package de.dala.simplenews.ui;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.text.InputType;
 import android.view.LayoutInflater;
@@ -41,7 +43,7 @@ public class CategorySelectionFragment extends BaseFragment implements CategoryR
     private static final String CATEGORIES_KEY = "categories";
     private static final String RSS_PATH_KEY = "path";
 
-    private List<Category> categories;
+    private List<Category> mCategories;
     private EmptyObservableRecyclerView recyclerView;
     private CategoryRecyclerAdapter adapter;
 
@@ -86,7 +88,7 @@ public class CategorySelectionFragment extends BaseFragment implements CategoryR
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        this.categories = getArguments().getParcelableArrayList(CATEGORIES_KEY);
+        mCategories = getArguments().getParcelableArrayList(CATEGORIES_KEY);
         this.rssPath = getArguments().getString(RSS_PATH_KEY);
     }
 
@@ -94,10 +96,19 @@ public class CategorySelectionFragment extends BaseFragment implements CategoryR
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.category_selection, container, false);
         if (rssPath != null) {
+            View topView = rootView.findViewById(R.id.topView);
             TextView topTextView = (TextView) rootView.findViewById(R.id.topTextView);
             topTextView.setText(getActivity().getString(R.string.category_add));
-            topTextView.setVisibility(View.VISIBLE);
+            topView.setVisibility(View.VISIBLE);
         }
+        FloatingActionButton addButton = (FloatingActionButton) rootView.findViewById(R.id.add_button);
+        addButton.setBackgroundTintList(new ColorStateList(new int[][]{new int[]{0}}, new int[]{PrefUtilities.getInstance().getCurrentColor()}));
+        addButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                createCategoryClicked();
+            }
+        });
         recyclerView = (EmptyObservableRecyclerView) rootView.findViewById(R.id.listView);
         recyclerView.setLayoutManager(new LinearLayoutManager(inflater.getContext()));
         recyclerView.setHasFixedSize(true);
@@ -111,11 +122,12 @@ public class CategorySelectionFragment extends BaseFragment implements CategoryR
         inflater.inflate(R.menu.category_selection_menu, menu);
     }
 
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.new_category:
-                createCategoryClicked();
+            case R.id.share_categories:
+                shareCategories(mCategories);
                 return true;
             case R.id.restore_categories:
                 new MaterialDialog.Builder(getActivity())
@@ -137,8 +149,8 @@ public class CategorySelectionFragment extends BaseFragment implements CategoryR
     }
 
     private void initAdapter() {
-        Collections.sort(categories);
-        adapter = new CategoryRecyclerAdapter(getActivity(), categories, rssPath, this);
+        Collections.sort(mCategories);
+        adapter = new CategoryRecyclerAdapter(getActivity(), mCategories, rssPath, this);
         recyclerView.setAdapter(adapter);
         adapter.initTouch(recyclerView);
     }
@@ -268,18 +280,7 @@ public class CategorySelectionFragment extends BaseFragment implements CategoryR
                     public void onSelection(MaterialDialog materialDialog, View view, int which, CharSequence charSequence) {
                         switch (which) {
                             case 0: //Share
-                                Opml opml = OpmlConverter.convertCategoriesToOpml(categories);
-                                String finalMessage = "";
-                                try {
-                                    finalMessage = new XMLOutputter().outputString(new OPML20Generator().generate(opml));
-                                } catch (FeedException e) {
-                                    e.printStackTrace();
-                                }
-                                Intent shareIntent = new Intent(Intent.ACTION_SEND);
-                                shareIntent.setType("text/xml");
-                                shareIntent.putExtra(Intent.EXTRA_TEXT,
-                                        finalMessage);
-                                startActivity(shareIntent);
+                                shareCategories(categories);
                                 break;
                             case 1: // Delete
                                 removeSelectedCategories(categories);
@@ -287,5 +288,20 @@ public class CategorySelectionFragment extends BaseFragment implements CategoryR
                         }
                     }
                 }).show();
+    }
+
+    private void shareCategories(List<Category> categories) {
+        Opml opml = OpmlConverter.convertCategoriesToOpml(categories);
+        String finalMessage = "";
+        try {
+            finalMessage = new XMLOutputter().outputString(new OPML20Generator().generate(opml));
+        } catch (FeedException e) {
+            e.printStackTrace();
+        }
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.setType("text/xml");
+        shareIntent.putExtra(Intent.EXTRA_TEXT,
+                finalMessage);
+        startActivity(shareIntent);
     }
 }

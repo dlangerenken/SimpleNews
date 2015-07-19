@@ -45,7 +45,7 @@ public class UpdatingFeedTask extends AsyncTask<String, String, Feed> {
     @Override
     protected Feed doInBackground(String... params) {
         String feedUrl = params[0];
-        if (!feedUrl.startsWith("http://")) {
+        if (!feedUrl.startsWith("http://") && !feedUrl.startsWith("https://")) {
             feedUrl = "http://" + feedUrl;
         }
 

@@ -10,6 +10,8 @@ import static android.os.Build.VERSION_CODES.GINGERBREAD;
 
 import java.util.Date;
 
+import de.dala.simplenews.ui.NewsOverViewFragment;
+
 
 @SuppressLint("CommitPrefEdits")
 public class PrefUtilities {
@@ -20,10 +22,11 @@ public class PrefUtilities {
     private static final String TIME_FOR_REFRESH = "time_for_refresh";
     private static final String DEPRECATED_TIME = "deprecated_time";
     private static final String SHORTEN_LINKS = "shorten_links";
-    private static final String MULTIPLE_COLUMNS_PORTRAIT = "multiple_columns_portrait";
-    private static final String MULTIPLE_COLUMNS_LANDSCAPE = "multiple_columns_landscape";
+    public static final String MULTIPLE_COLUMNS_PORTRAIT = "multiple_columns_portrait";
+    public static final String MULTIPLE_COLUMNS_LANDSCAPE = "multiple_columns_landscape";
     private static final String CATEGORY_INDEX = "category_index";
     private static final String CURRENT_COLOR = "current_color";
+    public static final String CURRENT_NEWS_TYPE_MODE = "news_type_mode";
 
     /**
      * Per the design guidelines, you should show the drawer on launch until the user manually
@@ -90,7 +93,7 @@ public class PrefUtilities {
     }
 
     public boolean shouldShortenLinks() {
-        return preferences.getBoolean(SHORTEN_LINKS, true);
+        return preferences.getBoolean(SHORTEN_LINKS, false);
     }
 
     public void increaseLaunchCountForRating() {
@@ -167,5 +170,21 @@ public class PrefUtilities {
 
     public void setCategoryIndex(int id) {
         save(preferences.edit().putInt(CATEGORY_INDEX, id));
+    }
+
+    public void setNewsTypeMode(int entryType) {
+        save(preferences.edit().putInt(CURRENT_NEWS_TYPE_MODE, entryType));
+    }
+
+    public int getNewsTypeMode() {
+        return preferences.getInt(CURRENT_NEWS_TYPE_MODE, NewsOverViewFragment.ALL);
+    }
+
+    public void addListener(SharedPreferences.OnSharedPreferenceChangeListener listener) {
+        preferences.registerOnSharedPreferenceChangeListener(listener);
+    }
+
+    public void removeListener(SharedPreferences.OnSharedPreferenceChangeListener listener) {
+        preferences.unregisterOnSharedPreferenceChangeListener(listener);
     }
 }
