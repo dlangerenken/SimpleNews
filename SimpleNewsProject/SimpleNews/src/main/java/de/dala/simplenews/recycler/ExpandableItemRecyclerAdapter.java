@@ -16,7 +16,6 @@ import android.widget.TextView;
 
 import com.ocpsoft.pretty.time.PrettyTime;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -25,7 +24,6 @@ import java.util.Set;
 import de.dala.simplenews.R;
 import de.dala.simplenews.common.Category;
 import de.dala.simplenews.common.Entry;
-import de.dala.simplenews.ui.NewsOverViewFragment;
 import de.dala.simplenews.utilities.ExpandCollapseHelper;
 import de.dala.simplenews.utilities.PrefUtilities;
 import de.dala.simplenews.utilities.UIUtils;
@@ -64,6 +62,7 @@ public class ExpandableItemRecyclerAdapter extends ChoiceModeRecyclerAdapter<Exp
     @Override
     void onBindNormalViewHolder(final EntryViewHolder holder, final int position) {
         final Entry currentEntry = get(position);
+        int secondaryColor = mCategory.getSecondaryColor();
 
         String formattedDate = "";
         if (currentEntry.getDate() != null) {
@@ -73,12 +72,11 @@ public class ExpandableItemRecyclerAdapter extends ChoiceModeRecyclerAdapter<Exp
 
         /* title */
         holder.infoTextView.setText(String.format("%s - %s", currentEntry.getSrcName(), formattedDate));
-        holder.infoTextView.setTextColor(mCategory.getSecondaryColor());
+        holder.infoTextView.setTextColor(secondaryColor);
         holder.infoTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
         UIUtils.setTextMaybeHtml(holder.titleTextView, currentEntry.getTitle());
         setImageDrawable(holder.imageView, currentEntry);
 
-        int secondaryColor = mCategory.getSecondaryColor();
         holder.colorBorderView.setBackgroundColor(secondaryColor);
         holder.colorBorderView.setBackgroundColor(secondaryColor);
         UIUtils.setTextMaybeHtml(holder.descriptionTextView, currentEntry.getDescription());
@@ -250,8 +248,7 @@ public class ExpandableItemRecyclerAdapter extends ChoiceModeRecyclerAdapter<Exp
 
     private void toggleExpandingElement(Entry entry, final View contentParent) {
         if (mRecyclerView != null) {
-            boolean isVisible = contentParent.getVisibility() == View.VISIBLE;
-            if (isVisible) {
+            if (contentParent.getVisibility() == View.VISIBLE) {
                 collapse(entry, contentParent, true);
             } else {
                 expand(entry, contentParent, true);

@@ -10,7 +10,7 @@ import static android.os.Build.VERSION_CODES.GINGERBREAD;
 
 import java.util.Date;
 
-import de.dala.simplenews.ui.NewsOverViewFragment;
+import de.dala.simplenews.ui.NewsActivity;
 
 
 @SuppressLint("CommitPrefEdits")
@@ -28,11 +28,6 @@ public class PrefUtilities {
     private static final String CURRENT_COLOR = "current_color";
     public static final String CURRENT_NEWS_TYPE_MODE = "news_type_mode";
 
-    /**
-     * Per the design guidelines, you should show the drawer on launch until the user manually
-     * expands it. This shared preference tracks this.
-     */
-    private static final String PREF_USER_LEARNED_DRAWER = "navigation_drawer_learned";
     private static PrefUtilities _instance;
     private static final long DEFAULT_TIME_FOR_REFRESH = 1000 * 60 * 60; //one hour
     private static final long DEFAULT_DEPRECATED_TIME = 1000 * 60 * 60 * 24 * 3; // three days
@@ -58,14 +53,6 @@ public class PrefUtilities {
 
     public void saveLoading(boolean save) {
         save(preferences.edit().putBoolean(XML_LOADED, save));
-    }
-
-    public boolean hasUserLearnedDrawer() {
-        return preferences.getBoolean(PREF_USER_LEARNED_DRAWER, false);
-    }
-
-    public void setUserLearnedDrawer(boolean b) {
-        save(preferences.edit().putBoolean(PREF_USER_LEARNED_DRAWER, b));
     }
 
     public void shouldNotAskForRatingAnymore() {
@@ -177,7 +164,7 @@ public class PrefUtilities {
     }
 
     public int getNewsTypeMode() {
-        return preferences.getInt(CURRENT_NEWS_TYPE_MODE, NewsOverViewFragment.ALL);
+        return preferences.getInt(CURRENT_NEWS_TYPE_MODE, NewsActivity.ALL);
     }
 
     public void addListener(SharedPreferences.OnSharedPreferenceChangeListener listener) {

@@ -54,7 +54,6 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
     private Category category;
     private CategoryUpdater updater;
     private int newsTypeMode;
-    private int position;
     private StaggeredGridLayoutManager mLayoutManager;
 
     private boolean isRefreshing;
@@ -77,10 +76,6 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
         return category;
     }
 
-    public int getPosition() {
-        return position;
-    }
-
     @Override
     public void setMenuVisibility(final boolean visible) {
         super.setMenuVisibility(visible);
@@ -94,7 +89,11 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
         super.onCreate(savedInstanceState);
         this.category = getArguments().getParcelable(ARG_CATEGORY);
         this.newsTypeMode = getArguments().getInt(ARG_ENTRY_TYPE);
-        this.position = getArguments().getInt(ARG_POSITION);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
         addListener();
     }
 
@@ -397,6 +396,14 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
         if (updater != null) {
             updater.cancel();
         }
+        removeListener();
+    }
+
+    private void removeListener() {
+        if (listener != null) {
+            PrefUtilities.getInstance().removeListener(listener);
+        }
+        listener = null;
     }
 
     @Override
@@ -424,13 +431,13 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
             if (params != null && params.length > 0) {
                 int type = params[0];
                 switch (type) {
-                    case NewsOverViewFragment.ALL:
+                    case NewsActivity.ALL:
                         entries.addAll(DatabaseHandler.getInstance().getEntries(category.getId(), null, true));
                         break;
-                    case NewsOverViewFragment.FAV:
+                    case NewsActivity.FAV:
                         entries.addAll(DatabaseHandler.getInstance().getFavoriteEntries(category.getId()));
                         break;
-                    case NewsOverViewFragment.RECENT:
+                    case NewsActivity.RECENT:
                         entries.addAll(DatabaseHandler.getInstance().getVisitedEntries(category.getId()));
                         break;
                 }

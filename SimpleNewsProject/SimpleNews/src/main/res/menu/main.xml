@@ -21,5 +21,10 @@
         android:title="@string/action_settings"
         app:showAsAction="never" />
 
-
+    <item
+        android:id="@+id/menu_columns"
+        android:title="@string/multiple_columns"
+        android:orderInCategory="1"
+        app:showAsAction="never"
+        />
 </menu>

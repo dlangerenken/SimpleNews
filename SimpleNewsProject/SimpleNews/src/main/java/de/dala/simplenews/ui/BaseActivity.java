@@ -7,6 +7,8 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
 import android.os.Build;
+import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -19,7 +21,7 @@ import de.dala.simplenews.R;
 import de.dala.simplenews.utilities.ColorManager;
 import de.dala.simplenews.utilities.PrefUtilities;
 
-public class BaseActivity extends AppCompatActivity {
+public abstract class BaseActivity extends AppCompatActivity {
 
     private static final int DURATION = 400;
     private Drawable oldBackgroundActivity = null;
@@ -30,7 +32,6 @@ public class BaseActivity extends AppCompatActivity {
     public void setContentView(int layoutResID) {
         super.setContentView(layoutResID);
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
-        setLastColor();
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -40,6 +41,12 @@ public class BaseActivity extends AppCompatActivity {
                 actionBar.setDisplayShowCustomEnabled(true);
             }
         }
+    }
+
+    @Override
+    public void onPostCreate(Bundle savedInstanceState, PersistableBundle persistentState) {
+        super.onPostCreate(savedInstanceState, persistentState);
+        setLastColor();
     }
 
     private void setLastColor() {

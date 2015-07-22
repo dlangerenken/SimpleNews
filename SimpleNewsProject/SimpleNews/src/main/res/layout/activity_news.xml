@@ -3,8 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <FrameLayout
-        android:id="@+id/container"
+    <android.support.v4.view.ViewPager
+        android:id="@+id/pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
@@ -48,11 +48,11 @@
             android:id="@+id/menu_item_1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"
             app:fab_colorNormal="#ffffffff"
             app:fab_colorPressed="#ffcfdbed"
             app:fab_colorRipple="#ffadbbd9"
-            app:fab_size="normal" />
+            app:fab_size="normal"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
         <com.github.clans.fab.FloatingActionButton
             android:id="@+id/menu_item_2"

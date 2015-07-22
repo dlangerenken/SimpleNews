@@ -1,97 +1,86 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_content"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@android:color/white"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:paddingEnd="7dp"
+    android:paddingLeft="7dp"
+    android:paddingRight="7dp"
+    android:paddingStart="7dp">
 
     <LinearLayout
-        android:id="@+id/main_content"
+        android:id="@+id/card_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="7dp">
+        android:paddingTop="7dp">
 
-        <LinearLayout
-            android:id="@+id/card_title"
-            android:layout_width="match_parent"
+        <RelativeLayout
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="horizontal">
 
-            <RelativeLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:contentDescription="@null"
-                    android:id="@+id/image"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentRight="true"
-                    android:layout_alignParentTop="true"
-                    android:layout_marginLeft="8dp"
-                    android:layout_marginStart="8dp" />
-
-                <TextView
-                    android:id="@+id/title"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
-                    android:layout_alignParentStart="true"
-                    android:layout_toLeftOf="@id/image"
-                    android:layout_toStartOf="@id/image"
-                    android:textSize="16sp"
-                    tools:text="Seit es die Rente mit 63 gibt, sind immer weniger ältere Menschen berufstätig" />
-            </RelativeLayout>
-
+            <ImageView
+                android:id="@+id/image"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginLeft="8dp"
+                android:layout_marginStart="8dp"
+                android:contentDescription="@null"
+                tools:src="@drawable/ic_fav_color" />
 
             <TextView
-                android:id="@+id/info"
+                android:id="@+id/title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                tools:text="Die Welt - Karriere - Vor 9 Stunden"
-                tools:textColor="@android:color/holo_red_light" />
-        </LinearLayout>
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_toLeftOf="@id/image"
+                android:layout_toStartOf="@id/image"
+                android:textSize="16sp"
+                tools:text="Seit es die Rente mit 63 gibt, sind immer weniger ältere Menschen berufstätig" />
+        </RelativeLayout>
 
-        <LinearLayout
-            android:id="@+id/card_content"
-            android:layout_width="match_parent"
+
+        <TextView
+            android:id="@+id/info"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="3dp"
-            android:orientation="horizontal"
-            android:visibility="gone"
-            tools:visibility="visible">
-
-            <View
-                android:id="@+id/color_border"
-                android:layout_width="10dp"
-                android:layout_height="match_parent"
-                tools:background="@android:color/holo_red_light" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/content_description"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginStart="10dp"
-                    android:singleLine="false"
-                    tools:text="Seit dem letzten Jahr können sich Arbeitnehmer schon mit 63 aus dem Berufsleben verabschieden. Ein Angebot, das offenbar viele annehmen. Die Beschäftigung von älteren Menschen ist deutlich zurückgegangen." />
-
-            </LinearLayout>
-        </LinearLayout>
+            tools:text="Die Welt - Karriere - Vor 9 Stunden"
+            tools:textColor="@android:color/holo_red_light" />
     </LinearLayout>
 
-    <View
-        android:id="@+id/divider"
+    <LinearLayout
+        android:id="@+id/card_content"
         android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/holo_gray_light" />
+        android:layout_height="wrap_content"
+        android:layout_marginTop="3dp"
+        android:orientation="horizontal"
+        android:paddingBottom="7dp"
+        android:visibility="gone"
+        tools:visibility="visible">
+
+        <View
+            android:id="@+id/color_border"
+            android:layout_width="10dp"
+            android:layout_height="match_parent"
+            tools:background="@android:color/holo_red_light" />
+
+        <TextView
+            android:id="@+id/content_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginStart="10dp"
+            android:singleLine="false"
+            tools:text="Seit dem letzten Jahr können sich Arbeitnehmer schon mit 63 aus dem Berufsleben verabschieden. Ein Angebot, das offenbar viele annehmen. Die Beschäftigung von älteren Menschen ist deutlich zurückgegangen." />
+
+    </LinearLayout>
 </LinearLayout>

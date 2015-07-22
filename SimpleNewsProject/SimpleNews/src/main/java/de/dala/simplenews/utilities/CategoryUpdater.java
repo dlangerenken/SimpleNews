@@ -78,10 +78,10 @@ public class CategoryUpdater {
 
     public void cancel() {
         if (isRunning) {
-            isRunning = false;
             if (task != null) {
                 task.cancel(true);
             }
+            isRunning = false;
             sendMessage(null, CANCEL);
         }
     }
@@ -110,7 +110,10 @@ public class CategoryUpdater {
                     }
                     try {
                         if (!future.isCancelled()) {
-                            entries.addAll(future.get(5, TimeUnit.SECONDS));
+                            List<Entry> result = future.get(5, TimeUnit.SECONDS);
+                            if (result != null) {
+                                entries.addAll(result);
+                            }
                         }
                     } catch (CancellationException ignored) {
                     }
