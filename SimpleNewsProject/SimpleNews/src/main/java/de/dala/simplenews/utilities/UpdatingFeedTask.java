@@ -48,29 +48,39 @@ public class UpdatingFeedTask extends AsyncTask<String, String, Feed> {
         if (!feedUrl.startsWith("http://") && !feedUrl.startsWith("https://")) {
             feedUrl = "http://" + feedUrl;
         }
-
-        if (UIUtils.isValideUrl(feedUrl)) {
-            try {
-                SyndFeedInput input = new SyndFeedInput();
-                SyndFeed syndFeed = input.build(new XmlReader(new URL(feedUrl), mContext));
-                if (syndFeed.getEntries() == null || syndFeed.getEntries().isEmpty()) {
-                    return null;
-                } else {
-                    Feed feed = new Feed();
-                    feed.setId(mFeedId);
-                    feed.setCategoryId(mCategory.getId());
-                    feed.setTitle(syndFeed.getTitle());
-                    feed.setDescription(syndFeed.getDescription());
-                    feed.setXmlUrl(feedUrl);
-                    feed.setType(syndFeed.getFeedType());
-                    long id = DatabaseHandler.getInstance().addFeed(mCategory.getId(), feed, true);
-                    feed.setId(id);
+        if (!UIUtils.isValideUrl(feedUrl)) {
+            return null;
+        }
+        /* Check whether or not the feed-url is already added to the category*/
+        if (mFeedId == null) {
+            for (Feed feed : mCategory.getFeeds()) {
+                if (Utilities.equals(feed.getXmlUrl(), feedUrl)) {
                     return feed;
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
             }
         }
+
+        try {
+            SyndFeedInput input = new SyndFeedInput();
+            SyndFeed syndFeed = input.build(new XmlReader(new URL(feedUrl), mContext));
+            if (syndFeed.getEntries() == null || syndFeed.getEntries().isEmpty()) {
+                return null;
+            } else {
+                Feed feed = new Feed();
+                feed.setId(mFeedId);
+                feed.setCategoryId(mCategory.getId());
+                feed.setTitle(syndFeed.getTitle());
+                feed.setDescription(syndFeed.getDescription());
+                feed.setXmlUrl(feedUrl);
+                feed.setType(syndFeed.getFeedType());
+                long id = DatabaseHandler.getInstance().addFeed(mCategory.getId(), feed, true);
+                feed.setId(id);
+                return feed;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         return null;
     }
 

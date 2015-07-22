@@ -56,6 +56,7 @@ public class EmptyObservableRecyclerView extends RecyclerView {
         if (adapter != null) {
             adapter.registerAdapterDataObserver(observer);
         }
+        checkIfEmpty();
     }
 
     public void setEmptyView(View emptyView) {

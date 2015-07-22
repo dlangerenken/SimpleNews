@@ -145,6 +145,7 @@ public class CategoryFeedsFragment extends BaseFragment implements FeedRecyclerA
                         dialog.dismiss();
                         positive.setEnabled(true);
                         negative.setEnabled(true);
+                        mRecyclerAdapter.add(feed);
                     }
 
                     @Override
