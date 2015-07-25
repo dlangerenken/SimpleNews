@@ -1,7 +1,6 @@
 package de.dala.simplenews.ui;
 
 import android.content.res.Resources;
-import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
@@ -17,11 +16,6 @@ import java.lang.reflect.Field;
 public class BaseFragment extends Fragment {
     // Arbitrary value; set it to some reasonable default
     private static final int DEFAULT_CHILD_ANIMATION_DURATION = 600;
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
 
     @Override
     public Animation onCreateAnimation(int transit, boolean enter, int nextAnim) {

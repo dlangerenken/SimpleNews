@@ -12,8 +12,6 @@ import java.util.List;
 
 public abstract class BaseItemAnimator extends RecyclerView.ItemAnimator {
 
-    private static final boolean DEBUG = false;
-
     private final ArrayList<ViewHolder> mPendingRemovals = new ArrayList<>();
     private final ArrayList<ViewHolder> mPendingAdditions = new ArrayList<>();
     private final ArrayList<MoveInfo> mPendingMoves = new ArrayList<>();
@@ -178,7 +176,6 @@ public abstract class BaseItemAnimator extends RecyclerView.ItemAnimator {
     @Override
     public boolean animateRemove(final ViewHolder holder) {
         endAnimation(holder);
-        preAnimateRemove(holder);
         mPendingRemovals.add(holder);
         return true;
     }
@@ -253,8 +250,6 @@ public abstract class BaseItemAnimator extends RecyclerView.ItemAnimator {
                 dispatchFinishedWhenDone();
             }
         }).start();
-    }
-    protected void preAnimateRemove(final RecyclerView.ViewHolder holder) {
     }
 
     @Override
@@ -429,27 +424,6 @@ public abstract class BaseItemAnimator extends RecyclerView.ItemAnimator {
                 }
             }
         }
-
-        // animations should be ended by the cancel above.
-        if (mRemoveAnimations.remove(item) && DEBUG) {
-            throw new IllegalStateException("after animation is cancelled, item should not be in "
-                    + "mRemoveAnimations list");
-        }
-
-        if (mAddAnimations.remove(item) && DEBUG) {
-            throw new IllegalStateException("after animation is cancelled, item should not be in "
-                    + "mAddAnimations list");
-        }
-
-        if (mChangeAnimations.remove(item) && DEBUG) {
-            throw new IllegalStateException("after animation is cancelled, item should not be in "
-                    + "mChangeAnimations list");
-        }
-
-        if (mMoveAnimations.remove(item) && DEBUG) {
-            throw new IllegalStateException("after animation is cancelled, item should not be in "
-                    + "mMoveAnimations list");
-        }
         dispatchFinishedWhenDone();
     }
 
@@ -499,7 +473,6 @@ public abstract class BaseItemAnimator extends RecyclerView.ItemAnimator {
         count = mPendingAdditions.size();
         for (int i = count - 1; i >= 0; i--) {
             ViewHolder item = mPendingAdditions.get(i);
-            View view = item.itemView;
             reset(item.itemView);
             dispatchAddFinished(item);
             mPendingAdditions.remove(i);

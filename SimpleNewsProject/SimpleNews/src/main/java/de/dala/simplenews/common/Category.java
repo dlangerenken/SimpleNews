@@ -2,6 +2,7 @@ package de.dala.simplenews.common;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -122,8 +123,8 @@ public class Category implements Serializable, Parcelable, Comparable<Category> 
     }
 
     @Override
-    public int compareTo(Category another) {
-        if (another == null || another.order == null) {
+    public int compareTo(@NonNull Category another) {
+        if (another.order == null) {
             return 1;
         }
         if (order == null) {

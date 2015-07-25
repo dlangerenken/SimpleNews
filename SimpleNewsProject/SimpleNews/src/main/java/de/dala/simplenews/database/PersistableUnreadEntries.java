@@ -7,7 +7,7 @@ import static de.dala.simplenews.database.DatabaseHandler.concatenateQueries;
 /**
  * Created by Daniel on 01.08.2014.
  */
-public class PersistableUnreadEntries extends PersistableEntries{
+class PersistableUnreadEntries extends PersistableEntries{
 
     public PersistableUnreadEntries(Long categoryId, Long feedId, Long entryId, Boolean onlyVisible){
         super(categoryId, feedId, entryId, onlyVisible);

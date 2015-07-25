@@ -4,16 +4,7 @@
     <string name="app_name">SimpleNews</string>
     <string name="action_settings">Einstellungen</string>
     <string name="categories">Kategorien</string>
-    <string name="about_ok">OK</string>
-    <string name="changelog_title">Versionen</string>
-    <string name="changelog_menu">Versionen</string>
-    <string name="progress">Fortschritt</string>
-    <string name="navigation_drawer_open">Öffne die Navigation</string>
-    <string name="navigation_drawer_close">Schließe die Navigation</string>
-    <string name="refresh">Aktualisieren</string>
-    <string name="update_news">Aktualisiere Nachrichten…</string>
-    <string name="add">Hinzufügen</string>
-    <string name="not_valid_format">Adresse nicht valide - XML/RSS-Format benötigt.</string>
+    <string name="ok">OK</string>
     <string name="category_add">Wähle eine Kategorie für den Feed aus.</string>
     <string name="cancel">Abbrechen</string>
     <string name="submit">Ok</string>
@@ -22,18 +13,7 @@
     <string name="rename">Umbenennen</string>
     <string name="category">Kategorie</string>
     <string name="change_category_name">Ändere den Namen der Kategorie</string>
-    <string name="category_created">Kategorie erstellt</string>
-    <string name="coming_soon">Demnächst…</string>
 
-    <string name="pref_config">Farbauswahl</string>
-    <string name="new_category">Neue Kategorie</string>
-    <string name="desc_list_item_icon">Item Icon</string>
-    <string name="menu_settings">Einstellungen</string>
-    <string name="title_activity_main">MainActivity</string>
-
-    <string name="countdown_dismissing">Entfernen</string>
-    <string name="itemdeleted">Eintrag gelöscht</string>
-    <string name="taptoundo">Wiederherstellen</string>
     <string name="description_refresh">Aktualisieren</string>
 
     <string name="select_color_create_category">Wähle eine Farbe für die Kategorie</string>
@@ -42,14 +22,7 @@
     <string name="rename_feed">Ändere die Adresse des Feeds</string>
     <string name="new_feed_url_header">Neue Adresse des Feeds</string>
 
-    <string name="simple_news_title">Nachrichten</string>
 
-    <plurals name="countdown_seconds">
-        <item quantity="one">Entferne in 1...</item>
-        <item quantity="other">Entferne in %d...</item>
-    </plurals>
-    <string name="categories_title"><![CDATA[Kategorien]]></string>
-    <string name="cancel_menu">Abbrechen</string>
     <string name="hint_add_entry">Adresse des Feeds</string>
     <string name="rate_my_app_desc">Wenn dir %s gefällt, überlege bitte, eine Bewertung abzugeben. Danke für deine Unterstützung!</string>
     <string name="rate_my_app_title">Bewerte %s</string>
@@ -58,7 +31,6 @@
     <string name="rate_my_app_never">Nein, Danke.</string>
     <string name="playstore_not_found">Der Playstore konnte nicht gefunden werden. Bitte starte Ihn manuell und gib deine Bewertung ab.</string>
     <string name="restore_categories">Zurücksetzen</string>
-    <string name="add_category">Hinzufügen</string>
     <string name="restore_categories_yes">Ja, zurücksetzen.</string>
     <string name="restore_categories_no">Nein, Abbrechen.</string>
     <string name="restore_categories_title">Ursprungszustand wiederherstellen?</string>
@@ -67,59 +39,34 @@
 
     <string name="refresh_summary">Wie oft sollen Feeds aktualisieren</string>
     <string name="refresh_title_feed">Feed-Aktualisierung</string>
-    <string name="menu_recently">Gelesene</string>
-    <string name="menu_favorites">Favoriten</string>
-    <string name="menu_all">Alle</string>
-    <string name="reset_categories">Kategorien zurücksetzen</string>
     <string name="selection_save">Speichern</string>
     <string name="selection_share">Teilen</string>
     <string name="shorten_links_title">Links zum Teilen verkürzen?</string>
     <string name="shorten_links_summary">Sollen Links zum Teilen gekürzt werden? (z.B. www.sehrsehrlangewebsite.de -> www.adf.ly/kurzername)</string>
     <string name="feed_selection_remove">Entfernen</string>
-    <string name="feed_selection_add">Hinzufügen</string>
     <string name="mark_read">Gelesen markieren</string>
     <string name="mark_unread">Ungelesen markieren</string>
-    <string name="menu_unread">Ungelesen</string>
     <string name="multiple_columns">Ansicht mit mehreren Spalten</string>
     <string name="single_columns">Ansicht mit einer Spalte</string>
-    <string name="category_name">Name der Kategorie</string>
-    <string name="select_all_context_list">Alle Einträge selektieren</string>
-    <string name="deselect_all_context_list">Selektion entfernen</string>
     <string name="no_entries">Keine Einträge gefunden.</string>
-    <string name="is_loading">Suche nach Einträgen</string>
     <string name="remove_old_entries_summary">Veraltete Nachrichten löschen?</string>
     <string name="remove_old_entries_title">Veraltete Einträge</string>
 
     <string name="opml_url">URL-Adresse oder Inhalt einer OPML-Datei angeben</string>
-    <string name="navdrawer_settings">Einstellungen</string>
     <string name="menu_delete_entry">Löschen</string>
     <string name="not_valid_url_nor_opml_file">Der eingegebene Text ist weder in einem validen OPML-Format, noch eine valide URL.</string>
     <string name="choose_category_for_feeds">Wähle eine Kategorie</string>
-    <string name="assigning_feeds_title">Feeds zuweisen</string>
     <string name="beta_version_disclaimer">Das ist eine Test-Version! Bitte bewerte die Anwendung nicht aufgrund dieser Funktionalität, sondern sende stattdessen Vorschläge oder Fehler</string>
     <string name="feed_selection_assign">Selektiere die Feeds, die zu einer Kategorie hinzugefügt werden sollen.</string>
     <string name="import_button">Importieren</string>
     <string name="enter_url_or_content_import">Bitte geben Sie eine URL zu einem OPML-Link oder den gesamten Inhalt einer Datei an</string>
-    <string name="home_title">Nachrichten</string>
-    <string name="favorite_title">Favoriten</string>
-    <string name="recent_title">Gesehene</string>
-    <string name="unread_title">Ungelesene</string>
     <string name="no_feeds_found">Keine Feeds gefunden</string>
     <string name="no_browser_found">Hoppla, es wurde kein Browser gefunden. Bitte installiere zuerst einen Browser und versuche es dann erneut!</string>
-    <string name="category_feeds_fragment_title">%s: Feeds</string>
-    <string name="category_modifier_fragment">Kategorien</string>
-    <string name="category_selection_fragment_title">Kategorien</string>
-    <string name="opml_assign_fragment_title">Opml-Feeds zuweisen</string>
-    <string name="opml_import_fragment_title">Opml importieren</string>
     <string name="pref_fragment_title">Einstellungen</string>
 
 
-    <string name="title_activity_opml">Opml</string>
-    <string name="thanks">Vielen Dank!</string>
-    <string name="exception">Oops! Da ist etwas schief gelaufen!</string>
     <string name="menu_opml">OPML</string>
     <string name="assign_menu_title">Zuweisen</string>
-    <string name="error_feed_loading">Couldn\'t load feed.</string>
     <string name="share_categories">Kategorien teilen</string>
     <string name="share_feeds">Feeds teilen</string>
 </resources>

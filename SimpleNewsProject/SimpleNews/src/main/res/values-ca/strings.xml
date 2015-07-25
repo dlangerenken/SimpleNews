@@ -3,33 +3,12 @@
 
     <string name="app_name">"SimpleNews"</string>
     <string name="action_settings">"Configuració"</string>
-    <string name="about_ok">"D'acord"</string>
-    <string name="changelog_title">"Registre de canvis"</string>
-    <string name="changelog_menu">"Registre de canvis"</string>
-    <string name="progress">"Progrés"</string>
-    <string name="refresh">"Actualitza"</string>
-    <string name="update_news">"Actualitzant les notícies…"</string>
-    <string name="coming_soon">"Properament…"</string>
-    <string name="navigation_drawer_open">"Obre el calaix de navegació"</string>
-    <string name="navigation_drawer_close">"Tanca el calaix de navegació"</string>
+    <string name="ok">D'acord</string>
     <string name="categories">"Categoríes"</string>
-    <string name="pref_config">"Selector de color"</string>
-    <string name="new_category">"Nova categoria"</string>
-    <string name="add">"Afegeix"</string>
     <string name="description_refresh">"Actualitzar"</string>
 
-    <plurals name="countdown_seconds">
-        <item quantity="one">"S'eliminará en 1..."</item>
-        <item quantity="other">"S'eliminará en %d ..."</item>
-    </plurals>
-
     <string name="countdown_dismissing">"Eliminant"</string>
-    <string name="itemdeleted">"Eliminat"</string>
-    <string name="taptoundo">"Premeu per desfer"</string>
     <string name="select_color_create_category">"Seleccioneu un color de categoria"</string>
-    <string name="create_category_2_2">"Creació de categoria 2/2"</string>
-    <string name="create_category_1_2" tools:ignore="TypographyFractions">"Creació de categoria 1/2"</string>
-    <string name="not_valid_format">"Adreça invàlida: Es requereix un format XML ​​/ RSS."</string>
     <string name="category_add">"Seleccioneu una categoria per afegir aquest canal"</string>
     <string name="cancel">"Cancel·la"</string>
     <string name="submit">"@android:string/ok"</string>
@@ -38,12 +17,8 @@
     <string name="rename">"Canvia el nom"</string>
     <string name="category">"Categoria"</string>
     <string name="change_category_name">"Canvieu el nom de la categoria"</string>
-    <string name="category_created">"S'ha creat la categoria"</string>
     <string name="rename_feed">"Canvia el nom del canal"</string>
     <string name="new_feed_url_header">"Nova adreça del canal"</string>
-    <string name="simple_news_title">"Notícies"</string>
-    <string name="categories_title">"&lt;! [CDATA [Categoríes"</string>
-    <string name="cancel_menu">"Cancel·la"</string>
     <string name="hint_add_entry">"Insereix adreça"</string>
     <string name="rate_my_app_desc">"Si vos agrada el %s , si us plau valoreu l'aplicació, és només un moment. Gràcies pel vostre recolzament!"</string>
     <string name="rate_my_app_title">"Puntuació %s"</string>
@@ -52,72 +27,42 @@
     <string name="rate_my_app_never">"No, gràcies."</string>
     <string name="playstore_not_found">"No s'ha pogut obrir el Play Store. Si us plau, obriu-lo manualment."</string>
     <string name="restore_categories">"Restaura"</string>
-    <string name="add_category">"Afegeix"</string>
     <string name="restore_categories_yes">"Sí, restaura'l."</string>
     <string name="restore_categories_no">"No, cancel·la."</string>
     <string name="restore_categories_title">"Voleu restaurar la configuració per defecte?"</string>
     <string name="restore_categories_message">"Atenció! S'eliminaran totes les dades desades."</string>
     <string name="feed_title_not_found">"No s'han trobat cap títol"</string>
-    <!-- Content Description -->
-    <string name="desc_list_item_icon">"Icona per l'element"</string>
 
-
-    <string name="menu_settings">"Configuració"</string>
-    <string name="title_activity_main">"MainActivity"</string>
     <string name="refresh_summary">"Amb quina freqüència s'hauria d'actualitzar els canals"</string>
     <string name="refresh_title_feed">"Actualizació dels canals"</string>
-    <string name="menu_recently">"Recents"</string>
-    <string name="menu_favorites">"Preferits"</string>
-    <string name="menu_all">"Tot"</string>
-    <string name="reset_categories">"Restablir les categoríes"</string>
     <string name="selection_save">"Desa"</string>
     <string name="selection_share">"Comparteix"</string>
     <string name="shorten_links_title">"Escurçar els enllaços per compartir?"</string>
     <string name="shorten_links_summary">"S'han d'escurçar els enllaços compartits? (p. ex. www.unnomllarguissimdecanal.com a www.adf.ly/nomnou)"</string>
     <string name="feed_selection_remove">"Elimina"</string>
-    <string name="feed_selection_add">"Afegei"</string>
     <string name="mark_read">"Marca com a llegit"</string>
     <string name="mark_unread">"Marca com a no llegit"</string>
-    <string name="menu_unread">"No llegits"</string>
     <string name="multiple_columns">"Mostra amb vàries columnes"</string>
     <string name="single_columns">"Mostra amb una sola columna"</string>
-    <string name="category_name">"Nom de la categoria"</string>
-    <string name="select_all_context_list">"Selecciona-ho tot"</string>
-    <string name="deselect_all_context_list">"Elimina els seleccionats"</string>
     <string name="no_entries">"No s'han trobat entrades."</string>
-    <string name="is_loading">"Cercant notícies per mostrar"</string>
     <string name="remove_old_entries_summary">"Eliminar les notícies antigues?"</string>
     <string name="remove_old_entries_title">"Entrades antigues"</string>
     <string name="opml_url">"Introduïu l'adreça o el contingut d'un arxiu OPML vàlid"</string>
-    <string name="navdrawer_settings">"Configuració"</string>
     <string name="menu_delete_entry">"Elimina"</string>
     <string name="not_valid_url_nor_opml_file">"El text introduït no és ni una adreça, ni un contingut d'arxiu OPML vàlids."</string>
     <string name="choose_category_for_feeds">"Trieu una categoria"</string>
     <string name="beta_version_disclaimer">"Aquesta és una versió beta. No valoreu l'aplicació en base a aquesta funcionalitat. En lloc d'això, envieu un informe del error o un suggeriment."</string>
     <string name="feed_selection_assign">"Seleccioneu els canals per assignar-los a la categoria"</string>
-    <string name="assigning_feeds_title">"Assignant els canals"</string>
     <string name="import_button">"Importa"</string>
     <string name="enter_url_or_content_import">"Introduïu l'adreça d'un arxiu OPML o el seu contingut"</string>
-    <string name="home_title">"Inici"</string>
-    <string name="favorite_title">"Preferits"</string>
-    <string name="recent_title">"Recent"</string>
-    <string name="unread_title">"No llegits"</string>
     <string name="no_feeds_found">"No s'han trobat canals"</string>
     <string name="no_browser_found">"No s'ha trobat cap navegador. Instal·leu-ne un i torneu-ho a provar."</string>
-    <string name="category_feeds_fragment_title">"%s : canals"</string>
-    <string name="category_modifier_fragment">"Categoríes"</string>
-    <string name="category_selection_fragment_title">"Categoríes"</string>
     <string name="opml_assign_fragment_title">"Assigneu canals OPML"</string>
-    <string name="opml_import_fragment_title">"Importa OPML"</string>
     <string name="pref_fragment_title">"Preferències"</string>
 
 
-    <string name="title_activity_opml">Opml</string>
-    <string name="thanks">Thank you!</string>
-    <string name="exception">Oops! Something went wrong!</string>
     <string name="menu_opml">OPML</string>
     <string name="assign_menu_title">Assign</string>
-    <string name="error_feed_loading">Couldn\'t load feed.</string>
     <string name="share_categories">Share Categorías</string>
     <string name="share_feeds">Share canals</string>
 </resources>

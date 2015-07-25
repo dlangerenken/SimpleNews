@@ -1,24 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="background_window">#FFE5E5E5</color>
-    <color name="textual_background">#FFE5E5E5</color>
-
-    <integer-array name="my_colors">
-        <item>@android:color/white</item>
-        <item>@android:color/transparent</item>
-    </integer-array>
 
     <color name="primary">#009688</color>
     <color name="primaryDark">#00796B</color>
     <color name="accent">#FF4081</color>
 
-    <color name="list_item_title">#ff2f2f2f</color>
     <color name="list_background">#ffffff</color>
     <color name="list_background_selected">#ABE3FF</color>
-    <color name="list_background_pressed">#992416</color>
-    <color name="list_divider">#272727</color>
-    <color name="counter_text_bg">#626262</color>
-    <color name="counter_text_color">#c5c4c4</color>
 
     <color name="holo_red_dark">#ffcc0000</color>
     <color name="holo_gray_light">#33999999</color>

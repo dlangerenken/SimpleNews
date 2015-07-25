@@ -40,7 +40,7 @@ public class CategoryUpdater {
     private boolean isRunning = false;
     private final Context context;
     private UpdatingTask task;
-    Long deprecatedTime;
+    private final Long deprecatedTime;
 
     public CategoryUpdater(Handler handler, Category category, Context context) {
         this.handler = handler;

@@ -58,7 +58,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     void changeTabColor(Drawable drawable) {
     }
 
-    public void changeColor(int primaryColor, int secondaryColor) {
+    void changeColor(int primaryColor, int secondaryColor) {
         ColorDrawable colorDrawableActivity = new ColorDrawable(primaryColor);
         ColorDrawable colorDrawableTabs = new ColorDrawable(primaryColor);
         ActionBar ab = getSupportActionBar();

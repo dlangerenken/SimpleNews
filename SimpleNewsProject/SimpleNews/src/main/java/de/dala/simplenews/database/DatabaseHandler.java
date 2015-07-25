@@ -287,9 +287,9 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
     }
 
     @Override
-    public void updateEntry(Entry entry) {
+    public long[] updateEntry(Entry entry) {
         IPersistableObject<Entry> persistence = new PersistableEntries(entry.getCategoryId(), entry.getFeedId(), entry.getId(), null);
-        long[] ids = update(persistence, entry);
+        return update(persistence, entry);
     }
 
     @Override
@@ -376,15 +376,15 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
     }
 
     @Override
-    public void updateCategory(Category category) {
+    public long[] updateCategory(Category category) {
         IPersistableObject<Category> persistence = new PersistableCategories(category.getId(), true, true, null);
-        long[] ids = update(persistence, category);
+        return update(persistence, category);
     }
 
     @Override
-    public void updateFeed(Feed feed) {
+    public long[] updateFeed(Feed feed) {
         IPersistableObject<Feed> persistence = new PersistableFeeds(feed.getCategoryId(), feed.getId(), null, null);
-        long[] ids = update(persistence, feed);
+        return update(persistence, feed);
     }
 
     private <E> long[] update(final IPersistableObject<E> persistableResource, E resource) {

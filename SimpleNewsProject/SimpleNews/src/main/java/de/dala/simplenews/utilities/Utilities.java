@@ -7,7 +7,6 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.RippleDrawable;
 import android.os.Build;
-import android.support.annotation.NonNull;
 import android.view.View;
 
 import com.rometools.rome.feed.synd.SyndContent;
@@ -17,7 +16,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import de.dala.simplenews.R;
 import de.dala.simplenews.common.Entry;
 
 /**

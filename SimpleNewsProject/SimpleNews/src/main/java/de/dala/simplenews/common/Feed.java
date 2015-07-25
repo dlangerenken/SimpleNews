@@ -1,5 +1,7 @@
 package de.dala.simplenews.common;
 
+import android.support.annotation.NonNull;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -100,10 +102,7 @@ public class Feed implements Serializable, Comparable<Feed> {
     }
 
     @Override
-    public int compareTo(Feed another) {
-        if (another == null) {
-            return 1;
-        }
+    public int compareTo(@NonNull Feed another) {
         if (title == null) {
             return -1;
         }

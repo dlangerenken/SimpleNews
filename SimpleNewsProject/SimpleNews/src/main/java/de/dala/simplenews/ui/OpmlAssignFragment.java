@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,7 +43,18 @@ public class OpmlAssignFragment extends BaseFragment implements ChoiceModeRecycl
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        feedsToImport = (List<Feed>) getArguments().getSerializable(FEED_LIST_KEY);
+        Serializable feedListSerializable = getArguments().getSerializable(FEED_LIST_KEY);
+        assert feedListSerializable != null;
+        if (feedListSerializable instanceof List<?>) {
+            feedsToImport = new ArrayList<>();
+            List<?> serializable = (List<?>) feedListSerializable;
+            for (int i = 0; i < serializable.size(); i++) {
+                Object elem = serializable.get(i);
+                if (elem instanceof Feed) {
+                    feedsToImport.add((Feed) elem);
+                }
+            }
+        }
     }
 
     public static Fragment newInstance(List<Feed> feeds) {

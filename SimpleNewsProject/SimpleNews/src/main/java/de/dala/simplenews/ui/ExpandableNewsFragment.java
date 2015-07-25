@@ -293,12 +293,12 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
     }
 
 
-    public void newsTypeModeChanged(int newsTypeMode) {
+    private void newsTypeModeChanged(int newsTypeMode) {
         this.newsTypeMode = newsTypeMode;
         refreshFeedsByDatabase();
     }
 
-    public void gridSettingsChanged() {
+    private void gridSettingsChanged() {
         updateColumnCount();
     }
 
@@ -362,17 +362,32 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
             mFragment = new WeakReference<>(fragment);
         }
 
+        private List<Entry> entriesFromObject(Object obj){
+            if (obj == null || !(obj instanceof List<?>)){
+                return null;
+            }
+            List<?> castedList = (List<?>) obj;
+            List<Entry> entries = new ArrayList<>();
+            for (int i = 0; i < castedList.size(); i++) {
+                Object elem = castedList.get(i);
+                if (elem instanceof Entry) {
+                    entries.add((Entry) elem);
+                }
+            }
+            return entries;
+        }
+
         @Override
         public void handleMessage(Message msg) {
             ExpandableNewsFragment fragment = mFragment.get();
             if (fragment != null) {
                 switch (msg.what) {
                     case CategoryUpdater.RESULT:
-                        fragment.updateFinished(true, (List<Entry>) msg.obj);
+                        fragment.updateFinished(true, entriesFromObject(msg.obj));
                         break;
                     case CategoryUpdater.PART_RESULT:
                         if (msg.obj != null) {
-                            fragment.receivePartResult((List<Entry>) msg.obj);
+                            fragment.receivePartResult(entriesFromObject(msg.obj));
                         }
                         break;
                     case CategoryUpdater.ERROR:

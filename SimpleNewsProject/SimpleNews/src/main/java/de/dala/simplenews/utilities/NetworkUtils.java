@@ -13,8 +13,8 @@ import de.dala.simplenews.database.DatabaseHandler;
 import de.dala.simplenews.network.NetworkCommunication;
 import de.dala.simplenews.network.StringCallback;
 
-public class NetworkUtils {
-    public static void shortenWithAdfly(final List<Entry> entries) {
+class NetworkUtils {
+    private static void shortenWithAdfly(final List<Entry> entries) {
         for (final Entry entry : entries) {
             if (entry.getShortenedLink() != null || entry.getLink() == null) {
                 continue;
