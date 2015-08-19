@@ -16,13 +16,6 @@
             android:summary="@string/remove_old_entries_summary"
             android:title="@string/remove_old_entries_title" />
         <ListPreference
-            android:defaultValue="1800000"
-            android:entries="@array/listOptions"
-            android:entryValues="@array/listValues"
-            android:key="time_for_refresh"
-            android:summary="@string/refresh_summary"
-            android:title="@string/refresh_title_feed" />
-        <ListPreference
             android:defaultValue="small"
             android:entries="@array/font_sizes_names"
             android:entryValues="@array/font_sizes_values"

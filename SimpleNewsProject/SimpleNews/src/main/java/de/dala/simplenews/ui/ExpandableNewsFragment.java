@@ -211,7 +211,7 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setItemAnimator(new FadeInUpAnimator());
         mRecyclerView.setAdapter(mExpandableItemRecyclerAdapter);
-        mRecyclerView.setHasFixedSize(false);
+        mRecyclerView.setHasFixedSize(true);
         updateColumnCount();
     }
 

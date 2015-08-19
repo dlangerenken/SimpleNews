@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.os.Handler;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -64,14 +65,13 @@ public class ExpandableItemRecyclerAdapter extends ChoiceModeRecyclerAdapter<Exp
 
     @Override
     void onBindNormalViewHolder(EntryViewHolder holder, int position) {
-        final EntryViewHolder viewHolder = holder;
         if (position >= getItems().size()) {
-            viewHolder.itemView.setVisibility(View.INVISIBLE);
+            holder.itemView.setVisibility(View.INVISIBLE);
             return;
         } else {
-            viewHolder.itemView.setVisibility(View.VISIBLE);
+            holder.itemView.setVisibility(View.VISIBLE);
         }
-        final Entry currentEntry = get(position);
+        Entry currentEntry = get(position);
         int secondaryColor = mCategory.getSecondaryColor();
 
         String formattedDate = "";
@@ -81,62 +81,78 @@ public class ExpandableItemRecyclerAdapter extends ChoiceModeRecyclerAdapter<Exp
         }
 
         /* title */
-        viewHolder.infoTextView.setText(String.format("%s - %s", currentEntry.getSrcName(), formattedDate));
-        viewHolder.infoTextView.setTextColor(secondaryColor);
-        viewHolder.titleTextView.setText(currentEntry.getTitle());
+        holder.infoTextView.setText(String.format("%s - %s", currentEntry.getSrcName(), formattedDate));
+        holder.infoTextView.setTextColor(secondaryColor);
+        holder.titleTextView.setText(currentEntry.getTitle());
 
         if (shouldMarkUnreadEntries && currentEntry.isUnseen()) {
-            viewHolder.titleTextView.setTypeface(viewHolder.titleTextView.getTypeface(), Typeface.BOLD);
+            holder.titleTextView.setTypeface(null, Typeface.BOLD);
         } else {
-            viewHolder.titleTextView.setTypeface(viewHolder.titleTextView.getTypeface(), Typeface.NORMAL);
+            holder.titleTextView.setTypeface(null, Typeface.NORMAL);
         }
-        setImageDrawable(viewHolder.imageView, currentEntry);
+        setImageDrawable(holder.imageView, currentEntry);
 
-        viewHolder.colorBorderView.setBackgroundColor(secondaryColor);
+        holder.colorBorderView.setBackgroundColor(secondaryColor);
         String description = currentEntry.getDescription();
         if (description == null || "".equals(description)) {
             description = mContext.getString(R.string.no_description_available);
         }
-        viewHolder.descriptionTextView.setText(description);
+        holder.descriptionTextView.setText(description);
 
         /* click listener */
-        viewHolder.clickListener = new EntryViewHolder.ClickListener() {
-            @Override
-            public void onSelectItem() {
-                //toggle(currentEntry);
-                if (mItemClickListener != null) {
-                    mItemClickListener.onLongClick(currentEntry);
-                }
-            }
-
-            @Override
-            public void onTitleClick() {
-                if (!isInSelectionMode()) {
-                    toggleExpandingElement(currentEntry, viewHolder.contentLayout);
-                    if (mItemClickListener != null) {
-                        mItemClickListener.onExpandedClick(currentEntry);
-                    }
-                } else {
-                    toggleIfActionMode(currentEntry);
-                }
-            }
-
-            @Override
-            public void onDescriptionClick() {
-                if (!isInSelectionMode()) {
-                    if (mItemClickListener != null) {
-                        mItemClickListener.onOpenClick(currentEntry);
-                    }
-                } else {
-                    toggleIfActionMode(currentEntry);
-                }
-            }
-        };
+        holder.clickListener = new EntryClickListener(currentEntry, holder);
         if (mExpandedItemIds.contains(currentEntry)) {
-            expand(currentEntry, viewHolder.contentLayout, false);
+            expand(currentEntry, holder.contentLayout, false);
         } else {
-            collapse(currentEntry, viewHolder.contentLayout, false);
+            collapse(currentEntry, holder.contentLayout, false);
             Utilities.setPressedColorRippleDrawable(mContext.getResources().getColor(R.color.list_background), PrefUtilities.getInstance().getCurrentColor(), holder.itemView);
+        }
+    }
+
+    public class EntryClickListener implements EntryViewHolder.ClickListener {
+        private Entry mEntry;
+        private EntryViewHolder mViewHolder;
+
+        public EntryClickListener(Entry entry, EntryViewHolder viewHolder) {
+            mEntry = entry;
+            mViewHolder = viewHolder;
+        }
+
+        @Override
+        public void onSelectItem() {
+            if (mItemClickListener != null) {
+                mItemClickListener.onLongClick(mEntry);
+            }
+        }
+
+        @Override
+        public void onTitleClick() {
+            if (!isInSelectionMode()) {
+                toggleExpandingElement(mEntry, mViewHolder.contentLayout);
+                final Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (mItemClickListener != null) {
+                            mItemClickListener.onExpandedClick(mEntry);
+                        }
+                    }
+                }, 300);
+
+            } else {
+                toggleIfActionMode(mEntry);
+            }
+        }
+
+        @Override
+        public void onDescriptionClick() {
+            if (!isInSelectionMode()) {
+                if (mItemClickListener != null) {
+                    mItemClickListener.onOpenClick(mEntry);
+                }
+            } else {
+                toggleIfActionMode(mEntry);
+            }
         }
     }
 
@@ -223,7 +239,6 @@ public class ExpandableItemRecyclerAdapter extends ChoiceModeRecyclerAdapter<Exp
                         }
                     });
             titleLayout.setOnTouchListener(new OnTouch());
-
         }
 
         private class OnTouch implements View.OnTouchListener {
@@ -264,7 +279,12 @@ public class ExpandableItemRecyclerAdapter extends ChoiceModeRecyclerAdapter<Exp
         } else if (entry.getVisitedDate() != null && entry.getVisitedDate() > 0) {
             drawable = ContextCompat.getDrawable(mContext, R.drawable.ic_seen_color);
         }
-        entryType.setImageDrawable(drawable);
+        if (drawable != null) {
+            entryType.setVisibility(View.VISIBLE);
+            entryType.setImageDrawable(drawable);
+        } else {
+            entryType.setVisibility(View.GONE);
+        }
     }
 
 
@@ -301,6 +321,6 @@ public class ExpandableItemRecyclerAdapter extends ChoiceModeRecyclerAdapter<Exp
 
     @Override
     public int getItemCount() {
-        return super.getItemCount();
+        return super.getItemCount() + 1;
     }
 }
