@@ -32,7 +32,6 @@ public class FeedTests extends InstrumentationTestCase {
      */
     protected void setUp() throws Exception {
         super.setUp();
-        XmlParser.Init(getInstrumentation().getContext());
     }
 
 
@@ -40,7 +39,7 @@ public class FeedTests extends InstrumentationTestCase {
      * testFeeds
      */
     public final void testFeeds() throws IOException, XmlPullParserException, FeedException {
-        News news = XmlParser.getInstance().readDefaultNewsFile(R.raw.categories_test);
+        News news = new XmlParser().readDefaultNewsFile(getInstrumentation().getContext(), R.raw.categories_test);
         List<Feed> invalidFeeds = new ArrayList<>();
         for (Feed feed : news.getCategories().get(0).getFeeds()) {
             try {
@@ -49,10 +48,10 @@ public class FeedTests extends InstrumentationTestCase {
                 invalidFeeds.add(feed);
             }
         }
-        if (!invalidFeeds.isEmpty()){
+        if (!invalidFeeds.isEmpty()) {
             StringBuilder builder = new StringBuilder();
             builder.append("Following feeds are not valid:\n");
-            for(Feed feed : invalidFeeds){
+            for (Feed feed : invalidFeeds) {
                 builder.append(feed.getXmlUrl()).append("\n");
             }
             Assert.fail(builder.toString());

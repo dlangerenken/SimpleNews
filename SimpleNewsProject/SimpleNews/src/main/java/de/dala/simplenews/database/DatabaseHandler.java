@@ -30,7 +30,7 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
     /**
      * Database Name and Version
      */
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
     public static final String DATABASE_NAME = "simple_db";
 
     /**
@@ -69,13 +69,16 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
     public static final String ENTRY_VISIBLE = "visible";
     public static final String ENTRY_VISITED_DATE = "visited";
     public static final String ENTRY_FAVORITE_DATE = "favorite";
+    public static final String ENTRY_SEEN_DATE = "seen";
     public static final String ENTRY_IS_EXPANDED = "expanded";
 
     private static SQLiteDatabase db;
     private static DatabaseHandler instance;
+    private Context mContext;
 
     private DatabaseHandler(Context context, String databasePath) {
         super(context, databasePath, null, DATABASE_VERSION);
+        mContext = context;
     }
 
     /**
@@ -163,6 +166,7 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
                 + ENTRY_VISIBLE + " INTEGER,"
                 + ENTRY_VISITED_DATE + " LONG,"
                 + ENTRY_FAVORITE_DATE + " LONG,"
+                + ENTRY_SEEN_DATE + " LONG,"
                 + ENTRY_IS_EXPANDED + " INTEGER" + ");";
         db.execSQL(createCategoryTable);
         db.execSQL(createFeedTable);
@@ -174,6 +178,11 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
         if (oldVersion < newVersion) {
             switch (oldVersion) {
                 case -1:
+                    break;
+                case 1:
+                    if (newVersion >= 2) {
+                        db.execSQL("ALTER TABLE " + TABLE_ENTRY + " ADD " + ENTRY_SEEN_DATE + " LONG;");
+                    }
                     break;
                 default:
                     db.execSQL("DROP TABLE IF EXISTS " + TABLE_CATEGORY);
@@ -412,7 +421,7 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
 
     public void loadXmlIntoDatabase(int xml) {
         try {
-            News news = XmlParser.getInstance().readDefaultNewsFile(xml);
+            News news = XmlParser.readDefaultNewsFile(mContext, xml);
             addCategories(news.getCategories(), false, false);
             PrefUtilities.getInstance().saveLoading(true);
         } catch (XmlPullParserException | IOException e) {

@@ -118,11 +118,5 @@ public class CategoryActivity extends BaseActivity implements CategorySelectionF
         }
     }
 
-    private void startNewsActivity() {
-        Intent intent = new Intent(CategoryActivity.this, NewsActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
-        finish();
-    }
 
 }

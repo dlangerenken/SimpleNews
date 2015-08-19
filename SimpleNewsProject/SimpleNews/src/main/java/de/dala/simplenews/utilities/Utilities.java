@@ -125,7 +125,8 @@ public class Utilities {
                 description = description.replaceAll("<.*?>", "").replace("()", "").replace("&nbsp;", "").trim();
             }
 
-            return new Entry(null, feedId, categoryId, item.getTitle().trim(), description, time, source, url.toString(), null, null, null, false);
+            return new Entry(null, feedId, categoryId, item.getTitle().trim(), description, time, source, url.toString(), null, null, null, null,
+                    false);
         }
         return null;
     }

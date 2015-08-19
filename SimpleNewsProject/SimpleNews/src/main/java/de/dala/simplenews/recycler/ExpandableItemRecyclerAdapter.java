@@ -1,11 +1,11 @@
 package de.dala.simplenews.recycler;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -26,7 +26,6 @@ import de.dala.simplenews.common.Category;
 import de.dala.simplenews.common.Entry;
 import de.dala.simplenews.utilities.ExpandCollapseHelper;
 import de.dala.simplenews.utilities.PrefUtilities;
-import de.dala.simplenews.utilities.UIUtils;
 import de.dala.simplenews.utilities.Utilities;
 
 
@@ -37,12 +36,15 @@ public class ExpandableItemRecyclerAdapter extends ChoiceModeRecyclerAdapter<Exp
 
     private final ItemClickListener mItemClickListener;
     private final Set<Entry> mExpandedItemIds;
+    private boolean shouldMarkUnreadEntries;
 
     public interface ItemClickListener {
 
         void onOpenClick(Entry entry);
 
         void onLongClick(Entry entry);
+
+        void onExpandedClick(Entry currentEntry);
     }
 
     public ExpandableItemRecyclerAdapter(List<Entry> entries, Category category, Context context, ItemClickListener itemClickListener, RecyclerView recyclerView, ChoiceModeListener listener) {
@@ -52,6 +54,7 @@ public class ExpandableItemRecyclerAdapter extends ChoiceModeRecyclerAdapter<Exp
         mItemClickListener = itemClickListener;
         mRecyclerView = recyclerView;
         mExpandedItemIds = new HashSet<>();
+        shouldMarkUnreadEntries = PrefUtilities.getInstance().shouldMarkUnreadEntries();
     }
 
     @Override
@@ -60,7 +63,14 @@ public class ExpandableItemRecyclerAdapter extends ChoiceModeRecyclerAdapter<Exp
     }
 
     @Override
-    void onBindNormalViewHolder(final EntryViewHolder holder, final int position) {
+    void onBindNormalViewHolder(EntryViewHolder holder, int position) {
+        final EntryViewHolder viewHolder = holder;
+        if (position >= getItems().size()) {
+            viewHolder.itemView.setVisibility(View.INVISIBLE);
+            return;
+        } else {
+            viewHolder.itemView.setVisibility(View.VISIBLE);
+        }
         final Entry currentEntry = get(position);
         int secondaryColor = mCategory.getSecondaryColor();
 
@@ -71,18 +81,26 @@ public class ExpandableItemRecyclerAdapter extends ChoiceModeRecyclerAdapter<Exp
         }
 
         /* title */
-        holder.infoTextView.setText(String.format("%s - %s", currentEntry.getSrcName(), formattedDate));
-        holder.infoTextView.setTextColor(secondaryColor);
-        holder.infoTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
-        UIUtils.setTextMaybeHtml(holder.titleTextView, currentEntry.getTitle());
-        setImageDrawable(holder.imageView, currentEntry);
+        viewHolder.infoTextView.setText(String.format("%s - %s", currentEntry.getSrcName(), formattedDate));
+        viewHolder.infoTextView.setTextColor(secondaryColor);
+        viewHolder.titleTextView.setText(currentEntry.getTitle());
 
-        holder.colorBorderView.setBackgroundColor(secondaryColor);
-        holder.colorBorderView.setBackgroundColor(secondaryColor);
-        UIUtils.setTextMaybeHtml(holder.descriptionTextView, currentEntry.getDescription());
+        if (shouldMarkUnreadEntries && currentEntry.isUnseen()) {
+            viewHolder.titleTextView.setTypeface(viewHolder.titleTextView.getTypeface(), Typeface.BOLD);
+        } else {
+            viewHolder.titleTextView.setTypeface(viewHolder.titleTextView.getTypeface(), Typeface.NORMAL);
+        }
+        setImageDrawable(viewHolder.imageView, currentEntry);
+
+        viewHolder.colorBorderView.setBackgroundColor(secondaryColor);
+        String description = currentEntry.getDescription();
+        if (description == null || "".equals(description)) {
+            description = mContext.getString(R.string.no_description_available);
+        }
+        viewHolder.descriptionTextView.setText(description);
 
         /* click listener */
-        holder.clickListener = new EntryViewHolder.ClickListener() {
+        viewHolder.clickListener = new EntryViewHolder.ClickListener() {
             @Override
             public void onSelectItem() {
                 //toggle(currentEntry);
@@ -94,7 +112,10 @@ public class ExpandableItemRecyclerAdapter extends ChoiceModeRecyclerAdapter<Exp
             @Override
             public void onTitleClick() {
                 if (!isInSelectionMode()) {
-                    toggleExpandingElement(currentEntry, holder.contentLayout);
+                    toggleExpandingElement(currentEntry, viewHolder.contentLayout);
+                    if (mItemClickListener != null) {
+                        mItemClickListener.onExpandedClick(currentEntry);
+                    }
                 } else {
                     toggleIfActionMode(currentEntry);
                 }
@@ -112,11 +133,11 @@ public class ExpandableItemRecyclerAdapter extends ChoiceModeRecyclerAdapter<Exp
             }
         };
         if (mExpandedItemIds.contains(currentEntry)) {
-            expand(currentEntry, holder.contentLayout, false);
+            expand(currentEntry, viewHolder.contentLayout, false);
         } else {
-            collapse(currentEntry, holder.contentLayout, false);
+            collapse(currentEntry, viewHolder.contentLayout, false);
+            Utilities.setPressedColorRippleDrawable(mContext.getResources().getColor(R.color.list_background), PrefUtilities.getInstance().getCurrentColor(), holder.itemView);
         }
-        Utilities.setPressedColorRippleDrawable(mContext.getResources().getColor(R.color.list_background), PrefUtilities.getInstance().getCurrentColor(), holder.itemView);
     }
 
     @Override
@@ -246,6 +267,7 @@ public class ExpandableItemRecyclerAdapter extends ChoiceModeRecyclerAdapter<Exp
         entryType.setImageDrawable(drawable);
     }
 
+
     private void toggleExpandingElement(Entry entry, final View contentParent) {
         if (mRecyclerView != null) {
             if (contentParent.getVisibility() == View.VISIBLE) {
@@ -275,5 +297,10 @@ public class ExpandableItemRecyclerAdapter extends ChoiceModeRecyclerAdapter<Exp
     public void addNewEntriesAndRemoveOld(List<Entry> entries) {
         add(entries);
         removeOldEntries(entries);
+    }
+
+    @Override
+    public int getItemCount() {
+        return super.getItemCount();
     }
 }

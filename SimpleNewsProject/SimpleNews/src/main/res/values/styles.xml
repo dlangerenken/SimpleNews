@@ -22,4 +22,41 @@
         <item name="backgroundSplit">@android:color/white</item>
         <item name="actionModeShareDrawable">@drawable/ic_share_white</item>
     </style>
+
+    <style name="FontStyle"></style>
+
+    <style name="FontStyle.XSmall">
+        <item name="font_small">12sp</item>
+        <item name="font_medium">14sp</item>
+        <item name="font_large">16sp</item>
+        <item name="font_xlarge">18sp</item>
+    </style>
+
+    <style name="FontStyle.Small">
+        <item name="font_small">14sp</item>
+        <item name="font_medium">16sp</item>
+        <item name="font_large">18sp</item>
+        <item name="font_xlarge">20sp</item>
+    </style>
+
+    <style name="FontStyle.Medium">
+        <item name="font_small">16sp</item>
+        <item name="font_medium">18sp</item>
+        <item name="font_large">20sp</item>
+        <item name="font_xlarge">22sp</item>
+    </style>
+
+    <style name="FontStyle.Large">
+        <item name="font_small">18sp</item>
+        <item name="font_medium">20sp</item>
+        <item name="font_large">22sp</item>
+        <item name="font_xlarge">24sp</item>
+    </style>
+
+    <style name="FontStyle.XLarge">
+        <item name="font_small">20sp</item>
+        <item name="font_medium">22sp</item>
+        <item name="font_large">24sp</item>
+        <item name="font_xlarge">26sp</item>
+    </style>
 </resources>

@@ -1,5 +1,7 @@
 package de.dala.simplenews.ui;
 
+import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
@@ -20,10 +22,11 @@ import java.util.List;
 
 import de.dala.simplenews.R;
 import de.dala.simplenews.common.Category;
+import de.dala.simplenews.common.Entry;
 import de.dala.simplenews.database.DatabaseHandler;
 import de.dala.simplenews.utilities.PrefUtilities;
 
-public class NewsActivity extends BaseActivity implements ViewPager.OnPageChangeListener {
+public class NewsActivity extends BaseActivity implements ViewPager.OnPageChangeListener, ExpandableNewsFragment.ExpandableNewsInterface {
 
     private TabLayout mTabLayout;
     private ViewPager pager;
@@ -119,7 +122,7 @@ public class NewsActivity extends BaseActivity implements ViewPager.OnPageChange
         switch (item.getItemId()) {
             case R.id.menu_columns:
                 if (getResources() != null) {
-                    android.content.res.Configuration config = getResources().getConfiguration();
+                    Configuration config = getResources().getConfiguration();
                     if (config != null) {
                         switch (config.orientation) {
                             case android.content.res.Configuration.ORIENTATION_LANDSCAPE:
@@ -173,15 +176,19 @@ public class NewsActivity extends BaseActivity implements ViewPager.OnPageChange
 
 
     private void setColor(FloatingActionButton button, int primaryColor, int secondaryColor) {
-        button.setColorNormal(primaryColor);
-        button.setColorPressed(secondaryColor);
-        button.setColorRipple(secondaryColor);
+        if (button != null) {
+            button.setColorNormal(primaryColor);
+            button.setColorPressed(secondaryColor);
+            button.setColorRipple(secondaryColor);
+        }
     }
 
     private void setColor(FloatingActionMenu menu, int primaryColor, int secondaryColor) {
-        menu.setMenuButtonColorNormal(primaryColor);
-        menu.setMenuButtonColorPressed(secondaryColor);
-        menu.setMenuButtonColorRipple(secondaryColor);
+        if (menu != null) {
+            menu.setMenuButtonColorNormal(primaryColor);
+            menu.setMenuButtonColorPressed(secondaryColor);
+            menu.setMenuButtonColorRipple(secondaryColor);
+        }
     }
 
 
@@ -241,6 +248,13 @@ public class NewsActivity extends BaseActivity implements ViewPager.OnPageChange
         setColor(newsTypeButton, primaryColor, secondaryColor);
     }
 
+    @Override
+    public void onOpenInternalBrowser(Entry entry) {
+        Intent intent = new Intent(NewsActivity.this, NewsWebViewActivity.class);
+        intent.putExtra(NewsWebViewActivity.ENTRY_KEY, entry);
+        startActivity(intent);
+    }
+
     public class MyPagerAdapter extends FragmentStatePagerAdapter {
 
         public MyPagerAdapter(FragmentManager fm) {
@@ -264,6 +278,7 @@ public class NewsActivity extends BaseActivity implements ViewPager.OnPageChange
         }
 
     }
+
 
     private class OnSubActionButtonClickListener implements View.OnClickListener {
 

@@ -2,6 +2,7 @@ package de.dala.simplenews.utilities;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.webkit.URLUtil;
 
 import com.rometools.rome.feed.synd.SyndFeed;
 import com.rometools.rome.io.SyndFeedInput;
@@ -48,7 +49,7 @@ public class UpdatingFeedTask extends AsyncTask<String, String, Feed> {
         if (!feedUrl.startsWith("http://") && !feedUrl.startsWith("https://")) {
             feedUrl = "http://" + feedUrl;
         }
-        if (!UIUtils.isValideUrl(feedUrl)) {
+        if (!URLUtil.isValidUrl(feedUrl)) {
             return null;
         }
         /* Check whether or not the feed-url is already added to the category*/

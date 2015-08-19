@@ -1,7 +1,7 @@
 package de.dala.simplenews.ui;
 
+import android.app.Activity;
 import android.content.ActivityNotFoundException;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -20,7 +20,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 
@@ -56,6 +55,11 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
     private int newsTypeMode;
     private StaggeredGridLayoutManager mLayoutManager;
 
+    public interface ExpandableNewsInterface {
+        void onOpenInternalBrowser(Entry entry);
+    }
+
+    private ExpandableNewsInterface mListener;
     private boolean isRefreshing;
     private MenuItem refreshItem;
 
@@ -95,6 +99,12 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
     public void onResume() {
         super.onResume();
         addListener();
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        mListener = (ExpandableNewsInterface) activity;
     }
 
     private SharedPreferences.OnSharedPreferenceChangeListener listener;
@@ -201,7 +211,7 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setItemAnimator(new FadeInUpAnimator());
         mRecyclerView.setAdapter(mExpandableItemRecyclerAdapter);
-        mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.setHasFixedSize(false);
         updateColumnCount();
     }
 
@@ -281,9 +291,19 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
     }
 
     private void markEntryAsRead(Entry entry) {
-        entry.setVisitedDate((entry.getVisitedDate() == null || entry.getVisitedDate() == 0) ? new Date().getTime() : null);
-        DatabaseHandler.getInstance().updateEntry(entry);
-        mExpandableItemRecyclerAdapter.update(entry);
+        if (entry.getVisitedDate() == null || entry.getVisitedDate() == 0) {
+            entry.setVisitedDate(new Date().getTime());
+            DatabaseHandler.getInstance().updateEntry(entry);
+            mExpandableItemRecyclerAdapter.update(entry);
+        }
+    }
+
+    private void markEntryAsSeen(Entry entry) {
+        if (entry.getSeenDate() == null || entry.getSeenDate() == 0) {
+            entry.setSeenDate(new Date().getTime());
+            DatabaseHandler.getInstance().updateEntry(entry);
+            mExpandableItemRecyclerAdapter.update(entry);
+        }
     }
 
     private void markEntriesAsRead(List<Entry> selectedEntries) {
@@ -306,17 +326,31 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
     public void onOpenClick(Entry entry) {
         markEntryAsRead(entry);
 
+        if (PrefUtilities.getInstance().useInternalBrowser()) {
+            startInternalBrowser(entry);
+        } else {
+            startExternalBrower(entry);
+        }
+    }
+
+    @Override
+    public void onExpandedClick(Entry entry) {
+        markEntryAsSeen(entry);
+    }
+
+    private void startExternalBrower(Entry entry) {
         Intent browserIntent = new Intent(Intent.ACTION_VIEW);
         //String link = entry.getShortenedLink() != null ? entry.getShortenedLink() : entry.getLink();
         browserIntent.setData(Uri.parse(entry.getLink()));
         try {
             startActivity(browserIntent);
         } catch (ActivityNotFoundException e) {
-            Context context = getActivity();
-            if (context != null) {
-                Toast.makeText(context, context.getResources().getString(R.string.no_browser_found), Toast.LENGTH_LONG).show();
-            }
+            startExternalBrower(entry);
         }
+    }
+
+    private void startInternalBrowser(Entry entry) {
+        mListener.onOpenInternalBrowser(entry);
     }
 
     @Override
@@ -346,6 +380,7 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
                 }).show();
     }
 
+
     private void share(List<Entry> entries) {
         String finalMessage = Utilities.join("\n", entries, PrefUtilities.getInstance().shouldShortenLinks()) + " - by SimpleNews";
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
@@ -362,8 +397,8 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
             mFragment = new WeakReference<>(fragment);
         }
 
-        private List<Entry> entriesFromObject(Object obj){
-            if (obj == null || !(obj instanceof List<?>)){
+        private List<Entry> entriesFromObject(Object obj) {
+            if (obj == null || !(obj instanceof List<?>)) {
                 return null;
             }
             List<?> castedList = (List<?>) obj;

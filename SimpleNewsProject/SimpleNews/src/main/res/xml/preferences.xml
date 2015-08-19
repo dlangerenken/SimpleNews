@@ -1,27 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <PreferenceCategory
-        android:summary="General Feed-Reading Information"
-        android:title="Feeds">
+    <PreferenceCategory android:title="@string/preference_category_general">
         <ListPreference
+            android:defaultValue="1800000"
             android:entries="@array/listOptions"
             android:entryValues="@array/listValues"
-            android:defaultValue="1800000"
             android:key="time_for_refresh"
             android:summary="@string/refresh_summary"
             android:title="@string/refresh_title_feed" />
+        <ListPreference
+            android:defaultValue="259200000"
+            android:entries="@array/keep_old_entries"
+            android:entryValues="@array/oldEntryValues"
+            android:key="deprecated_time"
+            android:summary="@string/remove_old_entries_summary"
+            android:title="@string/remove_old_entries_title" />
+        <ListPreference
+            android:defaultValue="1800000"
+            android:entries="@array/listOptions"
+            android:entryValues="@array/listValues"
+            android:key="time_for_refresh"
+            android:summary="@string/refresh_summary"
+            android:title="@string/refresh_title_feed" />
+        <ListPreference
+            android:defaultValue="small"
+            android:entries="@array/font_sizes_names"
+            android:entryValues="@array/font_sizes_values"
+            android:key="font_style"
+            android:summary="@string/font_size_pref_summary"
+            android:title="@string/font_size_pref_title" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/preference_category_expert">
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="shorten_links"
             android:summary="@string/shorten_links_summary"
             android:title="@string/shorten_links_title" />
-        <ListPreference
-            android:entries="@array/keep_old_entries"
-            android:entryValues="@array/oldEntryValues"
-            android:defaultValue="259200000"
-            android:key="deprecated_time"
-            android:summary="@string/remove_old_entries_summary"
-            android:title="@string/remove_old_entries_title" />
-
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="sorting_order"
+            android:summary="@string/sort_after_feed_pref_summary"
+            android:title="@string/sort_after_feed_pref_title" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="use_internal_browser"
+            android:summary="@string/use_internal_browser_pref_summary"
+            android:title="@string/use_internal_browser_pref_title" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="mark_unread_entries"
+            android:summary="@string/mark_unread_entries_pref_summary"
+            android:title="@string/mark_unread_entries_pref_title" />
     </PreferenceCategory>
 </PreferenceScreen>

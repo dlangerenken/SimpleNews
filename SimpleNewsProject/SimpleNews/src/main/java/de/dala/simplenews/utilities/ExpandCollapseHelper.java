@@ -4,16 +4,18 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.content.res.TypedArray;
+import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 
 public class ExpandCollapseHelper {
     public static void animateCollapsing(final View view, boolean animated) {
-        if (!animated) {
+        if (!animated || view.getVisibility() == View.GONE) {
+            ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
+            layoutParams.height = 0;
+            view.setLayoutParams(layoutParams);
             view.setVisibility(View.GONE);
-        }
-        if (view.getVisibility() == View.GONE) {
             return;
         }
         int origHeight = view.getHeight();
@@ -27,6 +29,12 @@ public class ExpandCollapseHelper {
             }
         });
         animator.start();
+    }
+
+    private static void callListener(Handler listener) {
+        if (listener != null) {
+            listener.sendEmptyMessage(0);
+        }
     }
 
     public static void animateExpanding(final View view, final RecyclerView listViewWrapper, boolean animated) {
@@ -72,6 +80,12 @@ public class ExpandCollapseHelper {
                     }
                 }
         );
+        animator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                super.onAnimationEnd(animation);
+            }
+        });
         animator.start();
     }
 

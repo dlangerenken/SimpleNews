@@ -28,9 +28,9 @@ import de.dala.simplenews.database.IDatabaseHandler;
 
 public class CategoryUpdater {
 
-    public static final int EMPTY = 0;
-    public static final int ERROR = -1;
     public static final int CANCEL = -2;
+    public static final int ERROR = -1;
+    public static final int EMPTY = 0;
     public static final int RESULT = 4;
     public static final int PART_RESULT = 5;
 

@@ -5,16 +5,20 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
-import static android.os.Build.VERSION.SDK_INT;
-import static android.os.Build.VERSION_CODES.GINGERBREAD;
-
 import java.util.Date;
 
 import de.dala.simplenews.ui.NewsActivity;
 
+import static android.os.Build.VERSION.SDK_INT;
+import static android.os.Build.VERSION_CODES.GINGERBREAD;
+
 
 @SuppressLint("CommitPrefEdits")
 public class PrefUtilities {
+    public static final String MULTIPLE_COLUMNS_PORTRAIT = "multiple_columns_portrait";
+    public static final String MULTIPLE_COLUMNS_LANDSCAPE = "multiple_columns_landscape";
+    public static final String CURRENT_NEWS_TYPE_MODE = "news_type_mode";
+
     private static final String XML_LOADED = "xmlLoaded";
     private static final String ASK_FOR_RATING = "ask_for_rating";
     private static final String LAUNCH_COUNT = "launch_count";
@@ -22,11 +26,14 @@ public class PrefUtilities {
     private static final String TIME_FOR_REFRESH = "time_for_refresh";
     private static final String DEPRECATED_TIME = "deprecated_time";
     private static final String SHORTEN_LINKS = "shorten_links";
-    public static final String MULTIPLE_COLUMNS_PORTRAIT = "multiple_columns_portrait";
-    public static final String MULTIPLE_COLUMNS_LANDSCAPE = "multiple_columns_landscape";
     private static final String CATEGORY_INDEX = "category_index";
     private static final String CURRENT_COLOR = "current_color";
-    public static final String CURRENT_NEWS_TYPE_MODE = "news_type_mode";
+    private static final String USE_INTERNAL_BROWSER = "use_internal_browser";
+    private static final String FONT_STYLE = "font_style";
+
+    private static final String MARK_UNREAD_ENTRIES = "mark_unread_entries";
+    private static final String SORT_BY_FEED = "sorting_order";
+
 
     private static PrefUtilities _instance;
     private static final long DEFAULT_TIME_FOR_REFRESH = 1000 * 60 * 60; //one hour
@@ -63,6 +70,14 @@ public class PrefUtilities {
         return preferences.getBoolean(ASK_FOR_RATING, true);
     }
 
+    public boolean shouldMarkUnreadEntries() {
+        return preferences.getBoolean(MARK_UNREAD_ENTRIES, false);
+    }
+
+    public boolean shouldSortByFeeds() {
+        return preferences.getBoolean(SORT_BY_FEED, false);
+    }
+
     public boolean useMultipleColumnsLandscape() {
         return preferences.getBoolean(MULTIPLE_COLUMNS_LANDSCAPE, true);
     }
@@ -81,6 +96,10 @@ public class PrefUtilities {
 
     public boolean shouldShortenLinks() {
         return preferences.getBoolean(SHORTEN_LINKS, false);
+    }
+
+    public boolean useInternalBrowser() {
+        return preferences.getBoolean(USE_INTERNAL_BROWSER, false);
     }
 
     public void increaseLaunchCountForRating() {
@@ -149,6 +168,15 @@ public class PrefUtilities {
         } else {
             editor.commit();
         }
+    }
+
+    public FontStyle getFontStyle() {
+        return FontStyle.valueOf(preferences.getString(FONT_STYLE,
+                FontStyle.Medium.name()));
+    }
+
+    public void setFontStyle(FontStyle style) {
+        save(preferences.edit().putString(FONT_STYLE, style.name()));
     }
 
     public int getCategoryIndex() {

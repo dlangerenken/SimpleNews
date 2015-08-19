@@ -7,15 +7,12 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
 import android.os.Build;
-import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.Window;
 import android.view.WindowManager;
-
 
 import de.dala.simplenews.R;
 import de.dala.simplenews.utilities.ColorManager;
@@ -31,6 +28,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     public void setContentView(int layoutResID) {
         super.setContentView(layoutResID);
+        getTheme().applyStyle(PrefUtilities.getInstance().getFontStyle().getResId(), true);
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
 
         ActionBar actionBar = getSupportActionBar();
@@ -41,13 +39,9 @@ public abstract class BaseActivity extends AppCompatActivity {
                 actionBar.setDisplayShowCustomEnabled(true);
             }
         }
-    }
-
-    @Override
-    public void onPostCreate(Bundle savedInstanceState, PersistableBundle persistentState) {
-        super.onPostCreate(savedInstanceState, persistentState);
         setLastColor();
     }
+
 
     private void setLastColor() {
         int primaryColor = PrefUtilities.getInstance().getCurrentColor();
@@ -63,9 +57,6 @@ public abstract class BaseActivity extends AppCompatActivity {
         ColorDrawable colorDrawableTabs = new ColorDrawable(primaryColor);
         ActionBar ab = getSupportActionBar();
         if (ab != null) {
-            // http://stackoverflow.com/questions/11002691/actionbar-setbackgrounddrawable-nulling-background-from-thread-handler
-            //ab.setDisplayShowTitleEnabled(false);
-            //ab.setDisplayShowTitleEnabled(true);
             if (oldBackgroundActivity == null) {
                 ab.setBackgroundDrawable(colorDrawableActivity);
                 changeTabColor(colorDrawableTabs);
@@ -77,7 +68,6 @@ public abstract class BaseActivity extends AppCompatActivity {
                 tdActivity.startTransition(DURATION);
                 tdTabs.startTransition(DURATION);
             }
-
             animateStatusBar(secondaryColor);
         }
         oldBackgroundActivity = colorDrawableActivity;
@@ -152,5 +142,12 @@ public abstract class BaseActivity extends AppCompatActivity {
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    protected void startNewsActivity() {
+        Intent intent = new Intent(BaseActivity.this, NewsActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+        finish();
     }
 }

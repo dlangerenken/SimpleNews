@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import de.dala.simplenews.utilities.EmptyObservableRecyclerView;
+
 public abstract class ChoiceModeRecyclerAdapter<VH extends RecyclerView.ViewHolder, Item extends Comparable> extends RecyclerView.Adapter<VH> {
 
     private List<Item> mItems;

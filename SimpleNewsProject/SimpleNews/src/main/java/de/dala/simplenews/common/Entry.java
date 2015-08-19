@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 
 import java.io.Serializable;
 
+import de.dala.simplenews.utilities.PrefUtilities;
 import de.dala.simplenews.utilities.Utilities;
 
 public class Entry implements Comparable<Entry>, Serializable {
@@ -22,12 +23,13 @@ public class Entry implements Comparable<Entry>, Serializable {
     private boolean expanded = false;
     private Long favoriteDate;
     private Long visitedDate;
+    private Long seenDate;
 
 
     public Entry() {
     }
 
-    public Entry(Long id, Long feedId, Long categoryId, String title, String description, Long date, String srcName, String link, String imageLink, Long visitedDate, Long favoriteDate, boolean isExpanded) {
+    public Entry(Long id, Long feedId, Long categoryId, String title, String description, Long date, String srcName, String link, String imageLink, Long visitedDate, Long favoriteDate, Long seenDate, boolean isExpanded) {
         this.id = id;
         this.feedId = feedId;
         this.categoryId = categoryId;
@@ -39,6 +41,7 @@ public class Entry implements Comparable<Entry>, Serializable {
         this.imageLink = imageLink;
         this.favoriteDate = favoriteDate;
         this.visitedDate = visitedDate;
+        this.seenDate = seenDate;
         this.expanded = isExpanded;
     }
 
@@ -50,6 +53,12 @@ public class Entry implements Comparable<Entry>, Serializable {
         this.expanded = expanded;
     }
 
+
+    public boolean isUnseen() {
+        return (favoriteDate == null || favoriteDate <= 0)
+                && (seenDate == null || seenDate <= 0)
+                && (visitedDate == null || visitedDate <= 0);
+    }
 
     public Long getId() {
         return id;
@@ -141,10 +150,20 @@ public class Entry implements Comparable<Entry>, Serializable {
 
     @Override
     public int compareTo(@NonNull Entry another) {
+        if (PrefUtilities.getInstance().shouldSortByFeeds()) {
+            int result = compareTo(another.getFeedId());
+            if (result != 0) {
+                return result;
+            }
+        }
         if (another.getDate() == null) {
             return 1;
         }
         return another.getDate().compareTo(getDate());
+    }
+
+    public int compareTo(@NonNull Long other) {
+        return feedId.compareTo(other);
     }
 
     @Override
@@ -159,6 +178,10 @@ public class Entry implements Comparable<Entry>, Serializable {
         return visitedDate;
     }
 
+    public Long getSeenDate() {
+        return seenDate;
+    }
+
     public void setVisitedDate(Long visitedDate) {
         this.visitedDate = visitedDate;
     }
@@ -169,6 +192,10 @@ public class Entry implements Comparable<Entry>, Serializable {
 
     public void setFavoriteDate(Long favoriteDate) {
         this.favoriteDate = favoriteDate;
+    }
+
+    public void setSeenDate(Long seenDate) {
+        this.seenDate = seenDate;
     }
 
     @Override
@@ -197,9 +224,10 @@ public class Entry implements Comparable<Entry>, Serializable {
     }
 
     public String toString(boolean shorten) {
-        if (shorten){
+        if (shorten) {
             return toString();
         }
         return String.format("%s - %s", title, link);
     }
+
 }

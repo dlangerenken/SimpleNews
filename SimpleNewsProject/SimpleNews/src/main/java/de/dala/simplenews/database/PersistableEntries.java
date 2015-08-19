@@ -25,6 +25,7 @@ import static de.dala.simplenews.database.DatabaseHandler.ENTRY_TITLE;
 import static de.dala.simplenews.database.DatabaseHandler.ENTRY_URL;
 import static de.dala.simplenews.database.DatabaseHandler.ENTRY_VISIBLE;
 import static de.dala.simplenews.database.DatabaseHandler.ENTRY_VISITED_DATE;
+import static de.dala.simplenews.database.DatabaseHandler.ENTRY_SEEN_DATE;
 import static de.dala.simplenews.database.DatabaseHandler.FEED_ID;
 import static de.dala.simplenews.database.DatabaseHandler.FEED_VISIBLE;
 import static de.dala.simplenews.database.DatabaseHandler.TABLE_ENTRY;
@@ -104,6 +105,7 @@ public class PersistableEntries implements IPersistableObject<Entry> {
             entry.setVisible(cursor.getInt(10) == 1);
             entry.setVisitedDate(cursor.getLong(11));
             entry.setFavoriteDate(cursor.getLong(12));
+            entry.setSeenDate(cursor.getLong(13));
             entry.setExpanded(cursor.getInt(13) == 1);
         } catch (CursorIndexOutOfBoundsException e) {
             //ignore for this time...
@@ -127,6 +129,7 @@ public class PersistableEntries implements IPersistableObject<Entry> {
                 entry.setId(similar.getId());
                 entry.setVisitedDate(similar.getVisitedDate());
                 entry.setFavoriteDate(similar.getFavoriteDate());
+                entry.setSeenDate(similar.getSeenDate());
                 entry.setShortenedLink(similar.getShortenedLink());
                 entry.setExpanded(similar.isExpanded());
             }
@@ -147,6 +150,7 @@ public class PersistableEntries implements IPersistableObject<Entry> {
             values.put(ENTRY_VISIBLE, entry.isVisible() ? 1 : 0);
             values.put(ENTRY_VISITED_DATE, entry.getVisitedDate());
             values.put(ENTRY_FAVORITE_DATE, entry.getFavoriteDate());
+            values.put(ENTRY_SEEN_DATE, entry.getSeenDate());
             values.put(ENTRY_IS_EXPANDED, entry.isExpanded() ? 1 : 0);
 
                 /*

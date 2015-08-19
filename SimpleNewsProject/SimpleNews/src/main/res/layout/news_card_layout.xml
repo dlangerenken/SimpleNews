@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main_content"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:background="@android:color/white"
     android:orientation="vertical"
     android:paddingEnd="7dp"
@@ -44,7 +44,7 @@
                 android:layout_alignParentStart="true"
                 android:layout_toLeftOf="@id/image"
                 android:layout_toStartOf="@id/image"
-                android:textSize="16sp"
+                android:textSize="?attr/font_medium"
                 tools:text="Seit es die Rente mit 63 gibt, sind immer weniger ältere Menschen berufstätig" />
         </RelativeLayout>
 
@@ -53,6 +53,7 @@
             android:id="@+id/info"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textSize="?attr/font_small"
             tools:text="Die Welt - Karriere - Vor 9 Stunden"
             tools:textColor="@android:color/holo_red_light" />
     </LinearLayout>
@@ -80,6 +81,7 @@
             android:layout_marginLeft="10dp"
             android:layout_marginStart="10dp"
             android:singleLine="false"
+            android:textSize="?attr/font_small"
             tools:text="Seit dem letzten Jahr können sich Arbeitnehmer schon mit 63 aus dem Berufsleben verabschieden. Ein Angebot, das offenbar viele annehmen. Die Beschäftigung von älteren Menschen ist deutlich zurückgegangen." />
 
     </LinearLayout>

@@ -6,6 +6,7 @@ import android.util.AttributeSet;
 import android.view.View;
 
 public class EmptyObservableRecyclerView extends RecyclerView {
+    public static final int EMPTY = 2;
     private View emptyView;
     final private RecyclerView.AdapterDataObserver observer = new AdapterDataObserver() {
         @Override
@@ -38,7 +39,7 @@ public class EmptyObservableRecyclerView extends RecyclerView {
 
     private void checkIfEmpty() {
         if (emptyView != null) {
-            if (getAdapter().getItemCount() == 0) {
+            if (getAdapter().getItemCount() == EMPTY) {
                 emptyView.animate().alpha(1).setDuration(500).start();
             } else {
                 emptyView.animate().alpha(0).setDuration(100).start();

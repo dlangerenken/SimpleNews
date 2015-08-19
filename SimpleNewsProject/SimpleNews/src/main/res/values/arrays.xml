@@ -15,6 +15,23 @@
         <item>@string/menu_delete_entry</item>
     </string-array>
 
+    <string-array name="font_sizes_names" translatable="false">
+        <item>@string/font_size_xsmall</item>
+        <item>@string/font_size_small</item>
+        <item>@string/font_size_medium</item>
+        <item>@string/font_size_large</item>
+        <item>@string/font_size_xlarge</item>
+    </string-array>
+
+    <string-array name="font_sizes_values" translatable="false">
+        <item>XSmall</item>
+        <item>Small</item>
+        <item>Medium</item>
+        <item>Large</item>
+        <item>XLarge</item>
+    </string-array>
+
+
     <array name="colors">
         <item>#00BCD4</item>
         <item>#03A9F4</item>

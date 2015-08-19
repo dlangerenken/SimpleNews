@@ -157,7 +157,6 @@ public class CategorySelectionFragment extends BaseFragment implements CategoryR
 
     private void createCategoryClicked() {
         new MaterialDialog.Builder(getActivity())
-                .title(R.string.create_category_1_2)
                 .positiveText(R.string.submit)
                 .negativeText(R.string.cancel)
                 .content(R.string.name_of_category)

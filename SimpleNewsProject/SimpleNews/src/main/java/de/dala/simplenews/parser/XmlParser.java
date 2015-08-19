@@ -15,9 +15,6 @@ import de.dala.simplenews.common.Category;
 import de.dala.simplenews.common.Feed;
 import de.dala.simplenews.common.News;
 
-/**
- * Created by Daniel on 23.12.13.
- */
 public class XmlParser {
     private static final String TAG_NEWS = "news";
     private static final String TAG_CATEGORY = "category";
@@ -34,40 +31,6 @@ public class XmlParser {
      * TAG for logging *
      */
     private static final String TAG = "XmlParser";
-    private static XmlParser _instance;
-
-    //--------------------------------------------------------------------------------
-    //Constructors
-    //--------------------------------------------------------------------------------
-    /**
-     * Create a new instance for a context.
-     *
-     * @param context  current Context
-     */
-    private final Context context;
-
-
-    /**
-     * Create a new instance for a context and for a custom news-file.
-     * <p/>
-     * You have to use file in res/raw folder.
-     *
-     * @param context                current Context
-     */
-    private XmlParser(Context context) {
-        this.context = context;
-    }
-
-    //--------------------------------------------------------------------------------
-
-
-    public static void Init(Context context) {
-        _instance = new XmlParser(context);
-    }
-
-    public static XmlParser getInstance() {
-        return _instance;
-    }
 
     /**
      * Read and parse res/raw/categories.xml or custom file
@@ -75,7 +38,7 @@ public class XmlParser {
      * @return {@link News} obj with all data
      * @throws Exception if categories.xml or custom file is not found or if there are errors on parsing
      */
-    public News readDefaultNewsFile(int xml) throws XmlPullParserException, IOException {
+    public static News readDefaultNewsFile(Context context, int xml) throws XmlPullParserException, IOException {
         News news = null;
         try {
             InputStream is;
@@ -120,21 +83,18 @@ public class XmlParser {
      * @param parser
      * @param news
      */
-    private void readNews(XmlPullParser parser, News news) throws XmlPullParserException, IOException {
+    private static void readNews(XmlPullParser parser, News news) throws XmlPullParserException, IOException {
         if (parser == null || news == null) return;
         // Parse changelog node
         parser.require(XmlPullParser.START_TAG, null, TAG_NEWS);
         Log.d(TAG, "Processing main tag=");
 
-        //Parse nested nodes
         while (parser.next() != XmlPullParser.END_TAG) {
             if (parser.getEventType() != XmlPullParser.START_TAG) {
                 continue;
             }
-
             String tag = parser.getName();
             Log.d(TAG, "Processing tag=" + tag);
-
             if (tag.equals(TAG_CATEGORY)) {
                 readCategory(parser, news);
             }
@@ -148,7 +108,7 @@ public class XmlParser {
      * @param news
      * @throws Exception
      */
-    private void readCategory(XmlPullParser parser, News news) throws XmlPullParserException, IOException {
+    private static void readCategory(XmlPullParser parser, News news) throws XmlPullParserException, IOException {
 
         if (parser == null) return;
 
@@ -161,7 +121,7 @@ public class XmlParser {
         Category category = new Category();
         try {
             category.setColorId(Color.parseColor(color));
-        }catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             // Unknown color, try to parse it as integer
             try {
                 category.setColorId(Integer.parseInt(color));
@@ -200,7 +160,7 @@ public class XmlParser {
      * @param news
      * @throws Exception
      */
-    private Feed readFeed(XmlPullParser parser, News news) throws XmlPullParserException, IOException {
+    private static Feed readFeed(XmlPullParser parser, News news) throws XmlPullParserException, IOException {
         Feed feed = null;
         if (parser == null) return null;
 

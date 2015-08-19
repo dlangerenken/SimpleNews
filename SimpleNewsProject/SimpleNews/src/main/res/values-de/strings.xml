@@ -4,7 +4,7 @@
     <string name="app_name">SimpleNews</string>
     <string name="action_settings">Einstellungen</string>
     <string name="categories">Kategorien</string>
-    <string name="ok">OK</string>
+    <string name="ok">Ok</string>
     <string name="category_add">Wähle eine Kategorie für den Feed aus.</string>
     <string name="cancel">Abbrechen</string>
     <string name="submit">Ok</string>
@@ -17,8 +17,6 @@
     <string name="description_refresh">Aktualisieren</string>
 
     <string name="select_color_create_category">Wähle eine Farbe für die Kategorie</string>
-    <string name="create_category_2_2">Erstelle Kategorie 2 / 2</string>
-    <string name="create_category_1_2" tools:ignore="TypographyFractions">Erstelle Kategorie 1 / 2</string>
     <string name="rename_feed">Ändere die Adresse des Feeds</string>
     <string name="new_feed_url_header">Neue Adresse des Feeds</string>
 
@@ -69,4 +67,27 @@
     <string name="assign_menu_title">Zuweisen</string>
     <string name="share_categories">Kategorien teilen</string>
     <string name="share_feeds">Feeds teilen</string>
+    <string name="webview">Nachrichten</string>
+
+    <string name="font_size_xsmall">Sehr klein</string>
+    <string name="font_size_small">Klein</string>
+    <string name="font_size_medium">Mittel</string>
+    <string name="font_size_large">Groß</string>
+    <string name="font_size_xlarge">Sehr groß</string>
+    <string name="font_size_pref_summary">Ändere die Schriftgröße</string>
+    <string name="font_size_pref_title">Schriftgröße</string>
+
+    <string name="feed_selection_add">Hinzufügen</string>
+    <string name="deselect_all_context_list">Auswahl entfernen</string>
+    <string name="menu_unread">Ungelesen</string>
+    <string name="select_all_context_list">Alle Einträge selektieren</string>
+    <string name="sort_after_feed_pref_summary">Zuerst nach Feeds sortieren</string>
+    <string name="sort_after_feed_pref_title">Sortierreihenfolge</string>
+    <string name="use_internal_browser_pref_summary">Der interne Browser kann Einträge herunterladen und ohne Internet abrufen</string>
+    <string name="preference_category_expert">Expert</string>
+    <string name="preference_category_general">General</string>
+    <string name="mark_unread_entries_pref_summary">Ungelese Einträge hervorheben</string>
+    <string name="mark_unread_entries_pref_title">Ungelesene Einträge</string>
+    <string name="no_description_available">Es wurde keine Beschreibung gefunden. Hier klicken um den Artikel zu öffnen</string>
+    <string name="use_internal_browser_pref_title">Internen Browser verwenden</string>
 </resources>

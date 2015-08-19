@@ -3,14 +3,14 @@
 
     <string name="app_name">SimpleNews</string>
     <string name="action_settings">Settings</string>
-    <string name="ok">OK</string>
+    <string name="ok">Ok</string>
     <string name="categories">Categories</string>
     <string name="description_refresh">Refresh</string>
 
     <string name="select_color_create_category">Select Color for Category</string>
     <string name="category_add">Select Category to add Feed</string>
     <string name="cancel">Cancel</string>
-    <string name="submit">@android:string/ok</string>
+    <string name="submit">Ok</string>
     <string name="name_of_category">Name for the Category</string>
     <string name="new_name">New name: %s</string>
     <string name="rename">Rename</string>
@@ -32,10 +32,8 @@
     <string name="restore_categories_message">Careful! All saved data will be removed!</string>
     <string name="feed_title_not_found">No title found</string>
     <!-- Content Description -->
-    <string name="desc_list_item_icon">Item Icon</string>
 
 
-    <string name="menu_settings">Settings</string>
     <string name="refresh_summary">How often should the feeds be refreshed</string>
     <string name="refresh_title_feed">Refresh Feeds</string>
     <string name="selection_save">Save</string>
@@ -72,4 +70,23 @@
     <string name="assign_menu_title">Assign</string>
     <string name="share_categories">Share categories</string>
     <string name="share_feeds">Share feeds</string>
+
+    <string name="webview">WebView - News</string>
+
+    <string name="font_size_small">Small</string>
+    <string name="font_size_medium">Medium</string>
+    <string name="font_size_large">Large</string>
+    <string name="font_size_pref_summary">Set a font-size</string>
+    <string name="font_size_pref_title">Font-size</string>
+    <string name="font_size_xlarge">Extra Large</string>
+    <string name="font_size_xsmall">Extra Small</string>
+    <string name="sort_after_feed_pref_summary">Sort after feeds first</string>
+    <string name="sort_after_feed_pref_title">Sorting type</string>
+    <string name="use_internal_browser_pref_summary">Open saved links with the internal browser</string>
+    <string name="use_internal_browser_pref_title">Use internal browser</string>
+    <string name="preference_category_expert">Expert</string>
+    <string name="preference_category_general">General</string>
+    <string name="mark_unread_entries_pref_summary">Mark unread entries</string>
+    <string name="mark_unread_entries_pref_title">Unread entries</string>
+    <string name="no_description_available">No description available. Click, to open the article in a browser.</string>
 </resources>
