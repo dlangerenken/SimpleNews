@@ -26,8 +26,8 @@ android {
         applicationId "de.dala.simplenews"
         testApplicationId  "de.dala.simplenews.test"
         testInstrumentationRunner "android.test.InstrumentationTestRunner"
-        versionCode 12
-        versionName "1.1.0"
+        versionCode 13
+        versionName "1.1.1"
     }
     lintOptions {
         abortOnError false

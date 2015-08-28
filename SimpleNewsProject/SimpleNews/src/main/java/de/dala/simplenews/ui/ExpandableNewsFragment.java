@@ -28,15 +28,16 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import de.dala.simplenews.BuildConfig;
 import de.dala.simplenews.R;
 import de.dala.simplenews.common.Category;
 import de.dala.simplenews.common.Entry;
 import de.dala.simplenews.database.DatabaseHandler;
+import de.dala.simplenews.recycler.ExpandableItemRecyclerAdapter;
+import de.dala.simplenews.recycler.FadeInUpAnimator;
 import de.dala.simplenews.utilities.CategoryUpdater;
 import de.dala.simplenews.utilities.EmptyObservableRecyclerView;
 import de.dala.simplenews.utilities.PrefUtilities;
-import de.dala.simplenews.recycler.ExpandableItemRecyclerAdapter;
-import de.dala.simplenews.recycler.FadeInUpAnimator;
 import de.dala.simplenews.utilities.Utilities;
 
 
@@ -300,7 +301,13 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
 
     private void markEntryAsSeen(Entry entry) {
         if (entry.getSeenDate() == null || entry.getSeenDate() == 0) {
-            entry.setSeenDate(new Date().getTime());
+            long date = new Date().getTime();
+            if (BuildConfig.DEBUG) {
+                if (date == 0l) {
+                    throw new RuntimeException("New Date is 0");
+                }
+            }
+            entry.setSeenDate(date);
             DatabaseHandler.getInstance().updateEntry(entry);
             mExpandableItemRecyclerAdapter.update(entry);
         }

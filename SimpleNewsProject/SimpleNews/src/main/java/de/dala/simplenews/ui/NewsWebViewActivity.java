@@ -23,9 +23,11 @@ import de.dala.simplenews.common.Entry;
 public class NewsWebViewActivity extends BaseActivity {
 
     public static final String ENTRY_KEY = "entry";
+    public static final String LOADING_KEY = "loading";
     private Entry mEntry;
     private WebView mWebView;
     private MenuItem mRefreshItem;
+    private boolean isLoading;
 
 
     @Override
@@ -44,7 +46,10 @@ public class NewsWebViewActivity extends BaseActivity {
             }
         } else {
             mWebView.restoreState(savedInstanceState);
-            mWebView.setWebChromeClient(new WebChromeClient());
+            mEntry = (Entry) savedInstanceState.getSerializable(ENTRY_KEY);
+            isLoading = savedInstanceState.getBoolean(LOADING_KEY);
+            invalidateOptionsMenu();
+            setRefreshActionButtonState(isLoading);
         }
         if (mEntry != null) {
             loadPage();
@@ -67,7 +72,6 @@ public class NewsWebViewActivity extends BaseActivity {
         if (!isNetworkAvailable()) { // loading offline
             mWebView.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
         }
-        //TODO
         mWebView.loadUrl(mEntry.getLink());
     }
 
@@ -133,10 +137,22 @@ public class NewsWebViewActivity extends BaseActivity {
     }
 
     @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putSerializable(ENTRY_KEY, mEntry);
+        outState.putBoolean(LOADING_KEY, isLoading);
+        super.onSaveInstanceState(outState);
+    }
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        mRefreshItem = menu.findItem(R.id.menu_refresh);
+        setRefreshActionButtonState(isLoading);
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_news_web, menu);
-        mRefreshItem = menu.findItem(R.id.menu_refresh);
-        return super.onCreateOptionsMenu(menu);
+        return true;
     }
 
     @Override

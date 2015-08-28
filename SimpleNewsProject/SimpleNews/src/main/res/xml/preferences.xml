@@ -16,7 +16,7 @@
             android:summary="@string/remove_old_entries_summary"
             android:title="@string/remove_old_entries_title" />
         <ListPreference
-            android:defaultValue="small"
+            android:defaultValue="Small"
             android:entries="@array/font_sizes_names"
             android:entryValues="@array/font_sizes_values"
             android:key="font_style"

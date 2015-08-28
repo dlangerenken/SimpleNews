@@ -171,8 +171,12 @@ public class PrefUtilities {
     }
 
     public FontStyle getFontStyle() {
-        return FontStyle.valueOf(preferences.getString(FONT_STYLE,
-                FontStyle.Medium.name()));
+        try {
+            return FontStyle.valueOf(preferences.getString(FONT_STYLE,
+                    FontStyle.Medium.name()));
+        } catch (Exception e) {
+            return FontStyle.Medium;
+        }
     }
 
     public void setFontStyle(FontStyle style) {
