@@ -19,6 +19,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.OvershootInterpolator;
 import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -38,6 +39,7 @@ import de.dala.simplenews.utilities.CategoryUpdater;
 import de.dala.simplenews.utilities.EmptyObservableRecyclerView;
 import de.dala.simplenews.utilities.PrefUtilities;
 import de.dala.simplenews.utilities.Utilities;
+import jp.wasabeef.recyclerview.animators.SlideInUpAnimator;
 
 
 public class ExpandableNewsFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener, ExpandableItemRecyclerAdapter.ItemClickListener {
@@ -209,7 +211,7 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
         assert mRecyclerView != null;
         mExpandableItemRecyclerAdapter = new ExpandableItemRecyclerAdapter(new ArrayList<Entry>(), category, getActivity(), this, mRecyclerView, null);
         mRecyclerView.setLayoutManager(mLayoutManager);
-        //mRecyclerView.setItemAnimator(new FadeInUpAnimator());
+        mRecyclerView.setItemAnimator(new SlideInUpAnimator(new OvershootInterpolator(1f)));
         mRecyclerView.setAdapter(mExpandableItemRecyclerAdapter);
         mRecyclerView.setHasFixedSize(true);
         updateColumnCount();

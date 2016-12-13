@@ -4,7 +4,6 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.content.res.TypedArray;
-import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,12 +28,6 @@ public class ExpandCollapseHelper {
             }
         });
         animator.start();
-    }
-
-    private static void callListener(Handler listener) {
-        if (listener != null) {
-            listener.sendEmptyMessage(0);
-        }
     }
 
     public static void animateExpanding(final View view, final RecyclerView listViewWrapper, boolean animated) {

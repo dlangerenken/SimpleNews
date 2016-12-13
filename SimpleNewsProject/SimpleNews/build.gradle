@@ -79,4 +79,5 @@ dependencies {
     compile 'com.afollestad.material-dialogs:commons:0.9.1.0'
     compile 'com.ocpsoft:ocpsoft-pretty-time:1.0.7'
     compile 'com.github.clans:fab:1.6.4'
+    compile 'jp.wasabeef:recyclerview-animators:2.2.5'
 }
