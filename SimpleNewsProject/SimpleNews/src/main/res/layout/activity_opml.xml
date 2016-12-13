@@ -20,17 +20,6 @@
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/textView"
         android:layout_below="@id/toolbar" />
-
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:padding="5dp"
-        android:text="@string/beta_version_disclaimer"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:textColor="@color/holo_red_dark" />
 
 </RelativeLayout>

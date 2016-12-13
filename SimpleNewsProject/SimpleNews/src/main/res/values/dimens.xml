@@ -1,8 +1,5 @@
 <resources>
-    <!-- Per the design guidelines, navigation drawers should be between 240dp and 320dp:
-     https://developer.android.com/design/patterns/navigation-drawer.html -->
     <dimen name="card_layout_padding">12dp</dimen>
-
     <dimen name="action_button_min_width">56dp</dimen>
     <dimen name="indeterminate_progress_size">16dp</dimen>
 

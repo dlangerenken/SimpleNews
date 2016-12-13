@@ -10,14 +10,11 @@
         android:id="@+id/checkbox"
         android:layout_centerVertical="true"
         android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
     <LinearLayout
-        android:layout_toLeftOf="@+id/checkbox"
         android:layout_toStartOf="@+id/checkbox"
         android:layout_alignParentStart="true"
-        android:layout_alignParentLeft="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical">

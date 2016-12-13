@@ -22,7 +22,6 @@
             android:id="@+id/drag"
             android:layout_width="35dp"
             android:layout_height="35dp"
-            android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:paddingBottom="4dp"
             android:paddingLeft="8dp"
@@ -33,10 +32,8 @@
             android:id="@+id/color"
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:layout_marginLeft="3dp"
             android:layout_marginStart="3dp"
             android:layout_toEndOf="@id/drag"
-            android:layout_toRightOf="@id/drag"
             android:contentDescription="@null"
             tools:background="@android:color/holo_red_light" />
 
@@ -44,10 +41,8 @@
             android:id="@+id/name"
             android:layout_width="wrap_content"
             android:layout_height="35dp"
-            android:layout_marginLeft="15dp"
             android:layout_marginStart="5dp"
             android:layout_toEndOf="@id/color"
-            android:layout_toRightOf="@id/color"
             android:gravity="center_vertical"
             android:textAppearance="?android:attr/textAppearanceMedium"
             tools:text="International" />
@@ -57,7 +52,6 @@
             android:layout_width="35dp"
             android:layout_height="35dp"
             android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
             android:focusable="false" />
         <!--android:background="@drawable/checkbox_visible_drawable"
         android:button="@null"-->
