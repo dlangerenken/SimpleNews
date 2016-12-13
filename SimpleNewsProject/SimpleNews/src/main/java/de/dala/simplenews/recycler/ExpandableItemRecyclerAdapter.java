@@ -109,11 +109,11 @@ public class ExpandableItemRecyclerAdapter extends ChoiceModeRecyclerAdapter<Exp
         }
     }
 
-    public class EntryClickListener implements EntryViewHolder.ClickListener {
+    private class EntryClickListener implements EntryViewHolder.ClickListener {
         private Entry mEntry;
         private EntryViewHolder mViewHolder;
 
-        public EntryClickListener(Entry entry, EntryViewHolder viewHolder) {
+        EntryClickListener(Entry entry, EntryViewHolder viewHolder) {
             mEntry = entry;
             mViewHolder = viewHolder;
         }
@@ -161,19 +161,19 @@ public class ExpandableItemRecyclerAdapter extends ChoiceModeRecyclerAdapter<Exp
         return new EntryViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.news_card_layout, parent, false));
     }
 
-    public static class EntryViewHolder extends RecyclerView.ViewHolder {
-        public final LinearLayout titleLayout;
-        public final LinearLayout contentLayout;
-        public final View mainContent;
+    static class EntryViewHolder extends RecyclerView.ViewHolder {
+        final LinearLayout titleLayout;
+        final LinearLayout contentLayout;
+        final View mainContent;
 
         /* Content */
-        public final View colorBorderView;
-        public final TextView descriptionTextView;
+        final View colorBorderView;
+        final TextView descriptionTextView;
 
         /* Title */
-        public final ImageView imageView;
-        public final TextView titleTextView;
-        public final TextView infoTextView;
+        final ImageView imageView;
+        final TextView titleTextView;
+        final TextView infoTextView;
 
         interface ClickListener {
             void onSelectItem();
@@ -183,10 +183,10 @@ public class ExpandableItemRecyclerAdapter extends ChoiceModeRecyclerAdapter<Exp
             void onDescriptionClick();
         }
 
-        public ClickListener clickListener;
+        ClickListener clickListener;
 
 
-        public EntryViewHolder(View itemView) {
+        EntryViewHolder(View itemView) {
             super(itemView);
             titleLayout = (LinearLayout) itemView.findViewById(R.id.card_title);
             contentLayout = (LinearLayout) itemView.findViewById(R.id.card_content);

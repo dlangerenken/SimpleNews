@@ -257,7 +257,7 @@ public class NewsActivity extends BaseActivity implements ViewPager.OnPageChange
 
     public class MyPagerAdapter extends FragmentStatePagerAdapter {
 
-        public MyPagerAdapter(FragmentManager fm) {
+        MyPagerAdapter(FragmentManager fm) {
             super(fm);
         }
 

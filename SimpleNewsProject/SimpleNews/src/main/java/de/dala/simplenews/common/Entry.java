@@ -162,7 +162,7 @@ public class Entry implements Comparable<Entry>, Serializable {
         return another.getDate().compareTo(getDate());
     }
 
-    public int compareTo(@NonNull Long other) {
+    private int compareTo(@NonNull Long other) {
         return feedId.compareTo(other);
     }
 

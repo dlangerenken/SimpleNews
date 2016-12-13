@@ -144,7 +144,7 @@ public class XmlParser {
             Log.d(TAG, "Processing tag=" + tag);
 
             if (tag.equals(TAG_FEED)) {
-                Feed feed = readFeed(parser, news);
+                Feed feed = readFeed(parser);
                 if (feed != null) {
                     category.getFeeds().add(feed);
                 }
@@ -157,10 +157,9 @@ public class XmlParser {
      * Parse changeLogText node
      *
      * @param parser
-     * @param news
      * @throws Exception
      */
-    private static Feed readFeed(XmlPullParser parser, News news) throws XmlPullParserException, IOException {
+    private static Feed readFeed(XmlPullParser parser) throws XmlPullParserException, IOException {
         Feed feed = null;
         if (parser == null) return null;
 

@@ -86,7 +86,7 @@ public class FeedRecyclerAdapter extends ChoiceModeRecyclerAdapter<FeedRecyclerA
         final CheckBox show;
         final ImageView edit;
 
-        public FeedViewHolder(View itemView) {
+        FeedViewHolder(View itemView) {
             super(itemView);
 
             name = (TextView) itemView.findViewById(R.id.name);
@@ -99,7 +99,7 @@ public class FeedRecyclerAdapter extends ChoiceModeRecyclerAdapter<FeedRecyclerA
     class FeedItemClickListener implements View.OnClickListener {
         private final Feed feed;
 
-        public FeedItemClickListener(Feed feed) {
+        FeedItemClickListener(Feed feed) {
             this.feed = feed;
         }
 
@@ -130,7 +130,7 @@ public class FeedRecyclerAdapter extends ChoiceModeRecyclerAdapter<FeedRecyclerA
                     public void onInput(final MaterialDialog materialDialog, CharSequence charSequence) {
                         final View positive = materialDialog.getActionButton(DialogAction.POSITIVE);
                         final View negative = materialDialog.getActionButton(DialogAction.NEGATIVE);
-                        UpdatingFeedTask feedTask = new UpdatingFeedTask(mContext, mCategory, new UpdatingFeedTask.UpdatingFeedListener() {
+                        UpdatingFeedTask feedTask = new UpdatingFeedTask(mCategory, new UpdatingFeedTask.UpdatingFeedListener() {
                             @Override
                             public void success(Feed feed) {
                                 materialDialog.dismiss();

@@ -31,11 +31,11 @@ public class ColorManager {
         return Color.HSVToColor(hsv);
     }
 
-    public int[] getColors() {
+    int[] getColors() {
         return colors;
     }
 
-    public int[] getDarkColors() {
+    int[] getDarkColors() {
         return colors;
     }
 

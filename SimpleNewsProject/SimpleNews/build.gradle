@@ -21,13 +21,13 @@ android {
     compileSdkVersion 25
     buildToolsVersion '25.0.2'
     defaultConfig {
-        minSdkVersion 16
+        minSdkVersion 19
         targetSdkVersion 25
         applicationId "de.dala.simplenews"
         testApplicationId  "de.dala.simplenews.test"
         testInstrumentationRunner "android.test.InstrumentationTestRunner"
         versionCode 13
-        versionName "1.1.1"
+        versionName "2016"
     }
     lintOptions {
         abortOnError false

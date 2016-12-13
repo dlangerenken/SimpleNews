@@ -1,6 +1,6 @@
 package de.dala.simplenews.ui;
 
-import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.os.Bundle;
@@ -74,12 +74,12 @@ public class CategorySelectionFragment extends BaseFragment implements CategoryR
     }
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
+    public void onAttach(Context context) {
+        super.onAttach(context);
         try {
-            mListener = (OnCategorySelectionFragmentAction) activity;
+            mListener = (OnCategorySelectionFragmentAction) context;
         } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
+            throw new ClassCastException(context.toString()
                     + " must implement OnCategorySelectionFragmentAction");
         }
     }

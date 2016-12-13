@@ -7,10 +7,6 @@ import java.util.List;
 public class News implements Serializable {
     private List<Category> categories;
 
-    public News(List<Category> categories) {
-        this.categories = categories;
-    }
-
     public News() {
         this.categories = new ArrayList<>();
     }

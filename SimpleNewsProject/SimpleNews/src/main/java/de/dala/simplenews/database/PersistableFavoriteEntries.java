@@ -7,7 +7,7 @@ import static de.dala.simplenews.database.DatabaseHandler.concatenateQueries;
  */
 class PersistableFavoriteEntries extends PersistableEntries{
 
-    public PersistableFavoriteEntries(Long categoryId, Long feedId, Long entryId, Boolean onlyVisible){
+    PersistableFavoriteEntries(Long categoryId, Long feedId, Long entryId, Boolean onlyVisible){
         super(categoryId, feedId, entryId, onlyVisible);
     }
 

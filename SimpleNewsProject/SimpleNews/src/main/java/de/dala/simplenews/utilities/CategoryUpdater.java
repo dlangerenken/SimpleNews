@@ -1,6 +1,5 @@
 package de.dala.simplenews.utilities;
 
-import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Message;
@@ -38,14 +37,12 @@ public class CategoryUpdater {
     private final Category category;
     private final IDatabaseHandler databaseHandler;
     private boolean isRunning = false;
-    private final Context context;
     private UpdatingTask task;
     private final Long deprecatedTime;
 
-    public CategoryUpdater(Handler handler, Category category, Context context) {
+    public CategoryUpdater(Handler handler, Category category) {
         this.handler = handler;
         this.category = category;
-        this.context = context;
         databaseHandler = DatabaseHandler.getInstance();
         deprecatedTime = PrefUtilities.getInstance().getDeprecatedTime();
     }
@@ -156,7 +153,7 @@ public class CategoryUpdater {
         final SyndFeedInput input = new SyndFeedInput();
         final Feed mFeed;
 
-        public FeedFutureTask(Feed feed) {
+        FeedFutureTask(Feed feed) {
             mFeed = feed;
         }
 

@@ -36,41 +36,41 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
     /**
      * Table names
      */
-    public static final String TABLE_CATEGORY = "category";
-    public static final String TABLE_FEED = "feed";
-    public static final String TABLE_ENTRY = "entry";
+    static final String TABLE_CATEGORY = "category";
+    static final String TABLE_FEED = "feed";
+    static final String TABLE_ENTRY = "entry";
 
-    public static final String CATEGORY_ID = "_id";
-    public static final String CATEGORY_COLOR = "color";
-    public static final String CATEGORY_NAME = "name";
-    public static final String CATEGORY_VISIBLE = "visible";
-    public static final String CATEGORY_LAST_UPDATE = "last_update";
-    public static final String CATEGORY_ORDER = "_order";
+    static final String CATEGORY_ID = "_id";
+    static final String CATEGORY_COLOR = "color";
+    static final String CATEGORY_NAME = "name";
+    static final String CATEGORY_VISIBLE = "visible";
+    static final String CATEGORY_LAST_UPDATE = "last_update";
+    static final String CATEGORY_ORDER = "_order";
 
-    public static final String FEED_ID = "_id";
-    public static final String FEED_CATEGORY_ID = "category_id";
-    public static final String FEED_TITLE = "title";
-    public static final String FEED_DESCRIPTION = "description";
-    public static final String FEED_URL = "url";
-    public static final String FEED_HTML_URL = "html_url";
-    public static final String FEED_VISIBLE = "visible";
-    public static final String FEED_TYPE = "type";
+    static final String FEED_ID = "_id";
+    static final String FEED_CATEGORY_ID = "category_id";
+    static final String FEED_TITLE = "title";
+    static final String FEED_DESCRIPTION = "description";
+    static final String FEED_URL = "url";
+    static final String FEED_HTML_URL = "html_url";
+    static final String FEED_VISIBLE = "visible";
+    static final String FEED_TYPE = "type";
 
-    public static final String ENTRY_ID = "_id";
-    public static final String ENTRY_CATEGORY_ID = "category_id";
-    public static final String ENTRY_FEED_ID = "feed_id";
-    public static final String ENTRY_TITLE = "title";
-    public static final String ENTRY_DESCRIPTION = "description";
-    public static final String ENTRY_DATE = "date";
-    public static final String ENTRY_SRC_NAME = "src_name";
-    public static final String ENTRY_URL = "url";
-    public static final String ENTRY_SHORTENED_URL = "shortened_url";
-    public static final String ENTRY_IMAGE_URL = "image_url";
-    public static final String ENTRY_VISIBLE = "visible";
-    public static final String ENTRY_VISITED_DATE = "visited";
-    public static final String ENTRY_FAVORITE_DATE = "favorite";
-    public static final String ENTRY_SEEN_DATE = "seen";
-    public static final String ENTRY_IS_EXPANDED = "expanded";
+    static final String ENTRY_ID = "_id";
+    static final String ENTRY_CATEGORY_ID = "category_id";
+    static final String ENTRY_FEED_ID = "feed_id";
+    static final String ENTRY_TITLE = "title";
+    static final String ENTRY_DESCRIPTION = "description";
+    static final String ENTRY_DATE = "date";
+    static final String ENTRY_SRC_NAME = "src_name";
+    static final String ENTRY_URL = "url";
+    static final String ENTRY_SHORTENED_URL = "shortened_url";
+    static final String ENTRY_IMAGE_URL = "image_url";
+    static final String ENTRY_VISIBLE = "visible";
+    static final String ENTRY_VISITED_DATE = "visited";
+    static final String ENTRY_FAVORITE_DATE = "favorite";
+    static final String ENTRY_SEEN_DATE = "seen";
+    static final String ENTRY_IS_EXPANDED = "expanded";
 
     private static SQLiteDatabase db;
     private static DatabaseHandler instance;
@@ -88,12 +88,12 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
         return instance;
     }
 
-    public static synchronized SQLiteDatabase getDbInstance() {
+    static synchronized SQLiteDatabase getDbInstance() {
         return db;
     }
 
 
-    public static String concatenateQueries(String query, String additionalQuery) {
+    static String concatenateQueries(String query, String additionalQuery) {
         if (query == null) {
             return additionalQuery;
         }
@@ -403,9 +403,8 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
     }
 
     private <E> List<E> load(final IPersistableObject<E> persistableResource) {
-        Cursor cursor = persistableResource.getCursor();
         List<E> cached = new ArrayList<>();
-        try {
+        try (Cursor cursor = persistableResource.getCursor()) {
             if (!cursor.moveToFirst()) {
                 return cached;
             }
@@ -414,8 +413,6 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
             }
             while (cursor.moveToNext());
             return cached;
-        } finally {
-            cursor.close();
         }
     }
 

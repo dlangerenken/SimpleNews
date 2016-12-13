@@ -77,7 +77,7 @@ public class OpmlRecyclerAdapter extends ChoiceModeRecyclerAdapter<OpmlRecyclerA
         final TextView link;
         final CheckBox checkBox;
 
-        public OpmlViewHolder(View itemView) {
+        OpmlViewHolder(View itemView) {
             super(itemView);
             name = (TextView) itemView.findViewById(R.id.title);
             link = (TextView) itemView.findViewById(R.id.url);

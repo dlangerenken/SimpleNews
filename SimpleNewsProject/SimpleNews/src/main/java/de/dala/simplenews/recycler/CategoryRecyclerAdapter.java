@@ -1,6 +1,7 @@
 package de.dala.simplenews.recycler;
 
 import android.content.Context;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.MotionEventCompat;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
@@ -133,7 +134,7 @@ public class CategoryRecyclerAdapter extends ChoiceModeRecyclerAdapter<CategoryR
     }
 
     private void setBackground(View view) {
-        Utilities.setPressedColorRippleDrawable(mContext.getResources().getColor(R.color.list_background), PrefUtilities.getInstance().getCurrentColor(), view);
+        Utilities.setPressedColorRippleDrawable(ContextCompat.getColor(mContext, R.color.list_background), PrefUtilities.getInstance().getCurrentColor(), view);
     }
 
     @Override
@@ -142,10 +143,10 @@ public class CategoryRecyclerAdapter extends ChoiceModeRecyclerAdapter<CategoryR
         return new CategoryViewHolder(itemView);
     }
 
-    class CategoryItemRSSClickListener implements View.OnClickListener {
+    private class CategoryItemRSSClickListener implements View.OnClickListener {
         private final Category category;
 
-        public CategoryItemRSSClickListener(Category category) {
+        CategoryItemRSSClickListener(Category category) {
             this.category = category;
         }
 
@@ -159,10 +160,10 @@ public class CategoryRecyclerAdapter extends ChoiceModeRecyclerAdapter<CategoryR
         }
     }
 
-    class CategoryItemLongClickListener implements View.OnLongClickListener {
+    private class CategoryItemLongClickListener implements View.OnLongClickListener {
         private final Category category;
 
-        public CategoryItemLongClickListener(Category category) {
+        CategoryItemLongClickListener(Category category) {
             this.category = category;
         }
 
@@ -174,10 +175,10 @@ public class CategoryRecyclerAdapter extends ChoiceModeRecyclerAdapter<CategoryR
         }
     }
 
-    class CategoryItemClickListener implements View.OnClickListener {
+    private class CategoryItemClickListener implements View.OnClickListener {
         private final Category category;
 
-        public CategoryItemClickListener(Category category) {
+        CategoryItemClickListener(Category category) {
             this.category = category;
         }
 
@@ -212,7 +213,7 @@ public class CategoryRecyclerAdapter extends ChoiceModeRecyclerAdapter<CategoryR
         final ImageView edit;
         final GripView drag;
 
-        public CategoryViewHolder(View itemView) {
+        CategoryViewHolder(View itemView) {
             super(itemView);
             name = (TextView) itemView.findViewById(R.id.name);
             color = (ImageView) itemView.findViewById(R.id.color);

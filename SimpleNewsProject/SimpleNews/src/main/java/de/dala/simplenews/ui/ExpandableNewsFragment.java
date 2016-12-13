@@ -1,7 +1,7 @@
 package de.dala.simplenews.ui;
 
-import android.app.Activity;
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -102,9 +102,9 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
     }
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        mListener = (ExpandableNewsInterface) activity;
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        mListener = (ExpandableNewsInterface) context;
     }
 
     private SharedPreferences.OnSharedPreferenceChangeListener listener;
@@ -217,7 +217,7 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
 
     private void refreshFeeds() {
         if (updater == null) {
-            updater = new CategoryUpdater(new CategoryUpdateHandler(this), category, getActivity());
+            updater = new CategoryUpdater(new CategoryUpdateHandler(this), category);
         }
         setRefresh(true);
         updater.start();
@@ -302,7 +302,7 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
         if (entry.getSeenDate() == null || entry.getSeenDate() == 0) {
             long date = new Date().getTime();
             if (BuildConfig.DEBUG) {
-                if (date == 0l) {
+                if (date == 0) {
                     throw new RuntimeException("New Date is 0");
                 }
             }

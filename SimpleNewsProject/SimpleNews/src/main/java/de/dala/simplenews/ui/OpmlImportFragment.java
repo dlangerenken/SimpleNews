@@ -1,7 +1,7 @@
 package de.dala.simplenews.ui;
 
 import android.app.ActionBar;
-import android.app.Activity;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -62,14 +62,12 @@ public class OpmlImportFragment extends BaseFragment {
     }
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        // This makes sure that the container activity has implemented
-        // the callback interface. If not, it throws an exception
+    public void onAttach(Context context) {
+        super.onAttach(context);
         try {
-            parent = (OnFeedsLoaded) activity;
+            parent = (OnFeedsLoaded) context;
         } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
+            throw new ClassCastException(context.toString()
                     + " must implement OnHeadlineSelectedListener");
         }
     }

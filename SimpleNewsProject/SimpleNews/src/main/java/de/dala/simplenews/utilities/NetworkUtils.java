@@ -43,7 +43,7 @@ class NetworkUtils {
         }
     }
 
-    public static void shortenIfNecessary(List<Entry> entries) {
+    static void shortenIfNecessary(List<Entry> entries) {
         if (PrefUtilities.getInstance().shouldShortenLinks()) {
             shortenWithAdfly(entries);
         }

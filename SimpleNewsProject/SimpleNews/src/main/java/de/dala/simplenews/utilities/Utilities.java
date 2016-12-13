@@ -101,7 +101,7 @@ public class Utilities {
         return new ColorDrawable(color);
     }
 
-    public static Entry getEntryFromRSSItem(SyndEntry item, Long feedId, String source, long categoryId) {
+    static Entry getEntryFromRSSItem(SyndEntry item, Long feedId, String source, long categoryId) {
         if (item != null) {
             if (item.getTitle() == null) {
                 return null;

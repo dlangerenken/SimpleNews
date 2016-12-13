@@ -139,7 +139,7 @@ public class CategoryFeedsFragment extends BaseFragment implements FeedRecyclerA
             public void onClick(View v) {
                 final View positive = dialog.getActionButton(DialogAction.POSITIVE);
                 final View negative = dialog.getActionButton(DialogAction.NEGATIVE);
-                feedTask = new UpdatingFeedTask(getActivity(), mCategory, new UpdatingFeedTask.UpdatingFeedListener() {
+                feedTask = new UpdatingFeedTask(mCategory, new UpdatingFeedTask.UpdatingFeedListener() {
                     @Override
                     public void success(Feed feed) {
                         dialog.dismiss();

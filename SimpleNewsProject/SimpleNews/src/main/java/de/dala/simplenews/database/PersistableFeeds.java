@@ -15,7 +15,7 @@ import de.dala.simplenews.common.Feed;
 /**
  * Created by Daniel on 01.08.2014.
  */
-public class PersistableFeeds implements IPersistableObject<Feed>{
+class PersistableFeeds implements IPersistableObject<Feed>{
 
     private final Boolean mExcludeEntries;
     private final Long mCategoryId;
@@ -24,7 +24,7 @@ public class PersistableFeeds implements IPersistableObject<Feed>{
 
     private final SQLiteDatabase db;
 
-    public PersistableFeeds(Long categoryId, Long feedId, Boolean excludeEntries, Boolean onlyVisible){
+    PersistableFeeds(Long categoryId, Long feedId, Boolean excludeEntries, Boolean onlyVisible){
         mCategoryId = categoryId;
         mFeedId = feedId;
         mExcludeEntries = excludeEntries;
@@ -62,9 +62,8 @@ public class PersistableFeeds implements IPersistableObject<Feed>{
 
         if (mExcludeEntries != null && !mExcludeEntries) {
             PersistableEntries mPersistableEntries = getPersistableEntries(feed.getCategoryId(), feed.getId());
-            Cursor entryCursor = mPersistableEntries.getCursor();
-            try {
-                if (entryCursor.moveToFirst()){
+            try (Cursor entryCursor = mPersistableEntries.getCursor()) {
+                if (entryCursor.moveToFirst()) {
                     List<Entry> cached = new ArrayList<>();
                     do {
                         cached.add(mPersistableEntries.loadFrom(entryCursor));
@@ -72,8 +71,6 @@ public class PersistableFeeds implements IPersistableObject<Feed>{
                     while (entryCursor.moveToNext());
                     feed.setEntries(cached);
                 }
-            } finally {
-                entryCursor.close();
             }
         }
         return feed;

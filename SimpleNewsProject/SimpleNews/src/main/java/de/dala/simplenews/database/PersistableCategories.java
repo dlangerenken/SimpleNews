@@ -12,7 +12,7 @@ import de.dala.simplenews.common.Feed;
 
 import static de.dala.simplenews.database.DatabaseHandler.*;
 
-public class PersistableCategories implements IPersistableObject<Category> {
+class PersistableCategories implements IPersistableObject<Category> {
 
     private final Long mCategoryId;
     private final Boolean mExcludeFeeds;
@@ -20,7 +20,7 @@ public class PersistableCategories implements IPersistableObject<Category> {
     private final Boolean mOnlyVisible;
     private final SQLiteDatabase db;
 
-    public PersistableCategories(Long categoryId, Boolean excludeFeeds, Boolean excludeEntries, Boolean onlyVisible) {
+    PersistableCategories(Long categoryId, Boolean excludeFeeds, Boolean excludeEntries, Boolean onlyVisible) {
         mExcludeFeeds = excludeFeeds;
         mExcludeEntries = excludeEntries;
         mCategoryId = categoryId;
@@ -52,8 +52,7 @@ public class PersistableCategories implements IPersistableObject<Category> {
 
         if (mExcludeFeeds == null || !mExcludeFeeds) {
             PersistableFeeds mPersistableFeeds = getPersistableFeeds(category.getId());
-            Cursor feedCursor = mPersistableFeeds.getCursor();
-            try {
+            try (Cursor feedCursor = mPersistableFeeds.getCursor()) {
                 if (feedCursor.moveToFirst()) {
                     List<Feed> cached = new ArrayList<>();
                     do {
@@ -62,8 +61,6 @@ public class PersistableCategories implements IPersistableObject<Category> {
                     while (feedCursor.moveToNext());
                     category.setFeeds(cached);
                 }
-            } finally {
-                feedCursor.close();
             }
         }
         return category;

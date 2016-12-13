@@ -1,6 +1,5 @@
 package de.dala.simplenews.utilities;
 
-import android.content.Context;
 import android.os.AsyncTask;
 import android.webkit.URLUtil;
 
@@ -17,7 +16,6 @@ import de.dala.simplenews.database.DatabaseHandler;
 public class UpdatingFeedTask extends AsyncTask<String, String, Feed> {
     private final Category mCategory;
     private final UpdatingFeedListener mListener;
-    private final Context mContext;
     private final Long mFeedId;
 
     public interface UpdatingFeedListener {
@@ -28,10 +26,9 @@ public class UpdatingFeedTask extends AsyncTask<String, String, Feed> {
         void fail();
     }
 
-    public UpdatingFeedTask(Context context, Category category, UpdatingFeedListener listener, Long feedId) {
+    public UpdatingFeedTask(Category category, UpdatingFeedListener listener, Long feedId) {
         mCategory = category;
         mListener = listener;
-        mContext = context;
         mFeedId = feedId;
     }
 
