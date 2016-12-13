@@ -3,7 +3,6 @@ package de.dala.simplenews.utilities;
 import android.net.Uri;
 import android.util.Log;
 
-import com.squareup.okhttp.Request;
 
 import java.io.IOException;
 import java.util.List;
@@ -12,6 +11,7 @@ import de.dala.simplenews.common.Entry;
 import de.dala.simplenews.database.DatabaseHandler;
 import de.dala.simplenews.network.NetworkCommunication;
 import de.dala.simplenews.network.StringCallback;
+import okhttp3.Call;
 
 class NetworkUtils {
     private static void shortenWithAdfly(final List<Entry> entries) {
@@ -23,8 +23,9 @@ class NetworkUtils {
             String urlForCall = String.format("http://api.adf.ly/api.php?key=86a235af637887da35e4627465b784cb&uid=6090236&advert_type=int&domain=adf.ly&url=%s", Uri.encode(link));
             Log.d("CategoryUpdater", String.format("Shorten started for: %s", urlForCall));
             NetworkCommunication.loadShortenedUrl(urlForCall, new StringCallback() {
+
                 @Override
-                public void onFailure(Request request, IOException e) {
+                public void onFailure(Call call, IOException e) {
                     Log.e("CategoryUpdater", String.format("Entry with id: %s could not be shortened", entry.getId() + ""));
                 }
 

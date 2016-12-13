@@ -191,13 +191,4 @@ public class XmlParser {
         parser.require(XmlPullParser.END_TAG, null, TAG_FEED);
         return feed;
     }
-
-    public String readShortenedLink(String shortenedLink) {
-        int startIndex = shortenedLink.indexOf("<url>") + "<url>".length();
-        int endIndex = shortenedLink.indexOf("</url>");
-        if (startIndex > -1 && endIndex > -1) {
-            return shortenedLink.substring(startIndex, endIndex);
-        }
-        return null;
-    }
 }

@@ -20,9 +20,9 @@ import android.widget.EditText;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.GravityEnum;
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.rometools.rome.feed.opml.Opml;
+import com.rometools.opml.feed.opml.Opml;
+import com.rometools.opml.io.impl.OPML20Generator;
 import com.rometools.rome.io.FeedException;
-import com.rometools.rome.io.impl.OPML20Generator;
 
 import org.jdom2.output.XMLOutputter;
 

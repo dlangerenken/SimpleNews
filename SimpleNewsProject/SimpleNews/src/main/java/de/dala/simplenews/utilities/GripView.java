@@ -80,21 +80,6 @@ public class GripView extends View {
         mDotPaint.setColor(getResources().getColor(colorResId));
     }
 
-    /**
-     * Sets the radius in pixels of the dots. Defaults to {@value #DEFAULT_DOT_SIZE_RADIUS_DP} dp.
-     */
-    public void setDotSizeRadiusPx(final float dotSizeRadiusPx) {
-        mDotSizeRadiusPx = dotSizeRadiusPx;
-    }
-
-    /**
-     * Sets the number of horizontal dots. Defaults to {@value #DEFAULT_COLUMN_COUNT}.
-     */
-    public void setColumnCount(final int columnCount) {
-        mColumnCount = columnCount;
-        requestLayout();
-    }
-
     @SuppressWarnings("ParameterNameDiffersFromOverriddenParameter")
     @Override
     protected void onSizeChanged(final int width, final int height, final int oldWidth, final int oldHeight) {

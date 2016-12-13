@@ -34,7 +34,6 @@ import de.dala.simplenews.common.Category;
 import de.dala.simplenews.common.Entry;
 import de.dala.simplenews.database.DatabaseHandler;
 import de.dala.simplenews.recycler.ExpandableItemRecyclerAdapter;
-import de.dala.simplenews.recycler.FadeInUpAnimator;
 import de.dala.simplenews.utilities.CategoryUpdater;
 import de.dala.simplenews.utilities.EmptyObservableRecyclerView;
 import de.dala.simplenews.utilities.PrefUtilities;
@@ -210,7 +209,7 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
         assert mRecyclerView != null;
         mExpandableItemRecyclerAdapter = new ExpandableItemRecyclerAdapter(new ArrayList<Entry>(), category, getActivity(), this, mRecyclerView, null);
         mRecyclerView.setLayoutManager(mLayoutManager);
-        mRecyclerView.setItemAnimator(new FadeInUpAnimator());
+        //mRecyclerView.setItemAnimator(new FadeInUpAnimator());
         mRecyclerView.setAdapter(mExpandableItemRecyclerAdapter);
         mRecyclerView.setHasFixedSize(true);
         updateColumnCount();

@@ -164,7 +164,7 @@ public class CategoryUpdater {
         public List<Entry> call() throws Exception {
             List<Entry> feedEntries = new ArrayList<>();
             try {
-                SyndFeed syndFeed = input.build(new XmlReader(new URL(mFeed.getXmlUrl()), context));
+                SyndFeed syndFeed = input.build(new XmlReader(new URL(mFeed.getXmlUrl())));
                 String title = syndFeed.getTitle();
                 if (mFeed.getTitle() == null) {
                     mFeed.setTitle(title);

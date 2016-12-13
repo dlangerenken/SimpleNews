@@ -63,7 +63,7 @@ public class UpdatingFeedTask extends AsyncTask<String, String, Feed> {
 
         try {
             SyndFeedInput input = new SyndFeedInput();
-            SyndFeed syndFeed = input.build(new XmlReader(new URL(feedUrl), mContext));
+            SyndFeed syndFeed = input.build(new XmlReader(new URL(feedUrl)));
             if (syndFeed.getEntries() == null || syndFeed.getEntries().isEmpty()) {
                 return null;
             } else {

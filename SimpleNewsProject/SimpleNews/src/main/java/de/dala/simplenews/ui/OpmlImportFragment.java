@@ -15,8 +15,8 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.rometools.opml.feed.opml.Opml;
 import com.rometools.rome.feed.WireFeed;
-import com.rometools.rome.feed.opml.Opml;
 import com.rometools.rome.io.WireFeedInput;
 import com.rometools.rome.io.XmlReader;
 
@@ -163,7 +163,7 @@ public class OpmlImportFragment extends BaseFragment {
                     if (!enteredText.startsWith("http://")) {
                         enteredText = "http://" + enteredText;
                     }
-                    WireFeed feed = input.build(new XmlReader(new URL(enteredText), getActivity()));
+                    WireFeed feed = input.build(new XmlReader(new URL(enteredText)));
                     if (feed != null && feed instanceof Opml) {
                         feeds = OpmlConverter.convertOpmlListToFeedList((Opml) feed);
                     }
