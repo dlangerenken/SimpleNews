@@ -72,7 +72,7 @@ public class NewsActivity extends BaseActivity implements ViewPager.OnPageChange
         }
 
         onCreateNewsView(savedInstanceState);
-        RateMyApp.appLaunched(this);
+        //RateMyApp.appLaunched(this); //TODO comment in later
     }
 
     @Override
