@@ -209,7 +209,7 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
     private void initCardsAdapter() {
         mLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         assert mRecyclerView != null;
-        mExpandableItemRecyclerAdapter = new ExpandableItemRecyclerAdapter(new ArrayList<Entry>(), category, getActivity(), this, mRecyclerView, null);
+        mExpandableItemRecyclerAdapter = new ExpandableItemRecyclerAdapter(new ArrayList<Entry>(), category, getActivity(), this, mRecyclerView);
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setItemAnimator(new SlideInUpAnimator(new OvershootInterpolator(1f)));
         mRecyclerView.setAdapter(mExpandableItemRecyclerAdapter);

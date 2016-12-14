@@ -79,12 +79,6 @@ public class CategoryFeedsFragment extends BaseFragment implements FeedRecyclerA
                 ab.setDisplayHomeAsUpEnabled(true);
             }
         }
-        if (savedInstanceState != null) {
-            if (savedInstanceState.containsKey("ActionMode")) {
-                Bundle actionModeBundle = savedInstanceState.getBundle("ActionMode");
-                mRecyclerAdapter.restoreSelectionStates(actionModeBundle);
-            }
-        }
 
         return rootView;
     }
@@ -211,7 +205,6 @@ public class CategoryFeedsFragment extends BaseFragment implements FeedRecyclerA
         categories.add(mCategory);
         Opml opml = OpmlConverter.convertCategoriesToOpml(categories);
         shareOpml(opml);
-
     }
 
     private void shareOpml(Opml opml) {

@@ -28,7 +28,7 @@ import de.dala.simplenews.utilities.Movement;
 import de.dala.simplenews.utilities.PrefUtilities;
 import de.dala.simplenews.utilities.Utilities;
 
-public class CategoryRecyclerAdapter extends ChoiceModeRecyclerAdapter<CategoryRecyclerAdapter.CategoryViewHolder, Category> implements ItemTouchHelperAdapter {
+public class CategoryRecyclerAdapter extends BaseRecyclerAdapter<CategoryRecyclerAdapter.CategoryViewHolder, Category> implements ItemTouchHelperAdapter {
     private final Context mContext;
     private final String mRssPath;
     private final OnCategoryClicked mListener;
@@ -84,7 +84,7 @@ public class CategoryRecyclerAdapter extends ChoiceModeRecyclerAdapter<CategoryR
     }
 
     public CategoryRecyclerAdapter(Context context, List<Category> categories, String rssPath, OnCategoryClicked categoryClicked) {
-        super(categories, null);
+        super(categories);
         mContext = context;
         mRssPath = rssPath;
         mListener = categoryClicked;
@@ -92,12 +92,7 @@ public class CategoryRecyclerAdapter extends ChoiceModeRecyclerAdapter<CategoryR
 
 
     @Override
-    void onBindSelectedViewHolder(CategoryViewHolder holder, int position) {
-        onBindNormalViewHolder(holder, position);
-    }
-
-    @Override
-    void onBindNormalViewHolder(final CategoryViewHolder holder, int position) {
+    public void onBindViewHolder(final CategoryViewHolder holder, int position) {
         if (position >= getItems().size()) {
             holder.itemView.setVisibility(View.INVISIBLE);
             return;
@@ -154,8 +149,6 @@ public class CategoryRecyclerAdapter extends ChoiceModeRecyclerAdapter<CategoryR
         public void onClick(View v) {
             if (mListener != null && mRssPath != null) {
                 mListener.onRSSSavedClick(category, mRssPath);
-            } else {
-                toggleIfActionMode(category);
             }
         }
     }
@@ -169,7 +162,6 @@ public class CategoryRecyclerAdapter extends ChoiceModeRecyclerAdapter<CategoryR
 
         @Override
         public boolean onLongClick(View v) {
-            //toggle(category);
             mListener.onLongClick(category);
             return true;
         }
@@ -201,7 +193,6 @@ public class CategoryRecyclerAdapter extends ChoiceModeRecyclerAdapter<CategoryR
                         break;
                 }
             }
-
         }
     }
 

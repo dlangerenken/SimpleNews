@@ -30,7 +30,7 @@ import de.dala.simplenews.utilities.PrefUtilities;
 import de.dala.simplenews.utilities.Utilities;
 
 
-public class ExpandableItemRecyclerAdapter extends ChoiceModeRecyclerAdapter<ExpandableItemRecyclerAdapter.EntryViewHolder, Entry> {
+public class ExpandableItemRecyclerAdapter extends BaseRecyclerAdapter<ExpandableItemRecyclerAdapter.EntryViewHolder, Entry> {
     private final Category mCategory;
     private final Context mContext;
     private final RecyclerView mRecyclerView;
@@ -48,8 +48,8 @@ public class ExpandableItemRecyclerAdapter extends ChoiceModeRecyclerAdapter<Exp
         void onExpandedClick(Entry currentEntry);
     }
 
-    public ExpandableItemRecyclerAdapter(List<Entry> entries, Category category, Context context, ItemClickListener itemClickListener, RecyclerView recyclerView, ChoiceModeListener listener) {
-        super(entries, listener);
+    public ExpandableItemRecyclerAdapter(List<Entry> entries, Category category, Context context, ItemClickListener itemClickListener, RecyclerView recyclerView) {
+        super(entries);
         mCategory = category;
         mContext = context;
         mItemClickListener = itemClickListener;
@@ -59,12 +59,7 @@ public class ExpandableItemRecyclerAdapter extends ChoiceModeRecyclerAdapter<Exp
     }
 
     @Override
-    void onBindSelectedViewHolder(EntryViewHolder holder, int position) {
-        onBindNormalViewHolder(holder, position);
-    }
-
-    @Override
-    void onBindNormalViewHolder(EntryViewHolder holder, int position) {
+    public void onBindViewHolder(EntryViewHolder holder, int position) {
         if (position >= getItems().size()) {
             holder.itemView.setVisibility(View.INVISIBLE);
             return;
@@ -105,7 +100,14 @@ public class ExpandableItemRecyclerAdapter extends ChoiceModeRecyclerAdapter<Exp
             expand(currentEntry, holder.contentLayout, false);
         } else {
             collapse(currentEntry, holder.contentLayout, false);
-            Utilities.setPressedColorRippleDrawable(mContext.getResources().getColor(R.color.list_background), PrefUtilities.getInstance().getCurrentColor(), holder.itemView);
+            Utilities.setPressedColorRippleDrawable(ContextCompat.getColor(mContext, R.color.list_background), PrefUtilities.getInstance().getCurrentColor(), holder.itemView);
+        }
+    }
+
+    @Override
+    public void update(Entry entry) {
+        if (shouldMarkUnreadEntries) {
+            super.update(entry);
         }
     }
 
@@ -127,31 +129,22 @@ public class ExpandableItemRecyclerAdapter extends ChoiceModeRecyclerAdapter<Exp
 
         @Override
         public void onTitleClick() {
-            if (!isInSelectionMode()) {
-                toggleExpandingElement(mEntry, mViewHolder.contentLayout);
-                final Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (mItemClickListener != null) {
-                            mItemClickListener.onExpandedClick(mEntry);
-                        }
+            toggleExpandingElement(mEntry, mViewHolder.contentLayout);
+            final Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    if (mItemClickListener != null) {
+                        mItemClickListener.onExpandedClick(mEntry);
                     }
-                }, 300);
-
-            } else {
-                toggleIfActionMode(mEntry);
-            }
+                }
+            }, 300);
         }
 
         @Override
         public void onDescriptionClick() {
-            if (!isInSelectionMode()) {
-                if (mItemClickListener != null) {
-                    mItemClickListener.onOpenClick(mEntry);
-                }
-            } else {
-                toggleIfActionMode(mEntry);
+            if (mItemClickListener != null) {
+                mItemClickListener.onOpenClick(mEntry);
             }
         }
     }
@@ -251,7 +244,6 @@ public class ExpandableItemRecyclerAdapter extends ChoiceModeRecyclerAdapter<Exp
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     // Simulate motion on the card view.
-                    //itemView.onTouchEvent(event);
                     itemView.drawableHotspotChanged(x, y);
                 }
 
@@ -319,8 +311,4 @@ public class ExpandableItemRecyclerAdapter extends ChoiceModeRecyclerAdapter<Exp
         removeOldEntries(entries);
     }
 
-    @Override
-    public int getItemCount() {
-        return super.getItemCount() + 1;
-    }
 }

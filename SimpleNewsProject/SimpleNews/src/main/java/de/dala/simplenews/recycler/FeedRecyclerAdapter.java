@@ -24,7 +24,7 @@ import de.dala.simplenews.utilities.PrefUtilities;
 import de.dala.simplenews.utilities.UpdatingFeedTask;
 import de.dala.simplenews.utilities.Utilities;
 
-public class FeedRecyclerAdapter extends ChoiceModeRecyclerAdapter<FeedRecyclerAdapter.FeedViewHolder, Feed> {
+public class FeedRecyclerAdapter extends BaseRecyclerAdapter<FeedRecyclerAdapter.FeedViewHolder, Feed> {
 
     private final Activity mContext;
     private final Category mCategory;
@@ -35,15 +35,14 @@ public class FeedRecyclerAdapter extends ChoiceModeRecyclerAdapter<FeedRecyclerA
     }
 
     public FeedRecyclerAdapter(Activity context, Category category, CategoryFeedsListener cFListener) {
-        super(category.getFeeds(), null);
+        super(category.getFeeds());
         mContext = context;
         mCategory = category;
         mListener = cFListener;
     }
 
-
     @Override
-    void onBindNormalViewHolder(FeedViewHolder holder, int position) {
+    public void onBindViewHolder(FeedViewHolder holder, int position) {
         final Feed feed = get(position);
         holder.name.setText(feed.getTitle() == null ? mContext.getString(R.string.feed_title_not_found) : feed.getTitle());
         holder.link.setText(feed.getXmlUrl());
@@ -59,12 +58,6 @@ public class FeedRecyclerAdapter extends ChoiceModeRecyclerAdapter<FeedRecyclerA
                 return true;
             }
         });
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                toggleIfActionMode(feed);
-            }
-        });
         Utilities.setPressedColorRippleDrawable(mContext.getResources().getColor(R.color.list_background), PrefUtilities.getInstance().getCurrentColor(), holder.itemView);
     }
 
@@ -74,11 +67,6 @@ public class FeedRecyclerAdapter extends ChoiceModeRecyclerAdapter<FeedRecyclerA
         return new FeedViewHolder(itemView);
     }
 
-    @Override
-    void onBindSelectedViewHolder(FeedViewHolder holder, int position) {
-        onBindNormalViewHolder(holder, position);
-        holder.itemView.setBackgroundResource(R.color.list_background_selected);
-    }
 
     class FeedViewHolder extends RecyclerView.ViewHolder {
         final TextView name;
@@ -96,7 +84,7 @@ public class FeedRecyclerAdapter extends ChoiceModeRecyclerAdapter<FeedRecyclerA
         }
     }
 
-    class FeedItemClickListener implements View.OnClickListener {
+    private class FeedItemClickListener implements View.OnClickListener {
         private final Feed feed;
 
         FeedItemClickListener(Feed feed) {
