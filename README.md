@@ -4,7 +4,7 @@ In the beginning the News-Feed-Reader was implemented to fulfill my requirements
 
 So this is a News-Feed-Reader based on the current State of the Art in User-Interface-Design and Interaction-Design. Feel free to fork and improve the application or to give suggestions for improving the application!
 
-The app is available in the [Google PlayStore](https://play.google.com/store/apps/details?id=de.dala.simplenews)
+The app is available in the [Google PlayStore](https://play.google.com/store/apps/details?id=de.dala.simplenews.smarties)
 
 Implementead features:
 * hide/show categories and entries
