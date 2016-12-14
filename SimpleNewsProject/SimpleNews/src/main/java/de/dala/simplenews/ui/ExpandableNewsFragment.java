@@ -383,7 +383,7 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
 
 
     private void share(List<Entry> entries) {
-        String finalMessage = Utilities.join("\n", entries, PrefUtilities.getInstance().shouldShortenLinks()) + " - by SimpleNews";
+        String finalMessage = Utilities.join(entries, PrefUtilities.getInstance().shouldShortenLinks()) + " - by SimpleNews";
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.setType("text/plain");
         shareIntent.putExtra(Intent.EXTRA_TEXT,
@@ -394,7 +394,7 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
     private static class CategoryUpdateHandler extends Handler {
         final WeakReference<ExpandableNewsFragment> mFragment;
 
-        public CategoryUpdateHandler(ExpandableNewsFragment fragment) {
+        CategoryUpdateHandler(ExpandableNewsFragment fragment) {
             mFragment = new WeakReference<>(fragment);
         }
 

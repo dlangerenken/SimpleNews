@@ -9,10 +9,10 @@ public class ItemTouchHelperCallback extends ItemTouchHelper.Callback {
     private final boolean mIsLongPressDragEnabled;
     private final boolean mIsSwipeEnabled;
 
-    public ItemTouchHelperCallback(ItemTouchHelperAdapter adapter, boolean isLongPressDragEnabled, boolean isSwipeEnabled) {
+    public ItemTouchHelperCallback(ItemTouchHelperAdapter adapter) {
         mAdapter = adapter;
-        mIsLongPressDragEnabled = isLongPressDragEnabled;
-        mIsSwipeEnabled = isSwipeEnabled;
+        mIsLongPressDragEnabled = false;
+        mIsSwipeEnabled = false;
     }
 
     @Override

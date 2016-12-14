@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.text.InputType;
@@ -16,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.rometools.opml.feed.opml.Opml;
 import com.rometools.opml.io.impl.OPML20Generator;
@@ -135,9 +137,9 @@ public class CategorySelectionFragment extends BaseFragment implements CategoryR
                         .content(R.string.restore_categories_message)
                         .positiveText(R.string.restore_categories_yes)
                         .negativeText(R.string.restore_categories_no)
-                        .callback(new MaterialDialog.ButtonCallback() {
+                        .onPositive(new MaterialDialog.SingleButtonCallback() {
                             @Override
-                            public void onPositive(MaterialDialog dialog) {
+                            public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                                 DatabaseHandler.getInstance().removeAllCategories();
                                 PrefUtilities.getInstance().saveLoading(false);
                                 onRestore();
@@ -163,7 +165,7 @@ public class CategorySelectionFragment extends BaseFragment implements CategoryR
                 .inputType(InputType.TYPE_CLASS_TEXT)
                 .input("", "", new MaterialDialog.InputCallback() {
                     @Override
-                    public void onInput(MaterialDialog materialDialog, CharSequence charSequence) {
+                    public void onInput(@NonNull MaterialDialog materialDialog, CharSequence charSequence) {
                         String categoryName = charSequence != null ? charSequence.toString() : "";
                         selectColor(categoryName);
                     }
@@ -180,7 +182,7 @@ public class CategorySelectionFragment extends BaseFragment implements CategoryR
                 .inputType(InputType.TYPE_CLASS_TEXT)
                 .input("", category.getName(), new MaterialDialog.InputCallback() {
                     @Override
-                    public void onInput(MaterialDialog materialDialog, CharSequence charSequence) {
+                    public void onInput(@NonNull MaterialDialog materialDialog, CharSequence charSequence) {
                         String categoryName = charSequence != null ? charSequence.toString() : "";
                         category.setName(categoryName);
                         adapter.update(category);

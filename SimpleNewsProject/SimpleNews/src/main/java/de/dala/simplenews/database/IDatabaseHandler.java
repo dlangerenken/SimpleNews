@@ -17,16 +17,16 @@ public interface IDatabaseHandler {
     long[] addCategories(List<Category> categories, Boolean excludeFeeds, Boolean excludeEntries);
     void addCategory(Category category, Boolean excludeFeeds, Boolean excludeEntries);
     void removeCategory(long categoryId, Boolean excludeFeeds, Boolean excludeEntries);
-    long[] updateCategory(Category category);
+    void updateCategory(Category category);
     void removeAllCategories();
 
     long addFeed(long categoryId, Feed feed, Boolean excludeEntries);
     void removeFeeds(Long categoryId, Long feedId, Boolean excludeEntries);
-    long[] updateFeed(Feed feed);
+    void updateFeed(Feed feed);
 
     List<Entry> getEntries(Long categoryId, Long feedId, Boolean onlyVisible);
-    long[] addEntries(Long categoryId, Long feedId, List<Entry> entries);
-    long[] updateEntry(Entry entry);
+    void addEntries(Long categoryId, Long feedId, List<Entry> entries);
+    void updateEntry(Entry entry);
     void removeEntries(Long categoryId, Long feedId, Long entryId);
     List<Entry> getFavoriteEntries(long categoryId);
     List<Entry> getVisitedEntries(long categoryId);

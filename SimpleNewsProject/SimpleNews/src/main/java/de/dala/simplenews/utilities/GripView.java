@@ -8,6 +8,7 @@ import android.graphics.Paint;
 import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.View;
@@ -32,7 +33,7 @@ public class GripView extends View {
     /**
      * The radius in pixels of the dots.
      */
-    private float mDotSizeRadiusPx;
+    private final float mDotSizeRadiusPx;
 
     /**
      * The calculated top padding to make sure the dots are centered. Calculated in {@link #onSizeChanged(int, int, int, int)}.
@@ -42,7 +43,7 @@ public class GripView extends View {
     /**
      * The number of columns.
      */
-    private int mColumnCount = DEFAULT_COLUMN_COUNT;
+    private final int mColumnCount = DEFAULT_COLUMN_COUNT;
 
     /**
      * The number of rows. Calculated in {@link #onSizeChanged(int, int, int, int)}.
@@ -61,7 +62,7 @@ public class GripView extends View {
         super(context, attrs, defStyleAttr);
 
         mDotPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        int color = getResources().getColor(DEFAULT_DOT_COLOR);
+        int color = ContextCompat.getColor(getContext(), DEFAULT_DOT_COLOR);
         if (attrs != null) {
             final TypedArray a = context.obtainStyledAttributes(attrs, ATTRS);
             color = a.getColor(0, color);
@@ -77,7 +78,7 @@ public class GripView extends View {
      * Sets the color of the dots. Defaults to {@link #DEFAULT_DOT_COLOR}.
      */
     public void setColor(@ColorRes final int colorResId) {
-        mDotPaint.setColor(getResources().getColor(colorResId));
+        mDotPaint.setColor(ContextCompat.getColor(getContext(), colorResId));
     }
 
     @SuppressWarnings("ParameterNameDiffersFromOverriddenParameter")

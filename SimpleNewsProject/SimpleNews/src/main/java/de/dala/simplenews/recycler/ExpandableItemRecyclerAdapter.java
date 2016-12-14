@@ -37,7 +37,7 @@ public class ExpandableItemRecyclerAdapter extends BaseRecyclerAdapter<Expandabl
 
     private final ItemClickListener mItemClickListener;
     private final Set<Entry> mExpandedItemIds;
-    private boolean shouldMarkUnreadEntries;
+    private final boolean shouldMarkUnreadEntries;
 
     public interface ItemClickListener {
 
@@ -112,8 +112,8 @@ public class ExpandableItemRecyclerAdapter extends BaseRecyclerAdapter<Expandabl
     }
 
     private class EntryClickListener implements EntryViewHolder.ClickListener {
-        private Entry mEntry;
-        private EntryViewHolder mViewHolder;
+        private final Entry mEntry;
+        private final EntryViewHolder mViewHolder;
 
         EntryClickListener(Entry entry, EntryViewHolder viewHolder) {
             mEntry = entry;

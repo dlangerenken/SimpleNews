@@ -248,7 +248,7 @@ public class NewsActivity extends BaseActivity implements ViewPager.OnPageChange
     }
 
     @Override
-    public void changeColor(int primaryColor, int secondaryColor) {
+    void changeColor(int primaryColor, int secondaryColor) {
         super.changeColor(primaryColor, secondaryColor);
         setColor(subactionButton1, primaryColor, secondaryColor);
         setColor(subactionButton2, primaryColor, secondaryColor);

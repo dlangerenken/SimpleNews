@@ -137,14 +137,14 @@ public class Utilities {
      * @param tokens an array objects to be joined. Strings will be formed from
      *               the objects by calling object.toString().
      */
-    public static String join(CharSequence delimiter, Iterable<Entry> tokens, boolean shorten) {
+    public static String join(Iterable<Entry> tokens, boolean shorten) {
         StringBuilder sb = new StringBuilder();
         boolean firstTime = true;
         for (Entry token : tokens) {
             if (firstTime) {
                 firstTime = false;
             } else {
-                sb.append(delimiter);
+                sb.append((CharSequence) "\n");
             }
             sb.append(token.toString(shorten));
         }

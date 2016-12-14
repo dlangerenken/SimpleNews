@@ -55,7 +55,7 @@ public class CategoryRecyclerAdapter extends BaseRecyclerAdapter<CategoryRecycle
     }
 
     public void initTouch(EmptyObservableRecyclerView recyclerView) {
-        ItemTouchHelper.Callback callback = new ItemTouchHelperCallback(this, false, false);
+        ItemTouchHelper.Callback callback = new ItemTouchHelperCallback(this);
         mItemTouchHelper = new ItemTouchHelper(callback);
         mItemTouchHelper.attachToRecyclerView(recyclerView);
     }

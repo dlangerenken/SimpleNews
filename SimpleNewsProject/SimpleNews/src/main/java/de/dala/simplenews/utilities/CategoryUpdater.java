@@ -3,6 +3,7 @@ package de.dala.simplenews.utilities;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 
 import com.rometools.rome.feed.synd.SyndEntry;
 import com.rometools.rome.feed.synd.SyndFeed;
@@ -177,7 +178,7 @@ public class CategoryUpdater {
                     }
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                Log.e("CategoryUpdater", "XmlReader could not read feed", e);
                 return null;
             }
             databaseHandler.removeEntries(category.getId(), mFeed.getId(), null);

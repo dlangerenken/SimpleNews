@@ -41,11 +41,6 @@ public class OpmlImportFragment extends BaseFragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
-    @Override
     public void onPause() {
         super.onPause();
         if (task != null) {

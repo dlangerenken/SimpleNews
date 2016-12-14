@@ -6,7 +6,7 @@ import android.util.AttributeSet;
 import android.view.View;
 
 public class EmptyObservableRecyclerView extends RecyclerView {
-    public static final int EMPTY = 0;
+    private static final int EMPTY = 0;
     private View emptyView;
     final private RecyclerView.AdapterDataObserver observer = new AdapterDataObserver() {
         @Override

@@ -1,6 +1,7 @@
 package de.dala.simplenews.recycler;
 
 import android.content.Context;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -63,7 +64,7 @@ public class OpmlRecyclerAdapter extends ChoiceModeRecyclerAdapter<OpmlRecyclerA
         });
         int pad = mContext.getResources().getDimensionPixelSize(R.dimen.card_layout_padding);
         holder.itemView.setPadding(pad, pad, pad, pad);
-        Utilities.setPressedColorRippleDrawable(mContext.getResources().getColor(R.color.list_background), PrefUtilities.getInstance().getCurrentColor(), holder.itemView);
+        Utilities.setPressedColorRippleDrawable(ContextCompat.getColor(mContext, R.color.list_background), PrefUtilities.getInstance().getCurrentColor(), holder.itemView);
     }
 
     @Override

@@ -1,6 +1,8 @@
 package de.dala.simplenews.recycler;
 
 import android.app.Activity;
+import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -58,7 +60,7 @@ public class FeedRecyclerAdapter extends BaseRecyclerAdapter<FeedRecyclerAdapter
                 return true;
             }
         });
-        Utilities.setPressedColorRippleDrawable(mContext.getResources().getColor(R.color.list_background), PrefUtilities.getInstance().getCurrentColor(), holder.itemView);
+        Utilities.setPressedColorRippleDrawable(ContextCompat.getColor(mContext, R.color.list_background), PrefUtilities.getInstance().getCurrentColor(), holder.itemView);
     }
 
     @Override
@@ -115,7 +117,7 @@ public class FeedRecyclerAdapter extends BaseRecyclerAdapter<FeedRecyclerAdapter
                 .input(R.string.hint_add_entry, 0, new MaterialDialog.InputCallback() {
 
                     @Override
-                    public void onInput(final MaterialDialog materialDialog, CharSequence charSequence) {
+                    public void onInput(@NonNull final MaterialDialog materialDialog, CharSequence charSequence) {
                         final View positive = materialDialog.getActionButton(DialogAction.POSITIVE);
                         final View negative = materialDialog.getActionButton(DialogAction.NEGATIVE);
                         UpdatingFeedTask feedTask = new UpdatingFeedTask(mCategory, new UpdatingFeedTask.UpdatingFeedListener() {
@@ -142,13 +144,12 @@ public class FeedRecyclerAdapter extends BaseRecyclerAdapter<FeedRecyclerAdapter
                         feedTask.execute(charSequence.toString());
                     }
                 })
-                .callback(new MaterialDialog.ButtonCallback() {
+                .onNegative(new MaterialDialog.SingleButtonCallback() {
                     @Override
-                    public void onNegative(MaterialDialog dialog) {
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                         dialog.cancel();
                     }
-                })
-                .autoDismiss(false).build();
+                }).autoDismiss(false).build();
         EditText text = dialog.getInputEditText();
         if (text != null) {
             text.setText(feed.getXmlUrl());

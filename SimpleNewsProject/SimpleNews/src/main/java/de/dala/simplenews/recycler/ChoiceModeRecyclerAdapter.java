@@ -87,7 +87,7 @@ public abstract class ChoiceModeRecyclerAdapter<VH extends RecyclerView.ViewHold
         return sum;
     }
 
-    boolean isInSelectionMode() {
+    private boolean isInSelectionMode() {
         return mInSelectionMode;
     }
 
@@ -127,7 +127,7 @@ public abstract class ChoiceModeRecyclerAdapter<VH extends RecyclerView.ViewHold
         return mItems.size();
     }
 
-    public Item get(int index) {
+    Item get(int index) {
         return getItems().get(index);
     }
 
@@ -135,7 +135,7 @@ public abstract class ChoiceModeRecyclerAdapter<VH extends RecyclerView.ViewHold
         return getItems().indexOf(item);
     }
 
-    public List<Item> getItems() {
+    private List<Item> getItems() {
         return mItems;
     }
 
@@ -164,7 +164,7 @@ public abstract class ChoiceModeRecyclerAdapter<VH extends RecyclerView.ViewHold
         }
     }
 
-    public void update(Item item) {
+    private void update(Item item) {
         notifyItemChanged(indexOf(item));
     }
 
@@ -175,7 +175,7 @@ public abstract class ChoiceModeRecyclerAdapter<VH extends RecyclerView.ViewHold
         }
     }
 
-    public void remove(Item removingItem) {
+    private void remove(Item removingItem) {
         List<Item> selectedItems = getSelectedItems();
         clearSelections();
         int index = indexOf(removingItem);

@@ -31,7 +31,7 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
      * Database Name and Version
      */
     private static final int DATABASE_VERSION = 2;
-    public static final String DATABASE_NAME = "simple_db";
+    private static final String DATABASE_NAME = "simple_db";
 
     /**
      * Table names
@@ -74,7 +74,7 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
 
     private static SQLiteDatabase db;
     private static DatabaseHandler instance;
-    private Context mContext;
+    private final Context mContext;
 
     private DatabaseHandler(Context context, String databasePath) {
         super(context, databasePath, null, DATABASE_VERSION);
@@ -106,9 +106,9 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
     *
     * @param context the context to set.
     */
-    public static void init(Context context, String databasePath) {
+    public static void init(Context context) {
         if (instance == null) {
-            instance = new DatabaseHandler(context, databasePath);
+            instance = new DatabaseHandler(context, DatabaseHandler.DATABASE_NAME);
             db = instance.getWritableDatabase();
         }
     }
@@ -240,15 +240,15 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
     }
 
     @Override
-    public long[] addEntries(Long categoryId, Long feedId, List<Entry> entries) {
+    public void addEntries(Long categoryId, Long feedId, List<Entry> entries) {
         IPersistableObject<Entry> persistence = new PersistableEntries(categoryId, feedId, null, null);
-        return persistence.store(entries);
+        persistence.store(entries);
     }
 
     @Override
-    public long[] updateEntry(Entry entry) {
+    public void updateEntry(Entry entry) {
         IPersistableObject<Entry> persistence = new PersistableEntries(entry.getCategoryId(), entry.getFeedId(), entry.getId(), null);
-        return update(persistence, entry);
+        update(persistence, entry);
     }
 
     @Override
@@ -285,15 +285,15 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
     }
 
     @Override
-    public long[] updateCategory(Category category) {
+    public void updateCategory(Category category) {
         IPersistableObject<Category> persistence = new PersistableCategories(category.getId(), true, true, null);
-        return update(persistence, category);
+        update(persistence, category);
     }
 
     @Override
-    public long[] updateFeed(Feed feed) {
+    public void updateFeed(Feed feed) {
         IPersistableObject<Feed> persistence = new PersistableFeeds(feed.getCategoryId(), feed.getId(), null, null);
-        return update(persistence, feed);
+        update(persistence, feed);
     }
 
     private <E> long[] update(final IPersistableObject<E> persistableResource, E resource) {

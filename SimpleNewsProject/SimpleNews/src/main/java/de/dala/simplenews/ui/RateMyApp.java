@@ -4,8 +4,10 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 
 import de.dala.simplenews.R;
@@ -53,9 +55,9 @@ class RateMyApp {
                 .positiveText(R.string.rate_my_app_now)
                 .neutralText(R.string.rate_my_app_later)
                 .negativeText(R.string.rate_my_app_never)
-                .callback(new MaterialDialog.ButtonCallback() {
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
-                    public void onPositive(MaterialDialog dialog) {
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                         PrefUtilities.getInstance().shouldNotAskForRatingAnymore();
                         try {
                             mContext.startActivity(new Intent(
@@ -67,17 +69,17 @@ class RateMyApp {
                             Toast.makeText(mContext, mContext.getString(R.string.playstore_not_found), Toast.LENGTH_LONG).show();
                         }
                     }
-
+                })
+                .onNegative(new MaterialDialog.SingleButtonCallback() {
                     @Override
-                    public void onNegative(MaterialDialog dialog) {
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                         PrefUtilities.getInstance().shouldNotAskForRatingAnymore();
-                        super.onNegative(dialog);
                     }
-
+                })
+                .onNeutral(new MaterialDialog.SingleButtonCallback() {
                     @Override
-                    public void onNeutral(MaterialDialog dialog) {
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                         PrefUtilities.getInstance().shouldAskForRatingAgain();
-                        super.onNeutral(dialog);
                     }
                 }).show();
     }

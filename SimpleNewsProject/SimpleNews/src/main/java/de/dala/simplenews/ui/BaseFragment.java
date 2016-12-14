@@ -28,14 +28,14 @@ public class BaseFragment extends Fragment {
             // the parent is removed (as all children are first removed from the parent)
             // See https://code.google.com/p/android/issues/detail?id=55228
             Animation doNothingAnim = new AlphaAnimation(1, 1);
-            doNothingAnim.setDuration(getNextAnimationDuration(parent, DEFAULT_CHILD_ANIMATION_DURATION));
+            doNothingAnim.setDuration(getNextAnimationDuration(parent));
             return doNothingAnim;
         } else {
             return super.onCreateAnimation(transit, enter, nextAnim);
         }
     }
 
-    private static long getNextAnimationDuration(Fragment fragment, long defValue) {
+    private static long getNextAnimationDuration(Fragment fragment) {
         try {
             // Attempt to get the resource ID of the next animation that
             // will be applied to the given fragment.
@@ -45,16 +45,16 @@ public class BaseFragment extends Fragment {
             Animation nextAnim = AnimationUtils.loadAnimation(fragment.getActivity(), nextAnimResource);
 
             // ...and if it can be loaded, return that animation's duration
-            return (nextAnim == null) ? defValue : nextAnim.getDuration();
+            return (nextAnim == null) ? (long) BaseFragment.DEFAULT_CHILD_ANIMATION_DURATION : nextAnim.getDuration();
         } catch (IllegalAccessException e) {
             e.printStackTrace();
-            return defValue;
+            return (long) BaseFragment.DEFAULT_CHILD_ANIMATION_DURATION;
         } catch (NoSuchFieldException e) {
             e.printStackTrace();
-            return defValue;
+            return (long) BaseFragment.DEFAULT_CHILD_ANIMATION_DURATION;
         } catch (Resources.NotFoundException e) {
             e.printStackTrace();
-            return defValue;
+            return (long) BaseFragment.DEFAULT_CHILD_ANIMATION_DURATION;
         }
     }
 

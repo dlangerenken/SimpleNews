@@ -11,7 +11,7 @@ public class MainApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        DatabaseHandler.init(this, DatabaseHandler.DATABASE_NAME);
+        DatabaseHandler.init(this);
         PrefUtilities.init(this);
         ColorManager.init(this);
     }

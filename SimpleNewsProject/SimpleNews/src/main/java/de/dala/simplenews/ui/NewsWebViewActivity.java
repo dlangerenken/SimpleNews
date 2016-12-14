@@ -23,7 +23,7 @@ import de.dala.simplenews.common.Entry;
 public class NewsWebViewActivity extends BaseActivity {
 
     public static final String ENTRY_KEY = "entry";
-    public static final String LOADING_KEY = "loading";
+    private static final String LOADING_KEY = "loading";
     private Entry mEntry;
     private WebView mWebView;
     private MenuItem mRefreshItem;
@@ -105,13 +105,7 @@ public class NewsWebViewActivity extends BaseActivity {
 
         // We set the WebViewClient to ensure links are consumed by the WebView rather
         // than passed to a browser if it can
-        mWebView.setWebViewClient(new WebViewClient() {
-            @Override
-            public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                view.loadUrl(url);
-                return true;
-            }
-        });
+        mWebView.setWebViewClient(new WebViewClient());
         mWebView.setWebChromeClient(new WebChromeClient() {
             public void onProgressChanged(WebView view, int progress) {
                 setRefreshActionButtonState(progress < 100);
