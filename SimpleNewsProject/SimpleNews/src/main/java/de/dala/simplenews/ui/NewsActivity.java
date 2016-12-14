@@ -44,6 +44,13 @@ public class NewsActivity extends BaseActivity implements ViewPager.OnPageChange
     private FloatingActionButton subactionButton1;
     private FloatingActionButton subactionButton2;
 
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        DatabaseHandler.getInstance().deleteDeprecatedEntries(PrefUtilities.getInstance().getDeprecatedTime());
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

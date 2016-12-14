@@ -37,24 +37,12 @@
             android:contentDescription="@null"
             tools:background="@android:color/holo_red_light" />
 
-        <TextView
-            android:id="@+id/name"
-            android:layout_width="wrap_content"
-            android:layout_height="35dp"
-            android:layout_marginStart="5dp"
-            android:layout_toEndOf="@id/color"
-            android:gravity="center_vertical"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            tools:text="International" />
-
         <CheckBox
             android:id="@+id/show"
             android:layout_width="35dp"
             android:layout_height="35dp"
             android:layout_alignParentEnd="true"
             android:focusable="false" />
-        <!--android:background="@drawable/checkbox_visible_drawable"
-        android:button="@null"-->
 
         <ImageView
             android:id="@+id/more"
@@ -63,7 +51,6 @@
             android:layout_gravity="center"
             android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp"
-            android:layout_toLeftOf="@id/show"
             android:layout_toStartOf="@id/show"
             android:background="@drawable/ic_overflow"
             android:contentDescription="@null" />
@@ -73,14 +60,23 @@
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:layout_gravity="center"
-            android:layout_toLeftOf="@id/more"
             android:layout_toStartOf="@id/more"
             android:background="@drawable/ic_editing"
             android:contentDescription="@null" />
+
+        <TextView
+            android:id="@+id/name"
+            android:layout_width="wrap_content"
+            android:layout_height="35dp"
+            android:layout_marginStart="5dp"
+            android:layout_toEndOf="@id/color"
+            android:layout_toStartOf="@id/edit"
+            android:gravity="center_vertical"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            tools:text="International" />
     </RelativeLayout>
 
     <View
-        android:id="@+id/divider"
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="@color/holo_gray_light" />

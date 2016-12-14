@@ -29,7 +29,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import de.dala.simplenews.BuildConfig;
 import de.dala.simplenews.R;
 import de.dala.simplenews.common.Category;
 import de.dala.simplenews.common.Entry;
@@ -302,13 +301,7 @@ public class ExpandableNewsFragment extends BaseFragment implements SwipeRefresh
 
     private void markEntryAsSeen(Entry entry) {
         if (entry.getSeenDate() == null || entry.getSeenDate() == 0) {
-            long date = new Date().getTime();
-            if (BuildConfig.DEBUG) {
-                if (date == 0) {
-                    throw new RuntimeException("New Date is 0");
-                }
-            }
-            entry.setSeenDate(date);
+            entry.setSeenDate(new Date().getTime());
             DatabaseHandler.getInstance().updateEntry(entry);
             mExpandableItemRecyclerAdapter.update(entry);
         }

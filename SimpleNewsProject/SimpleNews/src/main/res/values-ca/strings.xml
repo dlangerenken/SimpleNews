@@ -40,7 +40,6 @@
     <string name="shorten_links_summary">"S\'han d\'escurçar els enllaços compartits? (p. ex. www.unnomllarguissimdecanal.com a www.adf.ly/nomnou)"</string>
     <string name="feed_selection_remove">"Elimina"</string>
     <string name="mark_read">"Marca com a llegit"</string>
-    <string name="mark_unread">"Marca com a no llegit"</string>
     <string name="multiple_columns">"Mostra amb vàries columnes"</string>
     <string name="single_columns">"Mostra amb una sola columna"</string>
     <string name="no_entries">"No s\'han trobat entrades."</string>
@@ -50,12 +49,10 @@
     <string name="menu_delete_entry">"Elimina"</string>
     <string name="not_valid_url_nor_opml_file">"El text introduït no és ni una adreça, ni un contingut d\'arxiu OPML vàlids."</string>
     <string name="choose_category_for_feeds">"Trieu una categoria"</string>
-    <string name="beta_version_disclaimer">"Aquesta és una versió beta. No valoreu l\'aplicació en base a aquesta funcionalitat. En lloc d\'això, envieu un informe del error o un suggeriment."</string>
     <string name="feed_selection_assign">"Seleccioneu els canals per assignar-los a la categoria"</string>
     <string name="import_button">"Importa"</string>
     <string name="enter_url_or_content_import">"Introduïu l\'adreça d\'un arxiu OPML o el seu contingut"</string>
     <string name="no_feeds_found">"No s\'han trobat canals"</string>
-    <string name="no_browser_found">"No s\'ha trobat cap navegador. Instal·leu-ne un i torneu-ho a provar."</string>
     <string name="pref_fragment_title">"Preferències"</string>
 
 
@@ -71,10 +68,6 @@
     <string name="font_size_pref_summary">Ajust la mida de la font</string>
     <string name="font_size_pref_title">Mida de la font</string>
     <string name="font_size_xlarge">Muy Grande</string>
-    <string name="feed_selection_add">Add</string>
-    <string name="deselect_all_context_list">Eliminar selecció</string>
-    <string name="menu_unread">No llegit</string>
-    <string name="select_all_context_list">Seleccioneu totes les entrades</string>
     <string name="font_size_xsmall">Molt petit</string>
     <string name="sort_after_feed_pref_summary">Classifica segon alimenta primer</string>
     <string name="sort_after_feed_pref_title">Classificació tipus</string>

@@ -199,16 +199,6 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
     }
 
     @Override
-    public Category getCategory(Long categoryId, Boolean excludeFeeds, Boolean excludeEntries) {
-        IPersistableObject<Category> persistence = new PersistableCategories(categoryId, excludeFeeds, excludeEntries, null);
-        List<Category> result = load(persistence);
-        if (result != null && result.size() == 1) {
-            return result.get(0);
-        }
-        return null;
-    }
-
-    @Override
     public void addCategory(Category category, Boolean excludeFeeds, Boolean excludeEntries) {
         IPersistableObject<Category> persistence = new PersistableCategories(null, excludeFeeds, excludeEntries, null);
         List<Category> result = new ArrayList<>();
@@ -229,34 +219,12 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
     }
 
     @Override
-    public List<Feed> getFeeds(Long categoryId, Boolean excludeEntries) {
-        IPersistableObject<Feed> persistence = new PersistableFeeds(categoryId, null, excludeEntries, null);
-        return load(persistence);
-    }
-
-    @Override
-    public Feed getFeed(long feedId, Boolean excludeEntries) {
-        IPersistableObject<Feed> persistence = new PersistableFeeds(null, feedId, excludeEntries, null);
-        List<Feed> result = load(persistence);
-        if (result != null && result.size() == 1) {
-            return result.get(0);
-        }
-        return null;
-    }
-
-    @Override
     public long addFeed(long categoryId, Feed feed, Boolean excludeEntries) {
         IPersistableObject<Feed> persistence = new PersistableFeeds(categoryId, null, excludeEntries, null);
         List<Feed> result = new ArrayList<>();
         result.add(feed);
         persistence.store(result);
         return feed.getId();
-    }
-
-    @Override
-    public long[] addFeeds(long categoryId, List<Feed> feeds, Boolean excludeEntries) {
-        IPersistableObject<Feed> persistence = new PersistableFeeds(categoryId, null, excludeEntries, null);
-        return persistence.store(feeds);
     }
 
     @Override
@@ -269,24 +237,6 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
     public List<Entry> getEntries(Long categoryId, Long feedId, Boolean onlyVisible) {
         IPersistableObject<Entry> persistence = new PersistableEntries(categoryId, feedId, null, onlyVisible);
         return load(persistence);
-    }
-
-    @Override
-    public Entry getEntry(long entryId) {
-        IPersistableObject<Entry> persistence = new PersistableEntries(null, null, entryId, null);
-        List<Entry> result = load(persistence);
-        if (result != null && result.size() == 1) {
-            return result.get(0);
-        }
-        return null;
-    }
-
-    @Override
-    public void addEntry(long categoryId, long feedId, Entry entry) {
-        IPersistableObject<Entry> persistence = new PersistableEntries(categoryId, feedId, null, null);
-        List<Entry> result = new ArrayList<>();
-        result.add(entry);
-        persistence.store(result);
     }
 
     @Override
@@ -317,56 +267,6 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
     public List<Entry> getVisitedEntries(long categoryId) {
         IPersistableObject<Entry> persistence = new PersistableVisibleEntries(categoryId, null, null, null);
         return load(persistence);
-    }
-
-    @Override
-    public List<Entry> getUnreadEntries(long categoryId) {
-        IPersistableObject<Entry> persistence = new PersistableUnreadEntries(categoryId, null, null, null);
-        return load(persistence);
-    }
-
-    @Override
-    public Cursor getEntriesCursor(Long categoryId, Long feedId, Boolean onlyVisible) {
-        IPersistableObject<Entry> persistence = new PersistableEntries(categoryId, feedId, null, onlyVisible);
-        return persistence.getCursor();
-    }
-
-    @Override
-    public Cursor getFavoriteEntriesCursor(Long categoryId, Long feedId) {
-        IPersistableObject<Entry> persistence = new PersistableFavoriteEntries(categoryId, feedId, null, null);
-        return persistence.getCursor();
-    }
-
-    @Override
-    public Cursor getRecentEntriesCursor(Long categoryId, Long feedId) {
-        IPersistableObject<Entry> persistence = new PersistableVisibleEntries(categoryId, feedId, null, null);
-        return persistence.getCursor();
-    }
-
-    @Override
-    public Cursor getUnreadEntriesCursor(Long categoryId, Long feedId) {
-        IPersistableObject<Entry> persistence = new PersistableUnreadEntries(categoryId, feedId, null, null);
-        return persistence.getCursor();
-    }
-
-    @Override
-    public Cursor getEntriesCursor(Long categoryId, Boolean onlyVisible) {
-        return getEntriesCursor(categoryId, null, onlyVisible);
-    }
-
-    @Override
-    public Cursor getFavoriteEntriesCursor(Long categoryId) {
-        return getFavoriteEntriesCursor(categoryId, null);
-    }
-
-    @Override
-    public Cursor getRecentEntriesCursor(Long categoryId) {
-        return getRecentEntriesCursor(categoryId, null);
-    }
-
-    @Override
-    public Cursor getUnreadEntriesCursor(Long categoryId) {
-        return getUnreadEntriesCursor(categoryId, null);
     }
 
     @Override
@@ -424,10 +324,5 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
         } catch (XmlPullParserException | IOException e) {
             e.printStackTrace();
         }
-    }
-
-    @Override
-    public void dropCategory(Long id) {
-        removeEntries(id, null, null);
     }
 }

@@ -6,9 +6,7 @@
     <color name="accent">#FF4081</color>
 
     <color name="list_background">#ffffff</color>
-    <color name="list_background_selected">#ABE3FF</color>
 
-    <color name="holo_red_dark">#ffcc0000</color>
     <color name="holo_gray_light">#33999999</color>
 
 </resources>

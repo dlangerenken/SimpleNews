@@ -43,7 +43,6 @@
     <string name="shorten_links_summary">Sollen Links zum Teilen gekürzt werden? (z.B. www.sehrsehrlangewebsite.de -> www.adf.ly/kurzername)</string>
     <string name="feed_selection_remove">Entfernen</string>
     <string name="mark_read">Gelesen markieren</string>
-    <string name="mark_unread">Ungelesen markieren</string>
     <string name="multiple_columns">Ansicht mit mehreren Spalten</string>
     <string name="single_columns">Ansicht mit einer Spalte</string>
     <string name="no_entries">Keine Einträge gefunden.</string>
@@ -54,12 +53,10 @@
     <string name="menu_delete_entry">Löschen</string>
     <string name="not_valid_url_nor_opml_file">Der eingegebene Text ist weder in einem validen OPML-Format, noch eine valide URL.</string>
     <string name="choose_category_for_feeds">Wähle eine Kategorie</string>
-    <string name="beta_version_disclaimer">Das ist eine Test-Version! Bitte bewerte die Anwendung nicht aufgrund dieser Funktionalität, sondern sende stattdessen Vorschläge oder Fehler</string>
     <string name="feed_selection_assign">Selektiere die Feeds, die zu einer Kategorie hinzugefügt werden sollen.</string>
     <string name="import_button">Importieren</string>
     <string name="enter_url_or_content_import">Bitte geben Sie eine URL zu einem OPML-Link oder den gesamten Inhalt einer Datei an</string>
     <string name="no_feeds_found">Keine Feeds gefunden</string>
-    <string name="no_browser_found">Hoppla, es wurde kein Browser gefunden. Bitte installiere zuerst einen Browser und versuche es dann erneut!</string>
     <string name="pref_fragment_title">Einstellungen</string>
 
 
@@ -77,10 +74,6 @@
     <string name="font_size_pref_summary">Ändere die Schriftgröße</string>
     <string name="font_size_pref_title">Schriftgröße</string>
 
-    <string name="feed_selection_add">Hinzufügen</string>
-    <string name="deselect_all_context_list">Auswahl entfernen</string>
-    <string name="menu_unread">Ungelesen</string>
-    <string name="select_all_context_list">Alle Einträge selektieren</string>
     <string name="sort_after_feed_pref_summary">Zuerst nach Feeds sortieren</string>
     <string name="sort_after_feed_pref_title">Sortierreihenfolge</string>
     <string name="use_internal_browser_pref_summary">Der interne Browser kann Einträge herunterladen und ohne Internet abrufen</string>

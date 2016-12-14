@@ -41,14 +41,9 @@
     <string name="shorten_links_title">Shorten links for sharing?</string>
     <string name="shorten_links_summary">Should the shared links be shortened? (e.g. www.thisismyverylongnewssite.com to www.adf.ly/newname)</string>
     <string name="feed_selection_remove">Remove</string>
-    <string name="feed_selection_add">Add</string>
     <string name="mark_read">Mark as read</string>
-    <string name="mark_unread">Mark as unread</string>
-    <string name="menu_unread">Unread</string>
     <string name="multiple_columns">View with multiple columns</string>
     <string name="single_columns">View with a single column</string>
-    <string name="select_all_context_list">Select all items</string>
-    <string name="deselect_all_context_list">Remove selection</string>
     <string name="no_entries">No entries found.</string>
     <string name="remove_old_entries_summary">Delete deprecated news?</string>
     <string name="remove_old_entries_title">Deprecated Entries</string>
@@ -56,13 +51,10 @@
     <string name="menu_delete_entry">Delete</string>
     <string name="not_valid_url_nor_opml_file">Sorry, but the entered text neither is a valid url nor contains valid content of an opml-file.</string>
     <string name="choose_category_for_feeds">Choose a category</string>
-    <string name="beta_version_disclaimer">This is a beta version. Do not rate the app based on this functionality.
-        Please report bugs or suggestions instead!</string>
     <string name="feed_selection_assign">Select feeds to assign them to categories</string>
     <string name="import_button">Import</string>
     <string name="enter_url_or_content_import">Please enter an url to an opml-file or the content of an opml-file</string>
     <string name="no_feeds_found">No Feeds found</string>
-    <string name="no_browser_found">Sorry, no browser found. Please install a browser and try again!</string>
     <string name="pref_fragment_title">Preferences</string>
 
 
