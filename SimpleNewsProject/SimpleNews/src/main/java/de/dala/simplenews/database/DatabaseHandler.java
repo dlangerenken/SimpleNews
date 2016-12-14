@@ -76,8 +76,8 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
     private static DatabaseHandler instance;
     private final Context mContext;
 
-    private DatabaseHandler(Context context, String databasePath) {
-        super(context, databasePath, null, DATABASE_VERSION);
+    private DatabaseHandler(Context context) {
+        super(context, DatabaseHandler.DATABASE_NAME, null, DATABASE_VERSION);
         mContext = context;
     }
 
@@ -108,7 +108,7 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
     */
     public static void init(Context context) {
         if (instance == null) {
-            instance = new DatabaseHandler(context, DatabaseHandler.DATABASE_NAME);
+            instance = new DatabaseHandler(context);
             db = instance.getWritableDatabase();
         }
     }
@@ -296,10 +296,10 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
         update(persistence, feed);
     }
 
-    private <E> long[] update(final IPersistableObject<E> persistableResource, E resource) {
+    private <E> void update(final IPersistableObject<E> persistableResource, E resource) {
         List<E> result = new ArrayList<>();
         result.add(resource);
-        return persistableResource.store(result);
+        persistableResource.store(result);
     }
 
     private <E> List<E> load(final IPersistableObject<E> persistableResource) {
