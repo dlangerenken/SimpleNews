@@ -38,7 +38,7 @@ import de.dala.simplenews.utilities.CategoryUpdater;
 import de.dala.simplenews.utilities.EmptyObservableRecyclerView;
 import de.dala.simplenews.utilities.PrefUtilities;
 import de.dala.simplenews.utilities.Utilities;
-import jp.wasabeef.recyclerview.animators.SlideInUpAnimator;
+import de.dala.simplenews.utilities.animators.SlideInUpAnimator;
 
 
 public class ExpandableNewsFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener, ExpandableItemRecyclerAdapter.ItemClickListener {

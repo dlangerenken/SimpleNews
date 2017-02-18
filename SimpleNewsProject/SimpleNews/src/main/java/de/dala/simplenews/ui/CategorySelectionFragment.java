@@ -98,10 +98,9 @@ public class CategorySelectionFragment extends BaseFragment implements CategoryR
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.category_selection, container, false);
         if (rssPath != null) {
-            View topView = rootView.findViewById(R.id.topView);
             TextView topTextView = (TextView) rootView.findViewById(R.id.topTextView);
             topTextView.setText(getActivity().getString(R.string.category_add));
-            topView.setVisibility(View.VISIBLE);
+            topTextView.setVisibility(View.VISIBLE);
         }
         FloatingActionButton addButton = (FloatingActionButton) rootView.findViewById(R.id.add_button);
         addButton.setBackgroundTintList(new ColorStateList(new int[][]{new int[]{0}}, new int[]{PrefUtilities.getInstance().getCurrentColor()}));

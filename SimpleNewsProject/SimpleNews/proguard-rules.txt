@@ -1,21 +1,26 @@
--keep class java.nio.**
--keep class com.googlecode.**
--keep class okio.**
--keep class com.squareup.**
--keep class com.rometools.**
--keep class org.jdom2.**
--keep class com.ocpsoft.**
--keep class android.support.**
+-dontusemixedcaseclassnames
+-dontskipnonpubliclibraryclasses
+-dontpreverify
+-dontobfuscate
+-verbose
+-useuniqueclassmembernames
+#-optimizations !code/simplification/arithmetic,!field/*,!class/merging/*
+# For comfortability in case we do obfuscate
+# -renamesourcefileattribute SourceFile
+-keepattributes SourceFile, LineNumberTable, *Annotation*, Signature, InnerClasses, EnclosingMethod
 
+#pretty time
+-keep class com.ocpsoft.** { *;}
+-keep class org.hamcrest.** { *;}
+-dontwarn com.ocpsoft.**
+-dontwarn org.hamcrest.**
 
--dontwarn okio.**
--dontwarn com.squareup.**
--dontwarn com.ocpsoft.pretty.**
--dontwarn org.jdom2.**
--dontwarn org.apache.**
--dontwarn com.google.vending.licensing.**
--dontwarn com.android.vending.licensing.**
--dontnote android.support.**
--optimizations !class/unboxing/enum
--renamesourcefileattribute SourceFile
--keepattributes SourceFile,LineNumberTable
+# RSS libraries
+-keep class com.rometools.rome.feed.synd.impl.** { *;}
+-keep class com.rometools.rome.io.impl.** { *;}
+-dontnote com.rometools.rome.**
+-dontwarn javax.xml.stream.**
+-dontwarn org.jaxen.**
+-dontwarn java.nio.**
+-dontwarn org.codehaus.mojo.animal_sniffer.**
+-dontwarn org.slf4j.impl.**

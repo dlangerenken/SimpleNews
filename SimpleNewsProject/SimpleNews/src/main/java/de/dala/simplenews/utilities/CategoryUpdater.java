@@ -142,7 +142,6 @@ public class CategoryUpdater {
         if (!entries.isEmpty()) {
             category.setLastUpdateTime(new Date().getTime());
             databaseHandler.updateCategory(category);
-            NetworkUtils.shortenIfNecessary(entries);
             sendMessage(entries, RESULT);
         } else {
             sendMessage(null, EMPTY);

@@ -30,7 +30,7 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
     /**
      * Database Name and Version
      */
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 4;
     private static final String DATABASE_NAME = "simple_db";
 
     /**
@@ -183,6 +183,12 @@ public class DatabaseHandler extends SQLiteOpenHelper implements
                     if (newVersion >= 2) {
                         db.execSQL("ALTER TABLE " + TABLE_ENTRY + " ADD " + ENTRY_SEEN_DATE + " LONG;");
                     }
+                    break;
+                case 2:
+                    break;
+                case 3:
+                    break;
+                case 4:
                     break;
                 default:
                     db.execSQL("DROP TABLE IF EXISTS " + TABLE_CATEGORY);
